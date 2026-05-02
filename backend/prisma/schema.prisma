@@ -1,0 +1,232 @@
+// CowHealth AI — Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+
+enum UserProfile {
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+enum CowStatus {
+  HEALTHY
+  CALVING
+  HEAT_STRESS
+  ALERT
+}
+
+enum CollarStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+}
+
+// Auth / RBAC
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  profile      UserProfile @default(VIEWER)
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  roles         UserRole[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique  // ex: "farms.create", "cows.delete"
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  roles  RolePermission[]
+  groups PermissionGroupPermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  userId Int @map("user_id")
+  roleId Int @map("role_id")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       Int @map("role_id")
+  permissionId Int @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model PermissionGroup {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  permissions PermissionGroupPermission[]
+
+  @@map("permission_groups")
+}
+
+model PermissionGroupPermission {
+  groupId      Int @map("group_id")
+  permissionId Int @map("permission_id")
+
+  group      PermissionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  permission Permission      @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, permissionId])
+  @@map("permission_group_permissions")
+}
+
+// Core Domain
+
+model Farm {
+  id        Int      @id @default(autoincrement())
+  name      String
+  cnpj      String   @unique
+  address   String?
+  city      String?
+  state     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cows Cow[]
+
+  @@map("farms")
+}
+
+model Collar {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique  // usado como device_id no MQTT
+  status    CollarStatus @default(ACTIVE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  cow Cow? // 1 colar ↔ 1 vaca (nullable enquanto não associado)
+
+  @@map("collars")
+}
+
+model Cow {
+  id        Int       @id @default(autoincrement())
+  tag       String    @unique  // identificador visual da vaca
+  name      String?
+  breed     String?
+  birthDate DateTime? @map("birth_date")
+  status    CowStatus @default(HEALTHY)
+  farmId    Int       @map("farm_id")
+  collarId  Int?      @unique @map("collar_id") // único: garante 1-para-1
+
+  farm   Farm    @relation(fields: [farmId], references: [id])
+  collar Collar? @relation(fields: [collarId], references: [id])
+
+  heartRateData     HeartRateData[]
+  temperatureData   TemperatureData[]
+  accelerometerData AccelerometerData[]
+  notifications     Notification[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("cows")
+}
+
+// Sensor Data
+
+model HeartRateData {
+  id         Int      @id @default(autoincrement())
+  cowId      Int      @map("cow_id")
+  bpm        Int
+  measuredAt DateTime @map("measured_at") // timestamp vindo do payload MQTT
+  receivedAt DateTime @default(now()) @map("received_at") // quando chegou na API
+
+  cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
+
+  @@index([cowId, measuredAt])
+  @@map("heart_rate_data")
+}
+
+model TemperatureData {
+  id          Int      @id @default(autoincrement())
+  cowId       Int      @map("cow_id")
+  celsius     Float
+  measuredAt  DateTime @map("measured_at")
+  receivedAt  DateTime @default(now()) @map("received_at")
+
+  cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
+
+  @@index([cowId, measuredAt])
+  @@map("temperature_data")
+}
+
+model AccelerometerData {
+  id         Int      @id @default(autoincrement())
+  cowId      Int      @map("cow_id")
+  x          Float
+  y          Float
+  z          Float
+  measuredAt DateTime @map("measured_at")
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
+
+  @@index([cowId, measuredAt])
+  @@map("accelerometer_data")
+}
+
+// Notifications
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  cowId     Int?     @map("cow_id")
+  title     String
+  message   String   @db.Text
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cow  Cow?  @relation(fields: [cowId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
