@@ -151,15 +151,3 @@ services/        → aplica regras de negócio, acessa o banco via Prisma
     ▼
 Banco de dados (MySQL)
 ```
-
----
-
-## Comparação com projeto sem Prisma
-
-| | Projeto anterior (SQL manual) | Projeto atual (Prisma) |
-|---|---|---|
-| Conexão com o banco | `connection.ts` com `mysql2` | `lib/prisma.ts` com `PrismaClient` |
-| Queries | SQL escrito manualmente | Métodos do Prisma (`findMany`, `create`, etc.) |
-| Tipagem dos resultados | Manual ou ausente | Gerada automaticamente pelo Prisma |
-| Migrations | Scripts SQL manuais | `prisma migrate dev` |
-| Controllers, routes, services, middlewares | Igual | Igual |
