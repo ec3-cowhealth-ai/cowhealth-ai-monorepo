@@ -156,12 +156,12 @@ await prisma.cow.delete({ where: { id: 1 } });
 
 | Situação | Comando |
 |---|---|
-| Alterei o `schema.prisma` | `prisma migrate dev --name descricao` |
-| Puxei mudanças com novas migrations | `prisma migrate dev` |
+| Alterou o `schema.prisma` | `prisma migrate dev --name descricao` |
+| Puxar mudanças com novas migrations | `prisma migrate dev` |
 | Client desatualizado sem nova migration | `prisma generate` |
-| Quero popular o banco com dados iniciais | `prisma db seed` |
-| Quero apagar tudo e recomeçar do zero | `prisma migrate reset` |
-| Quero inspecionar os dados | `prisma studio` |
+| Quer popular o banco com dados iniciais | `prisma db seed` |
+| Quer apagar tudo e recomeçar do zero | `prisma migrate reset` |
+| Quer inspecionar os dados | `prisma studio` |
 
 ---
 
