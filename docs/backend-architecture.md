@@ -20,7 +20,8 @@ backend/
 │   ├── types/               # interfaces e tipos TypeScript
 │   ├── lib/
 │   │   └── prisma.ts        # singleton do PrismaClient
-│   └── server.ts            # inicialização do Express
+│   ├── server.ts            # inicialização do Express
+│   └── worker.ts            # processo MQTT — fora do escopo do MVP
 ├── prisma.config.ts         # configuração de conexão com o banco
 ├── .env                     # variáveis de ambiente (não commitado)
 ├── .env.example             # template de variáveis para o time
@@ -33,19 +34,21 @@ backend/
 ## Responsabilidade de cada camada
 
 ### `routes/`
-Define os endpoints e associa cada um ao controller correspondente. Aplica os middlewares por rota. Não contém lógica.
+Define os endpoints e associa cada um ao controller correspondente. Aplica os middlewares de autenticação e autorização por rota. Não contém lógica.
 
 ```ts
 // src/routes/farmsRoutes.ts
 import { Router } from "express";
-import { listFarms, createFarm } from "../controllers/farmsController";
+import { listFarms, createFarm, updateFarm, deleteFarm } from "../controllers/farmsController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
 
 const router = Router();
 
-router.get("/",  requireAuth, requirePermission("ViewAny Farm"), listFarms);
-router.post("/", requireAuth, requirePermission("Create Farm"),  createFarm);
+router.get("/",        requireAuth, requirePermission("ViewAny Farm"), listFarms);
+router.post("/",       requireAuth, requirePermission("Create Farm"),  createFarm);
+router.put("/:id",    requireAuth, requirePermission("Update Farm"),  updateFarm);
+router.delete("/:id", requireAuth, requirePermission("Delete Farm"),  deleteFarm);
 
 export default router;
 ```
@@ -53,28 +56,28 @@ export default router;
 ---
 
 ### `controllers/`
-Recebe a requisição, extrai os dados necessários (params, body, query) e delega ao service. Devolve a resposta HTTP.
+Recebe a requisição, extrai os dados necessários (params, body, query) e delega ao service. Devolve a resposta HTTP. Não contém regras de negócio.
 
 ```ts
 // src/controllers/farmsController.ts
 import { Request, Response } from "express";
 import { getAllFarms, createFarm } from "../services/farmsService";
 
-export const listFarms = async (_req: Request, res: Response) => {
+export const listFarms = async (_request: Request, response: Response): Promise<void> => {
   const farms = await getAllFarms();
-  res.json(farms);
+  response.json(farms);
 };
 
-export const createFarm = async (req: Request, res: Response) => {
-  const farm = await createFarm(req.body);
-  res.status(201).json(farm);
+export const createFarmController = async (request: Request, response: Response): Promise<void> => {
+  const farm = await createFarm(request.body);
+  response.status(201).json(farm);
 };
 ```
 
 ---
 
 ### `services/`
-Contém as regras de negócio e é a única camada que acessa o banco de dados via Prisma. Não conhece `req` nem `res`.
+Contém as regras de negócio e é a única camada que acessa o banco via Prisma. Não conhece `req` nem `res`.
 
 ```ts
 // src/services/farmsService.ts
@@ -92,24 +95,25 @@ export const createFarm = async (data: { name: string; cnpj: string }) => {
 ---
 
 ### `middlewares/`
-Funções executadas antes dos controllers. Responsáveis por autenticação (JWT) e autorização (RBAC).
+
+#### `requireAuth`
+Valida o token JWT no header `Authorization` e injeta os dados do usuário autenticado em `req.user`. Deve ser aplicado em todas as rotas protegidas.
 
 ```ts
 // src/middlewares/requireAuth.ts
-// Valida o JWT e injeta o usuário autenticado em req.user
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import type { AuthPayload } from "../types/auth";
 
 export const requireAuth = (
-  req: Request,
-  res: Response,
+  request: Request,
+  response: Response,
   next: NextFunction
 ): void => {
-  const authHeader = req.headers.authorization;
+  const authHeader = request.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Token nao fornecido." });
+    response.status(401).json({ error: "Token nao fornecido." });
     return;
   }
 
@@ -117,33 +121,35 @@ export const requireAuth = (
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as unknown as AuthPayload;
-    req.user = payload;
+    request.user = payload;
     next();
   } catch {
-    res.status(401).json({ error: "Token invalido ou expirado." });
+    response.status(401).json({ error: "Token invalido ou expirado." });
   }
 };
 ```
 
+#### `requirePermission`
+Verifica se o usuário autenticado possui a permissão necessária através de seus roles. Deve ser aplicado após `requireAuth`. A query ao banco é encapsulada em `userHasPermission` no `authService`.
+
 ```ts
 // src/middlewares/requirePermission.ts
-// Verifica se o usuário autenticado possui a permissão necessária via roles
 import { Request, Response, NextFunction } from "express";
 import { userHasPermission } from "../services/authService";
 
 export const requirePermission = (permissionName: string) =>
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const userId = req.user?.sub;
+  async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    const userId = request.user?.sub;
 
     if (!userId) {
-      res.status(401).json({ error: "Nao autenticado." });
+      response.status(401).json({ error: "Nao autenticado." });
       return;
     }
 
-    const allowed = await userHasPermission(userId, permissionName);
+    const isAllowed = await userHasPermission(userId, permissionName);
 
-    if (!allowed) {
-      res.status(403).json({ error: "Sem permissao para esta acao." });
+    if (!isAllowed) {
+      response.status(403).json({ error: "Sem permissao para esta acao." });
       return;
     }
 
@@ -194,7 +200,7 @@ export interface CreateFarmInput {
 ---
 
 ### `lib/prisma.ts`
-Instância única do PrismaClient compartilhada por toda a aplicação.
+Instância única do PrismaClient compartilhada por toda a aplicação. Substitui o `connection.ts` de projetos com SQL manual.
 
 ```ts
 import { prisma } from "../lib/prisma";
@@ -208,16 +214,19 @@ import { prisma } from "../lib/prisma";
 Client HTTP
     │
     ▼
-routes/          → define o caminho, o método e aplica os middlewares
+routes/              → define o caminho, método e middlewares
     │
     ▼
-middlewares/     → requireAuth (valida JWT) → requirePermission (verifica RBAC)
+requireAuth          → valida o JWT e injeta req.user
     │
     ▼
-controllers/     → extrai dados da requisição, chama o service
+requirePermission    → verifica a permissão via roles no banco
     │
     ▼
-services/        → aplica regras de negócio, acessa o banco via Prisma
+controllers/         → extrai dados da requisição, chama o service
+    │
+    ▼
+services/            → aplica regras de negócio, acessa o banco via Prisma
     │
     ▼
 Banco de dados (MySQL)
@@ -225,12 +234,8 @@ Banco de dados (MySQL)
 
 ---
 
-## Variáveis de ambiente necessárias
+## Worker MQTT — fora do escopo do MVP
 
-```dotenv
-PORT=3001
-DATABASE_URL="mysql://user:password@localhost:3306/cowhealth-db"
-JWT_SECRET="string-longa-e-aleatoria"
-JWT_EXPIRES_IN="7d"
-NODE_ENV=development
-```
+O `worker.ts` está documentado no `plan.md` para uso futuro. Nesta entrega os dados de sensores são mockados via seed. A arquitetura de rotas e serviços não depende do worker.
+
+---

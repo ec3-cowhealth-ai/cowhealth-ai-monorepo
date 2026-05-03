@@ -23,9 +23,10 @@ Guia de referência sobre a organização do código no frontend do projeto.
 
 ```
 frontend/
-├── public/                  # arquivos estáticos (favicon, etc.)
+├── public/
 ├── src/
 │   ├── components/          # componentes reutilizáveis (sem lógica de negócio)
+│   │   └── ProtectedRoute/  # redirecionamento para login se não autenticado
 │   ├── hooks/               # hooks customizados com React Query
 │   ├── lib/
 │   │   ├── api.ts           # instância configurada do Axios
@@ -39,8 +40,7 @@ frontend/
 ├── index.html
 ├── .env
 ├── .env.example
-├── vite.config.ts
-└── tsconfig.app.json
+└── vite.config.ts
 ```
 
 ---
@@ -48,7 +48,7 @@ frontend/
 ## Responsabilidade de cada camada
 
 ### `lib/api.ts`
-Instância configurada do Axios, compartilhada por todos os services. Injeta o JWT automaticamente e redireciona para login quando o token expirar — exceto na rota de login em si.
+Instância configurada do Axios, compartilhada por todos os services. Configura baseURL, timeout e dois interceptors: um que injeta o JWT em todas as requisições, e outro que redireciona para o login quando o token expirar — sem interceptar erros do próprio endpoint de login.
 
 ```ts
 // src/lib/api.ts
@@ -68,9 +68,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Redireciona para o login quando o token expirar.
-// A rota de login é ignorada — um 401 ali significa credencial errada,
-// não token expirado, e deve ser tratado pelo useLogin normalmente.
+// Redireciona para login quando o token expirar
+// A rota /auth/login é ignorada para permitir exibir erro de credencial inválida
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -119,10 +118,10 @@ import api from "../lib/api";
 import type { AuthUser, LoginInput } from "../types/auth";
 
 export const loginService = (data: LoginInput) =>
-  api.post<{ token: string }>("/auth/login", data).then((res) => res.data);
+  api.post<{ token: string }>("/auth/login", data).then((response) => response.data);
 
 export const getMeService = () =>
-  api.get<AuthUser>("/auth/me").then((res) => res.data);
+  api.get<AuthUser>("/auth/me").then((response) => response.data);
 ```
 
 ```ts
@@ -130,17 +129,17 @@ export const getMeService = () =>
 import api from "../lib/api";
 import type { Farm, CreateFarmInput } from "../types/farm";
 
-export const getFarms = () =>
-  api.get<Farm[]>("/farms").then((res) => res.data);
+export const getFarmsService = () =>
+  api.get<Farm[]>("/farms").then((response) => response.data);
 
-export const createFarm = (data: CreateFarmInput) =>
-  api.post<Farm>("/farms", data).then((res) => res.data);
+export const createFarmService = (data: CreateFarmInput) =>
+  api.post<Farm>("/farms", data).then((response) => response.data);
 
-export const updateFarm = (id: number, data: CreateFarmInput) =>
-  api.put<Farm>(`/farms/${id}`, data).then((res) => res.data);
+export const updateFarmService = (id: number, data: CreateFarmInput) =>
+  api.put<Farm>(`/farms/${id}`, data).then((response) => response.data);
 
-export const deleteFarm = (id: number) =>
-  api.delete(`/farms/${id}`).then((res) => res.data);
+export const deleteFarmService = (id: number) =>
+  api.delete(`/farms/${id}`).then((response) => response.data);
 ```
 
 ---
@@ -197,21 +196,33 @@ export const useLogout = () => {
 ```ts
 // src/hooks/useFarms.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getFarms, createFarm, deleteFarm } from "../services/farmsService";
+import { getFarmsService, createFarmService, deleteFarmService } from "../services/farmsService";
+
+const FARMS_QUERY_KEY = ["farms"];
 
 export const useFarms = () => {
   return useQuery({
-    queryKey: ["farms"],
-    queryFn:  getFarms,
+    queryKey: FARMS_QUERY_KEY,
+    queryFn:  getFarmsService,
   });
 };
 
 export const useCreateFarm = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createFarm,
+    mutationFn: createFarmService,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["farms"] });
+      queryClient.invalidateQueries({ queryKey: FARMS_QUERY_KEY });
+    },
+  });
+};
+
+export const useDeleteFarm = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteFarmService,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: FARMS_QUERY_KEY });
     },
   });
 };
@@ -219,21 +230,8 @@ export const useCreateFarm = () => {
 
 ---
 
-### `components/`
-Componentes genéricos reutilizados em múltiplas páginas. Não contêm lógica de negócio nem chamadas à API.
-
-```
-components/
-├── ProtectedRoute/
-│   └── index.tsx    # redireciona para /login se não autenticado
-├── Layout/
-│   ├── AppLayout.tsx    # layout principal com sidebar e header
-│   └── AuthLayout.tsx   # layout para login
-├── Button.tsx
-├── Modal.tsx
-├── Spinner.tsx
-└── Table.tsx
-```
+### `components/ProtectedRoute`
+Redireciona para `/login` se não houver usuário autenticado. Usado no `App.tsx` para envolver todas as rotas privadas.
 
 ```tsx
 // src/components/ProtectedRoute/index.tsx
@@ -241,11 +239,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useMe } from "../../hooks/useAuth";
 
 export const ProtectedRoute = () => {
-  const { data: user, isLoading } = useMe();
+  const { data: authenticatedUser, isLoading } = useMe();
 
   if (isLoading) return <p>Carregando...</p>;
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!authenticatedUser) return <Navigate to="/login" replace />;
 
   return <Outlet />;
 };
@@ -285,13 +283,51 @@ pages/
     └── permissions/
 ```
 
+As páginas consomem os hooks e delegam a renderização para os componentes locais:
+
+```tsx
+// src/pages/farms/FarmsPage.tsx
+import { useFarms, useDeleteFarm } from "../../hooks/useFarms";
+import { FarmRow } from "./FarmRow";
+
+export const FarmsPage = () => {
+  const { data: farms, isLoading } = useFarms();
+  const { mutate: deleteFarm }     = useDeleteFarm();
+
+  if (isLoading) return <p>Carregando...</p>;
+
+  return (
+    <ul>
+      {farms?.map((farm) => (
+        <FarmRow key={farm.id} farm={farm} onDelete={deleteFarm} />
+      ))}
+    </ul>
+  );
+};
+```
+
 ---
 
 ### `types/`
-Interfaces TypeScript alinhadas com o schema do banco.
+Interfaces TypeScript compartilhadas entre páginas, hooks e services. Devem refletir os campos do schema do banco.
 
 ```ts
 // src/types/auth.ts
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface Permission {
+  id: number;
+  name: string;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+}
+
 export interface AuthUser {
   id: number;
   name: string;
@@ -299,8 +335,8 @@ export interface AuthUser {
   profile: "ADMIN" | "MANAGER" | "VIEWER";
   active: boolean;
   createdAt: string;
-  roles: { id: number; name: string }[];
-  permissions: { id: number; name: string }[];
+  roles: Role[];
+  permissions: Permission[];
 }
 ```
 
@@ -357,7 +393,7 @@ export interface Collar {
 ---
 
 ### `App.tsx`
-Define as rotas com React Router. Rotas protegidas passam pelo `ProtectedRoute`.
+Define as rotas da aplicação. Rotas protegidas são envolvidas pelo `ProtectedRoute`.
 
 ```tsx
 // src/App.tsx
@@ -374,7 +410,7 @@ export const App = () => (
         <Route path="/login" element={<LoginPage />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<p>Dashboard (em breve)</p>} />
+          <Route path="/" element={<p>Dashboard (TODO)</p>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -382,6 +418,24 @@ export const App = () => (
     </BrowserRouter>
   </QueryClientProvider>
 );
+```
+
+---
+
+## Formulários — tipagem de eventos
+
+Com React 19, `FormEvent` foi depreciado. Usar os tipos nativos do DOM:
+
+| Situação | Tipo correto |
+|---|---|
+| `onSubmit` em formulário | `React.SubmitEvent` |
+| `onChange` em input | `React.ChangeEvent<HTMLInputElement>` |
+
+```tsx
+const handleSubmit = (event: React.SubmitEvent) => {
+  event.preventDefault();
+  login({ email, password });
+};
 ```
 
 ---
@@ -398,7 +452,7 @@ Hook (React Query)       → gerencia cache, loading e error automaticamente
 Service                  → define a chamada usando Axios
     │
     ▼
-lib/api.ts               → instância do Axios (baseURL, timeout, JWT, interceptors)
+lib/api.ts               → instância do Axios (baseURL, timeout, JWT)
     │
     ▼
 API (backend Express)
@@ -414,13 +468,5 @@ O Vite expõe apenas variáveis prefixadas com `VITE_` para o código do browser
 # frontend/.env
 VITE_API_URL=http://localhost:3001
 ```
-
----
-
-## Observações
-
-- Handlers de formulário usam `React.SubmitEvent` em vez do depreciado `React.FormEvent` (alinhado com React 19.2.10+).
-- O interceptor de 401 do Axios ignora a rota `/auth/login` — um 401 ali é credencial errada, não token expirado.
-- O `useMe` só executa se houver token no `localStorage` — evita chamadas desnecessárias antes do login.
 
 ---
