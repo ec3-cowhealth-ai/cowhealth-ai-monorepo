@@ -7,7 +7,7 @@ export const LoginPage = () => {
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: React.SubmitEvent) => {
     event.preventDefault();
     login({ email, password });
   };
