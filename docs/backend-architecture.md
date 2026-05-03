@@ -20,10 +20,9 @@ backend/
 │   ├── types/               # interfaces e tipos TypeScript
 │   ├── lib/
 │   │   └── prisma.ts        # singleton do PrismaClient
-│   ├── server.ts            # inicialização do Express
-│   └── worker.ts            # processo MQTT (roda em paralelo ao servidor)
+│   └── server.ts            # inicialização do Express
 ├── prisma.config.ts         # configuração de conexão com o banco
-├── .env                     # variáveis de ambiente
+├── .env                     # variáveis de ambiente (não commitado)
 ├── .env.example             # template de variáveis para o time
 ├── package.json
 └── tsconfig.json
@@ -34,10 +33,10 @@ backend/
 ## Responsabilidade de cada camada
 
 ### `routes/`
-Define os endpoints e associa cada um ao controller correspondente. Aplica middlewares por rota quando necessário. Não contém lógica.
+Define os endpoints e associa cada um ao controller correspondente. Aplica os middlewares por rota. Não contém lógica.
 
 ```ts
-// src/routes/farms.ts
+// src/routes/farmsRoutes.ts
 import { Router } from "express";
 import { listFarms, createFarm } from "../controllers/farmsController";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -93,24 +92,35 @@ export const createFarm = async (data: { name: string; cnpj: string }) => {
 ---
 
 ### `middlewares/`
-Funções executadas antes dos controllers. Responsáveis por autenticação (JWT), autorização (RBAC) e validações.
+Funções executadas antes dos controllers. Responsáveis por autenticação (JWT) e autorização (RBAC).
 
 ```ts
 // src/middlewares/requireAuth.ts
-// Valida o JWT e injeta o usuário autenticado na requisição
+// Valida o JWT e injeta o usuário autenticado em req.user
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import type { AuthPayload } from "../types/auth";
 
-export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Não autenticado." });
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.status(401).json({ error: "Token nao fornecido." });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    (req as any).user = payload;
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as unknown as AuthPayload;
+    req.user = payload;
     next();
   } catch {
-    res.status(401).json({ error: "Token inválido." });
+    res.status(401).json({ error: "Token invalido ou expirado." });
   }
 };
 ```
@@ -118,19 +128,25 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 ```ts
 // src/middlewares/requirePermission.ts
 // Verifica se o usuário autenticado possui a permissão necessária via roles
+import { Request, Response, NextFunction } from "express";
+import { userHasPermission } from "../services/authService";
+
 export const requirePermission = (permissionName: string) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = (req as any).user.id;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
-    });
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const userId = req.user?.sub;
 
-    const hasPermission = user?.roles.some((userRole) =>
-      userRole.role.permissions.some((rp) => rp.permission.name === permissionName)
-    );
+    if (!userId) {
+      res.status(401).json({ error: "Nao autenticado." });
+      return;
+    }
 
-    if (!hasPermission) return res.status(403).json({ error: "Sem permissão." });
+    const allowed = await userHasPermission(userId, permissionName);
+
+    if (!allowed) {
+      res.status(403).json({ error: "Sem permissao para esta acao." });
+      return;
+    }
+
     next();
   };
 ```
@@ -139,6 +155,28 @@ export const requirePermission = (permissionName: string) =>
 
 ### `types/`
 Interfaces e tipos TypeScript compartilhados entre as camadas.
+
+```ts
+// src/types/auth.ts
+export interface AuthPayload {
+  sub: number;
+  email: string;
+  profile: string;
+}
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthPayload;
+    }
+  }
+}
+```
 
 ```ts
 // src/types/farm.ts
@@ -156,34 +194,10 @@ export interface CreateFarmInput {
 ---
 
 ### `lib/prisma.ts`
-Instância única do PrismaClient compartilhada por toda a aplicação. Substitui o `connection.ts` de projetos com SQL manual.
+Instância única do PrismaClient compartilhada por toda a aplicação.
 
 ```ts
 import { prisma } from "../lib/prisma";
-```
-
----
-
-### `worker.ts`
-Processo separado que faz subscribe no broker MQTT e persiste os dados dos sensores. Roda em paralelo ao `server.ts` e usa a mesma instância do Prisma.
-
-```ts
-// src/worker.ts
-import mqtt from "mqtt";
-import { prisma } from "./lib/prisma";
-
-const client = mqtt.connect(process.env.MQTT_BROKER_URL!);
-
-client.on("connect", () => {
-  client.subscribe("project_ch_ai/send");
-});
-
-client.on("message", async (_topic, payload) => {
-  const data = JSON.parse(payload.toString());
-  const collar = await prisma.collar.findUnique({ where: { name: data.device_id }, include: { cow: true } });
-  if (!collar?.cow) return;
-  // persistir sensores e executar análise de saúde...
-});
 ```
 
 ---
@@ -194,10 +208,10 @@ client.on("message", async (_topic, payload) => {
 Client HTTP
     │
     ▼
-routes/          → define o caminho e o método (GET, POST, etc.)
+routes/          → define o caminho, o método e aplica os middlewares
     │
     ▼
-middlewares/     → valida JWT (requireAuth) e permissão (requirePermission)
+middlewares/     → requireAuth (valida JWT) → requirePermission (verifica RBAC)
     │
     ▼
 controllers/     → extrai dados da requisição, chama o service
@@ -209,23 +223,14 @@ services/        → aplica regras de negócio, acessa o banco via Prisma
 Banco de dados (MySQL)
 ```
 
-## Fluxo do worker MQTT
+---
 
-```
-Broker MQTT (broker.emqx.io)
-    │
-    ▼
-worker.ts        → subscribe no tópico project_ch_ai/send
-    │
-    ▼
-                 → resolve Collar por device_id → encontra Cow vinculada
-    │
-    ▼
-                 → persiste HeartRateData, TemperatureData, AccelerometerData
-    │
-    ▼
-                 → executa análise de saúde (parto iminente / estresse térmico)
-    │
-    ▼
-                 → atualiza Cow.status e cria Notification se alerta disparar
+## Variáveis de ambiente necessárias
+
+```dotenv
+PORT=3001
+DATABASE_URL="mysql://user:password@localhost:3306/cowhealth-db"
+JWT_SECRET="string-longa-e-aleatoria"
+JWT_EXPIRES_IN="7d"
+NODE_ENV=development
 ```
