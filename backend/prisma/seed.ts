@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+// Padrão: "ViewAny" = listar todos | "View" = ver um | "Create/Update/Delete" = ações
 const permissionNames = [
 	"ViewAny Farm", "View Farm", "Create Farm", "Update Farm", "Delete Farm",
 	"ViewAny Collar", "View Collar", "Create Collar", "Update Collar", "Delete Collar",
@@ -132,10 +133,10 @@ async function main() {
 		},
 	});
 
-	console.log("Roles criadas: SuperAdmin, Administrador, Veterinario, Produtor");
+	console.log("Roles criadas: SuperAdmin, Administrador, Veterinário, Produtor");
 
-	// Usuario admin
-	console.log("Criando usuario admin...");
+	// Usuário admin
+	console.log("Criando usuário admin...");
 	const passwordHash = await bcrypt.hash("admin1234", 12);
 	const adminUser = await prisma.user.upsert({
 		where:  { email: "admin@admin.com" },
@@ -224,15 +225,15 @@ async function main() {
 
 	console.log(`Dados de sensores criados para ${cowsWithCollar.length} vacas`);
 
-	// Notificacoes
-	console.log("Criando notificacoes...");
+	// Notificações
+	console.log("Criando notificações...");
 	await prisma.notification.createMany({
 		data: [
 		{
 			userId:  adminUser.id,
 			cowId:   createdCows[1].id,
-			title:   "Alerta: Vaca em estado de atencao",
-			message: `A vaca ${createdCows[1].name} (${createdCows[1].tag}) apresentou parametros fora do normal.`,
+			title:   "Alerta: Vaca em estado de atenção",
+			message: `A vaca ${createdCows[1].name} (${createdCows[1].tag}) apresentou parâmetros fora do normal.`,
 		},
 		{
 			userId:  adminUser.id,
@@ -243,7 +244,7 @@ async function main() {
 		],
 	});
 
-	console.log("Seed concluido com sucesso.");
+	console.log("Seed concluído com sucesso.");
 	console.log("---");
 	console.log("Acesso admin: admin@admin.com / admin1234");
 }
