@@ -14,6 +14,8 @@ Guia de referência sobre a organização do código no frontend do projeto.
 | React Router | Roteamento e proteção de rotas |
 | React Query | Cache, fetch e sincronização de estado do servidor |
 | Axios | Cliente HTTP (usado dentro dos services) |
+| Tailwind CSS | Estilização |
+| Recharts | Gráficos (FC, temperatura, vacas por status, top fazendas) |
 
 ---
 
@@ -43,7 +45,7 @@ frontend/
 ## Responsabilidade de cada camada
 
 ### `lib/api.ts`
-Instância configurada do Axios, compartilhada por todos os services. É aqui que se configura a baseURL, timeout e futuramente interceptors de autenticação (JWT).
+Instância configurada do Axios, compartilhada por todos os services. Configura baseURL, timeout e o interceptor que injeta o JWT em todas as requisições automaticamente.
 
 ```ts
 // src/lib/api.ts
@@ -54,7 +56,6 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Interceptor para adicionar o token JWT em todas as requisições
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -156,6 +157,8 @@ Uma pasta por módulo do sistema. Cada pasta contém a página principal e os co
 
 ```
 pages/
+├── auth/
+│   └── LoginPage.tsx
 ├── dashboard/
 │   ├── DashboardPage.tsx
 │   ├── StatsCards.tsx
@@ -164,19 +167,21 @@ pages/
 │   ├── FarmsPage.tsx
 │   ├── FarmForm.tsx
 │   └── FarmRow.tsx
+├── collars/
+│   ├── CollarsPage.tsx
+│   ├── CollarForm.tsx
+│   └── CollarRow.tsx
 ├── cows/
 │   ├── CowsPage.tsx
-│   ├── CowDetail.tsx
+│   ├── CowDetail.tsx       # gráficos de FC/temperatura + tabelas de sensores + galeria de fotos
 │   ├── CowForm.tsx
 │   └── SensorChart.tsx
 ├── notifications/
 │   └── NotificationsPage.tsx
-├── access/
-│   ├── users/
-│   ├── roles/
-│   └── permissions/
-└── auth/
-    └── LoginPage.tsx
+└── access/
+    ├── users/
+    ├── roles/
+    └── permissions/
 ```
 
 As páginas consomem os hooks e delegam a renderização para os componentes locais:
@@ -221,7 +226,7 @@ components/
 ---
 
 ### `types/`
-Interfaces TypeScript compartilhadas entre páginas, hooks e services.
+Interfaces TypeScript compartilhadas entre páginas, hooks e services. Devem refletir os campos do schema do banco.
 
 ```ts
 // src/types/farm.ts
@@ -232,6 +237,8 @@ export interface Farm {
   address?: string;
   city?: string;
   state?: string;
+  phone?: string;
+  email?: string;
 }
 
 export interface CreateFarmInput {
@@ -240,6 +247,34 @@ export interface CreateFarmInput {
   address?: string;
   city?: string;
   state?: string;
+  phone?: string;
+  email?: string;
+}
+```
+
+```ts
+// src/types/cow.ts
+export interface Cow {
+  id: number;
+  tag: string;
+  name?: string;
+  breed?: string;
+  birthDate?: string;
+  weight?: number;
+  photos?: string[];
+  status: "HEALTHY" | "CALVING" | "HEAT_STRESS" | "ALERT";
+  farmId: number;
+  collarId?: number;
+}
+```
+
+```ts
+// src/types/collar.ts
+export interface Collar {
+  id: number;
+  name: string;
+  status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+  dataFrequency: "HIGHER" | "DEFAULT" | "LOWER";
 }
 ```
 
