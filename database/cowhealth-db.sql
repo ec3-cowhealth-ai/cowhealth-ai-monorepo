@@ -2,7 +2,9 @@ DROP DATABASE IF EXISTS `cowhealth-db`;
 CREATE DATABASE IF NOT EXISTS `cowhealth-db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `cowhealth-db`;
 
+-- -----------------------------------------------------
 -- RBAC
+-- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS permissions (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,7 +67,9 @@ CREATE TABLE IF NOT EXISTS user_roles (
   CONSTRAINT user_roles_role_id_fkey FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE
 );
 
+-- -----------------------------------------------------
 -- Core domain
+-- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS farms (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,6 +78,8 @@ CREATE TABLE IF NOT EXISTS farms (
   address VARCHAR(191),
   city VARCHAR(191),
   state VARCHAR(191),
+  phone VARCHAR(191),
+  email VARCHAR(191),
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   updated_at DATETIME(3) NOT NULL,
   UNIQUE INDEX farms_cnpj_key (cnpj)
@@ -83,6 +89,7 @@ CREATE TABLE IF NOT EXISTS collars (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(191) NOT NULL,
   status ENUM('ACTIVE', 'INACTIVE', 'MAINTENANCE') NOT NULL DEFAULT 'ACTIVE',
+  data_frequency ENUM('HIGHER', 'DEFAULT', 'LOWER') NOT NULL DEFAULT 'DEFAULT',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   updated_at DATETIME(3) NOT NULL,
   UNIQUE INDEX collars_name_key (name)
@@ -94,6 +101,8 @@ CREATE TABLE IF NOT EXISTS cows (
   name VARCHAR(191),
   breed VARCHAR(191),
   birth_date DATETIME(3),
+  weight DOUBLE,
+  photos JSON,
   status ENUM('HEALTHY', 'CALVING', 'HEAT_STRESS', 'ALERT') NOT NULL DEFAULT 'HEALTHY',
   farm_id INT NOT NULL,
   collar_id INT,
@@ -105,7 +114,9 @@ CREATE TABLE IF NOT EXISTS cows (
   CONSTRAINT cows_collar_id_fkey FOREIGN KEY (collar_id) REFERENCES collars (id) ON DELETE SET NULL
 );
 
+-- -----------------------------------------------------
 -- Sensor data
+-- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS heart_rate_data (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -130,16 +141,21 @@ CREATE TABLE IF NOT EXISTS temperature_data (
 CREATE TABLE IF NOT EXISTS accelerometer_data (
   id INT AUTO_INCREMENT PRIMARY KEY,
   cow_id INT NOT NULL,
-  x DOUBLE NOT NULL,
-  y DOUBLE NOT NULL,
-  z DOUBLE NOT NULL,
+  accel_x DOUBLE NOT NULL,
+  accel_y DOUBLE NOT NULL,
+  accel_z DOUBLE NOT NULL,
+  gyro_x DOUBLE NOT NULL,
+  gyro_y DOUBLE NOT NULL,
+  gyro_z DOUBLE NOT NULL,
   measured_at DATETIME(3) NOT NULL,
   received_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   INDEX accelerometer_data_cow_id_measured_at_idx (cow_id, measured_at),
   CONSTRAINT accelerometer_data_cow_id_fkey FOREIGN KEY (cow_id) REFERENCES cows (id) ON DELETE CASCADE
 );
 
+-- -----------------------------------------------------
 -- Notifications
+-- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS notifications (
   id INT AUTO_INCREMENT PRIMARY KEY,
