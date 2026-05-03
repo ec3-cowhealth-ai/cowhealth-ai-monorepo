@@ -30,17 +30,23 @@ enum CollarStatus {
   MAINTENANCE
 }
 
+enum DataFrequency {
+  HIGHER  // 2 minutos
+  DEFAULT // 10 minutos
+  LOWER   // 60 minutos
+}
+
 // Auth / RBAC
 
 model User {
-  id           Int       @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   name         String
-  email        String    @unique
-  passwordHash String    @map("password_hash")
+  email        String      @unique
+  passwordHash String      @map("password_hash")
   profile      UserProfile @default(VIEWER)
-  active       Boolean   @default(true)
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  active       Boolean     @default(true)
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
   roles         UserRole[]
   notifications Notification[]
@@ -63,7 +69,7 @@ model Role {
 
 model Permission {
   id          Int      @id @default(autoincrement())
-  name        String   @unique  // ex: "farms.create", "cows.delete"
+  name        String   @unique                            // ex: "ViewAny Farm", "Delete Cow"
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
 
@@ -126,6 +132,8 @@ model Farm {
   address   String?
   city      String?
   state     String?
+  phone     String?
+  email     String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -135,26 +143,29 @@ model Farm {
 }
 
 model Collar {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique  // usado como device_id no MQTT
-  status    CollarStatus @default(ACTIVE)
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
+  id            Int           @id @default(autoincrement())
+  name          String        @unique                                   // device_id usado pelo MQTT para localizar o colar
+  status        CollarStatus  @default(ACTIVE)
+  dataFrequency DataFrequency @default(DEFAULT) @map("data_frequency")  // RF10A: HIGHER=2min, DEFAULT=10min, LOWER=60min
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
 
-  cow Cow? // 1 colar ↔ 1 vaca (nullable enquanto não associado)
+  cow Cow? // 1 colar -> 1 vaca (nullable enquanto não associado)
 
   @@map("collars")
 }
 
 model Cow {
   id        Int       @id @default(autoincrement())
-  tag       String    @unique  // identificador visual da vaca
+  tag       String    @unique                   // identificador visual da vaca
   name      String?
-  breed     String?
+  breed     String?                             // raça (breed adotado no lugar de race)
   birthDate DateTime? @map("birth_date")
+  weight    Float?                              // peso em kg
+  photos    Json?                               // array de nomes de arquivo para galeria de identificacao
   status    CowStatus @default(HEALTHY)
   farmId    Int       @map("farm_id")
-  collarId  Int?      @unique @map("collar_id") // único: garante 1-para-1
+  collarId  Int?      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
 
   farm   Farm    @relation(fields: [farmId], references: [id])
   collar Collar? @relation(fields: [collarId], references: [id])
@@ -176,7 +187,7 @@ model HeartRateData {
   id         Int      @id @default(autoincrement())
   cowId      Int      @map("cow_id")
   bpm        Int
-  measuredAt DateTime @map("measured_at") // timestamp vindo do payload MQTT
+  measuredAt DateTime @map("measured_at")                 // timestamp vindo do payload MQTT
   receivedAt DateTime @default(now()) @map("received_at") // quando chegou na API
 
   cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
@@ -186,11 +197,11 @@ model HeartRateData {
 }
 
 model TemperatureData {
-  id          Int      @id @default(autoincrement())
-  cowId       Int      @map("cow_id")
-  celsius     Float
-  measuredAt  DateTime @map("measured_at")
-  receivedAt  DateTime @default(now()) @map("received_at")
+  id         Int      @id @default(autoincrement())
+  cowId      Int      @map("cow_id")
+  celsius    Float
+  measuredAt DateTime @map("measured_at")
+  receivedAt DateTime @default(now()) @map("received_at")
 
   cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
 
@@ -201,9 +212,12 @@ model TemperatureData {
 model AccelerometerData {
   id         Int      @id @default(autoincrement())
   cowId      Int      @map("cow_id")
-  x          Float
-  y          Float
-  z          Float
+  accelX     Float    @map("accel_x") // eixo X do acelerometro (mpu.acc)
+  accelY     Float    @map("accel_y") // eixo Y do acelerometro (mpu.acc)
+  accelZ     Float    @map("accel_z") // eixo Z do acelerometro (mpu.acc)
+  gyroX      Float    @map("gyro_x")  // eixo X do giroscopio (mpu.gyro)
+  gyroY      Float    @map("gyro_y")  // eixo Y do giroscopio (mpu.gyro)
+  gyroZ      Float    @map("gyro_z")  // eixo Z do giroscopio (mpu.gyro)
   measuredAt DateTime @map("measured_at")
   receivedAt DateTime @default(now()) @map("received_at")
 
@@ -216,16 +230,16 @@ model AccelerometerData {
 // Notifications
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
-  cowId     Int?     @map("cow_id")
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  cowId     Int?      @map("cow_id")
   title     String
-  message   String   @db.Text
+  message   String    @db.Text
   readAt    DateTime? @map("read_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime  @default(now()) @map("created_at")
 
-  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cow  Cow?  @relation(fields: [cowId], references: [id], onDelete: SetNull)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cow  Cow? @relation(fields: [cowId], references: [id], onDelete: SetNull)
 
   @@index([userId, readAt])
   @@map("notifications")
