@@ -1,0 +1,95 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: CowHealth - Backend
+meta:
+  id: wrk_095293f4031046cbacf47613a6a51399
+  created: 1777833305593
+  modified: 1777833894949
+  description: ""
+collection:
+  - url: "{{ _[''].base_url }}auth/me"
+    name: auth/me
+    meta:
+      id: req_a7bb0a6263784f618635546e23030e3a
+      created: 1777833305597
+      modified: 1777833870198
+      isPrivate: false
+      description: ""
+      sortKey: -1777833305597
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.4.0
+        description: ""
+        disabled: false
+      - name: Authorization
+        value: Bearer {{ _[''].token }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _[''].base_url }}auth/login"
+    name: auth/login
+    meta:
+      id: req_9f63975c38b64dfebba9fbc27aed909c
+      created: 1777833527723
+      modified: 1777833764603
+      isPrivate: false
+      description: ""
+      sortKey: -1777833527723
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"email": "{{ _[''].api_user_email }}",
+        	"password": "{{ _[''].apit_password }}"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.4.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_11efa98d6557328df6a8227eaf657ba81db5c299
+    created: 1777833305595
+    modified: 1777833305595
+environments:
+  name: Base Environment
+  meta:
+    id: env_11efa98d6557328df6a8227eaf657ba81db5c299
+    created: 1777833305594
+    modified: 1777833305594
+    isPrivate: false
+  subEnvironments:
+    - name: Development
+      meta:
+        id: env_d508b6c7c9f242dfb226a384d40e195b
+        created: 1777833360026
+        modified: 1777833793403
+        isPrivate: false
+        sortKey: 1777833360026
+      data:
+        "":
+          base_url: http://localhost:3001/
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicHJvZmlsZSI6IkFETUlOIiwiaWF0IjoxNzc3ODMzNzY2LCJleHAiOjE3Nzg0Mzg1NjZ9.TYtXkIKcPH4cDj3TG1kRZR9pPC80QdEmFf77_BL7LCU
+          api_user_email: admin@admin.com
+          apit_password: admin1234
