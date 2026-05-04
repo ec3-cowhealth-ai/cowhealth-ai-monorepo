@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 import type { CreateUserInput, UpdateUserInput } from "../types/access";
 
+// ID do usuário SuperAdmin — protegido contra deleção e remoção de roles
+const SUPER_ADMIN_USER_ID = 1;
+
 export const getAllUsers = async () => {
     return prisma.user.findMany({
         select: {
@@ -13,9 +16,7 @@ export const getAllUsers = async () => {
             createdAt: true,
             roles: {
                 select: {
-                    role: {
-                        select: { id: true, name: true }
-                    },
+                    role: { select: { id: true, name: true } },
                 },
             },
         },
@@ -46,7 +47,7 @@ export const getUserById = async (userId: number) => {
                                         select: { id: true, name: true }
                                     },
                                 },
-                        },
+                            },
                         },
                     },
                 },
@@ -109,8 +110,20 @@ export const toggleUserActive = async (userId: number) => {
 };
 
 export const deleteUser = async (userId: number) => {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+        roles: { select: { role: { select: { name: true } } } },
+        },
+    });
+
     if (!user) throw new Error("Usuário não encontrado.");
+
+    // Regra: não deletar o usuário SuperAdmin
+    const isSuperAdmin = user.roles.some((userRole) => userRole.role.name === "SuperAdmin");
+    if (isSuperAdmin) {
+        throw new Error("Não é possível excluir o usuário SuperAdmin.");
+    }
 
     await prisma.user.delete({ where: { id: userId } });
 };
@@ -131,6 +144,11 @@ export const assignRoleToUser = async (userId: number, roleId: number) => {
 };
 
 export const removeRoleFromUser = async (userId: number, roleId: number) => {
+    // Regra: o usuário SuperAdmin (id: 1) não pode ser removido de nenhuma role
+    if (userId === SUPER_ADMIN_USER_ID) {
+        throw new Error("Não é possível remover roles do usuário SuperAdmin.");
+    }
+
     const userRole = await prisma.userRole.findUnique({
         where: { userId_roleId: { userId, roleId } },
     });

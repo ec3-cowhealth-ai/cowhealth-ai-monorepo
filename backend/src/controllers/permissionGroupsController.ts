@@ -5,8 +5,10 @@ import {
     createPermissionGroup,
     updatePermissionGroup,
     deletePermissionGroup,
-    grantPermissionsToGroup,
-    revokePermissionsFromGroup,
+    addPermissionToGroup,
+    removePermissionFromGroup,
+    grantGroupPermissionsToRoles,
+    revokeGroupPermissionsFromRoles,
 } from "../services/permissionGroupsService";
 
 export const listPermissionGroups = async (_request: Request, response: Response): Promise<void> => {
@@ -50,9 +52,37 @@ export const destroyPermissionGroup = async (request: Request, response: Respons
     }
 };
 
+// Permissões do grupo
+
+export const addPermission = async (request: Request, response: Response): Promise<void> => {
+    try {
+        await addPermissionToGroup(
+        Number(request.params.id),
+        Number(request.body.permissionId)
+        );
+        response.status(201).json({ message: "Permissao vinculada ao grupo com sucesso." });
+    } catch (error: any) {
+        response.status(400).json({ error: error.message });
+    }
+};
+
+export const removePermission = async (request: Request, response: Response): Promise<void> => {
+    try {
+        await removePermissionFromGroup(
+        Number(request.params.id),
+        Number(request.params.permissionId)
+        );
+        response.status(204).send();
+    } catch (error: any) {
+        response.status(400).json({ error: error.message });
+    }
+};
+
+// Grant / Revoke para Roles
+
 export const grantPermissions = async (request: Request, response: Response): Promise<void> => {
     try {
-        const result = await grantPermissionsToGroup(Number(request.params.id), request.body);
+        const result = await grantGroupPermissionsToRoles(Number(request.params.id), request.body);
         response.json(result);
     } catch (error: any) {
         response.status(400).json({ error: error.message });
@@ -61,7 +91,7 @@ export const grantPermissions = async (request: Request, response: Response): Pr
 
 export const revokePermissions = async (request: Request, response: Response): Promise<void> => {
     try {
-        const result = await revokePermissionsFromGroup(Number(request.params.id), request.body);
+        const result = await revokeGroupPermissionsFromRoles(Number(request.params.id), request.body);
         response.json(result);
     } catch (error: any) {
         response.status(400).json({ error: error.message });
