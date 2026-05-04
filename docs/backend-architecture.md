@@ -22,12 +22,116 @@ backend/
 │   │   └── prisma.ts        # singleton do PrismaClient
 │   ├── server.ts            # inicialização do Express
 │   └── worker.ts            # processo MQTT — fora do escopo do MVP
+├── uploads/                 # fotos das vacas
 ├── prisma.config.ts         # configuração de conexão com o banco
-├── .env                     # variáveis de ambiente (não commitado)
+├── .env                     # variáveis de ambiente
 ├── .env.example             # template de variáveis para o time
 ├── package.json
 └── tsconfig.json
 ```
+
+---
+
+## Endpoints implementados
+
+### Auth
+| Método | Rota | Permissão |
+|---|---|---|
+| POST | `/auth/login` | pública |
+| GET | `/auth/me` | autenticado |
+
+### Users
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/users` | ViewAny User |
+| GET | `/users/:id` | View User |
+| POST | `/users` | Create User |
+| PUT | `/users/:id` | Update User |
+| DELETE | `/users/:id` | Delete User |
+| PATCH | `/users/:id/toggle-active` | Update User |
+| POST | `/users/:id/roles` | Update User |
+| DELETE | `/users/:id/roles/:roleId` | Update User |
+
+### Roles
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/roles` | ViewAny Role |
+| GET | `/roles/:id` | View Role |
+| POST | `/roles` | Create Role |
+| PUT | `/roles/:id` | Update Role |
+| DELETE | `/roles/:id` | Delete Role |
+| POST | `/roles/:id/permissions` | Update Role |
+| DELETE | `/roles/:id/permissions/:permissionId` | Update Role |
+
+### Permissions
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/permissions` | ViewAny Permission |
+| GET | `/permissions/:id` | View Permission |
+| POST | `/permissions` | Create Permission |
+| PUT | `/permissions/:id` | Update Permission |
+| DELETE | `/permissions/:id` | Delete Permission |
+
+### Permission Groups
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/permission-groups` | ViewAny PermissionGroup |
+| GET | `/permission-groups/:id` | View PermissionGroup |
+| POST | `/permission-groups` | Create PermissionGroup |
+| PUT | `/permission-groups/:id` | Update PermissionGroup |
+| DELETE | `/permission-groups/:id` | Delete PermissionGroup |
+| POST | `/permission-groups/:id/permissions` | Update PermissionGroup |
+| DELETE | `/permission-groups/:id/permissions/:permissionId` | Update PermissionGroup |
+| POST | `/permission-groups/:id/grant` | Update PermissionGroup |
+| POST | `/permission-groups/:id/revoke` | Update PermissionGroup |
+
+### Farms
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/farms` | ViewAny Farm |
+| GET | `/farms/:id` | View Farm |
+| POST | `/farms` | Create Farm |
+| PUT | `/farms/:id` | Update Farm |
+| DELETE | `/farms/:id` | Delete Farm |
+
+### Collars
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/collars` | ViewAny Collar |
+| GET | `/collars/:id` | View Collar |
+| POST | `/collars` | Create Collar |
+| PUT | `/collars/:id` | Update Collar |
+| DELETE | `/collars/:id` | Delete Collar |
+
+### Cows
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/cows` | ViewAny Cow |
+| GET | `/cows/:id` | View Cow |
+| POST | `/cows` | Create Cow |
+| PUT | `/cows/:id` | Update Cow |
+| DELETE | `/cows/:id` | Delete Cow |
+| POST | `/cows/:id/photos` | Update Cow |
+| DELETE | `/cows/:id/photos/:filename` | Update Cow |
+| GET | `/cows/:id/heart-rate` | View Cow |
+| GET | `/cows/:id/temperature` | View Cow |
+| GET | `/cows/:id/accelerometer` | View Cow |
+| GET | `/cows/:id/heart-rate/daily` | View Cow |
+| GET | `/cows/:id/temperature/daily` | View Cow |
+
+### Dashboard
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/dashboard/overview` | autenticado |
+| GET | `/dashboard/cows-per-status` | autenticado |
+| GET | `/dashboard/cows-per-farm` | autenticado |
+
+### Notifications
+| Método | Rota | Permissão |
+|---|---|---|
+| GET | `/notifications` | ViewAny Notification |
+| PATCH | `/notifications/:id/read` | View Notification |
+| PATCH | `/notifications/read-all` | View Notification |
 
 ---
 
@@ -39,16 +143,17 @@ Define os endpoints e associa cada um ao controller correspondente. Aplica os mi
 ```ts
 // src/routes/farmsRoutes.ts
 import { Router } from "express";
-import { listFarms, createFarm, updateFarm, deleteFarm } from "../controllers/farmsController";
+import { listFarms, showFarm, storeFarm, updateFarmController, destroyFarm } from "../controllers/farmsController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
 
 const router = Router();
 
-router.get("/",        requireAuth, requirePermission("ViewAny Farm"), listFarms);
-router.post("/",       requireAuth, requirePermission("Create Farm"),  createFarm);
-router.put("/:id",    requireAuth, requirePermission("Update Farm"),  updateFarm);
-router.delete("/:id", requireAuth, requirePermission("Delete Farm"),  deleteFarm);
+router.get("/",       requireAuth, requirePermission("ViewAny Farm"), listFarms);
+router.get("/:id",    requireAuth, requirePermission("View Farm"),    showFarm);
+router.post("/",      requireAuth, requirePermission("Create Farm"),  storeFarm);
+router.put("/:id",    requireAuth, requirePermission("Update Farm"),  updateFarmController);
+router.delete("/:id", requireAuth, requirePermission("Delete Farm"),  destroyFarm);
 
 export default router;
 ```
@@ -68,9 +173,13 @@ export const listFarms = async (_request: Request, response: Response): Promise<
   response.json(farms);
 };
 
-export const createFarmController = async (request: Request, response: Response): Promise<void> => {
-  const farm = await createFarm(request.body);
-  response.status(201).json(farm);
+export const storeFarm = async (request: Request, response: Response): Promise<void> => {
+  try {
+    const farm = await createFarm(request.body);
+    response.status(201).json(farm);
+  } catch (error: any) {
+    response.status(400).json({ error: error.message });
+  }
 };
 ```
 
@@ -170,11 +279,6 @@ export interface AuthPayload {
   profile: string;
 }
 
-export interface LoginInput {
-  email: string;
-  password: string;
-}
-
 declare global {
   namespace Express {
     interface Request {
@@ -185,7 +289,7 @@ declare global {
 ```
 
 ```ts
-// src/types/farm.ts
+// src/types/farming.ts
 export interface CreateFarmInput {
   name: string;
   cnpj: string;
@@ -195,16 +299,85 @@ export interface CreateFarmInput {
   phone?: string;
   email?: string;
 }
+
+export interface CreateCollarInput {
+  name: string;
+  status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE" | "BATTERY";
+  dataFrequency?: "HIGHER" | "DEFAULT" | "LOWER";
+}
+```
+
+```ts
+// src/types/cows.ts
+export interface CreateCowInput {
+  tag: string;
+  name?: string;
+  breed?: string;
+  birthDate?: string;
+  weight?: number;
+  farmId: number;
+  collarId?: number;
+}
 ```
 
 ---
 
-### `lib/prisma.ts`
-Instância única do PrismaClient compartilhada por toda a aplicação. Substitui o `connection.ts` de projetos com SQL manual.
+## Regras de negócio implementadas
 
-```ts
-import { prisma } from "../lib/prisma";
+| Recurso | Regra |
+|---|---|
+| Farm | Não deletar com vacas vinculadas |
+| Collar | Não deletar vinculado a vaca |
+| Cow | Tag única; colar não pode estar vinculado a outra vaca; máximo 3 fotos |
+| Role | Não deletar com usuários vinculados |
+| Permission | Não deletar vinculada a roles ou grupos |
+| Permission Group | Não deletar com permissões vinculadas |
+| User | Não deletar usuário com role SuperAdmin |
+| User | Não remover role do usuário id: 1 (SuperAdmin) |
+| Permission Group Grant | Grupo deve ter permissões antes de conceder às roles |
+| Notification | Usuário só vê e marca suas próprias notificações |
+
+---
+
+## Upload de fotos
+
+O Multer é configurado no `cowsController.ts` e salva os arquivos na pasta `uploads/` da raiz do backend. Os nomes são gerados automaticamente com timestamp para evitar colisões.
+
+- Tipos aceitos: JPEG, PNG, WebP
+- Tamanho máximo: 5MB por arquivo
+- Limite: 3 fotos por vaca
+- As fotos são servidas estaticamente em `/uploads/:filename`
+- A lista de nomes é persistida no campo JSON `photos` da vaca
+
+---
+
+## Sensores — endpoints diários para gráficos
+
+Os endpoints `/cows/:id/heart-rate/daily` e `/cows/:id/temperature/daily` retornam a média diária dos últimos 7 dias no formato que o Recharts espera:
+
+```json
+[
+  { "date": "28/04", "average": 72.4 },
+  { "date": "29/04", "average": 74.1 },
+  { "date": "30/04", "average": 71.8 }
+]
 ```
+
+Os endpoints sem `/daily` retornam registros individuais paginados, usados nas tabelas do detalhe da vaca. Aceitam query params opcionais: `startDate`, `endDate` e `limit`.
+
+---
+
+## Grant / Revoke de permissões
+
+O fluxo correto para conceder permissões de um grupo às roles:
+
+```
+1. POST /permission-groups/:id/permissions     → vincula permissão ao grupo
+2. POST /permission-groups/:id/grant           → body: { permissionIds: [roleId1, roleId2] }
+                                                 concede todas as permissões do grupo às roles
+```
+
+O `grant` opera sobre as permissões **já vinculadas ao grupo** — se o grupo estiver vazio retorna erro 400.
 
 ---
 
