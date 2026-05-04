@@ -2,14 +2,14 @@ type: collection.insomnia.rest/5.0
 schema_version: "5.1"
 name: CowHealth - Backend
 meta:
-  id: wrk_095293f4031046cbacf47613a6a51399
-  created: 1777833305593
-  modified: 1777833894949
+  id: wrk_b3814a5d146743ebbbca1e37018f75f7
+  created: 1777913934002
+  modified: 1777913947935
   description: ""
 collection:
   - name: Users
     meta:
-      id: fld_cd326a2e213f463eb27be78fa2adcaf9
+      id: fld_df398bbb6dbf4cb68e0a018325443bdc
       created: 1777858398603
       modified: 1777904175216
       sortKey: -1777904165760
@@ -18,7 +18,7 @@ collection:
       - url: "{{ _[''].base_url }}users/1"
         name: Show User
         meta:
-          id: req_0f6dd9ceee0143c1ba49e1c60902c3a2
+          id: req_110b56d6453e4d34bd78d4c191fe04d6
           created: 1777858438960
           modified: 1777862053593
           isPrivate: false
@@ -45,7 +45,7 @@ collection:
       - url: "{{ _[''].base_url }}users/"
         name: List Users
         meta:
-          id: req_c6394f8ceb3b4abea6195155df223cdc
+          id: req_719404363c5a4bb1b0b7c215b745b774
           created: 1777858477523
           modified: 1777861600625
           isPrivate: false
@@ -72,7 +72,7 @@ collection:
       - url: "{{ _[''].base_url }}users"
         name: Create User
         meta:
-          id: req_cc9a7cff4db04507a7c5b9149a1dc162
+          id: req_b2ffb7035be64ac7ae5723b798aa4bf4
           created: 1777860976602
           modified: 1777861846084
           isPrivate: false
@@ -110,7 +110,7 @@ collection:
       - url: "{{ _[''].base_url }}users/2"
         name: Update User
         meta:
-          id: req_e2a7099e9b904986be0fe626bf02cc48
+          id: req_75f49c1c0d234afa847c7d4a1f2bc585
           created: 1777861006480
           modified: 1777862162274
           isPrivate: false
@@ -145,7 +145,7 @@ collection:
       - url: "{{ _[''].base_url }}users/2"
         name: Delete User
         meta:
-          id: req_da50599b6371418d99b0cafd684de573
+          id: req_1cd2bc3d737449a8ad18fdda7801bc59
           created: 1777861067889
           modified: 1777862247975
           isPrivate: false
@@ -172,7 +172,7 @@ collection:
       - url: "{{ _[''].base_url }}users/2/toggle-active"
         name: Toggle User Active
         meta:
-          id: req_3775969fd58040709b44ce92f52bd911
+          id: req_c7250ea6cd8444d28840760c4fa70bb0
           created: 1777861096930
           modified: 1777862435992
           isPrivate: false
@@ -199,7 +199,7 @@ collection:
       - url: "{{ _[''].base_url }}users/2/roles"
         name: Add Role to User
         meta:
-          id: req_d053b110fa9945afa5fb056e58564ea3
+          id: req_e67a05b539df413498d328ce7f842827
           created: 1777861142233
           modified: 1777862637226
           isPrivate: false
@@ -234,7 +234,7 @@ collection:
       - url: "{{ _[''].base_url }}users/2/roles/2"
         name: Remove Role from User
         meta:
-          id: req_06872ff3de98479e888bb3354b66de62
+          id: req_61e81c5cf1d94a4aa5593aa9fa1a7241
           created: 1777861196048
           modified: 1777862712921
           isPrivate: false
@@ -260,16 +260,16 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_553c02aca3914be5af60f9442da0cdcd
+          id: fld_dc36365463b4493b8a0b5547c805fd6c
           created: 1777866025347
-          modified: 1777866025347
-          sortKey: -1777866025347
+          modified: 1777914495219
+          sortKey: -1777860976002
           description: ""
         children:
           - url: "{{ _[''].base_url }}users"
             name: Create User - Duplicate Email
             meta:
-              id: req_269d2c67b1d04f3787b72799c6c12a17
+              id: req_18869ed433e3458fb5927ab806ed42b7
               created: 1777866060091
               modified: 1777866090959
               isPrivate: false
@@ -306,7 +306,7 @@ collection:
               rebuildPath: true
   - name: Auth
     meta:
-      id: fld_883f0b4e93ba49a288e9f39445c8b53a
+      id: fld_a3a814539bd149588b225ba62cbc498f
       created: 1777858411874
       modified: 1777904173181
       sortKey: -1777904165810
@@ -315,7 +315,7 @@ collection:
       - url: "{{ _[''].base_url }}auth/me"
         name: Me
         meta:
-          id: req_a7bb0a6263784f618635546e23030e3a
+          id: req_02d94aeb96404e75a8efc421689c460e
           created: 1777833305597
           modified: 1777860942774
           isPrivate: false
@@ -342,7 +342,7 @@ collection:
       - url: "{{ _[''].base_url }}auth/login"
         name: Login
         meta:
-          id: req_9f63975c38b64dfebba9fbc27aed909c
+          id: req_79c9711efba945febbfa570afa643cb7
           created: 1777833527723
           modified: 1777860937166
           isPrivate: false
@@ -373,7 +373,7 @@ collection:
           rebuildPath: true
   - name: Roles
     meta:
-      id: fld_dfa2d14841d7427c9a39c791c270592e
+      id: fld_2c960fc4ddf54360bb1b19190a172799
       created: 1777862856877
       modified: 1777904177514
       sortKey: -1777904165735
@@ -382,7 +382,7 @@ collection:
       - url: "{{ _[''].base_url }}roles/5/permissions/5"
         name: Remove Permission from Role
         meta:
-          id: req_f1f19144e07b4ba9bb212692cf48cbb6
+          id: req_48123e7b896f4916b80c788e918411ef
           created: 1777862867167
           modified: 1777863604576
           isPrivate: false
@@ -409,7 +409,7 @@ collection:
       - url: "{{ _[''].base_url }}roles/5/permissions"
         name: Add Permission to Role
         meta:
-          id: req_b6bf8cb2e2434a8084a062e8d195c444
+          id: req_742dd5b1a24d4395995249decde87cee
           created: 1777862877362
           modified: 1777863502085
           isPrivate: false
@@ -444,7 +444,7 @@ collection:
       - url: "{{ _[''].base_url }}roles/5"
         name: Delete Role
         meta:
-          id: req_02c97b56cb6b40cfb700be31b174ec05
+          id: req_128bc73719874e9ca8e14a1c782f757b
           created: 1777862878878
           modified: 1777863369591
           isPrivate: false
@@ -471,7 +471,7 @@ collection:
       - url: "{{ _[''].base_url }}roles/5"
         name: Update Role
         meta:
-          id: req_1bb355dd0d4649e48571ac61feb6c3cb
+          id: req_931ca1669eab4f9bbd13a81c7241ea43
           created: 1777862880330
           modified: 1777863318759
           isPrivate: false
@@ -507,7 +507,7 @@ collection:
       - url: "{{ _[''].base_url }}roles"
         name: Create Role
         meta:
-          id: req_823afac7479d433189c986317f4a4eeb
+          id: req_7652b89332704bf58f40f7b4b00df118
           created: 1777862881615
           modified: 1777863244357
           isPrivate: false
@@ -543,7 +543,7 @@ collection:
       - url: "{{ _[''].base_url }}roles/4"
         name: Show Role
         meta:
-          id: req_dbcbd55717c44e4bbb87806a66ae004c
+          id: req_996ed1916d6845558e359d5b6b39f21f
           created: 1777862882890
           modified: 1777863182185
           isPrivate: false
@@ -570,7 +570,7 @@ collection:
       - url: "{{ _[''].base_url }}roles"
         name: List Roles
         meta:
-          id: req_f873d3f550514d999b95dc62becf7c69
+          id: req_423cecdcb0f24652b79aad3473e85bd2
           created: 1777862884253
           modified: 1777863069858
           isPrivate: false
@@ -596,16 +596,16 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_e83bb13697f94292aee7377aed05a278
+          id: fld_f555605837a04beb846a5dde9dd8d57e
           created: 1777865754612
-          modified: 1777865754612
-          sortKey: -1777865754612
+          modified: 1777914491253
+          sortKey: -1777862867067
           description: ""
         children:
           - url: "{{ _[''].base_url }}roles/1"
             name: Delete Role - with Users
             meta:
-              id: req_6d559195c6cd4269abd0bc1b5973b279
+              id: req_12bc40e0f8b04e0697d5babd8ce01a10
               created: 1777865810560
               modified: 1777866112886
               isPrivate: false
@@ -631,7 +631,7 @@ collection:
               rebuildPath: true
   - name: Permissions
     meta:
-      id: fld_565f2d3c4db5481b825739d448cd42f8
+      id: fld_c9246ef8ee284024aef616f18e8e0e81
       created: 1777863766986
       modified: 1777904179358
       sortKey: -1777904165722.5
@@ -640,7 +640,7 @@ collection:
       - url: "{{ _[''].base_url }}permissions/38"
         name: Delete Permission
         meta:
-          id: req_78b64003536b4956b88fc22c7f9d31eb
+          id: req_c15fe8ac2d014b0cbc2d2e93a1c1f0c6
           created: 1777863776235
           modified: 1777864219774
           isPrivate: false
@@ -667,7 +667,7 @@ collection:
       - url: "{{ _[''].base_url }}permissions/38"
         name: Update Permission
         meta:
-          id: req_971ae9e611ef48b7bd55f967b379e9b9
+          id: req_a510c94b250e443dab9aa4b2ffa51496
           created: 1777863779006
           modified: 1777864176698
           isPrivate: false
@@ -703,7 +703,7 @@ collection:
       - url: "{{ _[''].base_url }}permissions"
         name: Create Permission
         meta:
-          id: req_6b310d4d715f4c1788a8a4e43376e77d
+          id: req_83adf060e4294c799baa0e84fee6fa1b
           created: 1777863780706
           modified: 1777864070799
           isPrivate: false
@@ -739,7 +739,7 @@ collection:
       - url: "{{ _[''].base_url }}permissions/1"
         name: Show Permission
         meta:
-          id: req_720418a39e5e4b23b594cfe4f47a94d5
+          id: req_810f966e1b7949ea8698d487149bedb9
           created: 1777863782010
           modified: 1777863959410
           isPrivate: false
@@ -766,7 +766,7 @@ collection:
       - url: "{{ _[''].base_url }}permissions"
         name: List Permissions
         meta:
-          id: req_9356eff2cc70482d80f41f482b7920bf
+          id: req_47dedae34dfe4752988b16de3ec1d57d
           created: 1777863783758
           modified: 1777863880542
           isPrivate: false
@@ -792,16 +792,16 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_89cfcc7846414119b3ba070071e0d1c0
+          id: fld_c5c503bc67f247d299e568400ab8873e
           created: 1777865944222
-          modified: 1777865944222
-          sortKey: -1777865944222
+          modified: 1777914485416
+          sortKey: -1777863776135
           description: ""
         children:
           - url: "{{ _[''].base_url }}permissions/14"
             name: Delete Permission - Linked
             meta:
-              id: req_9fffe30b125c4bcb8cc6674bb3c6d0f3
+              id: req_e38d61a9bfdd4f748aeeb59005dbb154
               created: 1777865955934
               modified: 1777866123077
               isPrivate: false
@@ -827,86 +827,16 @@ collection:
               rebuildPath: true
   - name: Permissions Group
     meta:
-      id: fld_74b58480055e429c9e1c72dfdc7e1757
+      id: fld_34d026f6ab2e47ababef29e5b5c61da4
       created: 1777864289721
       modified: 1777904181923
       sortKey: -1777904165716.25
       description: ""
     children:
-      - url: "{{ _[''].base_url }}permission-groups/4/revoke"
-        name: Revoke Permissions
-        meta:
-          id: req_70df2b5515cb405fa580f0f7f35cc721
-          created: 1777864300117
-          modified: 1777865490959
-          isPrivate: false
-          description: ""
-          sortKey: -1777864300117
-        method: POST
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "permissionIds": [3]
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-          - name: User-Agent
-            value: insomnia/12.4.0
-            description: ""
-            disabled: false
-          - name: Authorization
-            value: Bearer {{ _[''].token }}
-            description: ""
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/4/grant"
-        name: Grant Permissions
-        meta:
-          id: req_8473342393ee4dc799171308bb1fb762
-          created: 1777864310331
-          modified: 1777865398051
-          isPrivate: false
-          description: ""
-          sortKey: -1777864310331
-        method: POST
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "permissionIds": [1, 2, 3]
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-          - name: User-Agent
-            value: insomnia/12.4.0
-            description: ""
-            disabled: false
-          - name: Authorization
-            value: Bearer {{ _[''].token }}
-            description: ""
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
       - url: "{{ _[''].base_url }}permission-groups/4"
         name: Delete Permission Group
         meta:
-          id: req_0e8586eb4f6d4614829e54caf437d9d7
+          id: req_462ce80aaab8416087198b0bc36e2547
           created: 1777864311746
           modified: 1777865282089
           isPrivate: false
@@ -933,7 +863,7 @@ collection:
       - url: "{{ _[''].base_url }}permission-groups/4"
         name: Update Permission Group
         meta:
-          id: req_bd135873824a41d9b8a71cdf5ea35827
+          id: req_e7346ff46db440339d9a6d1be0822a23
           created: 1777864313099
           modified: 1777865232009
           isPrivate: false
@@ -969,7 +899,7 @@ collection:
       - url: "{{ _[''].base_url }}permission-groups"
         name: Create Permission Group
         meta:
-          id: req_548404b47a774ab6b44cedddd76fe670
+          id: req_03bebf88463147bc919408817cbc9836
           created: 1777864314733
           modified: 1777865082373
           isPrivate: false
@@ -1005,7 +935,7 @@ collection:
       - url: "{{ _[''].base_url }}permission-groups/1"
         name: Show Permission Group
         meta:
-          id: req_a3a69a87259f490d97b24e5211b1bce8
+          id: req_060b68ef5bca4031961b2a0d5f99bfe5
           created: 1777864316315
           modified: 1777864608665
           isPrivate: false
@@ -1032,7 +962,7 @@ collection:
       - url: "{{ _[''].base_url }}permission-groups"
         name: List Permission Groups
         meta:
-          id: req_2cc0c038c928428ba375b94b22b5b181
+          id: req_ab45d5a170194e1f96fb8c3e22bd8ba3
           created: 1777864317982
           modified: 1777864544233
           isPrivate: false
@@ -1056,44 +986,9 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/4/grant"
-        name: Grant Permissions - Already Granted
-        meta:
-          id: req_7e0a1fde1eb04a17b676baa60b0e1242
-          created: 1777866182385
-          modified: 1777866553325
-          isPrivate: false
-          description: ""
-          sortKey: -1777864305224
-        method: POST
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "permissionIds": [1, 2]
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-          - name: User-Agent
-            value: insomnia/12.4.0
-            description: ""
-            disabled: false
-          - name: Authorization
-            value: Bearer {{ _[''].token }}
-            description: ""
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
   - name: Security
     meta:
-      id: fld_2e5f6bec4c384bc6a4f041088a182071
+      id: fld_d1875cb6be4844d98e1b5443d987a851
       created: 1777866678964
       modified: 1777866678964
       sortKey: -1777866678964
@@ -1102,7 +997,7 @@ collection:
       - url: "{{ _[''].base_url }}users/"
         name: Request without Token
         meta:
-          id: req_4e327e5e724d4cadb4105504a38747c8
+          id: req_c7e838233f9e48e8b1ea282e65d8d604
           created: 1777866708181
           modified: 1777866743795
           isPrivate: false
@@ -1124,7 +1019,7 @@ collection:
           rebuildPath: true
   - name: Farms
     meta:
-      id: fld_7cfc1c506d9c4a12a343b8474d9e9980
+      id: fld_6806ee9e42f94d339f8ce39cbeb65a3d
       created: 1777898869561
       modified: 1777904187111
       sortKey: -1777904165713.125
@@ -1133,7 +1028,7 @@ collection:
       - url: "{{ _[''].base_url }}farms/4"
         name: Delete Farm
         meta:
-          id: req_e12f3ac14c9d4e88a4d58d3020af797d
+          id: req_b820ab8b8ec54b38a2c10298ab31e546
           created: 1777903469884
           modified: 1777904128753
           isPrivate: false
@@ -1160,7 +1055,7 @@ collection:
       - url: "{{ _[''].base_url }}farms/4"
         name: Update Farm
         meta:
-          id: req_261d5832362c45a689d957ba229ceb58
+          id: req_4beb7e76a15448f49e360996031f1ce3
           created: 1777903472390
           modified: 1777903937940
           isPrivate: false
@@ -1196,7 +1091,7 @@ collection:
       - url: "{{ _[''].base_url }}farms"
         name: Create Farm
         meta:
-          id: req_103d3cabbe1544c391e139a34885264e
+          id: req_6d887b027e7a4c419d3da7a22489e338
           created: 1777903474160
           modified: 1777903788512
           isPrivate: false
@@ -1237,7 +1132,7 @@ collection:
       - url: "{{ _[''].base_url }}farms/1"
         name: Show Farm
         meta:
-          id: req_9223b90b62ec4014b65464270526fcc6
+          id: req_62842eec0ac84c3382205882d00534dc
           created: 1777903475402
           modified: 1777903748279
           isPrivate: false
@@ -1264,7 +1159,7 @@ collection:
       - url: "{{ _[''].base_url }}farms"
         name: List Farms
         meta:
-          id: req_9fc7ec59af50495a84c0420c5906e961
+          id: req_385d83dd800b44ebbb935f2c9d4cdb1e
           created: 1777903550194
           modified: 1777903678137
           isPrivate: false
@@ -1290,16 +1185,16 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_6712832e2e734cec86c1588308e1338c
+          id: fld_b445f9cf94794f3d9463baa2086e5f6f
           created: 1777903827940
-          modified: 1777903827940
-          sortKey: -1777903827940
+          modified: 1777914511591
+          sortKey: -1777903469784
           description: ""
         children:
           - url: "{{ _[''].base_url }}farms"
             name: Create Farm - Duplicate CNPJ
             meta:
-              id: req_993bc9d5211a4a208f0ca25f9bc4091b
+              id: req_a5bcfd52344a4a7ea47fd7cd542eda38
               created: 1777903838985
               modified: 1777904080292
               isPrivate: false
@@ -1340,7 +1235,7 @@ collection:
           - url: "{{ _[''].base_url }}farms/1"
             name: Delete Farm - with Cows
             meta:
-              id: req_2ab956228830428dae447597a57d101e
+              id: req_b328cf5e529f421eb04b694f7a67c7a8
               created: 1777904073794
               modified: 1777904119035
               isPrivate: false
@@ -1366,7 +1261,7 @@ collection:
               rebuildPath: true
   - name: Collars
     meta:
-      id: fld_64d98aae0434431f85c09b46ed4c8f91
+      id: fld_ee564a0e69c94745a0c7bfef3aad8225
       created: 1777904165710
       modified: 1777904227953
       sortKey: -1777904165710
@@ -1375,7 +1270,7 @@ collection:
       - url: "{{ _[''].base_url }}collars/6"
         name: Delete Collar - Unlinked
         meta:
-          id: req_77cf0310881e401f88b847dbaccfdb17
+          id: req_f2124c137a884995b78d1327adbb0e6a
           created: 1777904191050
           modified: 1777905204395
           isPrivate: false
@@ -1402,7 +1297,7 @@ collection:
       - url: "{{ _[''].base_url }}collars/6"
         name: Update Collar
         meta:
-          id: req_7090f40e755c4f23b16a8a4052621003
+          id: req_f81831f80d8340318063208c221dff99
           created: 1777904195141
           modified: 1777904545196
           isPrivate: false
@@ -1438,7 +1333,7 @@ collection:
       - url: "{{ _[''].base_url }}collars"
         name: List Collars
         meta:
-          id: req_cbf3737e1ef5490cb60f4227c5405899
+          id: req_3fb3123c6c774c638c7f8f46e41a78f0
           created: 1777904198898
           modified: 1777904298806
           isPrivate: false
@@ -1465,7 +1360,7 @@ collection:
       - url: "{{ _[''].base_url }}collars/"
         name: Create Collar
         meta:
-          id: req_696303407ec24b70b96168f8948da60e
+          id: req_1bc617eb0ea44893b58860db83bd04bb
           created: 1777904228972
           modified: 1777904462834
           isPrivate: false
@@ -1502,7 +1397,7 @@ collection:
       - url: "{{ _[''].base_url }}collars/1"
         name: Show Collar
         meta:
-          id: req_0fb4ca622bb340488abfee84d0e52c3d
+          id: req_2b3553f42f1047d6a83b6c090cc031f7
           created: 1777904317934
           modified: 1777904323127
           isPrivate: false
@@ -1528,16 +1423,16 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_fbe0894a8382430f902e9a91082f3066
+          id: fld_47852aa7844c4c4aab69d57ee996fea0
           created: 1777904629452
-          modified: 1777904629452
-          sortKey: -1777904629452
+          modified: 1777914529730
+          sortKey: -1777904190950
           description: ""
         children:
           - url: "{{ _[''].base_url }}collars/"
             name: Create Collar - Duplicate Name
             meta:
-              id: req_18e2bd6aaddb4992b1ba45537390f8d0
+              id: req_26e673fff5d14c4bb48264a2a9fd319f
               created: 1777904721257
               modified: 1777904748606
               isPrivate: false
@@ -1572,7 +1467,7 @@ collection:
           - url: "{{ _[''].base_url }}collars/1"
             name: Delete Collar - Linked to Cow
             meta:
-              id: req_ec997e05f7d6489f9c613608e34bbef6
+              id: req_1ac96ead4adb429ba6879b157160f718
               created: 1777904836043
               modified: 1777904836043
               isPrivate: false
@@ -1596,23 +1491,840 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
+  - name: Cows
+    meta:
+      id: fld_77e808a7f666489eaf1e07e0acbd5da9
+      created: 1777910000000
+      modified: 1777910000000
+      sortKey: -1777904165700
+      description: ""
+    children:
+      - url: "{{ _[''].base_url }}cows"
+        name: List Cows
+        meta:
+          id: req_bc2ba9e045ca413fb8007788b9129b96
+          created: 1777910000001
+          modified: 1777914632200
+          isPrivate: false
+          description: ""
+          sortKey: -1777910000112
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/1"
+        name: Show Cow
+        meta:
+          id: req_3e9c1467a88645cfa25bba2c41c4fb1c
+          created: 1777910000002
+          modified: 1777914634655
+          isPrivate: false
+          description: ""
+          sortKey: -1777910000062
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows"
+        name: Create Cow
+        meta:
+          id: req_fbf24f19333241aba15fedd75dffa8d4
+          created: 1777910000003
+          modified: 1777914637301
+          isPrivate: false
+          description: ""
+          sortKey: -1777910000037
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "tag": "BR-006",
+              "name": "Mimosa Nova",
+              "breed": "Nelore",
+              "birthDate": "2021-03-15",
+              "weight": 450,
+              "farmId": 1,
+              "collarId": 4
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/1"
+        name: Update Cow
+        meta:
+          id: req_000715c10aa9467488628124827497cd
+          created: 1777910000004
+          modified: 1777914639851
+          isPrivate: false
+          description: ""
+          sortKey: -1777910000024.5
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Mimosa Atualizada",
+              "weight": 490,
+              "status": "HEALTHY"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/1"
+        name: Delete Cow
+        meta:
+          id: req_eaae316b1dc1402baf112c0b19ba29e1
+          created: 1777910000005
+          modified: 1777914643823
+          isPrivate: false
+          description: ""
+          sortKey: -1777910000018.25
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/photos"
+        name: Upload Photo
+        meta:
+          id: req_a23d7e61e0c34f3392ed6e2fb50c680e
+          created: 1777910000006
+          modified: 1777915135855
+          isPrivate: false
+          description: Body > Multipart Form > campo 'photo' com arquivo de imagem
+          sortKey: -1777910000015.125
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: photo
+              value: ""
+              disabled: false
+              fileName: /home/renato/Pictures/mimosa.jpg
+              type: file
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/photos/cow-1777915150710-903893219.jpg"
+        name: Delete Photo
+        meta:
+          id: req_e5ddc85f12284610bf0959e77b513b0c
+          created: 1777910000007
+          modified: 1777915195462
+          isPrivate: false
+          description: Substituir pelo filename retornado no upload
+          sortKey: -1777910000013.5625
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/heart-rate"
+        name: List Heart Rate
+        meta:
+          id: req_8eda18556dda4a8d856c8409d3383116
+          created: 1777910000008
+          modified: 1777914837176
+          isPrivate: false
+          description: "Query params opcionais: startDate, endDate, limit"
+          sortKey: -1777910000012.7812
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/temperature"
+        name: List Temperature
+        meta:
+          id: req_c036b895396b4a1abf5d526cbedddbe0
+          created: 1777910000009
+          modified: 1777914843651
+          isPrivate: false
+          description: "Query params opcionais: startDate, endDate, limit"
+          sortKey: -1777910000012.3906
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/accelerometer"
+        name: List Accelerometer
+        meta:
+          id: req_191c36f6bc6d4fb681b4c3f333997fbc
+          created: 1777910000010
+          modified: 1777914849580
+          isPrivate: false
+          description: "Query params opcionais: startDate, endDate, limit"
+          sortKey: -1777910000012.1953
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/heart-rate/daily"
+        name: List Heart Rate Daily
+        meta:
+          id: req_9d2181a0423b4ec89286cc981d64ba34
+          created: 1777910000011
+          modified: 1777914856135
+          isPrivate: false
+          description: Media diaria ultimos 7 dias para graficos
+          sortKey: -1777910000012.0977
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}cows/2/temperature/daily"
+        name: List Temperature Daily
+        meta:
+          id: req_f7a8362e4b71455ca12966197e9ce815
+          created: 1777910000012
+          modified: 1777914861560
+          isPrivate: false
+          description: Media diaria ultimos 7 dias para graficos
+          sortKey: -1777910000012
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_a2b0de60ef404fd796c378050c1e0907
+          created: 1777910000099
+          modified: 1777914541022
+          sortKey: -1777909999901
+          description: ""
+        children:
+          - url: "{{ _[''].base_url }}cows"
+            name: Create Cow - Duplicate Tag
+            meta:
+              id: req_76ee4255d0684c4fbf4f058ac6ce4f30
+              created: 1777910000013
+              modified: 1777910000013
+              isPrivate: false
+              description: ""
+              sortKey: -1777910000013
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "tag": "BR-001",
+                  "name": "Duplicada",
+                  "farmId": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _[''].base_url }}cows"
+            name: Create Cow - Collar Already Linked
+            meta:
+              id: req_2261f41f53cc421bbe6ead5bcd51a42d
+              created: 1777910000014
+              modified: 1777910000014
+              isPrivate: false
+              description: ""
+              sortKey: -1777910000014
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "tag": "BR-999",
+                  "name": "Teste Colar",
+                  "farmId": 1,
+                  "collarId": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Dashboard
+    meta:
+      id: fld_59066c01d1b241369e431e5870d9fef1
+      created: 1777911000000
+      modified: 1777911000000
+      sortKey: -1777904165690
+      description: ""
+    children:
+      - url: "{{ _[''].base_url }}dashboard/overview"
+        name: Overview
+        meta:
+          id: req_c0fb0bcbbe1541078df9cd2ed711dbd7
+          created: 1777911000001
+          modified: 1777911000001
+          isPrivate: false
+          description: "Cards: total vacas, vacas em atencao, fazenda top, notificacoes
+            nao lidas"
+          sortKey: -1777911000001
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}dashboard/cows-per-status"
+        name: Cows Per Status
+        meta:
+          id: req_31d9eb8407c54a0788e92c8836766da8
+          created: 1777911000002
+          modified: 1777911000002
+          isPrivate: false
+          description: "Grafico de barras: vacas por status"
+          sortKey: -1777911000002
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}dashboard/cows-per-farm"
+        name: Cows Per Farm
+        meta:
+          id: req_6c4af401cd044433927ce5067a0cb5a4
+          created: 1777911000003
+          modified: 1777911000003
+          isPrivate: false
+          description: "Grafico de barras: top 5 fazendas com mais vacas"
+          sortKey: -1777911000003
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Notifications
+    meta:
+      id: fld_11e3e180f984468ebad04258b828920e
+      created: 1777912000000
+      modified: 1777912000000
+      sortKey: -1777904165680
+      description: ""
+    children:
+      - url: "{{ _[''].base_url }}notifications"
+        name: List Notifications
+        meta:
+          id: req_750114fa71bc49afa47bd4984e194fbf
+          created: 1777912000001
+          modified: 1777912000001
+          isPrivate: false
+          description: Lista notificacoes do usuario autenticado
+          sortKey: -1777912000001
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}notifications/1/read"
+        name: Mark as Read
+        meta:
+          id: req_d56d6e79d9534b9d9d5feb44f0baa263
+          created: 1777912000002
+          modified: 1777912000002
+          isPrivate: false
+          description: ""
+          sortKey: -1777912000002
+        method: PATCH
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}notifications/read-all"
+        name: Mark All as Read
+        meta:
+          id: req_6e9cf71894664b7dafddf1ccbe675b80
+          created: 1777912000003
+          modified: 1777912000003
+          isPrivate: false
+          description: ""
+          sortKey: -1777912000003
+        method: PATCH
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_b05ee01e58314a0fb5cd170d29dc8a2a
+          created: 1777912000099
+          modified: 1777914553875
+          sortKey: -1777911999901
+          description: ""
+        children:
+          - url: "{{ _[''].base_url }}notifications/2/read"
+            name: Mark as Read - Already Read
+            meta:
+              id: req_c6a0cd4b742c4c78ab1b798d3f273b89
+              created: 1777912000004
+              modified: 1777912000004
+              isPrivate: false
+              description: Notificacao ja lida deve retornar erro 400
+              sortKey: -1777912000004
+            method: PATCH
+            headers:
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Permission Groups - Manage Permissions
+    meta:
+      id: fld_b7b264192b7044d6978d8a50cf4e6431
+      created: 1777913000000
+      modified: 1777914114434
+      sortKey: -1777904165714.6875
+      description: Gerenciar permissoes vinculadas ao grupo (antes de usar Grant/Revoke)
+    children:
+      - url: "{{ _[''].base_url }}permission-groups/4/permissions"
+        name: Add Permission to Group
+        meta:
+          id: req_a0a462d3a8004bb1b7cfd1094631bde3
+          created: 1777913000001
+          modified: 1777914450229
+          isPrivate: false
+          description: Vincula uma permissao ao grupo
+          sortKey: -1777913000051.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "permissionId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}permission-groups/4/permissions/1"
+        name: Remove Permission from Group
+        meta:
+          id: req_c1390a9e773f4206a852e9eb66e6ec2e
+          created: 1777913000002
+          modified: 1777914455141
+          isPrivate: false
+          description: Remove uma permissao do grupo
+          sortKey: -1777913000027.75
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}permission-groups/4/grant"
+        name: Grant Group Permissions to Roles
+        meta:
+          id: req_0e37583038c14c13b23604f9bb9a5e22
+          created: 1777913000003
+          modified: 1777914460510
+          isPrivate: false
+          description: Concede todas as permissoes do grupo às roles informadas (roleIds)
+          sortKey: -1777913000015.875
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "permissionIds": [2, 3]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}permission-groups/4/revoke"
+        name: Revoke Group Permissions from Roles
+        meta:
+          id: req_630beb5328784a06ba1a543d40e21956
+          created: 1777913000004
+          modified: 1777913000004
+          isPrivate: false
+          description: Revoga todas as permissoes do grupo das roles informadas (roleIds)
+          sortKey: -1777913000004
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "permissionIds": [2, 3]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_d774300fa4704d0ca4f457516a045456
+          created: 1777913000099
+          modified: 1777914472277
+          sortKey: -1777912999904
+          description: ""
+        children:
+          - url: "{{ _[''].base_url }}permission-groups/4/grant"
+            name: Grant - Group Without Permissions
+            meta:
+              id: req_223dd06aea22435db5f0adb2cc790434
+              created: 1777913000005
+              modified: 1777913000005
+              isPrivate: false
+              description: Grupo sem permissoes deve retornar erro 400
+              sortKey: -1777913000005
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "permissionIds": [2]
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _[''].base_url }}permission-groups/4"
+            name: Delete Group - With Permissions
+            meta:
+              id: req_b51080ded4b94a3e822dbe83f5532bd4
+              created: 1777913000006
+              modified: 1777913000006
+              isPrivate: false
+              description: Grupo com permissoes vinculadas deve retornar erro 400
+              sortKey: -1777913000006
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
-    id: jar_11efa98d6557328df6a8227eaf657ba81db5c299
-    created: 1777833305595
-    modified: 1777833305595
+    id: jar_6f64ee936f87c222dd0e01856f4359eb82fc6f23
+    created: 1777913934003
+    modified: 1777913934003
 environments:
   name: Base Environment
   meta:
-    id: env_11efa98d6557328df6a8227eaf657ba81db5c299
-    created: 1777833305594
-    modified: 1777833305594
+    id: env_6f64ee936f87c222dd0e01856f4359eb82fc6f23
+    created: 1777913934002
+    modified: 1777913934002
     isPrivate: false
   subEnvironments:
     - name: Development
       meta:
-        id: env_d508b6c7c9f242dfb226a384d40e195b
+        id: env_0c445c6061914a39ab9b4ba3023ddb66
         created: 1777833360026
         modified: 1777833793403
         isPrivate: false
