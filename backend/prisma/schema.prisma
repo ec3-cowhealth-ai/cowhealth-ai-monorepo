@@ -28,6 +28,7 @@ enum CollarStatus {
   ACTIVE
   INACTIVE
   MAINTENANCE
+  BATTERY
 }
 
 enum DataFrequency {
