@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { login, getMe } from "../services/authService";
 
 export const loginController = async (
-    request: Request,
-    response: Response
+        request: Request,
+        response: Response
     ): Promise<void> => {
     const { email, password } = request.body;
 
@@ -21,8 +21,8 @@ export const loginController = async (
 };
 
 export const meController = async (
-    request: Request,
-    response: Response
+        request: Request,
+        response: Response
     ): Promise<void> => {
     try {
         const user = await getMe(request.user!.sub);

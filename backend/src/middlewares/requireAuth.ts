@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import type { AuthPayload } from "../types/auth";
 
 export const requireAuth = (
-    request: Request,
-    response: Response,
-    next: NextFunction
+        request: Request,
+        response: Response,
+        next: NextFunction
     ): void => {
     const authHeader = request.headers.authorization;
 
