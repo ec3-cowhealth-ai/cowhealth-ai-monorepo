@@ -11,8 +11,8 @@ collection:
     meta:
       id: fld_cd326a2e213f463eb27be78fa2adcaf9
       created: 1777858398603
-      modified: 1777866683197
-      sortKey: -1777866679014
+      modified: 1777904175216
+      sortKey: -1777904165760
       description: ""
     children:
       - url: "{{ _[''].base_url }}users/1"
@@ -308,8 +308,8 @@ collection:
     meta:
       id: fld_883f0b4e93ba49a288e9f39445c8b53a
       created: 1777858411874
-      modified: 1777866681682
-      sortKey: -1777866679064
+      modified: 1777904173181
+      sortKey: -1777904165810
       description: ""
     children:
       - url: "{{ _[''].base_url }}auth/me"
@@ -375,8 +375,8 @@ collection:
     meta:
       id: fld_dfa2d14841d7427c9a39c791c270592e
       created: 1777862856877
-      modified: 1777866684571
-      sortKey: -1777866678989
+      modified: 1777904177514
+      sortKey: -1777904165735
       description: ""
     children:
       - url: "{{ _[''].base_url }}roles/5/permissions/5"
@@ -633,8 +633,8 @@ collection:
     meta:
       id: fld_565f2d3c4db5481b825739d448cd42f8
       created: 1777863766986
-      modified: 1777866686227
-      sortKey: -1777866678976.5
+      modified: 1777904179358
+      sortKey: -1777904165722.5
       description: ""
     children:
       - url: "{{ _[''].base_url }}permissions/38"
@@ -829,8 +829,8 @@ collection:
     meta:
       id: fld_74b58480055e429c9e1c72dfdc7e1757
       created: 1777864289721
-      modified: 1777866687660
-      sortKey: -1777866678970.25
+      modified: 1777904181923
+      sortKey: -1777904165716.25
       description: ""
     children:
       - url: "{{ _[''].base_url }}permission-groups/4/revoke"
@@ -1122,6 +1122,480 @@ collection:
             send: true
             store: true
           rebuildPath: true
+  - name: Farms
+    meta:
+      id: fld_7cfc1c506d9c4a12a343b8474d9e9980
+      created: 1777898869561
+      modified: 1777904187111
+      sortKey: -1777904165713.125
+      description: ""
+    children:
+      - url: "{{ _[''].base_url }}farms/4"
+        name: Delete Farm
+        meta:
+          id: req_e12f3ac14c9d4e88a4d58d3020af797d
+          created: 1777903469884
+          modified: 1777904128753
+          isPrivate: false
+          description: ""
+          sortKey: -1777903469884
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}farms/4"
+        name: Update Farm
+        meta:
+          id: req_261d5832362c45a689d957ba229ceb58
+          created: 1777903472390
+          modified: 1777903937940
+          isPrivate: false
+          description: ""
+          sortKey: -1777903472390
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Fazenda Teste Atualizada",
+              "phone": "(41) 88888-8888"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}farms"
+        name: Create Farm
+        meta:
+          id: req_103d3cabbe1544c391e139a34885264e
+          created: 1777903474160
+          modified: 1777903788512
+          isPrivate: false
+          description: ""
+          sortKey: -1777903474160
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Fazenda Teste",
+              "cnpj": "99.999.999/0001-99",
+              "address": "Rua Teste, 123",
+              "city": "Curitiba",
+              "state": "PR",
+              "phone": "(41) 99999-9999",
+              "email": "teste@fazenda.com"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}farms/1"
+        name: Show Farm
+        meta:
+          id: req_9223b90b62ec4014b65464270526fcc6
+          created: 1777903475402
+          modified: 1777903748279
+          isPrivate: false
+          description: ""
+          sortKey: -1777903475402
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}farms"
+        name: List Farms
+        meta:
+          id: req_9fc7ec59af50495a84c0420c5906e961
+          created: 1777903550194
+          modified: 1777903678137
+          isPrivate: false
+          description: ""
+          sortKey: -1777903550194
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_6712832e2e734cec86c1588308e1338c
+          created: 1777903827940
+          modified: 1777903827940
+          sortKey: -1777903827940
+          description: ""
+        children:
+          - url: "{{ _[''].base_url }}farms"
+            name: Create Farm - Duplicate CNPJ
+            meta:
+              id: req_993bc9d5211a4a208f0ca25f9bc4091b
+              created: 1777903838985
+              modified: 1777904080292
+              isPrivate: false
+              description: ""
+              sortKey: -1777903845628
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Fazenda Teste 2 com mesmo CNPJ",
+                  "cnpj": "99.999.999/0001-99",
+                  "address": "Rua Teste, 123",
+                  "city": "Curitiba",
+                  "state": "PR",
+                  "phone": "(41) 99999-9999",
+                  "email": "teste@fazenda.com"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                description: ""
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _[''].base_url }}farms/1"
+            name: Delete Farm - with Cows
+            meta:
+              id: req_2ab956228830428dae447597a57d101e
+              created: 1777904073794
+              modified: 1777904119035
+              isPrivate: false
+              description: ""
+              sortKey: -1777903845528
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.4.0
+                description: ""
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Collars
+    meta:
+      id: fld_64d98aae0434431f85c09b46ed4c8f91
+      created: 1777904165710
+      modified: 1777904227953
+      sortKey: -1777904165710
+      description: ""
+    children:
+      - url: "{{ _[''].base_url }}collars/6"
+        name: Delete Collar - Unlinked
+        meta:
+          id: req_77cf0310881e401f88b847dbaccfdb17
+          created: 1777904191050
+          modified: 1777905204395
+          isPrivate: false
+          description: ""
+          sortKey: -1777904191050
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}collars/6"
+        name: Update Collar
+        meta:
+          id: req_7090f40e755c4f23b16a8a4052621003
+          created: 1777904195141
+          modified: 1777904545196
+          isPrivate: false
+          description: ""
+          sortKey: -1777904195141
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "status": "MAINTENANCE",
+              "dataFrequency": "LOWER"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}collars"
+        name: List Collars
+        meta:
+          id: req_cbf3737e1ef5490cb60f4227c5405899
+          created: 1777904198898
+          modified: 1777904298806
+          isPrivate: false
+          description: ""
+          sortKey: -1777904229072
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}collars/"
+        name: Create Collar
+        meta:
+          id: req_696303407ec24b70b96168f8948da60e
+          created: 1777904228972
+          modified: 1777904462834
+          isPrivate: false
+          description: ""
+          sortKey: -1777904228972
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "collar-006",
+              "status": "ACTIVE",
+              "dataFrequency": "DEFAULT"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _[''].base_url }}collars/1"
+        name: Show Collar
+        meta:
+          id: req_0fb4ca622bb340488abfee84d0e52c3d
+          created: 1777904317934
+          modified: 1777904323127
+          isPrivate: false
+          description: ""
+          sortKey: -1777904229022
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.4.0
+            description: ""
+            disabled: false
+          - name: Authorization
+            value: Bearer {{ _[''].token }}
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_fbe0894a8382430f902e9a91082f3066
+          created: 1777904629452
+          modified: 1777904629452
+          sortKey: -1777904629452
+          description: ""
+        children:
+          - url: "{{ _[''].base_url }}collars/"
+            name: Create Collar - Duplicate Name
+            meta:
+              id: req_18e2bd6aaddb4992b1ba45537390f8d0
+              created: 1777904721257
+              modified: 1777904748606
+              isPrivate: false
+              description: ""
+              sortKey: -1777904637748
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "collar-001"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                description: ""
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _[''].base_url }}collars/1"
+            name: Delete Collar - Linked to Cow
+            meta:
+              id: req_ec997e05f7d6489f9c613608e34bbef6
+              created: 1777904836043
+              modified: 1777904836043
+              isPrivate: false
+              description: ""
+              sortKey: -1777904433360
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.4.0
+                description: ""
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _[''].token }}
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
