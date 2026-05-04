@@ -409,6 +409,6 @@ Banco de dados (MySQL)
 
 ## Worker MQTT — fora do escopo do MVP
 
-O `worker.ts` está documentado no `plan.md` para uso futuro. Nesta entrega os dados de sensores são mockados via seed. A arquitetura de rotas e serviços não depende do worker.
+Nesta entrega os dados de sensores são mockados via seed. A arquitetura de rotas e serviços não depende do worker.
 
 ---
