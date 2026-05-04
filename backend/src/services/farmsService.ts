@@ -1,0 +1,107 @@
+import { prisma } from "../lib/prisma";
+import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
+
+export const getAllFarms = async () => {
+    return prisma.farm.findMany({
+        select: {
+            id:        true,
+            name:      true,
+            cnpj:      true,
+            address:   true,
+            city:      true,
+            state:     true,
+            phone:     true,
+            email:     true,
+            createdAt: true,
+            _count: { select: { cows: true } },
+        },
+        orderBy: { name: "asc" },
+    });
+};
+
+export const getFarmById = async (farmId: number) => {
+    const farm = await prisma.farm.findUnique({
+        where: { id: farmId },
+        select: {
+            id:        true,
+            name:      true,
+            cnpj:      true,
+            address:   true,
+            city:      true,
+            state:     true,
+            phone:     true,
+            email:     true,
+            createdAt: true,
+            updatedAt: true,
+            cows: {
+                select: {
+                    id:     true,
+                    tag:    true,
+                    name:   true,
+                    breed:  true,
+                    status: true,
+                    collar: { select: { id: true, name: true, status: true } },
+                },
+            },
+        },
+    });
+
+    if (!farm) throw new Error("Fazenda não encontrada.");
+    return farm;
+};
+
+export const createFarm = async (data: CreateFarmInput) => {
+    const existingFarm = await prisma.farm.findUnique({ where: { cnpj: data.cnpj } });
+    if (existingFarm) throw new Error("Já existe uma fazenda com este CNPJ.");
+
+    return prisma.farm.create({
+        data,
+        select: {
+        id:        true,
+        name:      true,
+        cnpj:      true,
+        city:      true,
+        state:     true,
+        createdAt: true,
+        },
+    });
+};
+
+export const updateFarm = async (farmId: number, data: UpdateFarmInput) => {
+    const farm = await prisma.farm.findUnique({ where: { id: farmId } });
+    if (!farm) throw new Error("Fazenda não encontrada.");
+
+    if (data.cnpj && data.cnpj !== farm.cnpj) {
+        const cnpjInUse = await prisma.farm.findUnique({ where: { cnpj: data.cnpj } });
+        if (cnpjInUse) throw new Error("Já existe uma fazenda com este CNPJ.");
+    }
+
+    return prisma.farm.update({
+        where: { id: farmId },
+        data,
+        select: {
+            id:        true,
+            name:      true,
+            cnpj:      true,
+            city:      true,
+            state:     true,
+            updatedAt: true,
+        },
+    });
+};
+
+export const deleteFarm = async (farmId: number) => {
+    const farm = await prisma.farm.findUnique({
+        where: { id: farmId },
+        include: { _count: { select: { cows: true } } },
+    });
+
+    if (!farm) throw new Error("Fazenda não encontrada.");
+
+    // Regra: não deletar fazenda com vacas vinculadas
+    if (farm._count.cows > 0) {
+        throw new Error("Não é possível excluir uma fazenda com vacas vinculadas.");
+    }
+
+    await prisma.farm.delete({ where: { id: farmId } });
+};
