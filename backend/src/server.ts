@@ -9,6 +9,7 @@ import permissionsRoutes      from "./routes/permissionsRoutes";
 import permissionGroupsRoutes from "./routes/permissionGroupsRoutes";
 import farmsRoutes            from "./routes/farmsRoutes";
 import collarsRoutes          from "./routes/collarsRoutes";
+import cowsRoutes             from "./routes/cowsRoutes";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/permissions",       permissionsRoutes);
 app.use("/permission-groups", permissionGroupsRoutes);
 app.use("/farms",             farmsRoutes);
 app.use("/collars",           collarsRoutes);
+app.use("/cows",              cowsRoutes);
 
 // Teste de conexão com o Banco de Dados
 app.get("/health", async (_request, response) => {
