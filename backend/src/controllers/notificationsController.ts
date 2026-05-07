@@ -4,7 +4,7 @@ import {
     markNotificationAsRead,
     markAllNotificationsAsRead
 } from "../services/notificationsService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listNotifications = async (request: Request, response: Response): Promise<void> => {
     const notifications = await getAllNotifications(request.user!.sub);

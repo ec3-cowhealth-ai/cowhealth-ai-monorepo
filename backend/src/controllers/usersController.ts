@@ -9,7 +9,7 @@ import {
     assignRoleToUser,
     removeRoleFromUser
 } from "../services/usersService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listUsers = async (_request: Request, response: Response): Promise<void> => {
     const users = await getAllUsers();

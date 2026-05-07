@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { assertUnique } from "../lib/serviceHelpers";
+import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateCollarInput, UpdateCollarInput } from "../types/farming";
 
 export const getAllCollars = async () => {

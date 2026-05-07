@@ -6,7 +6,7 @@ import {
     updateFarm,
     deleteFarm
 } from "../services/farmsService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listFarms = async (_request: Request, response: Response): Promise<void> => {
     const farms = await getAllFarms();

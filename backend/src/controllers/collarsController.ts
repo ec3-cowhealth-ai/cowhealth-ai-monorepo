@@ -6,7 +6,7 @@ import {
     updateCollar,
     deleteCollar
 } from "../services/collarsService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listCollars = async (_request: Request, response: Response): Promise<void> => {
     const collars = await getAllCollars();

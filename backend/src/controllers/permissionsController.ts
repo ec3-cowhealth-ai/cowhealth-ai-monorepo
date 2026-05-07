@@ -6,7 +6,7 @@ import {
     updatePermission,
     deletePermission
 } from "../services/permissionsService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listPermissions = async (_request: Request, response: Response): Promise<void> => {
     const permissions = await getAllPermissions();

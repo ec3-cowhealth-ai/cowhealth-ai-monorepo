@@ -8,7 +8,7 @@ import {
     assignPermissionToRole,
     removePermissionFromRole
 } from "../services/rolesService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listRoles = async (_request: Request, response: Response): Promise<void> => {
     const roles = await getAllRoles();

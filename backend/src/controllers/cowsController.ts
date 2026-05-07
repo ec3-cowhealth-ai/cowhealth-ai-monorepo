@@ -15,7 +15,7 @@ import {
     getCowHeartRateDaily,
     getCowTemperatureDaily
 } from "../services/cowsService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 // Configuração do Multer
 

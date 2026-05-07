@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { assertUnique } from "../lib/serviceHelpers";
+import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
 
 export const getAllFarms = async () => {

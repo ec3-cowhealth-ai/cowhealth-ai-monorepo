@@ -10,7 +10,7 @@ import {
     grantGroupPermissionsToRoles,
     revokeGroupPermissionsFromRoles
 } from "../services/permissionGroupsService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const listPermissionGroups = async (_request: Request, response: Response): Promise<void> => {
     const permissionGroups = await getAllPermissionGroups();

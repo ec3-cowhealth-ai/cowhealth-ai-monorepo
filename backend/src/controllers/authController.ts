@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { login, getMe } from "../services/authService";
-import { handleRequest } from "../lib/controllerHelpers";
+import { handleRequest } from "../helpers/controllerHelpers";
 
 export const loginController = async (
     request: Request,

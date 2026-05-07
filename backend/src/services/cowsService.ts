@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { prisma } from "../lib/prisma";
-import { assertUnique, querySensorData, aggregateDailyAverage } from "../lib/serviceHelpers";
+import { assertUnique, querySensorData, aggregateDailyAverage } from "../helpers/serviceHelpers";
 import type { CreateCowInput, UpdateCowInput, SensorQueryInput } from "../types/cows";
 
 const MAX_PHOTOS = 3;
