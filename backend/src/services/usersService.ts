@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
+import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateUserInput, UpdateUserInput } from "../types/access";
 
-// ID do usuário SuperAdmin — protegido contra deleção e remoção de roles
 const SUPER_ADMIN_USER_ID = 1;
 
 export const getAllUsers = async () => {
@@ -16,7 +16,7 @@ export const getAllUsers = async () => {
             createdAt: true,
             roles: {
                 select: {
-                    role: { select: { id: true, name: true } },
+                role: { select: { id: true, name: true } },
                 },
             },
         },
@@ -43,9 +43,7 @@ export const getUserById = async (userId: number) => {
                             name: true,
                             permissions: {
                                 select: {
-                                    permission: {
-                                        select: { id: true, name: true }
-                                    },
+                                    permission: { select: { id: true, name: true } },
                                 },
                             },
                         },
@@ -59,11 +57,8 @@ export const getUserById = async (userId: number) => {
     return user;
 };
 
-export const createUser = async (
-    { name, email, password, profile }: CreateUserInput
-) => {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new Error("Email já cadastrado.");
+export const createUser = async ({ name, email, password, profile }: CreateUserInput) => {
+    await assertUnique(prisma.user, { email }, "Email já cadastrado.");
 
     const passwordHash = await bcrypt.hash(password, 12);
 
@@ -73,16 +68,12 @@ export const createUser = async (
     });
 };
 
-export const updateUser = async (
-    userId: number,
-    { name, email, password, profile }: UpdateUserInput
-) => {
+export const updateUser = async (userId: number, { name, email, password, profile }: UpdateUserInput) => {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("Usuário não encontrado.");
 
     if (email && email !== user.email) {
-        const emailInUse = await prisma.user.findUnique({ where: { email } });
-        if (emailInUse) throw new Error("Email já cadastrado.");
+        await assertUnique(prisma.user, { email }, "Email já cadastrado.", userId);
     }
 
     const updatedData: any = { name, email, profile };
@@ -112,14 +103,11 @@ export const toggleUserActive = async (userId: number) => {
 export const deleteUser = async (userId: number) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: {
-        roles: { select: { role: { select: { name: true } } } },
-        },
+        include: { roles: { select: { role: { select: { name: true } } } } },
     });
 
     if (!user) throw new Error("Usuário não encontrado.");
 
-    // Regra: não deletar o usuário SuperAdmin
     const isSuperAdmin = user.roles.some((userRole) => userRole.role.name === "SuperAdmin");
     if (isSuperAdmin) {
         throw new Error("Não é possível excluir o usuário SuperAdmin.");
@@ -135,16 +123,16 @@ export const assignRoleToUser = async (userId: number, roleId: number) => {
     const role = await prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new Error("Role não encontrada.");
 
-    const alreadyAssigned = await prisma.userRole.findUnique({
-        where: { userId_roleId: { userId, roleId } },
-    });
-    if (alreadyAssigned) throw new Error("Usuário já possui esta role.");
+    await assertUnique(
+        prisma.userRole,
+        { userId_roleId: { userId, roleId } },
+        "Usuário já possui esta role."
+    );
 
     return prisma.userRole.create({ data: { userId, roleId } });
 };
 
 export const removeRoleFromUser = async (userId: number, roleId: number) => {
-    // Regra: o usuário SuperAdmin (id: 1) não pode ser removido de nenhuma role
     if (userId === SUPER_ADMIN_USER_ID) {
         throw new Error("Não é possível remover roles do usuário SuperAdmin.");
     }

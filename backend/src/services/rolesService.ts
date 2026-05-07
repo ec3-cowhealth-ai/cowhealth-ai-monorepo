@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateRoleInput, UpdateRoleInput } from "../types/access";
 
 export const getAllRoles = async () => {
@@ -30,9 +31,7 @@ export const getRoleById = async (roleId: number) => {
             },
             users: {
                 select: {
-                    user: {
-                        select: { id: true, name: true, email: true, active: true }
-                    },
+                    user: { select: { id: true, name: true, email: true, active: true } },
                 },
             },
         },
@@ -42,11 +41,8 @@ export const getRoleById = async (roleId: number) => {
     return role;
 };
 
-export const createRole = async (
-    { name, description }: CreateRoleInput
-) => {
-    const existingRole = await prisma.role.findUnique({ where: { name } });
-    if (existingRole) throw new Error("Já existe uma role com este nome.");
+export const createRole = async ({ name, description }: CreateRoleInput) => {
+    await assertUnique(prisma.role, { name }, "Já existe uma role com este nome.");
 
     return prisma.role.create({
         data: { name, description },
@@ -54,16 +50,12 @@ export const createRole = async (
     });
 };
 
-export const updateRole = async (
-    roleId: number,
-    { name, description }: UpdateRoleInput
-) => {
+export const updateRole = async (roleId: number, { name, description }: UpdateRoleInput) => {
     const role = await prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new Error("Role não encontrada.");
 
     if (name && name !== role.name) {
-        const nameInUse = await prisma.role.findUnique({ where: { name } });
-        if (nameInUse) throw new Error("Já existe uma role com este nome.");
+        await assertUnique(prisma.role, { name }, "Já existe uma role com este nome.", roleId);
     }
 
     return prisma.role.update({
@@ -89,28 +81,23 @@ export const deleteRole = async (roleId: number) => {
     await prisma.role.delete({ where: { id: roleId } });
 };
 
-export const assignPermissionToRole = async (
-    roleId: number,
-    permissionId: number
-) => {
+export const assignPermissionToRole = async (roleId: number, permissionId: number) => {
     const role = await prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new Error("Role não encontrada.");
 
     const permission = await prisma.permission.findUnique({ where: { id: permissionId } });
     if (!permission) throw new Error("Permissão não encontrada.");
 
-    const alreadyAssigned = await prisma.rolePermission.findUnique({
-        where: { roleId_permissionId: { roleId, permissionId } },
-    });
-    if (alreadyAssigned) throw new Error("Role já possui esta permissão.");
+    await assertUnique(
+        prisma.rolePermission,
+        { roleId_permissionId: { roleId, permissionId } },
+        "Role já possui esta permissão."
+    );
 
     return prisma.rolePermission.create({ data: { roleId, permissionId } });
 };
 
-export const removePermissionFromRole = async (
-    roleId: number,
-    permissionId: number
-) => {
+export const removePermissionFromRole = async (roleId: number, permissionId: number) => {
     const rolePermission = await prisma.rolePermission.findUnique({
         where: { roleId_permissionId: { roleId, permissionId } },
     });
