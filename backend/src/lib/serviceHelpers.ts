@@ -1,8 +1,6 @@
 import { SensorQueryOptions } from "../types/sensors";
 
 /**
- * Verificação de existência
- * 
  * Busca um registro pelo ID e lança erro se não encontrado.
  * Elimina o padrão repetido de findUnique + if (!record) throw.
  *
@@ -24,8 +22,6 @@ export const findOrThrow = async <T>(
 };
 
 /**
- * Verificação de campo único
- * 
  * Verifica se um valor já existe em um campo único antes de criar ou atualizar.
  * Lança erro se já estiver em uso.
  *
@@ -55,8 +51,6 @@ export const assertUnique = async (
 };
 
 /**
- * Queries de sensores
- * 
  * Busca registros de sensor para uma vaca, com filtros opcionais por período.
  * Centraliza o padrão repetido nos três tipos de sensor (FC, temperatura, acelerômetro).
  *
@@ -91,8 +85,6 @@ export const querySensorData = async <T>(
 };
 
 /**
- * Agregação diária
- * 
  * Agrupa registros de sensor por dia e calcula a média do campo informado.
  * Retorna array com label (dd/MM) e média — formato esperado pelo Recharts.
  *

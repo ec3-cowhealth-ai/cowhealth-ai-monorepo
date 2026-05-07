@@ -6,8 +6,9 @@ import {
     updateRole,
     deleteRole,
     assignPermissionToRole,
-    removePermissionFromRole,
+    removePermissionFromRole
 } from "../services/rolesService";
+import { handleRequest } from "../lib/controllerHelpers";
 
 export const listRoles = async (_request: Request, response: Response): Promise<void> => {
     const roles = await getAllRoles();
@@ -15,61 +16,33 @@ export const listRoles = async (_request: Request, response: Response): Promise<
 };
 
 export const showRole = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const role = await getRoleById(Number(request.params.id));
-        response.json(role);
-    } catch (error: any) {
-        response.status(404).json({ error: error.message });
-    }
+    await handleRequest(response, () => getRoleById(Number(request.params.id)), 200, 404);
 };
 
 export const storeRole = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const role = await createRole(request.body);
-        response.status(201).json(role);
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => createRole(request.body), 201);
 };
 
 export const updateRoleController = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const role = await updateRole(Number(request.params.id), request.body);
-        response.json(role);
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => updateRole(Number(request.params.id), request.body));
 };
 
 export const destroyRole = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await deleteRole(Number(request.params.id));
-        response.status(204).send();
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => deleteRole(Number(request.params.id)), 204);
 };
 
 export const addPermissionToRole = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await assignPermissionToRole(
-        Number(request.params.id),
-        Number(request.body.permissionId)
-        );
-        response.status(201).json({ message: "Permissão atribuída com sucesso." });
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(
+        response,
+        () => assignPermissionToRole(Number(request.params.id), Number(request.body.permissionId)),
+        201
+    );
 };
 
 export const removeRolePermission = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await removePermissionFromRole(
-        Number(request.params.id),
-        Number(request.params.permissionId)
-        );
-        response.status(204).send();
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(
+        response,
+        () => removePermissionFromRole(Number(request.params.id), Number(request.params.permissionId)),
+        204
+    );
 };

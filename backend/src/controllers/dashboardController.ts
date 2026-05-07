@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
     getDashboardOverview,
     getCowsPerStatus,
-    getCowsPerFarm,
+    getCowsPerFarm
 } from "../services/dashboardService";
 
 export const overview = async (_request: Request, response: Response): Promise<void> => {

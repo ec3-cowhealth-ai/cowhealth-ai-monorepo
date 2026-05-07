@@ -4,8 +4,9 @@ import {
     getCollarById,
     createCollar,
     updateCollar,
-    deleteCollar,
+    deleteCollar
 } from "../services/collarsService";
+import { handleRequest } from "../lib/controllerHelpers";
 
 export const listCollars = async (_request: Request, response: Response): Promise<void> => {
     const collars = await getAllCollars();
@@ -13,37 +14,17 @@ export const listCollars = async (_request: Request, response: Response): Promis
 };
 
 export const showCollar = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const collar = await getCollarById(Number(request.params.id));
-        response.json(collar);
-    } catch (error: any) {
-        response.status(404).json({ error: error.message });
-    }
+    await handleRequest(response, () => getCollarById(Number(request.params.id)), 200, 404);
 };
 
 export const storeCollar = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const collar = await createCollar(request.body);
-        response.status(201).json(collar);
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => createCollar(request.body), 201);
 };
 
 export const updateCollarController = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const collar = await updateCollar(Number(request.params.id), request.body);
-        response.json(collar);
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => updateCollar(Number(request.params.id), request.body));
 };
 
 export const destroyCollar = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await deleteCollar(Number(request.params.id));
-        response.status(204).send();
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => deleteCollar(Number(request.params.id)), 204);
 };

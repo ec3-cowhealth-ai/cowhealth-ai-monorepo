@@ -7,8 +7,9 @@ import {
     toggleUserActive,
     deleteUser,
     assignRoleToUser,
-    removeRoleFromUser,
+    removeRoleFromUser
 } from "../services/usersService";
+import { handleRequest } from "../lib/controllerHelpers";
 
 export const listUsers = async (_request: Request, response: Response): Promise<void> => {
     const users = await getAllUsers();
@@ -16,64 +17,37 @@ export const listUsers = async (_request: Request, response: Response): Promise<
 };
 
 export const showUser = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const user = await getUserById(Number(request.params.id));
-        response.json(user);
-    } catch (error: any) {
-        response.status(404).json({ error: error.message });
-    }
+    await handleRequest(response, () => getUserById(Number(request.params.id)), 200, 404);
 };
 
 export const storeUser = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const user = await createUser(request.body);
-        response.status(201).json(user);
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => createUser(request.body), 201);
 };
 
 export const updateUserController = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const user = await updateUser(Number(request.params.id), request.body);
-        response.json(user);
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(response, () => updateUser(Number(request.params.id), request.body));
 };
 
 export const toggleActive = async (request: Request, response: Response): Promise<void> => {
-    try {
-        const user = await toggleUserActive(Number(request.params.id));
-        response.json(user);
-    } catch (error: any) {
-        response.status(404).json({ error: error.message });
-    }
+    await handleRequest(response, () => toggleUserActive(Number(request.params.id)), 200, 404);
 };
 
 export const destroyUser = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await deleteUser(Number(request.params.id));
-        response.status(204).send();
-    } catch (error: any) {
-        response.status(404).json({ error: error.message });
-    }
+    await handleRequest(response, () => deleteUser(Number(request.params.id)), 204, 404);
 };
 
 export const addRoleToUser = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await assignRoleToUser(Number(request.params.id), Number(request.body.roleId));
-        response.status(201).json({ message: "Role atribuída com sucesso." });
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(
+        response,
+        () => assignRoleToUser(Number(request.params.id), Number(request.body.roleId)),
+        201
+    );
 };
 
 export const removeUserRole = async (request: Request, response: Response): Promise<void> => {
-    try {
-        await removeRoleFromUser(Number(request.params.id), Number(request.params.roleId));
-        response.status(204).send();
-    } catch (error: any) {
-        response.status(400).json({ error: error.message });
-    }
+    await handleRequest(
+        response,
+        () => removeRoleFromUser(Number(request.params.id), Number(request.params.roleId)),
+        204
+    );
 };
