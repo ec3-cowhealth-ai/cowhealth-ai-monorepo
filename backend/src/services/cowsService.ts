@@ -64,11 +64,11 @@ export const createCow = async (data: CreateCowInput) => {
     return prisma.cow.create({
         data: { ...data, birthDate: data.birthDate ? new Date(data.birthDate) : undefined },
         select: {
-        id:     true,
-        tag:    true,
-        name:   true,
-        status: true,
-        farm:   { select: { id: true, name: true } },
+            id:     true,
+            tag:    true,
+            name:   true,
+            status: true,
+            farm:   { select: { id: true, name: true } },
         },
     });
 };
