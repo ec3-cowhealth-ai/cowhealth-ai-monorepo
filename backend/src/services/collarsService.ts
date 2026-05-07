@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { assertUnique } from "../lib/serviceHelpers";
 import type { CreateCollarInput, UpdateCollarInput } from "../types/farming";
 
 export const getAllCollars = async () => {
@@ -9,9 +10,7 @@ export const getAllCollars = async () => {
             status:        true,
             dataFrequency: true,
             createdAt:     true,
-            cow: {
-                select: { id: true, tag: true, name: true, status: true },
-            },
+            cow: { select: { id: true, tag: true, name: true, status: true } },
         },
         orderBy: { name: "asc" },
     });
@@ -45,18 +44,11 @@ export const getCollarById = async (collarId: number) => {
 };
 
 export const createCollar = async (data: CreateCollarInput) => {
-    const existingCollar = await prisma.collar.findUnique({ where: { name: data.name } });
-    if (existingCollar) throw new Error("Já existe um colar com este nome.");
+    await assertUnique(prisma.collar, { name: data.name }, "Já existe um colar com este nome.");
 
     return prisma.collar.create({
         data,
-        select: {
-            id:            true,
-            name:          true,
-            status:        true,
-            dataFrequency: true,
-            createdAt:     true,
-        },
+        select: { id: true, name: true, status: true, dataFrequency: true, createdAt: true },
     });
 };
 
@@ -65,20 +57,13 @@ export const updateCollar = async (collarId: number, data: UpdateCollarInput) =>
     if (!collar) throw new Error("Colar não encontrado.");
 
     if (data.name && data.name !== collar.name) {
-        const nameInUse = await prisma.collar.findUnique({ where: { name: data.name } });
-        if (nameInUse) throw new Error("Já existe um colar com este nome.");
+        await assertUnique(prisma.collar, { name: data.name }, "Já existe um colar com este nome.", collarId);
     }
 
     return prisma.collar.update({
         where: { id: collarId },
         data,
-        select: {
-        id:            true,
-        name:          true,
-        status:        true,
-        dataFrequency: true,
-        updatedAt:     true,
-        },
+        select: { id: true, name: true, status: true, dataFrequency: true, updatedAt: true },
     });
 };
 
@@ -90,7 +75,6 @@ export const deleteCollar = async (collarId: number) => {
 
     if (!collar) throw new Error("Colar não encontrado.");
 
-    // Regra: não deletar colar vinculado a uma vaca
     if (collar.cow) {
         throw new Error("Não é possível excluir um colar vinculado a uma vaca.");
     }

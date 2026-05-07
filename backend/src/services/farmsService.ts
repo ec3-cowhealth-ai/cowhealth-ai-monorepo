@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { assertUnique } from "../lib/serviceHelpers";
 import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
 
 export const getAllFarms = async () => {
@@ -51,19 +52,11 @@ export const getFarmById = async (farmId: number) => {
 };
 
 export const createFarm = async (data: CreateFarmInput) => {
-    const existingFarm = await prisma.farm.findUnique({ where: { cnpj: data.cnpj } });
-    if (existingFarm) throw new Error("Já existe uma fazenda com este CNPJ.");
+    await assertUnique(prisma.farm, { cnpj: data.cnpj }, "Já existe uma fazenda com este CNPJ.");
 
     return prisma.farm.create({
         data,
-        select: {
-        id:        true,
-        name:      true,
-        cnpj:      true,
-        city:      true,
-        state:     true,
-        createdAt: true,
-        },
+        select: { id: true, name: true, cnpj: true, city: true, state: true, createdAt: true },
     });
 };
 
@@ -72,21 +65,13 @@ export const updateFarm = async (farmId: number, data: UpdateFarmInput) => {
     if (!farm) throw new Error("Fazenda não encontrada.");
 
     if (data.cnpj && data.cnpj !== farm.cnpj) {
-        const cnpjInUse = await prisma.farm.findUnique({ where: { cnpj: data.cnpj } });
-        if (cnpjInUse) throw new Error("Já existe uma fazenda com este CNPJ.");
+        await assertUnique(prisma.farm, { cnpj: data.cnpj }, "Já existe uma fazenda com este CNPJ.", farmId);
     }
 
     return prisma.farm.update({
         where: { id: farmId },
         data,
-        select: {
-            id:        true,
-            name:      true,
-            cnpj:      true,
-            city:      true,
-            state:     true,
-            updatedAt: true,
-        },
+        select: { id: true, name: true, cnpj: true, city: true, state: true, updatedAt: true },
     });
 };
 
@@ -98,7 +83,6 @@ export const deleteFarm = async (farmId: number) => {
 
     if (!farm) throw new Error("Fazenda não encontrada.");
 
-    // Regra: não deletar fazenda com vacas vinculadas
     if (farm._count.cows > 0) {
         throw new Error("Não é possível excluir uma fazenda com vacas vinculadas.");
     }

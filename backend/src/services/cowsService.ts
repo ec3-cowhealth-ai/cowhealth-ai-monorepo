@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { prisma } from "../lib/prisma";
+import { assertUnique, querySensorData, aggregateDailyAverage } from "../lib/serviceHelpers";
 import type { CreateCowInput, UpdateCowInput, SensorQueryInput } from "../types/cows";
 
 const MAX_PHOTOS = 3;
@@ -17,8 +18,8 @@ export const getAllCows = async () => {
             weight:    true,
             status:    true,
             createdAt: true,
-            farm:      { select: { id: true, name: true } },
-            collar:    { select: { id: true, name: true, status: true } },
+            farm:   { select: { id: true, name: true } },
+            collar: { select: { id: true, name: true, status: true } },
         },
         orderBy: { tag: "asc" },
     });
@@ -38,8 +39,8 @@ export const getCowById = async (cowId: number) => {
             status:    true,
             createdAt: true,
             updatedAt: true,
-            farm:      { select: { id: true, name: true, city: true, state: true } },
-            collar:    { select: { id: true, name: true, status: true, dataFrequency: true } },
+            farm:   { select: { id: true, name: true, city: true, state: true } },
+            collar: { select: { id: true, name: true, status: true, dataFrequency: true } },
         },
     });
 
@@ -48,8 +49,7 @@ export const getCowById = async (cowId: number) => {
 };
 
 export const createCow = async (data: CreateCowInput) => {
-    const existingCow = await prisma.cow.findUnique({ where: { tag: data.tag } });
-    if (existingCow) throw new Error("Já existe uma vaca com esta tag.");
+    await assertUnique(prisma.cow, { tag: data.tag }, "Já existe uma vaca com esta tag.");
 
     const farm = await prisma.farm.findUnique({ where: { id: data.farmId } });
     if (!farm) throw new Error("Fazenda não encontrada.");
@@ -58,21 +58,17 @@ export const createCow = async (data: CreateCowInput) => {
         const collar = await prisma.collar.findUnique({ where: { id: data.collarId } });
         if (!collar) throw new Error("Colar não encontrado.");
 
-        const collarInUse = await prisma.cow.findFirst({ where: { collarId: data.collarId } });
-        if (collarInUse) throw new Error("Este colar já está vinculado a outra vaca.");
+        await assertUnique(prisma.cow, { collarId: data.collarId }, "Este colar já está vinculado a outra vaca.");
     }
 
     return prisma.cow.create({
-        data: {
-        ...data,
-        birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
-        },
+        data: { ...data, birthDate: data.birthDate ? new Date(data.birthDate) : undefined },
         select: {
-            id:     true,
-            tag:    true,
-            name:   true,
-            status: true,
-            farm:   { select: { id: true, name: true } },
+        id:     true,
+        tag:    true,
+        name:   true,
+        status: true,
+        farm:   { select: { id: true, name: true } },
         },
     });
 };
@@ -82,30 +78,22 @@ export const updateCow = async (cowId: number, data: UpdateCowInput) => {
     if (!cow) throw new Error("Vaca não encontrada.");
 
     if (data.tag && data.tag !== cow.tag) {
-        const tagInUse = await prisma.cow.findUnique({ where: { tag: data.tag } });
-        if (tagInUse) throw new Error("Já existe uma vaca com esta tag.");
+        await assertUnique(prisma.cow, { tag: data.tag }, "Já existe uma vaca com esta tag.");
     }
 
     if (data.collarId) {
-        const collarInUse = await prisma.cow.findFirst({
-        where: { collarId: data.collarId, id: { not: cowId } },
-        });
-        if (collarInUse) throw new Error("Este colar já está vinculado a outra vaca.");
+        await assertUnique(
+            prisma.cow,
+            { collarId: data.collarId },
+            "Este colar já está vinculado a outra vaca.",
+            cowId
+        );
     }
 
     return prisma.cow.update({
         where: { id: cowId },
-        data: {
-        ...data,
-        birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
-        },
-        select: {
-            id:        true,
-            tag:       true,
-            name:      true,
-            status:    true,
-            updatedAt: true,
-        },
+        data:  { ...data, birthDate: data.birthDate ? new Date(data.birthDate) : undefined },
+        select: { id: true, tag: true, name: true, status: true, updatedAt: true },
     });
 };
 
@@ -114,7 +102,7 @@ export const deleteCow = async (cowId: number) => {
     if (!cow) throw new Error("Vaca não encontrada.");
 
     await prisma.cow.delete({ where: { id: cowId } });
-    };
+};
 
 // Fotos
 
@@ -125,16 +113,13 @@ export const addCowPhoto = async (cowId: number, filename: string) => {
     if (!cow) throw new Error("Vaca não encontrada.");
 
     const currentPhotos = (cow.photos as string[]) ?? [];
-
     if (currentPhotos.length >= MAX_PHOTOS) {
         throw new Error(`Limite de ${MAX_PHOTOS} fotos por vaca atingido.`);
     }
 
-    const updatedPhotos = [...currentPhotos, filename];
-
     return prisma.cow.update({
         where: { id: cowId },
-        data:  { photos: updatedPhotos },
+        data:  { photos: [...currentPhotos, filename] },
         select: { id: true, photos: true },
     });
 };
@@ -149,92 +134,57 @@ export const removeCowPhoto = async (cowId: number, filename: string) => {
     const filePath = path.join(UPLOADS_DIR, filename);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
-    const updatedPhotos = currentPhotos.filter((photo) => photo !== filename);
-
     return prisma.cow.update({
         where: { id: cowId },
-        data:  { photos: updatedPhotos },
+        data:  { photos: currentPhotos.filter((photo) => photo !== filename) },
         select: { id: true, photos: true },
     });
 };
 
 // Sensores — listagem paginada
 
-export const getCowHeartRate = async (cowId: number, query: SensorQueryInput) => {
+export const getCowHeartRate = async (cowId: number, options: SensorQueryInput) => {
     const cow = await prisma.cow.findUnique({ where: { id: cowId } });
     if (!cow) throw new Error("Vaca não encontrada.");
 
-    return prisma.heartRateData.findMany({
-        where: {
-        cowId,
-        measuredAt: {
-            gte: query.startDate ? new Date(query.startDate) : undefined,
-            lte: query.endDate   ? new Date(query.endDate)   : undefined,
-        },
-        },
-        select: { id: true, bpm: true, measuredAt: true, receivedAt: true },
-        orderBy: { measuredAt: "desc" },
-        take: query.limit ?? 100,
-    });
+    return querySensorData(prisma.heartRateData, cowId, { bpm: true }, options);
 };
 
-export const getCowTemperature = async (cowId: number, query: SensorQueryInput) => {
+export const getCowTemperature = async (cowId: number, options: SensorQueryInput) => {
     const cow = await prisma.cow.findUnique({ where: { id: cowId } });
     if (!cow) throw new Error("Vaca não encontrada.");
 
-    return prisma.temperatureData.findMany({
-        where: {
-        cowId,
-        measuredAt: {
-            gte: query.startDate ? new Date(query.startDate) : undefined,
-            lte: query.endDate   ? new Date(query.endDate)   : undefined,
-        },
-        },
-        select: { id: true, celsius: true, measuredAt: true, receivedAt: true },
-        orderBy: { measuredAt: "desc" },
-        take: query.limit ?? 100,
-    });
+    return querySensorData(prisma.temperatureData, cowId, { celsius: true }, options);
 };
 
-export const getCowAccelerometer = async (cowId: number, query: SensorQueryInput) => {
+export const getCowAccelerometer = async (cowId: number, options: SensorQueryInput) => {
     const cow = await prisma.cow.findUnique({ where: { id: cowId } });
     if (!cow) throw new Error("Vaca não encontrada.");
 
-    return prisma.accelerometerData.findMany({
-        where: {
+    return querySensorData(
+        prisma.accelerometerData,
         cowId,
-        measuredAt: {
-            gte: query.startDate ? new Date(query.startDate) : undefined,
-            lte: query.endDate   ? new Date(query.endDate)   : undefined,
-        },
-        },
-        select: {
-            id: true, accelX: true, accelY: true, accelZ: true,
-            gyroX: true, gyroY: true, gyroZ: true,
-            measuredAt: true, receivedAt: true,
-        },
-        orderBy: { measuredAt: "desc" },
-        take: query.limit ?? 100,
-    });
+        { accelX: true, accelY: true, accelZ: true, gyroX: true, gyroY: true, gyroZ: true },
+        options
+    );
 };
 
-// Sensores — média diária para gráficos
-// Agrupa os dados por dia e retorna a média de cada dia nos últimos 7 dias
+// Sensores - média diária para gráficos na última semana
+
+const sevenDaysAgo = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 6);
+    date.setHours(0, 0, 0, 0);
+    return date;
+};
 
 export const getCowHeartRateDaily = async (cowId: number) => {
     const cow = await prisma.cow.findUnique({ where: { id: cowId } });
     if (!cow) throw new Error("Vaca não encontrada.");
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    sevenDaysAgo.setHours(0, 0, 0, 0);
-
     const records = await prisma.heartRateData.findMany({
-        where: {
-            cowId,
-            measuredAt: { gte: sevenDaysAgo },
-        },
-        select: { bpm: true, measuredAt: true },
+        where:   { cowId, measuredAt: { gte: sevenDaysAgo() } },
+        select:  { bpm: true, measuredAt: true },
         orderBy: { measuredAt: "asc" },
     });
 
@@ -245,49 +195,11 @@ export const getCowTemperatureDaily = async (cowId: number) => {
     const cow = await prisma.cow.findUnique({ where: { id: cowId } });
     if (!cow) throw new Error("Vaca não encontrada.");
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    sevenDaysAgo.setHours(0, 0, 0, 0);
-
     const records = await prisma.temperatureData.findMany({
-        where: {
-            cowId,
-            measuredAt: { gte: sevenDaysAgo },
-        },
-        select: { celsius: true, measuredAt: true },
+        where:   { cowId, measuredAt: { gte: sevenDaysAgo() } },
+        select:  { celsius: true, measuredAt: true },
         orderBy: { measuredAt: "asc" },
     });
 
     return aggregateDailyAverage(records, "celsius");
-};
-
-/**
- * Agrupa registros de sensores por dia e calcula a média do campo informado.
- * Retorna um array com label (dd/MM) e valor médio.
- */
-const aggregateDailyAverage = (
-    records: Array<{ measuredAt: Date; [key: string]: any }>,
-    field: string
-    ): Array<{ date: string; average: number }> => {
-    const dailyGroups = new Map<string, number[]>();
-
-    for (const record of records) {
-        const dateLabel = record.measuredAt.toLocaleDateString("pt-BR", {
-            day:   "2-digit",
-            month: "2-digit",
-        });
-
-        if (!dailyGroups.has(dateLabel)) {
-        dailyGroups.set(dateLabel, []);
-        }
-
-        dailyGroups.get(dateLabel)!.push(record[field]);
-    }
-
-    return Array.from(dailyGroups.entries()).map(([date, values]) => ({
-        date,
-        average: parseFloat(
-            (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)
-        ),
-    }));
 };
