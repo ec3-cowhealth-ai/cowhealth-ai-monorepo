@@ -158,3 +158,10 @@ dist-ssr
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# User JCFS Specific
+.env.local
+/agents/*
+agents/
+docs/*
