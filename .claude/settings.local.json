@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -E \"\\\\.\\(jsx|tsx|css|html|js|md\\)$\")",
-      "Bash(find C:/Users/jafte/iCloudDrive/Documents/SharedDevEnv/EC3/cowhealth/new/docs -type f -name *.md)"
-    ]
-  }
-}
