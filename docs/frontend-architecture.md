@@ -521,60 +521,113 @@ Com React 19, `FormEvent` foi depreciado. Usar os tipos nativos do DOM:
 | `onSubmit` em formulário | `React.FormEvent<HTMLFormElement>` |
 | `onChange` em input | `React.ChangeEvent<HTMLInputElement>` |
 
-### React Hook Form + Zod
+---
 
-Para formulários, use **React Hook Form** com **Zod** para validação:
+### Formulários (Recomendado)
+
+**Para formulários complexos:** use **React Hook Form** + **Zod** para validação robusta e type-safe.
+
+**Para formulários simples:** é OK usar apenas `useState()` com validação básica.
+
+**Escolha conforme a complexidade:**
+
+#### Caso 1: Formulário Simples (useState)
 
 ```tsx
-// src/components/forms/LoginForm/LoginForm.tsx
+// src/features/farms/components/SimpleForm.tsx
+import { useState } from 'react';
+
+export const SimpleFarmForm = () => {
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('Nome é obrigatório');
+      return;
+    }
+    // enviar
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={name}
+        onChange={(e) => setName(e.currentTarget.value)}
+        placeholder="Nome da Fazenda"
+      />
+      {error && <p className="text-red-600">{error}</p>}
+      <button type="submit">Salvar</button>
+    </form>
+  );
+};
+```
+
+#### Caso 2: Formulário Complexo (React Hook Form + Zod)
+
+```tsx
+// src/features/farms/components/ComplexFarmForm.tsx
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 // Schema de validação
-const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+const farmSchema = z.object({
+  name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
+  cnpj: z.string().regex(/^\d{14}$/, 'CNPJ inválido'),
+  email: z.string().email('Email inválido').optional(),
+  address: z.string().optional(),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type FarmFormData = z.infer<typeof farmSchema>;
 
-interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => Promise<void>;
+interface ComplexFarmFormProps {
+  onSubmit: (data: FarmFormData) => Promise<void>;
 }
 
-export const LoginForm = ({ onSubmit }: LoginFormProps) => {
+export const ComplexFarmForm = ({ onSubmit }: ComplexFarmFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<FarmFormData>({
+    resolver: zodResolver(farmSchema),
   });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <input
-          {...register('email')}
-          type="email"
-          placeholder="Email"
+          {...register('name')}
+          placeholder="Nome da Fazenda"
           className="w-full px-4 py-2 border rounded"
         />
-        {errors.email && (
-          <p className="text-red-600 text-sm">{errors.email.message}</p>
+        {errors.name && (
+          <p className="text-red-600 text-sm">{errors.name.message}</p>
         )}
       </div>
 
       <div>
         <input
-          {...register('password')}
-          type="password"
-          placeholder="Senha"
+          {...register('cnpj')}
+          placeholder="CNPJ"
           className="w-full px-4 py-2 border rounded"
         />
-        {errors.password && (
-          <p className="text-red-600 text-sm">{errors.password.message}</p>
+        {errors.cnpj && (
+          <p className="text-red-600 text-sm">{errors.cnpj.message}</p>
+        )}
+      </div>
+
+      <div>
+        <input
+          {...register('email')}
+          type="email"
+          placeholder="Email (opcional)"
+          className="w-full px-4 py-2 border rounded"
+        />
+        {errors.email && (
+          <p className="text-red-600 text-sm">{errors.email.message}</p>
         )}
       </div>
 
@@ -583,19 +636,20 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
         disabled={isSubmitting}
         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        {isSubmitting ? 'Entrando...' : 'Entrar'}
+        {isSubmitting ? 'Salvando...' : 'Salvar Fazenda'}
       </button>
     </form>
   );
 };
 ```
 
-**Vantagens:**
+**Vantagens do React Hook Form + Zod:**
 
-- Validação declarativa e type-safe com Zod
-- Performance otimizada com React Hook Form (re-renders apenas do campo alterado)
-- Mensagens de erro automáticas
-- Suporte a validação assíncrona
+- Validação declarativa e type-safe
+- Performance otimizada (re-renders apenas do campo alterado)
+- Mensagens de erro automáticas e tipadas
+- Suporte a validação assíncrona (ex: verificar email duplicado)
+- Integração com APIs backend seamless
 
 ---
 
