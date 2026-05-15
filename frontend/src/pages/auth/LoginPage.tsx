@@ -4,24 +4,55 @@ import { useLogin } from "../../hooks/useAuth";
 export const LoginPage = () => {
   const { mutate: login, isPending, error } = useLogin();
 
-  const [email,    setEmail]    = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event: React.SubmitEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     login({ email, password });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm bg-white rounded-lg shadow p-8">
-        <h1 className="text-xl font-semibold text-gray-800 mb-6">
-          CowHealth AI
-        </h1>
+    <div
+      style={{
+        minHeight: "100dvh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "var(--s-4)",
+        background: "var(--bg-app)",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          background: "var(--bg-elev-1)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--r-md)",
+          padding: "var(--s-6)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--s-4)",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "var(--t-h1)",
+              fontWeight: 700,
+              margin: 0,
+              color: "var(--text-primary)",
+            }}
+          >
+            🐄 CowHealth AI
+          </h1>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-gray-600" htmlFor="email">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--s-4)" }}>
+          <div className="form-field">
+            <label className="form-field__label" htmlFor="email">
               Email
             </label>
             <input
@@ -29,13 +60,14 @@ export const LoginPage = () => {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-field__input"
+              placeholder="seu@email.com"
               required
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-gray-600" htmlFor="password">
+          <div className="form-field">
+            <label className="form-field__label" htmlFor="password">
               Senha
             </label>
             <input
@@ -43,13 +75,17 @@ export const LoginPage = () => {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-field__input"
+              placeholder="••••••••"
               required
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600">
+            <p
+              className="form-field__error"
+              style={{ textAlign: "center", marginTop: "var(--s-2)" }}
+            >
               Email ou senha incorretos.
             </p>
           )}
@@ -57,7 +93,8 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={isPending}
-            className="bg-blue-600 text-white rounded py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="btn btn-primary btn-lg"
+            style={{ marginTop: "var(--s-2)" }}
           >
             {isPending ? "Entrando..." : "Entrar"}
           </button>
