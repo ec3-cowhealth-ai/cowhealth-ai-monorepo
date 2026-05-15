@@ -3,6 +3,7 @@ import { ProtectedRoute } from "@components/ProtectedRoute";
 import { LoginPage } from "@pages/auth/LoginPage";
 import { LandingPage } from "@features/landing";
 import { HomePage } from "@pages/home/HomePage";
+import { DashboardPage } from "@features/dashboard/pages/DashboardPage";
 import { FarmsPage, FarmDetailPage } from "@features/farms";
 import { CollarsPage, CollarDetailPage } from "@features/collars";
 import { NotificationsPage } from "@features/notifications";
@@ -13,22 +14,12 @@ import {
   RolesPage,
   PermissionsPage,
 } from "@features/access";
-import { AppBar } from "@components/layout";
-
-const DashboardPlaceholder = () => (
-  <div className="app-page">
-    <AppBar title="Dashboard" />
-    <section style={{ padding: "var(--s-4)" }}>
-      {/* TODO[IAN]: integrar componentes finais de dashboard e graficos */}
-      <p>Dashboard em construção.</p>
-    </section>
-  </div>
-);
 
 const RegisterPlaceholder = () => (
   <section style={{ padding: "var(--s-4)" }}>
     {/* TODO[ANGELO]: implementar tela de registro de usuarios */}
-    <p>Registro de usuários em construção.</p>
+    <p>Página de registro em construção.</p>
+    <p>Veja: <code>frontend/src/features/auth/README.md</code></p>
   </section>
 );
 
@@ -49,7 +40,7 @@ export const AppRoutes = () => (
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<HomePage />} />
-        <Route path="/dashboard" element={<DashboardPlaceholder />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
 
         {/* Farms */}
         <Route path="/farms" element={<FarmsPage />} />
