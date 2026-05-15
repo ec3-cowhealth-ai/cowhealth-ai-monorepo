@@ -470,3 +470,95 @@ VITE_API_URL=http://localhost:3001
 ```
 
 ---
+
+## Matriz de Responsabilidades (Frontend)
+
+Esta matriz define ownership principal por área de tela para evitar sobreposição de implementação:
+
+| Pessoa | Responsabilidade |
+|---|---|
+| Angelo | Frontend das telas de autenticação e registro de usuários |
+| Ian | Frontend dos dashboards e gráficos |
+| Jafte | Frontend de todas as demais telas |
+
+### Regra de dependência entre colegas
+
+Sempre que uma página/componente depender do trabalho de outro responsável, criar o esqueleto e marcar explicitamente o ponto de integração com `TODO[NOME]`.
+
+Exemplo:
+
+```tsx
+// src/pages/dashboard/DashboardPage.tsx
+import { PageLayout } from "../../components/layout/PageLayout";
+
+export const DashboardPage = () => {
+  return (
+    <PageLayout title="Dashboard">
+      {/* TODO[IAN]: integrar componentes finais de gráficos e KPIs */}
+      <section aria-label="area de dashboard">
+        <p>Esqueleto de dashboard em integração.</p>
+      </section>
+    </PageLayout>
+  );
+};
+```
+
+Convenções obrigatórias:
+
+- `TODO[ANGELO]` para dependências de autenticação/registro.
+- `TODO[IAN]` para dependências de dashboard/gráficos.
+- `TODO[JAFTE]` para dependências das demais telas.
+- O TODO deve indicar de forma curta o que falta integrar.
+
+## Diretrizes de Reuso e Baixo Acoplamento
+
+### 1) Separar por responsabilidade
+
+- `components/`: componentes compartilháveis e agnósticos de domínio (layout, tabela base, card base, estados vazios, feedback visual).
+- `pages/<modulo>/`: composição da tela e componentes locais do módulo.
+- `services/`: somente acesso a API.
+- `hooks/`: orquestração de estado assíncrono e regras de cache.
+- `types/`: contratos de dados.
+
+### 2) Evitar duplicação de UI
+
+- Se o mesmo padrão visual/comportamental aparecer em 2+ páginas, extrair para `src/components/`.
+- Evitar copiar blocos de formulário/listagem; criar componentes parametrizados por props.
+- Evitar classes utilitárias repetidas em múltiplos arquivos; concentrar variações no Design System mestre.
+
+### 3) Reduzir acoplamento entre módulos
+
+- Um módulo não deve importar componentes internos de outro módulo em `pages/`.
+- Compartilhamento entre módulos deve passar por `components/`, `hooks/` ou `types/`.
+- Preferir passagem de dados por props explícitas, evitando dependência implícita de estado global.
+
+### 4) Contratos estáveis para componentes
+
+- Definir interfaces de props pequenas, explícitas e tipadas.
+- Expor callbacks orientadas a intenção (`onCreate`, `onSelect`, `onRetry`) em vez de detalhes de implementação.
+- Não acoplar componentes de UI diretamente a chamadas de API.
+
+## Padrão de Gráficos com Recharts (Design System Mestre)
+
+Todos os gráficos do projeto devem usar `Recharts`, implementados dentro do Design System mestre do repositório.
+
+Regras:
+
+- Não criar gráficos fora dos componentes base de gráfico do Design System.
+- Criar wrappers reutilizáveis no Design System para padronizar: cores, tipografia, grid, tooltip, legenda e responsividade.
+- Páginas de dashboard devem consumir apenas esses wrappers, sem configuração visual duplicada em cada tela.
+- Cada gráfico deve receber dados por props tipadas, sem conhecer fonte de dados (API/hook).
+- Estados de loading/erro/vazio devem ser componentes de UI padronizados do próprio Design System.
+
+Estrutura recomendada:
+
+```text
+src/components/charts/
+  ChartContainer.tsx
+  LineChartCard.tsx
+  BarChartCard.tsx
+  PieChartCard.tsx
+  chartTheme.ts
+```
+
+---
