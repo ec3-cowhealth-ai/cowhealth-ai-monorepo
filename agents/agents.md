@@ -259,6 +259,20 @@ Required sections:
 
 ## Open Questions
 
+---
+
+## 5. Type Definition Rule (`/types`) and SRD Compliance
+
+Whenever a new type, interface, enum, or shared type alias is needed, it must be created in the correct file under `src/types/` (or the scoped `types/` folder of the corresponding frontend feature), not inlined inside page/component/service files.
+
+Mandatory rules:
+
+- Do not couple new type definitions to implementation files being written.
+- Reuse existing types before creating new ones.
+- If creating a new type, register it in the proper `types` module and import it where needed.
+- Keep typing boundaries explicit between `services`, `hooks`, `components`, and `pages`.
+- Apply SRD strictly: single responsibility in type modeling and in modules that consume those types.
+
 ## Session Log
 ```
 
