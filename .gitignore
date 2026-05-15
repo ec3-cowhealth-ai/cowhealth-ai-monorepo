@@ -164,3 +164,6 @@ vite.config.ts.timestamp-*
 .env.local
 .env
 docs/jcfs_tests/*
+.claude
+.claude/*
+.claude/skill/*
