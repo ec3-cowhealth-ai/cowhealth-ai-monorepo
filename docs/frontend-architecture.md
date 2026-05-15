@@ -470,3 +470,211 @@ VITE_API_URL=http://localhost:3001
 ```
 
 ---
+
+## Matriz de Responsabilidades
+
+Esta matriz define ownership principal por área de tela para evitar sobreposição de implementação:
+
+| Pessoa | Responsabilidade |
+|---|---|
+| Renato | Backend completo (responsabilidade total) |
+| Angelo | Frontend das telas de autenticação e registro de usuários |
+| Ian | Frontend dos dashboards e gráficos |
+| Jafte | Frontend de todas as demais telas |
+
+### Regra de dependência entre colegas
+
+Sempre que uma página/componente depender do trabalho de outro responsável, criar o esqueleto e marcar explicitamente o ponto de integração com `TODO[NOME]`.
+
+Exemplo:
+
+```tsx
+// src/pages/dashboard/DashboardPage.tsx
+import { PageLayout } from "../../components/layout/PageLayout";
+
+export const DashboardPage = () => {
+  return (
+    <PageLayout title="Dashboard">
+      {/* TODO[IAN]: integrar componentes finais de gráficos e KPIs */}
+      <section aria-label="area de dashboard">
+        <p>Esqueleto de dashboard em integração.</p>
+      </section>
+    </PageLayout>
+  );
+};
+```
+
+Convenções obrigatórias:
+
+- `TODO[ANGELO]` para dependências de autenticação/registro.
+- `TODO[IAN]` para dependências de dashboard/gráficos.
+- `TODO[JAFTE]` para dependências das demais telas.
+- O TODO deve indicar de forma curta o que falta integrar.
+
+## Diretrizes de Reuso e Baixo Acoplamento
+
+### 1) Separar por responsabilidade
+
+- `components/`: componentes compartilháveis e agnósticos de domínio (layout, tabela base, card base, estados vazios, feedback visual).
+- `pages/<modulo>/`: composição da tela e componentes locais do módulo.
+- `services/`: somente acesso a API.
+- `hooks/`: orquestração de estado assíncrono e regras de cache.
+- `types/`: contratos de dados.
+
+### 2) Evitar duplicação de UI
+
+- Se o mesmo padrão visual/comportamental aparecer em 2+ páginas, extrair para `src/components/`.
+- Evitar copiar blocos de formulário/listagem; criar componentes parametrizados por props.
+- Evitar classes utilitárias repetidas em múltiplos arquivos; concentrar variações no Design System mestre.
+
+### 3) Reduzir acoplamento entre módulos
+
+- Um módulo não deve importar componentes internos de outro módulo em `pages/`.
+- Compartilhamento entre módulos deve passar por `components/`, `hooks/` ou `types/`.
+- Preferir passagem de dados por props explícitas, evitando dependência implícita de estado global.
+
+### 4) Contratos estáveis para componentes
+
+- Definir interfaces de props pequenas, explícitas e tipadas.
+- Expor callbacks orientadas a intenção (`onCreate`, `onSelect`, `onRetry`) em vez de detalhes de implementação.
+- Não acoplar componentes de UI diretamente a chamadas de API.
+
+## Padrão de Gráficos com Recharts (Design System Mestre)
+
+Todos os gráficos do projeto devem usar `Recharts`, implementados dentro do Design System mestre do repositório.
+
+Regras:
+
+- Não criar gráficos fora dos componentes base de gráfico do Design System.
+- Criar wrappers reutilizáveis no Design System para padronizar: cores, tipografia, grid, tooltip, legenda e responsividade.
+- Páginas de dashboard devem consumir apenas esses wrappers, sem configuração visual duplicada em cada tela.
+- Cada gráfico deve receber dados por props tipadas, sem conhecer fonte de dados (API/hook).
+- Estados de loading/erro/vazio devem ser componentes de UI padronizados do próprio Design System.
+
+Estrutura recomendada:
+
+```text
+src/components/charts/
+  ChartContainer.tsx
+  LineChartCard.tsx
+  BarChartCard.tsx
+  PieChartCard.tsx
+  chartTheme.ts
+```
+
+---
+
+## Atualização 2026-05-14 — Diretrizes do Professor
+
+### Escopo
+
+- Estas diretrizes valem para o `frontend/`.
+- Backend permanece sob responsabilidade total de Renato e sem alteração estrutural neste guia.
+
+### Estrutura alvo (frontend)
+
+```text
+frontend/
+  src/
+    assets/
+    components/
+      common/        # componentes base reutilizáveis (Button, Input, Card, etc.)
+      layout/        # Header, Footer, Sidebar e wrappers de página
+      feedback/      # EmptyState, ErrorState, LoadingState
+      charts/        # wrappers Recharts do Design System mestre
+      ProtectedRoute/
+    features/        # organização por domínio (UI + regras da feature)
+      auth/
+      dashboard/
+      farms/
+      cows/
+      collars/
+      notifications/
+      access/
+    pages/           # composição final de páginas e entrada de rotas
+    hooks/
+    services/
+    store/
+      context/
+      reducers/
+    routes/
+      AppRoutes.tsx
+    config/
+      environment.ts
+    lib/
+    styles/
+    types/
+    utils/
+    App.tsx
+    main.tsx
+```
+
+### Padrões obrigatórios de arquitetura
+
+- Separar apresentação e regra de negócio: UI em `components/` e domínio em `features/`.
+- Um componente por arquivo, com nome em PascalCase.
+- Componentes pequenos e focados, sem acoplamento direto com API.
+- `services/` não importam componentes; `pages/features` não chamam API diretamente, apenas hooks/services padronizados.
+- Dependências entre colegas devem usar esqueleto com `TODO[NOME]`.
+
+### Padrão de rotas
+
+- Centralizar definição de rotas em `src/routes/AppRoutes.tsx`.
+- Manter rotas privadas protegidas com `ProtectedRoute`.
+- `App.tsx` deve apenas compor providers globais e renderizar `AppRoutes`.
+
+### Padrão de aliases (Vite)
+
+Adicionar em `vite.config.ts`:
+
+```ts
+resolve: {
+  alias: {
+    "@": path.resolve(__dirname, "./src"),
+    "@components": path.resolve(__dirname, "./src/components"),
+    "@features": path.resolve(__dirname, "./src/features"),
+    "@pages": path.resolve(__dirname, "./src/pages"),
+    "@hooks": path.resolve(__dirname, "./src/hooks"),
+    "@services": path.resolve(__dirname, "./src/services"),
+    "@routes": path.resolve(__dirname, "./src/routes"),
+    "@config": path.resolve(__dirname, "./src/config"),
+    "@utils": path.resolve(__dirname, "./src/utils"),
+    "@types": path.resolve(__dirname, "./src/types"),
+  },
+}
+```
+
+### Variáveis de ambiente e configuração
+
+- Manter `.env` e `.env.example` no frontend.
+- Centralizar leitura de env em `src/config/environment.ts`.
+
+Exemplo:
+
+```ts
+export const environment = {
+  apiUrl: import.meta.env.VITE_API_URL,
+  appName: import.meta.env.VITE_APP_NAME,
+  env: import.meta.env.VITE_ENV,
+} as const;
+```
+
+### Design System e gráficos (Recharts)
+
+- Todos os gráficos devem ser implementados com `Recharts`.
+- Implementação deve passar por `src/components/charts` (wrappers do Design System mestre).
+- É proibido criar configuração visual de gráfico duplicada em páginas.
+- Dashboards devem consumir wrappers prontos e tipados por props.
+
+### Checklist de conformidade (frontend)
+
+- Estrutura de pastas implementada no `src/`.
+- Rotas centralizadas em `src/routes`.
+- Aliases configurados no `vite.config.ts`.
+- `src/config/environment.ts` criado.
+- Componentes compartilhados extraídos para `components/common` e `components/layout`.
+- Gráficos padronizados em `components/charts` com Recharts.
+- Marcações `TODO[NOME]` criadas para dependências cruzadas.
+- Lint e build do frontend executando sem erro.
+
+---
