@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "@components/ProtectedRoute";
 import { LoginPage } from "@pages/auth/LoginPage";
+import { LandingPage } from "@features/landing";
 
 const DashboardPlaceholder = () => (
   <section>
@@ -26,14 +27,18 @@ const AppHomePlaceholder = () => (
 export const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPlaceholder />} />
 
+      {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<AppHomePlaceholder />} />
+        <Route path="/home" element={<AppHomePlaceholder />} />
         <Route path="/dashboard" element={<DashboardPlaceholder />} />
       </Route>
 
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </BrowserRouter>
