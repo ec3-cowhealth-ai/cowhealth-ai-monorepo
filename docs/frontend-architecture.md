@@ -471,12 +471,13 @@ VITE_API_URL=http://localhost:3001
 
 ---
 
-## Matriz de Responsabilidades (Frontend)
+## Matriz de Responsabilidades
 
 Esta matriz define ownership principal por área de tela para evitar sobreposição de implementação:
 
 | Pessoa | Responsabilidade |
 |---|---|
+| Renato | Backend completo (responsabilidade total) |
 | Angelo | Frontend das telas de autenticação e registro de usuários |
 | Ian | Frontend dos dashboards e gráficos |
 | Jafte | Frontend de todas as demais telas |
