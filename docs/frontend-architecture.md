@@ -563,3 +563,118 @@ src/components/charts/
 ```
 
 ---
+
+## Atualização 2026-05-14 — Diretrizes do Professor
+
+### Escopo
+
+- Estas diretrizes valem para o `frontend/`.
+- Backend permanece sob responsabilidade total de Renato e sem alteração estrutural neste guia.
+
+### Estrutura alvo (frontend)
+
+```text
+frontend/
+  src/
+    assets/
+    components/
+      common/        # componentes base reutilizáveis (Button, Input, Card, etc.)
+      layout/        # Header, Footer, Sidebar e wrappers de página
+      feedback/      # EmptyState, ErrorState, LoadingState
+      charts/        # wrappers Recharts do Design System mestre
+      ProtectedRoute/
+    features/        # organização por domínio (UI + regras da feature)
+      auth/
+      dashboard/
+      farms/
+      cows/
+      collars/
+      notifications/
+      access/
+    pages/           # composição final de páginas e entrada de rotas
+    hooks/
+    services/
+    store/
+      context/
+      reducers/
+    routes/
+      AppRoutes.tsx
+    config/
+      environment.ts
+    lib/
+    styles/
+    types/
+    utils/
+    App.tsx
+    main.tsx
+```
+
+### Padrões obrigatórios de arquitetura
+
+- Separar apresentação e regra de negócio: UI em `components/` e domínio em `features/`.
+- Um componente por arquivo, com nome em PascalCase.
+- Componentes pequenos e focados, sem acoplamento direto com API.
+- `services/` não importam componentes; `pages/features` não chamam API diretamente, apenas hooks/services padronizados.
+- Dependências entre colegas devem usar esqueleto com `TODO[NOME]`.
+
+### Padrão de rotas
+
+- Centralizar definição de rotas em `src/routes/AppRoutes.tsx`.
+- Manter rotas privadas protegidas com `ProtectedRoute`.
+- `App.tsx` deve apenas compor providers globais e renderizar `AppRoutes`.
+
+### Padrão de aliases (Vite)
+
+Adicionar em `vite.config.ts`:
+
+```ts
+resolve: {
+  alias: {
+    "@": path.resolve(__dirname, "./src"),
+    "@components": path.resolve(__dirname, "./src/components"),
+    "@features": path.resolve(__dirname, "./src/features"),
+    "@pages": path.resolve(__dirname, "./src/pages"),
+    "@hooks": path.resolve(__dirname, "./src/hooks"),
+    "@services": path.resolve(__dirname, "./src/services"),
+    "@routes": path.resolve(__dirname, "./src/routes"),
+    "@config": path.resolve(__dirname, "./src/config"),
+    "@utils": path.resolve(__dirname, "./src/utils"),
+    "@types": path.resolve(__dirname, "./src/types"),
+  },
+}
+```
+
+### Variáveis de ambiente e configuração
+
+- Manter `.env` e `.env.example` no frontend.
+- Centralizar leitura de env em `src/config/environment.ts`.
+
+Exemplo:
+
+```ts
+export const environment = {
+  apiUrl: import.meta.env.VITE_API_URL,
+  appName: import.meta.env.VITE_APP_NAME,
+  env: import.meta.env.VITE_ENV,
+} as const;
+```
+
+### Design System e gráficos (Recharts)
+
+- Todos os gráficos devem ser implementados com `Recharts`.
+- Implementação deve passar por `src/components/charts` (wrappers do Design System mestre).
+- É proibido criar configuração visual de gráfico duplicada em páginas.
+- Dashboards devem consumir wrappers prontos e tipados por props.
+
+### Checklist de conformidade (frontend)
+
+- Estrutura de pastas implementada no `src/`.
+- Rotas centralizadas em `src/routes`.
+- Aliases configurados no `vite.config.ts`.
+- `src/config/environment.ts` criado.
+- Componentes compartilhados extraídos para `components/common` e `components/layout`.
+- Gráficos padronizados em `components/charts` com Recharts.
+- Marcações `TODO[NOME]` criadas para dependências cruzadas.
+- Lint e build do frontend executando sem erro.
+
+---
