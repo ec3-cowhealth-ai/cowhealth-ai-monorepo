@@ -162,4 +162,4 @@ vite.config.ts.timestamp-*
 
 # User JCFS Specific
 .env.local
-docs/*
+docs/jcfs_tests/*
