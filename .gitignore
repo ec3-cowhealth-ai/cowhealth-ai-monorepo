@@ -167,3 +167,4 @@ docs/jcfs_tests/*
 .claude
 .claude/*
 .claude/skill/*
+setup.ps1
