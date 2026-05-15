@@ -78,6 +78,69 @@ Run and pass before opening PR:
 - Forbid direct push to `main`.
 - Prefer squash merge for noisy PR histories.
 
-## 8. Enforcement
+## 8. CHANGELOG Updates (Mandatory)
 
-Non-compliant branches, commits, or PRs must be corrected before merge.
+Every significant change must be documented in the CHANGELOG:
+
+### Location
+- File: `docs/change_control/CHANGELOG.md`
+- Your section: `# Alterações e Progresso de <SEU_NOME>`
+
+### How to Update
+
+1. **Locate your section** in the CHANGELOG by your name
+2. **Add a date header** using format: `## YYYY-MM-DD - <Brief Title>`
+3. **Organize content** using these subsections as needed:
+   - `### Novos arquivos e pastas` — List all new files/directories
+   - `### Arquivos modificados` — List modified files with brief explanation
+   - `### Exclusões` — Files/directories removed
+   - `### Conformidade aplicada` — What standards/patterns were followed
+   - `### Bugs fixados` — Bug fixes (if any)
+   - `### Testes` — New test coverage (if any)
+
+### Example Format
+
+```markdown
+## 2026-05-15 - Landing Page iOS/Android Responsivity
+
+Scope: Frontend landing page iOS/Android optimization + bug fixes.
+
+### Novos arquivos e pastas
+- None (refactoring existing files)
+
+### Arquivos modificados
+- `frontend/index.html`
+  - Added iOS/Android meta tags (viewport-fit, theme-color, mobile-web-app-capable)
+
+- `frontend/src/styles/landing.css`
+  - Added safe-area-inset padding for notch support
+  - Replaced 100vh with 100dvh for dynamic viewport height
+  - Added body[data-view="phone"] CSS for device frame preview
+
+- `frontend/src/features/landing/pages/LandingPage.tsx`
+  - Wrapped content in .stage div for proper viewport management
+  - Fixed scroll wheel functionality (overflow-y: auto)
+
+### Exclusões
+None.
+
+### Bugs fixados
+- Fixed scroll wheel (rolo do mouse) not working on landing page
+  - Issue: overflow-y: auto was missing from .app CSS
+  - Solution: Restored overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+
+### Conformidade aplicada
+- iOS/Android safe area handling via env(safe-area-inset-*)
+- Dynamic viewport height (100dvh) support for address bar
+- Progressive Web App (PWA) meta tags for installability
+- Mobile scroll behavior (overscroll-behavior-y: none)
+```
+
+**Commit message example:**
+```
+docs(changelog): update JCFS progress with landing page iOS/Android changes
+```
+
+## 9. Enforcement
+
+Non-compliant branches, commits, PRs, or undocumented CHANGELOG entries must be corrected before merge.
