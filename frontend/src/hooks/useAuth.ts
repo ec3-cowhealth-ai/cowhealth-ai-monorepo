@@ -22,7 +22,7 @@ export const useLogin = () => {
         onSuccess: async ({ token }) => {
         localStorage.setItem("token", token);
         await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
-        navigate("/");
+        navigate("/home");
         },
     });
 };
