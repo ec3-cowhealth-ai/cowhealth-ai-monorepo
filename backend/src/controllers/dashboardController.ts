@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
-import {
-    getDashboardOverview,
-    getCowsPerStatus,
-    getCowsPerFarm
-} from "../services/dashboardService";
+import { getDashboardOverview, getCowsPerStatus, getCowsPerFarm } from "../services/dashboardService";
 
-export const overview = async (_request: Request, response: Response): Promise<void> => {
-    const data = await getDashboardOverview();
+export const overview = async (request: Request, response: Response): Promise<void> => {
+    const period = request.query.period as "day" | "week" | "month" | undefined;
+    const data   = await getDashboardOverview(period);
     response.json(data);
 };
 

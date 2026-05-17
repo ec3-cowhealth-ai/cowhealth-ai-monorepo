@@ -1,40 +1,41 @@
 import { prisma } from "../lib/prisma";
 
-export const getDashboardOverview = async () => {
+// O parâmetro period não filtra os totais gerais (que são sempre o estado atual),
+// mas está disponível para extensões futuras como filtrar alertas por período.
+type Period = "day" | "week" | "month";
+
+export const getDashboardOverview = async (_period?: Period) => {
     const [
         totalCows,
-        cowsWithCollar,
-        cowsInAlert,
+        healthyCows,
+        unhealthyCows,
         totalFarms,
-        totalCollars,
+        totalActiveCollars,
         unreadNotifications,
     ] = await Promise.all([
         prisma.cow.count(),
-        prisma.cow.count({ where: { collarId: { not: null } } }),
+        prisma.cow.count({ where: { status: "HEALTHY" } }),
         prisma.cow.count({ where: { status: { in: ["ALERT", "HEAT_STRESS", "CALVING"] } } }),
         prisma.farm.count(),
         prisma.collar.count({ where: { status: "ACTIVE" } }),
         prisma.notification.count({ where: { readAt: null } }),
     ]);
 
-    // Fazenda com mais vacas monitoradas (com colar ativo)
     const topFarm = await prisma.farm.findFirst({
         select: {
-        id:   true,
-        name: true,
-        _count: { select: { cows: true } },
+            id:     true,
+            name:   true,
+            _count: { select: { cows: true } },
         },
-        orderBy: {
-        cows: { _count: "desc" },
-        },
+        orderBy: { cows: { _count: "desc" } },
     });
 
     return {
         totalCows,
-        cowsWithCollar,
-        cowsInAlert,
+        healthyCows,
+        unhealthyCows,
         totalFarms,
-        totalActiveCollars: totalCollars,
+        totalActiveCollars,
         unreadNotifications,
         topFarm: topFarm
         ? { id: topFarm.id, name: topFarm.name, cowCount: topFarm._count.cows }
@@ -49,27 +50,24 @@ export const getCowsPerStatus = async () => {
     });
 
     return statusGroups.map((group) => ({
-        status: group.status,
-        count:  group._count.status,
+        label: group.status,
+        value: group._count.status,
     }));
 };
 
 export const getCowsPerFarm = async () => {
     const farms = await prisma.farm.findMany({
         select: {
-        id:   true,
-        name: true,
-        _count: { select: { cows: true } },
+            id:     true,
+            name:   true,
+            _count: { select: { cows: true } },
         },
-        orderBy: {
-        cows: { _count: "desc" },
-        },
-        take: 5, // Top 5 fazendas
+        orderBy: { cows: { _count: "desc" } },
+        take: 5,
     });
 
     return farms.map((farm) => ({
-        id:       farm.id,
-        name:     farm.name,
-        cowCount: farm._count.cows,
+        label: farm.name,
+        value: farm._count.cows,
     }));
 };

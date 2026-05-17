@@ -1991,15 +1991,14 @@ collection:
       sortKey: -1777904165690
       description: ""
     children:
-      - url: "{{ _.api.base_url }}dashboard/overview"
+      - url: "{{ _.api.base_url }}dashboard/overview?period=week"
         name: Overview
         meta:
           id: req_6ca866e86edb46439b8ac6850bbe3f07
           created: 1777911000001
           modified: 1778996671259
           isPrivate: false
-          description: "Cards: total vacas, vacas em atencao, fazenda top, notificacoes
-            nao lidas"
+          description: "Retorna: { totalCows, healthyCows, unhealthyCows, totalFarms, totalActiveCollars, unreadNotifications, topFarm }. Query param opcional: period=day|week|month"
           sortKey: -1777911000001
         method: GET
         headers:
@@ -2024,7 +2023,7 @@ collection:
           created: 1777911000002
           modified: 1778996658778
           isPrivate: false
-          description: "Grafico de barras: vacas por status"
+          description: "Retorna: [{ label: 'HEALTHY', value: 120 }, ...] — formato label/value para o Recharts"
           sortKey: -1777911000002
         method: GET
         headers:
@@ -2049,7 +2048,7 @@ collection:
           created: 1777911000003
           modified: 1778996645322
           isPrivate: false
-          description: "Grafico de barras: top 5 fazendas com mais vacas"
+          description: "Retorna: [{ label: 'Fazenda Aurora', value: 50 }, ...] — top 5 fazendas, formato label/value para o Recharts"
           sortKey: -1777911000003
         method: GET
         headers:
