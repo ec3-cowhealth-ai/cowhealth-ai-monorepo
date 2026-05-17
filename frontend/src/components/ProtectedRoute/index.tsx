@@ -1,12 +1,26 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useMe } from "../../hooks/useAuth";
+import { AppShell } from "../layout";
+import { LoadingSpinner } from "../common";
 
 export const ProtectedRoute = () => {
-    const { data: user, isLoading } = useMe();
+  const { data: user, isLoading } = useMe();
 
-    if (isLoading) return <p>Carregando...</p>;
+  if (isLoading)
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100dvh",
+        }}
+      >
+        <LoadingSpinner />
+      </div>
+    );
 
-    if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
 
-    return <Outlet />;
+  return <AppShell />;
 };
