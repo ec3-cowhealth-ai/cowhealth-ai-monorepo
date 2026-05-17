@@ -2,25 +2,25 @@ type: collection.insomnia.rest/5.0
 schema_version: "5.1"
 name: CowHealth - Backend
 meta:
-  id: wrk_b3814a5d146743ebbbca1e37018f75f7
-  created: 1777913934002
-  modified: 1777913947935
+  id: wrk_e9e6b46e31844fa7be84cd4a96b3ed8f
+  created: 1778992561697
+  modified: 1778992561697
   description: ""
 collection:
   - name: Users
     meta:
-      id: fld_df398bbb6dbf4cb68e0a018325443bdc
+      id: fld_933486c6078c42319b1aad1e2ed37456
       created: 1777858398603
       modified: 1777904175216
       sortKey: -1777904165760
       description: ""
     children:
-      - url: "{{ _[''].base_url }}users/1"
+      - url: "{{ _.api.base_url }}users/1"
         name: Show User
         meta:
-          id: req_110b56d6453e4d34bd78d4c191fe04d6
+          id: req_879d76a99e3e499cbdc3547e400a904a
           created: 1777858438960
-          modified: 1777862053593
+          modified: 1778993673217
           isPrivate: false
           description: ""
           sortKey: -1777860976652
@@ -31,7 +31,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -42,12 +42,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users/"
+      - url: "{{ _.api.base_url }}users/"
         name: List Users
         meta:
-          id: req_719404363c5a4bb1b0b7c215b745b774
+          id: req_d3f693e853944b22bb460853e0d6eb04
           created: 1777858477523
-          modified: 1777861600625
+          modified: 1778993611459
           isPrivate: false
           description: ""
           sortKey: -1777860976702
@@ -58,7 +58,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -69,12 +69,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users"
+      - url: "{{ _.api.base_url }}users"
         name: Create User
         meta:
-          id: req_b2ffb7035be64ac7ae5723b798aa4bf4
+          id: req_2d8fa086dd7b45d28aa19e520d7377d1
           created: 1777860976602
-          modified: 1777861846084
+          modified: 1778993691061
           isPrivate: false
           description: ""
           sortKey: -1777860976602
@@ -96,7 +96,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -107,12 +107,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users/2"
+      - url: "{{ _.api.base_url }}users/2"
         name: Update User
         meta:
-          id: req_75f49c1c0d234afa847c7d4a1f2bc585
+          id: req_1b22bb1555264252a51923500ee03a0f
           created: 1777861006480
-          modified: 1777862162274
+          modified: 1778993833477
           isPrivate: false
           description: ""
           sortKey: -1777860976502
@@ -131,7 +131,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -142,12 +142,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users/2"
+      - url: "{{ _.api.base_url }}users/2"
         name: Delete User
         meta:
-          id: req_1cd2bc3d737449a8ad18fdda7801bc59
+          id: req_5f76536326af4b47839fdec983ef3b86
           created: 1777861067889
-          modified: 1777862247975
+          modified: 1778993637349
           isPrivate: false
           description: ""
           sortKey: -1777860976402
@@ -158,7 +158,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -169,12 +169,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users/2/toggle-active"
+      - url: "{{ _.api.base_url }}users/2/toggle-active"
         name: Toggle User Active
         meta:
-          id: req_c7250ea6cd8444d28840760c4fa70bb0
+          id: req_6938a14a396b441698b4d8194586cbc9
           created: 1777861096930
-          modified: 1777862435992
+          modified: 1778993847713
           isPrivate: false
           description: ""
           sortKey: -1777860976302
@@ -185,7 +185,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -196,12 +196,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users/2/roles"
+      - url: "{{ _.api.base_url }}users/2/roles"
         name: Add Role to User
         meta:
-          id: req_e67a05b539df413498d328ce7f842827
+          id: req_58d5de839d6c490d91da9d0abf157002
           created: 1777861142233
-          modified: 1777862637226
+          modified: 1778994218132
           isPrivate: false
           description: ""
           sortKey: -1777860976202
@@ -210,7 +210,7 @@ collection:
           mimeType: application/json
           text: |-
             {
-              "roleId": 2
+              "roleId": 3
             }
         headers:
           - name: Content-Type
@@ -220,7 +220,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -231,12 +231,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}users/2/roles/2"
+      - url: "{{ _.api.base_url }}users/2/roles/2"
         name: Remove Role from User
         meta:
-          id: req_61e81c5cf1d94a4aa5593aa9fa1a7241
+          id: req_7a69c35298de4920af1cd34e033fde29
           created: 1777861196048
-          modified: 1777862712921
+          modified: 1778995121696
           isPrivate: false
           description: ""
           sortKey: -1777860976102
@@ -260,18 +260,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_dc36365463b4493b8a0b5547c805fd6c
+          id: fld_c5481857b8fc4abb8f7642e60a3184fe
           created: 1777866025347
           modified: 1777914495219
           sortKey: -1777860976002
           description: ""
         children:
-          - url: "{{ _[''].base_url }}users"
+          - url: "{{ _.api.base_url }}users"
             name: Create User - Duplicate Email
             meta:
-              id: req_18869ed433e3458fb5927ab806ed42b7
+              id: req_0287ad5964614620bd448f99a8cbeba5
               created: 1777866060091
-              modified: 1777866090959
+              modified: 1778994063104
               isPrivate: false
               description: ""
               sortKey: -1777866064093
@@ -293,8 +293,81 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}users"
+            name: Create User - No Token (401)
+            meta:
+              id: req_788525e27bb54a908acfe336543721a3
+              created: 1777920000001
+              modified: 1778994072311
+              isPrivate: false
+              description: Sem token deve retornar 401. Cadastro de usuarios requer
+                autenticacao — use POST /users com token de Admin ou SuperAdmin.
+              sortKey: -1777866064001
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Teste Sem Token",
+                  "email": "semtoken@teste.com",
+                  "password": "senha123",
+                  "profile": "VIEWER"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}users"
+            name: Create User - Insufficient Permission (403)
+            meta:
+              id: req_5e23bf07f2cf4eb0b38b143a8eeff3b6
+              created: 1777920000002
+              modified: 1778995059737
+              isPrivate: false
+              description: Token de Veterinario ou Produtor deve retornar 403. Somente
+                Administrador e SuperAdmin possuem a permissao 'Create User'.
+                Lembre-se de aplicar o token de veterinário/produtor para testar
+                este erro.
+              sortKey: -1777866064000
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Teste Sem Permissao",
+                  "email": "sempermissao@teste.com",
+                  "password": "senha123",
+                  "profile": "VIEWER"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.4.0
+                disabled: false
+              - name: Authorization
+                value: Bearer {{ _.api.token }}
                 disabled: false
             settings:
               renderRequestBody: true
@@ -306,18 +379,18 @@ collection:
               rebuildPath: true
   - name: Auth
     meta:
-      id: fld_a3a814539bd149588b225ba62cbc498f
+      id: fld_3a6d07404079434591b74d9adf25e123
       created: 1777858411874
       modified: 1777904173181
       sortKey: -1777904165810
       description: ""
     children:
-      - url: "{{ _[''].base_url }}auth/me"
+      - url: "{{ _.api.base_url }}auth/me"
         name: Me
         meta:
-          id: req_02d94aeb96404e75a8efc421689c460e
+          id: req_e2bd6cc555754cbbbd8d79e8669f60c3
           created: 1777833305597
-          modified: 1777860942774
+          modified: 1778993112282
           isPrivate: false
           description: ""
           sortKey: -1777858416016
@@ -328,7 +401,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -339,12 +412,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}auth/login"
+      - url: "{{ _.api.base_url }}auth/login"
         name: Login
         meta:
-          id: req_79c9711efba945febbfa570afa643cb7
+          id: req_98bc3eed4c9c4b4fa7c0ff72da225f74
           created: 1777833527723
-          modified: 1777860937166
+          modified: 1778995094839
           isPrivate: false
           description: ""
           sortKey: -1777858416116
@@ -353,8 +426,8 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"email": "{{ _[''].api_user_email }}",
-            	"password": "{{ _[''].apit_password }}"
+            	"email": "{{ _.api.user_email }}",
+            	"password": "{{ _.api.user_password }}"
             }
         headers:
           - name: Content-Type
@@ -373,18 +446,18 @@ collection:
           rebuildPath: true
   - name: Roles
     meta:
-      id: fld_2c960fc4ddf54360bb1b19190a172799
+      id: fld_22752ca1331c43baacc17877cfd7747d
       created: 1777862856877
       modified: 1777904177514
       sortKey: -1777904165735
       description: ""
     children:
-      - url: "{{ _[''].base_url }}roles/5/permissions/5"
+      - url: "{{ _.api.base_url }}roles/5/permissions/5"
         name: Remove Permission from Role
         meta:
-          id: req_48123e7b896f4916b80c788e918411ef
+          id: req_7cad8e332f274447b21093e195e04063
           created: 1777862867167
-          modified: 1777863604576
+          modified: 1778995265837
           isPrivate: false
           description: ""
           sortKey: -1777862867167
@@ -395,7 +468,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -406,12 +479,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}roles/5/permissions"
+      - url: "{{ _.api.base_url }}roles/5/permissions"
         name: Add Permission to Role
         meta:
-          id: req_742dd5b1a24d4395995249decde87cee
+          id: req_3bd8cd33388d484b842ccf755337e494
           created: 1777862877362
-          modified: 1777863502085
+          modified: 1778995244372
           isPrivate: false
           description: ""
           sortKey: -1777862877362
@@ -430,7 +503,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -441,12 +514,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}roles/5"
+      - url: "{{ _.api.base_url }}roles/5"
         name: Delete Role
         meta:
-          id: req_128bc73719874e9ca8e14a1c782f757b
+          id: req_957e293b897345e1a5ede644398e7a9e
           created: 1777862878878
-          modified: 1777863369591
+          modified: 1778995234531
           isPrivate: false
           description: ""
           sortKey: -1777862878878
@@ -457,7 +530,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -468,12 +541,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}roles/5"
+      - url: "{{ _.api.base_url }}roles/5"
         name: Update Role
         meta:
-          id: req_931ca1669eab4f9bbd13a81c7241ea43
+          id: req_239fd9e988b84d3eb14cb642bae9bbf1
           created: 1777862880330
-          modified: 1777863318759
+          modified: 1778995221995
           isPrivate: false
           description: ""
           sortKey: -1777862880330
@@ -493,7 +566,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -504,12 +577,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}roles"
+      - url: "{{ _.api.base_url }}roles"
         name: Create Role
         meta:
-          id: req_7652b89332704bf58f40f7b4b00df118
+          id: req_8bf7dd05bbd5432480c7b1006f0ff671
           created: 1777862881615
-          modified: 1777863244357
+          modified: 1778995194465
           isPrivate: false
           description: ""
           sortKey: -1777862881615
@@ -529,7 +602,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -540,12 +613,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}roles/4"
+      - url: "{{ _.api.base_url }}roles/4"
         name: Show Role
         meta:
-          id: req_996ed1916d6845558e359d5b6b39f21f
+          id: req_5e226487b33141cd9607d1cf17ba23ba
           created: 1777862882890
-          modified: 1777863182185
+          modified: 1778995182542
           isPrivate: false
           description: ""
           sortKey: -1777862882890
@@ -556,7 +629,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -567,12 +640,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}roles"
+      - url: "{{ _.api.base_url }}roles"
         name: List Roles
         meta:
-          id: req_423cecdcb0f24652b79aad3473e85bd2
+          id: req_483f1c9b54824bf09f830af222ced548
           created: 1777862884253
-          modified: 1777863069858
+          modified: 1778995161953
           isPrivate: false
           description: ""
           sortKey: -1777862884253
@@ -583,7 +656,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -596,18 +669,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_f555605837a04beb846a5dde9dd8d57e
+          id: fld_2f2f3bcc385c4896b47d30f8b6c041b4
           created: 1777865754612
           modified: 1777914491253
           sortKey: -1777862867067
           description: ""
         children:
-          - url: "{{ _[''].base_url }}roles/1"
+          - url: "{{ _.api.base_url }}roles/1"
             name: Delete Role - with Users
             meta:
-              id: req_12bc40e0f8b04e0697d5babd8ce01a10
+              id: req_e44c80249d4d407eac516a9e9d5ca2eb
               created: 1777865810560
-              modified: 1777866112886
+              modified: 1778995277254
               isPrivate: false
               description: ""
               sortKey: -1777865781350
@@ -618,7 +691,7 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
                 disabled: false
             settings:
@@ -631,21 +704,21 @@ collection:
               rebuildPath: true
   - name: Permissions
     meta:
-      id: fld_c9246ef8ee284024aef616f18e8e0e81
+      id: fld_84bd67605fbb4fcbb19c75b016940b4c
       created: 1777863766986
-      modified: 1777904179358
+      modified: 1778995382312
       sortKey: -1777904165722.5
       description: ""
     children:
-      - url: "{{ _[''].base_url }}permissions/38"
+      - url: "{{ _.api.base_url }}permissions/38"
         name: Delete Permission
         meta:
-          id: req_c15fe8ac2d014b0cbc2d2e93a1c1f0c6
+          id: req_abe05152be3941cba94b834b141f6ecc
           created: 1777863776235
-          modified: 1777864219774
+          modified: 1778995365297
           isPrivate: false
           description: ""
-          sortKey: -1777863776235
+          sortKey: -1777863777620.5
         method: DELETE
         headers:
           - name: User-Agent
@@ -653,7 +726,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -664,12 +737,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permissions/38"
+      - url: "{{ _.api.base_url }}permissions/38"
         name: Update Permission
         meta:
-          id: req_a510c94b250e443dab9aa4b2ffa51496
+          id: req_61b6d9c6ee5447fdb11ba0a07c445016
           created: 1777863779006
-          modified: 1777864176698
+          modified: 1778995345771
           isPrivate: false
           description: ""
           sortKey: -1777863779006
@@ -689,7 +762,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -700,12 +773,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permissions"
+      - url: "{{ _.api.base_url }}permissions"
         name: Create Permission
         meta:
-          id: req_83adf060e4294c799baa0e84fee6fa1b
+          id: req_478da59ff8f54718a1556b9a93783ac8
           created: 1777863780706
-          modified: 1777864070799
+          modified: 1778995329949
           isPrivate: false
           description: ""
           sortKey: -1777863780706
@@ -725,7 +798,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -736,12 +809,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permissions/1"
+      - url: "{{ _.api.base_url }}permissions/1"
         name: Show Permission
         meta:
-          id: req_810f966e1b7949ea8698d487149bedb9
+          id: req_ddb15569471e410994d54cd2fdd6c85e
           created: 1777863782010
-          modified: 1777863959410
+          modified: 1778995308363
           isPrivate: false
           description: ""
           sortKey: -1777863782010
@@ -752,7 +825,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -763,12 +836,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permissions"
+      - url: "{{ _.api.base_url }}permissions"
         name: List Permissions
         meta:
-          id: req_47dedae34dfe4752988b16de3ec1d57d
+          id: req_3440c8bebd3647f29c95ef04517177fd
           created: 1777863783758
-          modified: 1777863880542
+          modified: 1778995296034
           isPrivate: false
           description: ""
           sortKey: -1777863783758
@@ -779,7 +852,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -792,18 +865,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_c5c503bc67f247d299e568400ab8873e
+          id: fld_11fcea14185c44ef8ae2c9f9ca73d43a
           created: 1777865944222
           modified: 1777914485416
           sortKey: -1777863776135
           description: ""
         children:
-          - url: "{{ _[''].base_url }}permissions/14"
+          - url: "{{ _.api.base_url }}permissions/14"
             name: Delete Permission - Linked
             meta:
-              id: req_e38d61a9bfdd4f748aeeb59005dbb154
+              id: req_e5dd09850e7d4a0e9b88433ca653c66d
               created: 1777865955934
-              modified: 1777866123077
+              modified: 1778995376762
               isPrivate: false
               description: ""
               sortKey: -1777865962718
@@ -814,7 +887,7 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
                 disabled: false
             settings:
@@ -827,18 +900,18 @@ collection:
               rebuildPath: true
   - name: Permissions Group
     meta:
-      id: fld_34d026f6ab2e47ababef29e5b5c61da4
+      id: fld_6d8b158b03d14813bb1af6a38c28f2e9
       created: 1777864289721
       modified: 1777904181923
       sortKey: -1777904165716.25
       description: ""
     children:
-      - url: "{{ _[''].base_url }}permission-groups/4"
+      - url: "{{ _.api.base_url }}permission-groups/4"
         name: Delete Permission Group
         meta:
-          id: req_462ce80aaab8416087198b0bc36e2547
+          id: req_c17de178d1b04e808bc8aebe6a47b598
           created: 1777864311746
-          modified: 1777865282089
+          modified: 1778995443961
           isPrivate: false
           description: ""
           sortKey: -1777864311746
@@ -849,7 +922,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -860,12 +933,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/4"
+      - url: "{{ _.api.base_url }}permission-groups/4"
         name: Update Permission Group
         meta:
-          id: req_e7346ff46db440339d9a6d1be0822a23
+          id: req_fd94ba4d892d4d80b0ebc0fc6b27a746
           created: 1777864313099
-          modified: 1777865232009
+          modified: 1778995430948
           isPrivate: false
           description: ""
           sortKey: -1777864313099
@@ -885,7 +958,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -896,12 +969,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups"
+      - url: "{{ _.api.base_url }}permission-groups"
         name: Create Permission Group
         meta:
-          id: req_03bebf88463147bc919408817cbc9836
+          id: req_c3b3a98e7a7a4dce81b233451f83be21
           created: 1777864314733
-          modified: 1777865082373
+          modified: 1778995416369
           isPrivate: false
           description: ""
           sortKey: -1777864314733
@@ -921,7 +994,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -932,12 +1005,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/1"
+      - url: "{{ _.api.base_url }}permission-groups/1"
         name: Show Permission Group
         meta:
-          id: req_060b68ef5bca4031961b2a0d5f99bfe5
+          id: req_c387ecbb616e4827863e4ef3f493c17a
           created: 1777864316315
-          modified: 1777864608665
+          modified: 1778995404967
           isPrivate: false
           description: ""
           sortKey: -1777864316315
@@ -948,7 +1021,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -959,12 +1032,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups"
+      - url: "{{ _.api.base_url }}permission-groups"
         name: List Permission Groups
         meta:
-          id: req_ab45d5a170194e1f96fb8c3e22bd8ba3
+          id: req_bcac4ccc2de9436592f2c264ec6dcb31
           created: 1777864317982
-          modified: 1777864544233
+          modified: 1778995393020
           isPrivate: false
           description: ""
           sortKey: -1777864317982
@@ -975,7 +1048,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -988,18 +1061,18 @@ collection:
           rebuildPath: true
   - name: Security
     meta:
-      id: fld_d1875cb6be4844d98e1b5443d987a851
+      id: fld_958c11271ed14cdf9b9485217836d27e
       created: 1777866678964
       modified: 1777866678964
       sortKey: -1777866678964
       description: ""
     children:
-      - url: "{{ _[''].base_url }}users/"
+      - url: "{{ _.api.base_url }}users/"
         name: Request without Token
         meta:
-          id: req_c7e838233f9e48e8b1ea282e65d8d604
+          id: req_750045996dc94c6f9d82c1916fcfb15c
           created: 1777866708181
-          modified: 1777866743795
+          modified: 1778996823460
           isPrivate: false
           description: ""
           sortKey: -1777866689791
@@ -1019,18 +1092,18 @@ collection:
           rebuildPath: true
   - name: Farms
     meta:
-      id: fld_6806ee9e42f94d339f8ce39cbeb65a3d
+      id: fld_25e2e42c4d7845429f2c6f74aee8fdc4
       created: 1777898869561
       modified: 1777904187111
       sortKey: -1777904165713.125
       description: ""
     children:
-      - url: "{{ _[''].base_url }}farms/4"
+      - url: "{{ _.api.base_url }}farms/4"
         name: Delete Farm
         meta:
-          id: req_b820ab8b8ec54b38a2c10298ab31e546
+          id: req_dfb140f1aca140868e9b82a1ce04b530
           created: 1777903469884
-          modified: 1777904128753
+          modified: 1778995843434
           isPrivate: false
           description: ""
           sortKey: -1777903469884
@@ -1041,7 +1114,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1052,12 +1125,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}farms/4"
+      - url: "{{ _.api.base_url }}farms/4"
         name: Update Farm
         meta:
-          id: req_4beb7e76a15448f49e360996031f1ce3
+          id: req_091c8ed0dd674b10bfa9bb2ad6ed72f9
           created: 1777903472390
-          modified: 1777903937940
+          modified: 1778995833019
           isPrivate: false
           description: ""
           sortKey: -1777903472390
@@ -1077,7 +1150,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1088,12 +1161,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}farms"
+      - url: "{{ _.api.base_url }}farms"
         name: Create Farm
         meta:
-          id: req_6d887b027e7a4c419d3da7a22489e338
+          id: req_5da976f693cd4133bf564bfd81cbceeb
           created: 1777903474160
-          modified: 1777903788512
+          modified: 1778995824098
           isPrivate: false
           description: ""
           sortKey: -1777903474160
@@ -1118,7 +1191,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1129,12 +1202,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}farms/1"
+      - url: "{{ _.api.base_url }}farms/1"
         name: Show Farm
         meta:
-          id: req_62842eec0ac84c3382205882d00534dc
+          id: req_a18ce617f09e48ea896be6e4b0ca9630
           created: 1777903475402
-          modified: 1777903748279
+          modified: 1778995812561
           isPrivate: false
           description: ""
           sortKey: -1777903475402
@@ -1145,7 +1218,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1156,12 +1229,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}farms"
+      - url: "{{ _.api.base_url }}farms"
         name: List Farms
         meta:
-          id: req_385d83dd800b44ebbb935f2c9d4cdb1e
+          id: req_c5d1643174ba41e48bdf07e4f5dfbc13
           created: 1777903550194
-          modified: 1777903678137
+          modified: 1778995797238
           isPrivate: false
           description: ""
           sortKey: -1777903550194
@@ -1172,7 +1245,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1185,18 +1258,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_b445f9cf94794f3d9463baa2086e5f6f
+          id: fld_291a3d6604184f56b2b53d030b64551b
           created: 1777903827940
           modified: 1777914511591
           sortKey: -1777903469784
           description: ""
         children:
-          - url: "{{ _[''].base_url }}farms"
+          - url: "{{ _.api.base_url }}farms"
             name: Create Farm - Duplicate CNPJ
             meta:
-              id: req_a5bcfd52344a4a7ea47fd7cd542eda38
+              id: req_93a0122c54704d6d818592ee562f9315
               created: 1777903838985
-              modified: 1777904080292
+              modified: 1778995852828
               isPrivate: false
               description: ""
               sortKey: -1777903845628
@@ -1221,7 +1294,7 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
                 disabled: false
             settings:
@@ -1232,12 +1305,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _[''].base_url }}farms/1"
+          - url: "{{ _.api.base_url }}farms/1"
             name: Delete Farm - with Cows
             meta:
-              id: req_b328cf5e529f421eb04b694f7a67c7a8
+              id: req_b90fc86fd8ae418b83c6b79eaa45e45d
               created: 1777904073794
-              modified: 1777904119035
+              modified: 1778995906579
               isPrivate: false
               description: ""
               sortKey: -1777903845528
@@ -1248,7 +1321,7 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
                 disabled: false
             settings:
@@ -1261,18 +1334,18 @@ collection:
               rebuildPath: true
   - name: Collars
     meta:
-      id: fld_ee564a0e69c94745a0c7bfef3aad8225
+      id: fld_ac16b9cce3a04549acf8bf55a0e5b0a3
       created: 1777904165710
       modified: 1777904227953
       sortKey: -1777904165710
       description: ""
     children:
-      - url: "{{ _[''].base_url }}collars/6"
+      - url: "{{ _.api.base_url }}collars/6"
         name: Delete Collar - Unlinked
         meta:
-          id: req_f2124c137a884995b78d1327adbb0e6a
+          id: req_f6e7c68ffc674cdc81a24785ba5f858a
           created: 1777904191050
-          modified: 1777905204395
+          modified: 1778995972933
           isPrivate: false
           description: ""
           sortKey: -1777904191050
@@ -1283,7 +1356,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1294,12 +1367,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}collars/6"
+      - url: "{{ _.api.base_url }}collars/6"
         name: Update Collar
         meta:
-          id: req_f81831f80d8340318063208c221dff99
+          id: req_5d831863752a40eea9be59cabc3711b0
           created: 1777904195141
-          modified: 1777904545196
+          modified: 1778995959565
           isPrivate: false
           description: ""
           sortKey: -1777904195141
@@ -1319,7 +1392,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1330,12 +1403,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}collars"
+      - url: "{{ _.api.base_url }}collars"
         name: List Collars
         meta:
-          id: req_3fb3123c6c774c638c7f8f46e41a78f0
+          id: req_83aeded9e8744395bd0beae2aa6d859b
           created: 1777904198898
-          modified: 1777904298806
+          modified: 1778995915503
           isPrivate: false
           description: ""
           sortKey: -1777904229072
@@ -1346,7 +1419,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1357,12 +1430,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}collars/"
+      - url: "{{ _.api.base_url }}collars/"
         name: Create Collar
         meta:
-          id: req_1bc617eb0ea44893b58860db83bd04bb
+          id: req_6616c40b90e7406f9d412c3e33c437fd
           created: 1777904228972
-          modified: 1777904462834
+          modified: 1778995947502
           isPrivate: false
           description: ""
           sortKey: -1777904228972
@@ -1383,7 +1456,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1394,12 +1467,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}collars/1"
+      - url: "{{ _.api.base_url }}collars/1"
         name: Show Collar
         meta:
-          id: req_2b3553f42f1047d6a83b6c090cc031f7
+          id: req_e881befd30534e3cbc0f322a3b0cec1f
           created: 1777904317934
-          modified: 1777904323127
+          modified: 1778995927815
           isPrivate: false
           description: ""
           sortKey: -1777904229022
@@ -1410,7 +1483,7 @@ collection:
             description: ""
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             description: ""
             disabled: false
         settings:
@@ -1423,18 +1496,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_47852aa7844c4c4aab69d57ee996fea0
+          id: fld_68b591aeb05f43e0b08ca08f9653f87f
           created: 1777904629452
           modified: 1777914529730
           sortKey: -1777904190950
           description: ""
         children:
-          - url: "{{ _[''].base_url }}collars/"
+          - url: "{{ _.api.base_url }}collars/"
             name: Create Collar - Duplicate Name
             meta:
-              id: req_26e673fff5d14c4bb48264a2a9fd319f
+              id: req_fb340f425b5a41faad13bd523564e28f
               created: 1777904721257
-              modified: 1777904748606
+              modified: 1778995983081
               isPrivate: false
               description: ""
               sortKey: -1777904637748
@@ -1453,7 +1526,7 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
                 disabled: false
             settings:
@@ -1464,12 +1537,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _[''].base_url }}collars/1"
+          - url: "{{ _.api.base_url }}collars/4"
             name: Delete Collar - Linked to Cow
             meta:
-              id: req_1ac96ead4adb429ba6879b157160f718
+              id: req_90565ab289334bdfa0f198a1dfdd9afd
               created: 1777904836043
-              modified: 1777904836043
+              modified: 1778996072985
               isPrivate: false
               description: ""
               sortKey: -1777904433360
@@ -1480,7 +1553,7 @@ collection:
                 description: ""
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 description: ""
                 disabled: false
             settings:
@@ -1493,18 +1566,18 @@ collection:
               rebuildPath: true
   - name: Cows
     meta:
-      id: fld_77e808a7f666489eaf1e07e0acbd5da9
+      id: fld_d122ef6ac0fd4da7ad24fa98dc998357
       created: 1777910000000
       modified: 1777910000000
       sortKey: -1777904165700
       description: ""
     children:
-      - url: "{{ _[''].base_url }}cows"
+      - url: "{{ _.api.base_url }}cows"
         name: List Cows
         meta:
-          id: req_bc2ba9e045ca413fb8007788b9129b96
+          id: req_cb4f868f9a8d4ae78aea26bb3475d67e
           created: 1777910000001
-          modified: 1777914632200
+          modified: 1778996124026
           isPrivate: false
           description: ""
           sortKey: -1777910000112
@@ -1514,7 +1587,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1524,12 +1597,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/1"
+      - url: "{{ _.api.base_url }}cows/1"
         name: Show Cow
         meta:
-          id: req_3e9c1467a88645cfa25bba2c41c4fb1c
+          id: req_2063a2b040f141b9921be0363230a557
           created: 1777910000002
-          modified: 1777914634655
+          modified: 1778996118799
           isPrivate: false
           description: ""
           sortKey: -1777910000062
@@ -1539,7 +1612,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1549,12 +1622,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows"
+      - url: "{{ _.api.base_url }}cows"
         name: Create Cow
         meta:
-          id: req_fbf24f19333241aba15fedd75dffa8d4
+          id: req_c8d4081850214c2db4776e509364269f
           created: 1777910000003
-          modified: 1777914637301
+          modified: 1778996182769
           isPrivate: false
           description: ""
           sortKey: -1777910000037
@@ -1569,7 +1642,7 @@ collection:
               "birthDate": "2021-03-15",
               "weight": 450,
               "farmId": 1,
-              "collarId": 4
+              "collarId": 1
             }
         headers:
           - name: Content-Type
@@ -1578,7 +1651,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1588,12 +1661,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/1"
+      - url: "{{ _.api.base_url }}cows/1"
         name: Update Cow
         meta:
-          id: req_000715c10aa9467488628124827497cd
+          id: req_f8007ef049f645eb98d3326c6d31f80a
           created: 1777910000004
-          modified: 1777914639851
+          modified: 1778996154881
           isPrivate: false
           description: ""
           sortKey: -1777910000024.5
@@ -1613,7 +1686,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1623,12 +1696,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/1"
+      - url: "{{ _.api.base_url }}cows/1"
         name: Delete Cow
         meta:
-          id: req_eaae316b1dc1402baf112c0b19ba29e1
+          id: req_60cfd45a49f247098c57c31564737dfc
           created: 1777910000005
-          modified: 1777914643823
+          modified: 1778996208852
           isPrivate: false
           description: ""
           sortKey: -1777910000018.25
@@ -1638,7 +1711,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1648,12 +1721,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/photos"
+      - url: "{{ _.api.base_url }}cows/2/photos"
         name: Upload Photo
         meta:
-          id: req_a23d7e61e0c34f3392ed6e2fb50c680e
+          id: req_68695878a5bd4b79a5c06c6417e24e7f
           created: 1777910000006
-          modified: 1777915135855
+          modified: 1778996335246
           isPrivate: false
           description: Body > Multipart Form > campo 'photo' com arquivo de imagem
           sortKey: -1777910000015.125
@@ -1664,14 +1737,14 @@ collection:
             - name: photo
               value: ""
               disabled: false
-              fileName: /home/renato/Pictures/mimosa.jpg
+              fileName: /home/renato/Pictures/cow_female_black_white.jpg
               type: file
         headers:
           - name: User-Agent
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1681,12 +1754,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/photos/cow-1777915150710-903893219.jpg"
+      - url: "{{ _.api.base_url }}cows/2/photos/cow-1778996341102-260061521.jpg"
         name: Delete Photo
         meta:
-          id: req_e5ddc85f12284610bf0959e77b513b0c
+          id: req_6f297eeb6ffa40ec9fa06d5cb935534e
           created: 1777910000007
-          modified: 1777915195462
+          modified: 1778996413572
           isPrivate: false
           description: Substituir pelo filename retornado no upload
           sortKey: -1777910000013.5625
@@ -1696,7 +1769,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1706,12 +1779,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/heart-rate"
+      - url: "{{ _.api.base_url }}cows/2/heart-rate"
         name: List Heart Rate
         meta:
-          id: req_8eda18556dda4a8d856c8409d3383116
+          id: req_a6e941a568b149ecb6ecaaf4b33d6583
           created: 1777910000008
-          modified: 1777914837176
+          modified: 1778996441211
           isPrivate: false
           description: "Query params opcionais: startDate, endDate, limit"
           sortKey: -1777910000012.7812
@@ -1721,7 +1794,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1731,12 +1804,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/temperature"
+      - url: "{{ _.api.base_url }}cows/2/temperature"
         name: List Temperature
         meta:
-          id: req_c036b895396b4a1abf5d526cbedddbe0
+          id: req_395ea1c42c804f5da18d7032779c95cf
           created: 1777910000009
-          modified: 1777914843651
+          modified: 1778996452163
           isPrivate: false
           description: "Query params opcionais: startDate, endDate, limit"
           sortKey: -1777910000012.3906
@@ -1746,7 +1819,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1756,12 +1829,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/accelerometer"
+      - url: "{{ _.api.base_url }}cows/2/accelerometer"
         name: List Accelerometer
         meta:
-          id: req_191c36f6bc6d4fb681b4c3f333997fbc
+          id: req_b8b349468cde40238a4c433535c2ce06
           created: 1777910000010
-          modified: 1777914849580
+          modified: 1778996466332
           isPrivate: false
           description: "Query params opcionais: startDate, endDate, limit"
           sortKey: -1777910000012.1953
@@ -1771,7 +1844,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1781,12 +1854,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/heart-rate/daily"
+      - url: "{{ _.api.base_url }}cows/2/heart-rate/daily"
         name: List Heart Rate Daily
         meta:
-          id: req_9d2181a0423b4ec89286cc981d64ba34
+          id: req_88454f44040e4f758d19739858e705ce
           created: 1777910000011
-          modified: 1777914856135
+          modified: 1778996480868
           isPrivate: false
           description: Media diaria ultimos 7 dias para graficos
           sortKey: -1777910000012.0977
@@ -1796,7 +1869,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1806,12 +1879,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}cows/2/temperature/daily"
+      - url: "{{ _.api.base_url }}cows/2/temperature/daily"
         name: List Temperature Daily
         meta:
-          id: req_f7a8362e4b71455ca12966197e9ce815
+          id: req_731640e8938549be9f150cfb633c229c
           created: 1777910000012
-          modified: 1777914861560
+          modified: 1778996493730
           isPrivate: false
           description: Media diaria ultimos 7 dias para graficos
           sortKey: -1777910000012
@@ -1821,7 +1894,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1833,18 +1906,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_a2b0de60ef404fd796c378050c1e0907
+          id: fld_51791b66508d4f1d951f20add109df92
           created: 1777910000099
           modified: 1777914541022
           sortKey: -1777909999901
           description: ""
         children:
-          - url: "{{ _[''].base_url }}cows"
+          - url: "{{ _.api.base_url }}cows"
             name: Create Cow - Duplicate Tag
             meta:
-              id: req_76ee4255d0684c4fbf4f058ac6ce4f30
+              id: req_9dea6cfe830d43158c197667be8f7dd7
               created: 1777910000013
-              modified: 1777910000013
+              modified: 1778996626906
               isPrivate: false
               description: ""
               sortKey: -1777910000013
@@ -1853,7 +1926,7 @@ collection:
               mimeType: application/json
               text: |-
                 {
-                  "tag": "BR-001",
+                  "tag": "BR-002",
                   "name": "Duplicada",
                   "farmId": 1
                 }
@@ -1864,7 +1937,7 @@ collection:
                 value: insomnia/12.4.0
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 disabled: false
             settings:
               renderRequestBody: true
@@ -1874,12 +1947,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _[''].base_url }}cows"
+          - url: "{{ _.api.base_url }}cows"
             name: Create Cow - Collar Already Linked
             meta:
-              id: req_2261f41f53cc421bbe6ead5bcd51a42d
+              id: req_d9e69eebc02549bf907f599d215469d1
               created: 1777910000014
-              modified: 1777910000014
+              modified: 1778996518985
               isPrivate: false
               description: ""
               sortKey: -1777910000014
@@ -1900,7 +1973,7 @@ collection:
                 value: insomnia/12.4.0
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 disabled: false
             settings:
               renderRequestBody: true
@@ -1912,18 +1985,18 @@ collection:
               rebuildPath: true
   - name: Dashboard
     meta:
-      id: fld_59066c01d1b241369e431e5870d9fef1
+      id: fld_afbd2be6c04d49e2bb1501a61bc7feac
       created: 1777911000000
       modified: 1777911000000
       sortKey: -1777904165690
       description: ""
     children:
-      - url: "{{ _[''].base_url }}dashboard/overview"
+      - url: "{{ _.api.base_url }}dashboard/overview"
         name: Overview
         meta:
-          id: req_c0fb0bcbbe1541078df9cd2ed711dbd7
+          id: req_6ca866e86edb46439b8ac6850bbe3f07
           created: 1777911000001
-          modified: 1777911000001
+          modified: 1778996671259
           isPrivate: false
           description: "Cards: total vacas, vacas em atencao, fazenda top, notificacoes
             nao lidas"
@@ -1934,7 +2007,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1944,12 +2017,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}dashboard/cows-per-status"
+      - url: "{{ _.api.base_url }}dashboard/cows-per-status"
         name: Cows Per Status
         meta:
-          id: req_31d9eb8407c54a0788e92c8836766da8
+          id: req_2b9abb285b824a38b05c23aaa4116e7b
           created: 1777911000002
-          modified: 1777911000002
+          modified: 1778996658778
           isPrivate: false
           description: "Grafico de barras: vacas por status"
           sortKey: -1777911000002
@@ -1959,7 +2032,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1969,12 +2042,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}dashboard/cows-per-farm"
+      - url: "{{ _.api.base_url }}dashboard/cows-per-farm"
         name: Cows Per Farm
         meta:
-          id: req_6c4af401cd044433927ce5067a0cb5a4
+          id: req_4bfaffdcfbd2410abaf025abbe43b985
           created: 1777911000003
-          modified: 1777911000003
+          modified: 1778996645322
           isPrivate: false
           description: "Grafico de barras: top 5 fazendas com mais vacas"
           sortKey: -1777911000003
@@ -1984,7 +2057,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -1996,28 +2069,28 @@ collection:
           rebuildPath: true
   - name: Notifications
     meta:
-      id: fld_11e3e180f984468ebad04258b828920e
+      id: fld_ac20feecbddc435fab5b10f177984b9b
       created: 1777912000000
       modified: 1777912000000
       sortKey: -1777904165680
       description: ""
     children:
-      - url: "{{ _[''].base_url }}notifications"
+      - url: "{{ _.api.base_url }}notifications"
         name: List Notifications
         meta:
-          id: req_750114fa71bc49afa47bd4984e194fbf
+          id: req_8e01459a9e3d4c819f924a29270183b2
           created: 1777912000001
-          modified: 1777912000001
+          modified: 1778996804204
           isPrivate: false
           description: Lista notificacoes do usuario autenticado
-          sortKey: -1777912000001
+          sortKey: -1777912000403
         method: GET
         headers:
           - name: User-Agent
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2027,22 +2100,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}notifications/1/read"
+      - url: "{{ _.api.base_url }}notifications/1/read"
         name: Mark as Read
         meta:
-          id: req_d56d6e79d9534b9d9d5feb44f0baa263
+          id: req_1e31fadf0071483eba039f0056b95d1f
           created: 1777912000002
-          modified: 1777912000002
+          modified: 1778996792801
           isPrivate: false
           description: ""
-          sortKey: -1777912000002
+          sortKey: -1777912000303
         method: PATCH
         headers:
           - name: User-Agent
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2052,22 +2125,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}notifications/read-all"
+      - url: "{{ _.api.base_url }}notifications/read-all"
         name: Mark All as Read
         meta:
-          id: req_6e9cf71894664b7dafddf1ccbe675b80
+          id: req_6e7d411e7c7149878a67dfc11a1736a9
           created: 1777912000003
-          modified: 1777912000003
+          modified: 1778996727975
           isPrivate: false
           description: ""
-          sortKey: -1777912000003
+          sortKey: -1777912000203
         method: PATCH
         headers:
           - name: User-Agent
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2079,18 +2152,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_b05ee01e58314a0fb5cd170d29dc8a2a
+          id: fld_07b535af4cd74c6ab5dc48d754de77a5
           created: 1777912000099
           modified: 1777914553875
           sortKey: -1777911999901
           description: ""
         children:
-          - url: "{{ _[''].base_url }}notifications/2/read"
+          - url: "{{ _.api.base_url }}notifications/2/read"
             name: Mark as Read - Already Read
             meta:
-              id: req_c6a0cd4b742c4c78ab1b798d3f273b89
+              id: req_eb2ebb122cef430c80cda0ff0c3cd5d1
               created: 1777912000004
-              modified: 1777912000004
+              modified: 1778996815010
               isPrivate: false
               description: Notificacao ja lida deve retornar erro 400
               sortKey: -1777912000004
@@ -2100,7 +2173,7 @@ collection:
                 value: insomnia/12.4.0
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 disabled: false
             settings:
               renderRequestBody: true
@@ -2112,18 +2185,18 @@ collection:
               rebuildPath: true
   - name: Permission Groups - Manage Permissions
     meta:
-      id: fld_b7b264192b7044d6978d8a50cf4e6431
+      id: fld_ccab5f9c4a77419fa850fcad41f2b5f0
       created: 1777913000000
       modified: 1777914114434
       sortKey: -1777904165714.6875
       description: Gerenciar permissoes vinculadas ao grupo (antes de usar Grant/Revoke)
     children:
-      - url: "{{ _[''].base_url }}permission-groups/4/permissions"
+      - url: "{{ _.api.base_url }}permission-groups/4/permissions"
         name: Add Permission to Group
         meta:
-          id: req_a0a462d3a8004bb1b7cfd1094631bde3
+          id: req_55c370ccee2c444e96689bc54d168a0b
           created: 1777913000001
-          modified: 1777914450229
+          modified: 1778995456107
           isPrivate: false
           description: Vincula uma permissao ao grupo
           sortKey: -1777913000051.5
@@ -2141,7 +2214,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2151,12 +2224,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/4/permissions/1"
+      - url: "{{ _.api.base_url }}permission-groups/4/permissions/1"
         name: Remove Permission from Group
         meta:
-          id: req_c1390a9e773f4206a852e9eb66e6ec2e
+          id: req_75e08f2d85c54711b9c3b62554797bc5
           created: 1777913000002
-          modified: 1777914455141
+          modified: 1778995468846
           isPrivate: false
           description: Remove uma permissao do grupo
           sortKey: -1777913000027.75
@@ -2166,7 +2239,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2176,12 +2249,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/4/grant"
+      - url: "{{ _.api.base_url }}permission-groups/4/grant"
         name: Grant Group Permissions to Roles
         meta:
-          id: req_0e37583038c14c13b23604f9bb9a5e22
+          id: req_739a3b50bf784705bf6531795d7b0519
           created: 1777913000003
-          modified: 1777914460510
+          modified: 1778995478061
           isPrivate: false
           description: Concede todas as permissoes do grupo às roles informadas (roleIds)
           sortKey: -1777913000015.875
@@ -2199,7 +2272,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2209,12 +2282,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _[''].base_url }}permission-groups/4/revoke"
+      - url: "{{ _.api.base_url }}permission-groups/4/revoke"
         name: Revoke Group Permissions from Roles
         meta:
-          id: req_630beb5328784a06ba1a543d40e21956
+          id: req_4e58e32744614d82afd43af4836a18ca
           created: 1777913000004
-          modified: 1777913000004
+          modified: 1778995505726
           isPrivate: false
           description: Revoga todas as permissoes do grupo das roles informadas (roleIds)
           sortKey: -1777913000004
@@ -2232,7 +2305,7 @@ collection:
             value: insomnia/12.4.0
             disabled: false
           - name: Authorization
-            value: Bearer {{ _[''].token }}
+            value: Bearer {{ _.api.token }}
             disabled: false
         settings:
           renderRequestBody: true
@@ -2244,18 +2317,18 @@ collection:
           rebuildPath: true
       - name: Error Cases
         meta:
-          id: fld_d774300fa4704d0ca4f457516a045456
+          id: fld_76371224a787466eb44767986585fd5f
           created: 1777913000099
           modified: 1777914472277
           sortKey: -1777912999904
           description: ""
         children:
-          - url: "{{ _[''].base_url }}permission-groups/4/grant"
+          - url: "{{ _.api.base_url }}permission-groups/4/grant"
             name: Grant - Group Without Permissions
             meta:
-              id: req_223dd06aea22435db5f0adb2cc790434
+              id: req_244fc26db71f41fcab01a202e78acef2
               created: 1777913000005
-              modified: 1777913000005
+              modified: 1778995542433
               isPrivate: false
               description: Grupo sem permissoes deve retornar erro 400
               sortKey: -1777913000005
@@ -2273,7 +2346,7 @@ collection:
                 value: insomnia/12.4.0
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 disabled: false
             settings:
               renderRequestBody: true
@@ -2283,12 +2356,12 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
-          - url: "{{ _[''].base_url }}permission-groups/4"
+          - url: "{{ _.api.base_url }}permission-groups/4"
             name: Delete Group - With Permissions
             meta:
-              id: req_b51080ded4b94a3e822dbe83f5532bd4
+              id: req_88b1ca6eb8894026b8c785fee558aa51
               created: 1777913000006
-              modified: 1777913000006
+              modified: 1778995523335
               isPrivate: false
               description: Grupo com permissoes vinculadas deve retornar erro 400
               sortKey: -1777913000006
@@ -2298,7 +2371,7 @@ collection:
                 value: insomnia/12.4.0
                 disabled: false
               - name: Authorization
-                value: Bearer {{ _[''].token }}
+                value: Bearer {{ _.api.token }}
                 disabled: false
             settings:
               renderRequestBody: true
@@ -2311,27 +2384,28 @@ collection:
 cookieJar:
   name: Default Jar
   meta:
-    id: jar_6f64ee936f87c222dd0e01856f4359eb82fc6f23
+    id: jar_c3c7ca8b10894135813e5050f737a812
     created: 1777913934003
     modified: 1777913934003
 environments:
   name: Base Environment
   meta:
-    id: env_6f64ee936f87c222dd0e01856f4359eb82fc6f23
+    id: env_9e9b109ba811457492bbff1c4f053787
     created: 1777913934002
     modified: 1777913934002
     isPrivate: false
   subEnvironments:
     - name: Development
       meta:
-        id: env_0c445c6061914a39ab9b4ba3023ddb66
+        id: env_3afbfaf62e734a62b291c32b48b9a2e6
         created: 1777833360026
-        modified: 1777833793403
+        modified: 1778993514163
         isPrivate: false
         sortKey: 1777833360026
       data:
-        "":
+        api:
           base_url: http://localhost:3001/
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicHJvZmlsZSI6IkFETUlOIiwiaWF0IjoxNzc3ODMzNzY2LCJleHAiOjE3Nzg0Mzg1NjZ9.TYtXkIKcPH4cDj3TG1kRZR9pPC80QdEmFf77_BL7LCU
-          api_user_email: admin@admin.com
-          apit_password: admin1234
+          token: "{% response 'body', 'req_98bc3eed4c9c4b4fa7c0ff72da225f74',
+            'b64::JC50b2tlbg==::46b', 'always', 60 %}"
+          user_email: admin@admin.com
+          user_password: admin1234

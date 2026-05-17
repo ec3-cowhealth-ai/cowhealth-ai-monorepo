@@ -88,11 +88,10 @@ export const assignPermissionToRole = async (roleId: number, permissionId: numbe
     const permission = await prisma.permission.findUnique({ where: { id: permissionId } });
     if (!permission) throw new Error("Permissão não encontrada.");
 
-    await assertUnique(
-        prisma.rolePermission,
-        { roleId_permissionId: { roleId, permissionId } },
-        "Role já possui esta permissão."
-    );
+    const alreadyAssigned = await prisma.rolePermission.findUnique({
+        where: { roleId_permissionId: { roleId, permissionId } },
+    });
+    if (alreadyAssigned) throw new Error("Role já possui esta permissão.");
 
     return prisma.rolePermission.create({ data: { roleId, permissionId } });
 };

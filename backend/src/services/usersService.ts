@@ -123,11 +123,10 @@ export const assignRoleToUser = async (userId: number, roleId: number) => {
     const role = await prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new Error("Role não encontrada.");
 
-    await assertUnique(
-        prisma.userRole,
-        { userId_roleId: { userId, roleId } },
-        "Usuário já possui esta role."
-    );
+    const alreadyAssigned = await prisma.userRole.findUnique({
+        where: { userId_roleId: { userId, roleId } },
+    });
+    if (alreadyAssigned) throw new Error("Usuário já possui esta role.");
 
     return prisma.userRole.create({ data: { userId, roleId } });
 };
