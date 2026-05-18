@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@theme {
+  --color-onyx: #131515;
+  --color-graphite: #2B2C28;
+  --color-verdigris: #339989;
+  --color-pearl-aqua: #7DE2D1;
+  --color-snow: #FFFAFB;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  background-color: #131515;
+  color: #FFFAFB;
+  font-family: "Manrope", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
