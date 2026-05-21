@@ -30,7 +30,7 @@ export const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       {/* TODO[ANGELO]: Adicionar campos com validação Zod */}
-      {isError && <div className="error">{(error as any)?.message}</div>}
+      {isError && <div className="error">{error instanceof Error ? error.message : "Erro ao autenticar"}</div>}
       <button type="submit" disabled={isPending}>
         {isPending ? 'Entrando...' : 'Entrar'}
       </button>

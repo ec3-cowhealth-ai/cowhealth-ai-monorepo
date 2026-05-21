@@ -5,6 +5,7 @@ import { LoadingSpinner, EmptyState } from "@components/common";
 import { FarmCard } from "../components/FarmCard";
 import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
+import type { CreateFarmInput } from "../../../types/farms";
 
 export const FarmsPage = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export const FarmsPage = () => {
     );
   }, [farms, search]);
 
-  const handleCreateFarm = (data: any) => {
+  const handleCreateFarm = (data: CreateFarmInput) => {
     createFarm(data, {
       onSuccess: () => setShowForm(false),
     });

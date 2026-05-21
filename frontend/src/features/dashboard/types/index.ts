@@ -6,7 +6,7 @@
 export interface ChartDataPoint {
   label: string;
   value: number;
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export interface DashboardData {
