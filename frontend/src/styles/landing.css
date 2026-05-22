@@ -98,7 +98,7 @@ body {
   overflow-x: hidden;
 }
 body {
-  overscroll-behavior-y: none;
+  overscroll-behavior-y: auto;
 }
 img,
 svg {
@@ -133,9 +133,8 @@ button {
   padding-right: env(safe-area-inset-right, 0px);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: visible;
   overflow-x: hidden;
-  scrollbar-width: none;
 }
 
 /* PHONE PREVIEW mode */
