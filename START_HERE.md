@@ -12,6 +12,8 @@ Você é novo por aqui? Leia nesta ordem:
 2. **[agents/agents.md](./agents/agents.md)** — Princípios de engenharia e arquitetura
 3. **[agents/design.md](./agents/design.md)** — Sistema de design visual (cores, tipografia, componentes)
 4. **[agents/UIUX_prompt.md](./agents/UIUX_prompt.md)** — Como gerar mockups high-fidelity
+5. **[docs/CHANGELOG.md](./docs/CHANGELOG.md)**Todas as mudanças notáveis deste projeto estão documentadas aqui.
+   Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 ---
 
