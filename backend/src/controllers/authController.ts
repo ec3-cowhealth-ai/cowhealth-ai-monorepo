@@ -1,6 +1,20 @@
 import { Request, Response } from "express";
-import { login, getMe } from "../services/authService";
+import { register, login, getMe } from "../services/authService";
 import { handleRequest } from "../helpers/controllerHelpers";
+
+export const registerController = async (
+    request: Request,
+    response: Response
+): Promise<void> => {
+    const { name, email, password } = request.body;
+
+    if (!name || !email || !password) {
+        response.status(400).json({ error: "Nome, email e senha sao obrigatorios." });
+        return;
+    }
+
+    await handleRequest(response, () => register({ name, email, password }), 201, 400);
+};
 
 export const loginController = async (
     request: Request,

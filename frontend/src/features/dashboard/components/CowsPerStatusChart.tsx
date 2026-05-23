@@ -1,52 +1,33 @@
-/**
- * CowsPerStatusChart Component
- * TODO[IAN]: Implementar gráfico de vacas por status de saúde
- *
- * Tipos esperados:
- * - "healthy" | "at-risk" | "sick"
- *
- * Recomendação: Usar gráfico de pizza (Pie Chart) ou barra
- */
-
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import type { ChartDataPoint } from '../types';
 
 interface CowsPerStatusChartProps {
   data: ChartDataPoint[];
 }
 
-export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => {
-  // TODO[IAN]: Implementar com Recharts Pie Chart:
-  // ```
-  // import { PieChart, Pie, Cell } from 'recharts';
-  //
-  // const COLORS = {
-  //   healthy: '#10b981',
-  //   'at-risk': '#f59e0b',
-  //   sick: '#ef4444'
-  // };
-  //
-  // return (
-  //   <PieChart width={400} height={400}>
-  //     <Pie data={data} dataKey="value" label>
-  //       {data.map((entry, index) => (
-  //         <Cell key={`cell-${index}`} fill={COLORS[entry.label] || '#ccc'} />
-  //       ))}
-  //     </Pie>
-  //   </PieChart>
-  // );
-  // ```
-
-  return (
-    <div className="chart-container">
-      <h3>Vacas por Status</h3>
-      <p>Gráfico de pizza com status de saúde</p>
-      <ul>
-        {data.map((point) => (
-          <li key={point.label}>
-            {point.label}: {point.value}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+const STATUS_COLORS: Record<string, string> = {
+  HEALTHY:    '#339989',
+  CALVING:    '#6BB4E8',
+  HEAT_STRESS:'#E8C66B',
+  ALERT:      '#ef4444',
+  Saudaveis:  '#339989',
+  'Em Risco': '#E8C66B',
+  Doentes:    '#ef4444',
 };
+
+export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => (
+  <div className="card" style={{ padding: 'var(--s-4)' }}>
+    <p style={{ fontWeight: 600, marginBottom: 'var(--s-3)' }}>Vacas por Status</p>
+    <ResponsiveContainer width="100%" height={260}>
+      <PieChart>
+        <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={90} label>
+          {data.map((entry, i) => (
+            <Cell key={`cell-${i}`} fill={STATUS_COLORS[entry.label] ?? '#8884d8'} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+);

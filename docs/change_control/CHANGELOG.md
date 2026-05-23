@@ -119,6 +119,187 @@ Nenhum arquivo removido.
 - Meta tags: ✅ Presentes no dist/index.html
 
 
+## 2026-05-23 - Backend register + Frontend auth/dashboard + Correcao de integracao
+
+Escopo: implementacao do endpoint de registro, features de auth e dashboard com graficos reais, e correcao completa de tipos TypeScript desalinhados com o contrato real da API.
+
+### Novos arquivos
+
+- `frontend/src/pages/auth/RegisterPage.tsx` — pagina de registro completa
+- `frontend/src/services/dashboardService.ts` — servico com os 3 endpoints de dashboard
+- `frontend/src/features/dashboard/hooks/useDashboard.ts` — hooks `useDashboardOverview`, `useCowsPerStatus`, `useCowsPerFarm`
+
+### Arquivos modificados
+
+**Backend**
+
+- `backend/src/types/auth.ts`
+  - Adicionada interface `RegisterInput { name, email, password }`
+
+- `backend/src/services/authService.ts`
+  - Adicionada funcao `register()`: verifica email duplicado, faz hash bcrypt, cria user com perfil VIEWER
+
+- `backend/src/controllers/authController.ts`
+  - Adicionado `registerController`: valida campos obrigatorios, chama service, responde 201
+
+- `backend/src/routes/authRoutes.ts`
+  - Adicionada rota `POST /register` (publica, sem requireAuth)
+
+**Frontend — Dependencias**
+
+- `frontend/package.json`
+  - Instalados: `react-hook-form`, `@hookform/resolvers`, `zod`, `recharts`
+
+**Frontend — Auth**
+
+- `frontend/src/features/auth/components/LoginForm.tsx`
+  - Substituido esqueleto por implementacao com `react-hook-form` + `zod`
+  - Validacao: email valido, password min 6 caracteres
+  - Loading state, erros inline por campo, link para `/register`
+
+- `frontend/src/features/auth/components/RegisterForm.tsx`
+  - Implementado do zero com `react-hook-form` + `zod`
+  - Validacoes: nome min 2 chars, email valido, senha forte (maiuscula + numero + min 8), confirmacao
+  - Integrado com `useRegister()`, redireciona para `/login` apos sucesso
+
+- `frontend/src/services/authService.ts`
+  - Adicionado `registerService()`
+
+- `frontend/src/hooks/useAuth.ts`
+  - Adicionado `useRegister()` com `useMutation` + `navigate("/login")` no `onSuccess`
+
+- `frontend/src/routes/AppRoutes.tsx`
+  - Substituido `RegisterPlaceholder` por `<RegisterPage />` real
+
+**Frontend — Dashboard**
+
+- `frontend/src/features/dashboard/components/DashboardKPICard.tsx`
+  - Implementado usando classes `.kpi-card` do design system
+  - Indicador de tendencia com seta unicode e percentual
+
+- `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx`
+  - Implementado com Recharts `PieChart` + `Cell` + `Legend` + `Tooltip`
+  - Cores mapeadas por status: HEALTHY verde, HEAT_STRESS amarelo, ALERT vermelho, CALVING azul
+
+- `frontend/src/features/dashboard/components/CowsPerFarmChart.tsx`
+  - Implementado com Recharts `BarChart`
+  - `CartesianGrid` com `var(--border)`, barras com radius 4px
+
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx`
+  - Implementado com Recharts `LineChart`
+
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx`
+  - Substituido mock data por hooks reais (`useDashboardOverview`, `useCowsPerStatus`, `useCowsPerFarm`)
+  - Loading state com `<LoadingSpinner />`
+  - Adicionados KPIs: `totalActiveCollars` e `unreadNotifications`
+  - Removido `DashboardOverviewChart` (LineChart com dados categoricos nao faz sentido sem endpoint de serie temporal)
+  - Mapeamento explicito dos campos do backend (`status/count` → `label/value`, `name/cowCount` → `label/value`)
+
+**Frontend — Cows**
+
+- `frontend/src/features/cows/components/SensorChart.tsx`
+  - Interface corrigida: `{ timestamp, value }` → `{ date, average }`
+  - `date` ja vem formatado como `"dd/MM"` do backend — usado diretamente no eixo X sem `new Date()`
+  - Calculos de min/avg/max corrigidos de `p.value` para `p.average`
+
+- `frontend/src/features/cows/pages/CowDetailPage.tsx`
+  - Removidas 2 queries desnecessarias (`farmsService.get` e `collarsService.get`)
+  - `farm` e `collar` agora extraidos de `cow.farm` e `cow.collar` (ja vem aninhados na API)
+  - `cow.dateOfBirth` → `cow.birthDate`
+  - `collar.identifier` → `collar.name`
+
+**Frontend — Collars**
+
+- `frontend/src/features/collars/components/CollarCard.tsx`
+  - `collar.identifier` → `collar.name`
+  - Removidos campos `batteryPercentage` e `lastSync` (nao existem no banco/API)
+  - Exibe vaca vinculada via `collar.cow.tag`
+
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx`
+  - Removida query de lista de vacas para encontrar a vaca vinculada
+  - `linkedCow = collar?.cow` (ja vem aninhado)
+  - `collar.identifier` → `collar.name` (titulo e AppBar)
+  - Removidos blocos de bateria e ultima sincronizacao
+  - Adicionado campo "Cadastrado em" com `collar.createdAt`
+
+**Frontend — Farms**
+
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx`
+  - Removido filtro client-side `c.farmId === id` (campo nao existe mais; API ja filtra por `farmId`)
+
+**Frontend — Access**
+
+- `frontend/src/features/access/pages/RolesPage.tsx`
+  - `role._count.permissions` → `role.permissions?.length ?? 0`
+
+**Frontend — Hooks**
+
+- `frontend/src/hooks/useNotifications.ts`
+  - `useMarkNotificationAsRead`: convertido de objeto fake `{ mutate }` para `useMutation` real com `invalidateQueries(["notifications"])`
+  - `useMarkAllAsRead`: idem — marcar como lida agora atualiza o cache automaticamente sem reload
+
+**Frontend — Tipos**
+
+- `frontend/src/types/cows.ts`
+  - `id: string` → `id: number`
+  - `dateOfBirth: string` → `birthDate?: string`
+  - `farmId: string` → `farm: { id: number; name: string; city?; state? }`
+  - `collarId?: string` → `collar?: { id: number; name: string; status; dataFrequency? }`
+  - `avatar?: string` → `photos?: string[]`
+  - `HeartRateDailyPoint/TemperatureDailyPoint { timestamp, value }` → `SensorDailyPoint { date, average }` (aliases mantidos para retrocompatibilidade)
+  - `CreateCowInput.farmId/collarId`: `string` → `number`
+
+- `frontend/src/types/collars.ts`
+  - `id: string` → `id: number`
+  - `identifier: string` → `name: string`
+  - Removidos `batteryPercentage: number` e `lastSync: string`
+  - `cowId?: string` → `cow?: { id, tag, name, breed?, status, farm? }`
+  - `CreateCollarInput.identifier` → `name`
+
+### Exclusoes
+
+- Nenhum arquivo removido.
+
+### Bugs corrigidos
+
+- **Dados em tempo real chegavam no banco mas nao apareciam nas telas**
+  - Causa: tipos TypeScript divergentes do contrato real da API (`timestamp/value` vs `date/average`, `identifier` vs `name`, `farmId` vs `farm`, etc.)
+  - Solucao: todos os tipos alinhados com o shape real dos endpoints (documentado em `docs/frontendDev_JCFS/FRONTEND_INTEGRATION.md`)
+
+- **Marcar notificacao como lida nao atualizava a UI**
+  - Causa: `useMarkNotificationAsRead` retornava objeto fake sem integrar com React Query
+  - Solucao: convertido para `useMutation` com `invalidateQueries`
+
+- **CollarDetailPage buscava todas as vacas para encontrar a vinculada**
+  - Causa: filtro client-side `cows.find(c => c.collarId === id)` usando campo inexistente
+  - Solucao: `collar.cow` ja vem aninhado no endpoint `GET /collars/:id`
+
+- **CowDetailPage fazia 2 requests extras desnecessarios**
+  - Causa: queries separadas para `farmsService.get(cow.farmId)` e `collarsService.get(cow.collarId)`
+  - Solucao: `cow.farm` e `cow.collar` ja vem no objeto retornado por `GET /cows/:id`
+
+### Build Status
+
+✅ **837 modules** | ✅ **284ms** | ✅ **Zero TypeScript errors**
+
+```
+dist/assets/index-CrAumhe4.css   36.87 kB │ gzip:  7.70 kB
+dist/assets/index-B9GOnZVC.js   853.29 kB │ gzip: 251.91 kB
+```
+
+### Checklist de verificacao (conforme FRONTEND_INTEGRATION.md §7)
+
+- [ ] `/home` — cards de status mostram contagens reais (nao 0)
+- [ ] `/cows` — lista com 160 vacas aparece (BR-0001 a BR-0160)
+- [ ] `/cows/:id` — detalhe mostra fazenda e colar sem erro de runtime
+- [ ] `/cows/:id` — graficos de frequencia cardiaca e temperatura mostram dados dos ultimos 7 dias
+- [ ] `/collars` — lista com 160 colares aparece
+- [ ] `/collars/:id` — detalhe sem erro (sem identifier, sem batteryPercentage)
+- [ ] `/dashboard` — KPIs com numeros reais, graficos de status e fazendas renderizados
+- [ ] `/notifications` — marcar como lida atualiza badge sem recarregar pagina
+- [ ] `/register` — fluxo de registro funcional (endpoint backend ativo)
+
+
 ## 2026-05-15 - Implementação Completa do App Autenticado (JCFS - Fases 1-4)
 
 Escopo: Implementação de todas as páginas autenticadas, layout do app, 5 features e design system CSS.

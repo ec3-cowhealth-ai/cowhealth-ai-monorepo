@@ -1,24 +1,24 @@
 import api from "../lib/api";
-import type { Role, CreateRoleInput, UpdateRoleInput } from "../types/access.ts";
+import type { RoleListItem, RoleDetail, CreateRoleInput, UpdateRoleInput } from "../types/access.ts";
 
 export const rolesService = {
   list: async () => {
-    const response = await api.get<Role[]>("/roles");
+    const response = await api.get<RoleListItem[]>("/roles");
     return response.data;
   },
 
   get: async (id: string) => {
-    const response = await api.get<Role>(`/roles/${id}`);
+    const response = await api.get<RoleDetail>(`/roles/${id}`);
     return response.data;
   },
 
   create: async (input: CreateRoleInput) => {
-    const response = await api.post<Role>("/roles", input);
+    const response = await api.post<RoleDetail>("/roles", input);
     return response.data;
   },
 
   update: async (id: string, input: UpdateRoleInput) => {
-    const response = await api.put<Role>(`/roles/${id}`, input);
+    const response = await api.put<RoleDetail>(`/roles/${id}`, input);
     return response.data;
   },
 
@@ -26,8 +26,9 @@ export const rolesService = {
     await api.delete(`/roles/${id}`);
   },
 
+  // Backend: POST /roles/:id/permissions com body { permissionId }
   grantPermission: async (roleId: string, permissionId: string) => {
-    await api.post(`/roles/${roleId}/permissions/${permissionId}`);
+    await api.post(`/roles/${roleId}/permissions`, { permissionId });
   },
 
   revokePermission: async (roleId: string, permissionId: string) => {

@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
 import { SensorChart } from "../components/SensorChart";
 import { CowStatusBadgeComponent } from "../components/CowStatusBadge";
 import { useCow, useCowHeartRateDaily, useCowTemperatureDaily } from "../hooks/useCows";
-import { farmsService } from "@services/farmsService";
-import { collarsService } from "@services/collarsService";
 import { useNotifications } from "@hooks/useNotifications";
 
 export const CowDetailPage = () => {
@@ -19,17 +16,9 @@ export const CowDetailPage = () => {
   const { data: heartRate } = useCowHeartRateDaily(id || "");
   const { data: temperature } = useCowTemperatureDaily(id || "");
 
-  const { data: farm } = useQuery({
-    queryKey: ["farms", cow?.farmId],
-    queryFn: () => (cow?.farmId ? farmsService.get(cow.farmId) : null),
-    enabled: !!cow?.farmId,
-  });
-
-  const { data: collar } = useQuery({
-    queryKey: ["collars", cow?.collarId],
-    queryFn: () => (cow?.collarId ? collarsService.get(cow.collarId) : null),
-    enabled: !!cow?.collarId,
-  });
+  // farm e collar ja vem aninhados no objeto cow — sem queries extras
+  const farm = cow?.farm;
+  const collar = cow?.collar;
 
   const { data: notifications } = useNotifications();
   const cowNotifications = notifications?.filter((n) => n.cowId === id) || [];
@@ -104,7 +93,7 @@ export const CowDetailPage = () => {
                   Coleira
                 </p>
                 <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
-                  {collar.identifier}
+                  {collar.name}
                 </p>
               </div>
             )}
@@ -138,11 +127,11 @@ export const CowDetailPage = () => {
             </div>
           )}
 
-          {cow.dateOfBirth && (
+          {cow.birthDate && (
             <div className="kpi-card">
               <p className="kpi-card__label">Data de Nascimento</p>
               <p className="kpi-card__value" style={{ color: "var(--text-primary)", fontSize: "var(--t-body)" }}>
-                {new Date(cow.dateOfBirth).toLocaleDateString("pt-BR")}
+                {new Date(cow.birthDate).toLocaleDateString("pt-BR")}
               </p>
             </div>
           )}

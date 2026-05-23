@@ -9,25 +9,42 @@ export type UserProfile = typeof UserProfileValues[keyof typeof UserProfileValue
 export interface Permission {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   createdAt: string;
 }
 
-export interface Role {
+// Retorno do GET /roles (lista)
+export interface RoleListItem {
   id: string;
   name: string;
-  description: string;
-  permissions: Permission[];
+  description: string | null;
+  createdAt: string;
+  _count: {
+    users: number;
+    permissions: number;
+  };
+}
+
+// Retorno do GET /roles/:id (detalhe)
+export interface RoleDetail {
+  id: string;
+  name: string;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
+  permissions: Array<{ permission: { id: string; name: string } }>;
+  users: Array<{ user: { id: string; name: string; email: string; active: boolean } }>;
 }
+
+// Manter Role para compatibilidade com código existente
+export type Role = RoleDetail;
 
 export interface User {
   id: string;
   name: string;
   email: string;
   profile: UserProfile;
-  roles: Role[];
+  roles: RoleListItem[];
   permissions: Permission[];
   isActive: boolean;
   createdAt: string;

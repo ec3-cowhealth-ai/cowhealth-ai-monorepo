@@ -171,3 +171,69 @@ await prisma.cow.delete({ where: { id: 1 } });
 - O Workbench é utilizado apenas para **visualização e conferência** dos dados, não para alterações estruturais.
 - O `migrate reset` apaga todos os dados. Usar apenas em ambiente de desenvolvimento.
 - O arquivo `.env` não deve ser commitado. Cada membro do time mantém o seu local com as credenciais próprias, baseando-se no `.env.example`.
+
+---
+
+## Seed massivo via SQL
+
+Para popular o banco com um volume realista de dados (200 colares, 160 vacas, 5 fazendas, 8 perfis de usuário), existe um seed alternativo baseado em SQL puro com stored procedures.
+
+### Arquivos
+
+```
+backend/
+└── prisma/
+    ├── seed_data.sql   # INSERT statements + stored procedures para geração em massa
+    └── run_seed.sh     # script de execução com confirmação interativa
+```
+
+### Estrutura gerada
+
+| Entidade            | Qtd    | Detalhe                                                              |
+|---------------------|--------|----------------------------------------------------------------------|
+| Permissions         | 37     | CRUD completo por recurso                                            |
+| Roles               | 8      | SuperAdmin, Administrador, Veterinário, Zootecnista, Gerente de Fazenda, Operador de Campo, Financeiro, Observador |
+| Users               | 8      | Um por role, emails `@cowhealth.com`                                 |
+| Farms               | 5      | PR, MG, GO, SP, MT                                                   |
+| Collars             | 200    | 1-160 ACTIVE (atribuídos), 161-180 estoque, 181-190 MAINTENANCE, 191-195 INACTIVE, 196-200 BATTERY |
+| Cows                | 160    | 32/fazenda — ~69% HEALTHY, 12% HEAT_STRESS, 12% ALERT, 6% CALVING   |
+| Sensor data         | ~81k   | 7 dias × 160 vacas × 3 tabelas (heart_rate, temperature, accelerometer) |
+| Notifications       | 100    | Alertas variados, 60% lidas                                          |
+
+### Como executar
+
+```bash
+cd backend/prisma
+./run_seed.sh
+```
+
+O script verifica a conexão, pede confirmação antes de apagar os dados e exibe um resumo ao final.
+
+Para rodar o SQL diretamente:
+
+```bash
+mysql -u root -p -P 33071 cowhealth-db < backend/prisma/seed_data.sql
+```
+
+### Usuários criados
+
+| Email                       | Role              | Profile |
+|-----------------------------|-------------------|---------|
+| admin@cowhealth.com         | SuperAdmin        | ADMIN   |
+| gerente@cowhealth.com       | Administrador     | ADMIN   |
+| vet@cowhealth.com           | Veterinário       | MANAGER |
+| zoot@cowhealth.com          | Zootecnista       | MANAGER |
+| fazenda@cowhealth.com       | Gerente de Fazenda| MANAGER |
+| operador@cowhealth.com      | Operador de Campo | VIEWER  |
+| financeiro@cowhealth.com    | Financeiro        | VIEWER  |
+| obs@cowhealth.com           | Observador        | VIEWER  |
+
+### Ativando o login (senhas)
+
+O SQL insere hashes placeholder. Para gerar um hash real de `password123` e atualizar todos os usuários:
+
+```bash
+node -e "require('bcrypt').hash('password123', 12).then(h => console.log('UPDATE users SET password_hash = \"' + h + '\";'))"
+```
+
+Cole o `UPDATE` gerado no MySQL, ou rode o `seed.ts` normalmente (`npx prisma db seed`) — ele recria os usuários com hashes válidos.

@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState, StatusBadge } from "@components/common";
-import { cowsService } from "@services/cowsService";
 import { useCollar } from "../hooks/useCollars";
 import { CollarStatusValues } from "../../../types/collars.ts";
 
@@ -24,13 +22,8 @@ export const CollarDetailPage = () => {
   const navigate = useNavigate();
   const { data: collar, isLoading } = useCollar(id || "");
 
-  const { data: cows } = useQuery({
-    queryKey: ["cows"],
-    queryFn: () => cowsService.list(),
-    enabled: !!id,
-  });
-
-  const linkedCow = cows?.find((c) => c.collarId === id);
+  // vaca vinculada ja vem aninhada no objeto collar
+  const linkedCow = collar?.cow;
 
   if (isLoading) {
     return (
@@ -54,14 +47,14 @@ export const CollarDetailPage = () => {
 
   return (
     <div className="app-page">
-      <AppBar title={collar.identifier} />
+      <AppBar title={collar.name} />
 
       <div className="app-page__section">
         {/* Collar Info */}
         <div className="card">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--s-3)" }}>
             <h3 style={{ margin: 0, fontSize: "var(--t-h2)", fontWeight: 700 }}>
-              {collar.identifier}
+              {collar.name}
             </h3>
             <StatusBadge tone={getStatusTone(collar.status)}>
               {collar.status}
@@ -71,16 +64,7 @@ export const CollarDetailPage = () => {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--s-3)" }}>
             <div>
               <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
-                Bateria
-              </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
-                {collar.batteryPercentage}%
-              </p>
-            </div>
-
-            <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
-                Frequência de Dados
+                Frequencia de Dados
               </p>
               <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
                 {collar.dataFrequency}
@@ -89,10 +73,10 @@ export const CollarDetailPage = () => {
 
             <div>
               <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
-                Última Sincronização
+                Cadastrado em
               </p>
               <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
-                {new Date(collar.lastSync).toLocaleString()}
+                {new Date(collar.createdAt).toLocaleDateString("pt-BR")}
               </p>
             </div>
           </div>

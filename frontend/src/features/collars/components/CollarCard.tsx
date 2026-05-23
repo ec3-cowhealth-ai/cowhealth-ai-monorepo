@@ -38,7 +38,7 @@ export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--s-2)" }}>
         <h3 style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
-          {collar.identifier}
+          {collar.name}
         </h3>
         <StatusBadge tone={getStatusTone(collar.status)}>
           {collar.status}
@@ -49,12 +49,8 @@ export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
         <strong>Frequência:</strong> {getFrequencyLabel(collar.dataFrequency)}
       </p>
 
-      <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
-        <strong>Bateria:</strong> {collar.batteryPercentage}%
-      </p>
-
       <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
-        <strong>Última sincronização:</strong> {new Date(collar.lastSync).toLocaleDateString()}
+        <strong>Vaca:</strong> {collar.cow ? collar.cow.tag : "Sem vaca vinculada"}
       </p>
     </div>
   );

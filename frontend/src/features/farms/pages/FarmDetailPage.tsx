@@ -15,7 +15,8 @@ export const FarmDetailPage = () => {
     enabled: !!id,
   });
 
-  const farmCows = cows?.filter((c) => c.farmId === id) || [];
+  // API ja filtra por farmId — usar cows direto
+  const farmCows = cows ?? [];
 
   if (isLoading) {
     return (
