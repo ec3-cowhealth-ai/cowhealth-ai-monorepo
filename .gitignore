@@ -1,8 +1,7 @@
 # Cow Photos
 backend/uploads/
 
-# Prisma
-/src/generated/prisma
+# Prisma (generated files go to node_modules by default, already covered above)
 
 # Logs
 logs
@@ -168,3 +167,4 @@ docs/jcfs_tests/*
 .claude/*
 .claude/skill/*
 setup.ps1
+*/frontendDev_JCFS/*
