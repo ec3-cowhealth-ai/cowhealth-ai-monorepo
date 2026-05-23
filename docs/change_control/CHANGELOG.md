@@ -631,6 +631,81 @@ Escopo: analise comparativa dos projetos, planejamento do ecossistema IoT, imple
 
 ---
 
+## 2026-05-23 - Entregas JAFTE - Ambiente, Seed SQL e Fixes de Integracao
+
+Escopo: configuracao do ambiente de desenvolvimento, criacao de seed massivo em SQL puro, documentacao e correcoes de bugs de integracao frontend/backend.
+
+### Novos Arquivos
+
+- `backend/prisma/seed_data.sql`
+  - Seed completo em SQL puro com stored procedures MySQL
+  - 37 permissoes, 8 roles com permissoes mapeadas, 3 grupos de permissao
+  - 8 usuarios com perfis distintos (SuperAdmin, Administrador, Veterinario, Zootecnista, Gerente de Fazenda, Operador de Campo, Financeiro, Observador)
+  - 5 fazendas distribuidas por PR, MG, GO, SP, MT
+  - 200 colares (1-160 ACTIVE/atribuidos, 161-180 estoque, 181-190 MAINTENANCE, 191-195 INACTIVE, 196-200 BATTERY)
+  - 160 vacas (32/fazenda, distribuicao: ~69% HEALTHY, 12% HEAT_STRESS, 12% ALERT, 6% CALVING)
+  - ~81.000 registros de sensores via stored procedure (7 dias x 160 vacas x 3 tabelas)
+  - 100 notificacoes variadas com 60% lidas
+  - SELECT de resumo ao final da execucao
+
+- `backend/prisma/run_seed.sh`
+  - Script shell interativo para execucao do seed_data.sql
+  - Detecta automaticamente o binario mysql (`command -v` com fallback para `/usr/local/mysql/bin/mysql`)
+  - Testa conexao antes de executar
+  - Pede confirmacao antes de apagar os dados
+  - Exibe resumo de usuarios e instrucoes de senha ao final
+
+### Arquivos Modificados
+
+**Backend**
+
+- `backend/.env` (criado — nao existia)
+  - Criado a partir do `.env.example`
+  - `DATABASE_URL` configurada com porta `33071`
+
+**Frontend**
+
+- `frontend/.env` (criado — nao existia)
+  - Criado a partir do `.env.example`
+  - `VITE_API_URL=http://localhost:3001` — corrige chamadas da API apontando para a propria porta 3000
+
+- `frontend/src/features/auth/components/LoginForm.tsx`
+  - `<form>`: adicionado `autoComplete="off"`
+  - Input de email: adicionado `autoComplete="one-time-code"` para evitar preenchimento automatico pelo Chrome com credenciais salvas
+
+- `frontend/src/features/access/pages/RolesPage.tsx`
+  - `role.permissions.length` → `role._count.permissions`
+  - Corrige crash na pagina `/access/roles` — `getAllRoles` retorna `_count` (numero), nao um array `permissions`
+
+**Documentacao**
+
+- `docs/prisma.md`
+  - Adicionada secao "Seed massivo via SQL" com: descricao dos arquivos, tabela de totais, instrucoes de execucao, lista de usuarios e instrucoes de senha
+
+### Bugs Corrigidos
+
+- **Frontend chamava `localhost:3000/auth/login` (si mesmo) em vez de `localhost:3001`**
+  - Causa: `frontend/.env` nao existia; `VITE_API_URL` era `undefined`; axios usava URL base vazia
+  - Solucao: criado `frontend/.env` com `VITE_API_URL=http://localhost:3001`
+
+- **Chrome preenchendo campo de email com conta Google do usuario**
+  - Causa: formulario sem atributo `autoComplete`
+  - Solucao: `autoComplete="off"` no `<form>` + `autoComplete="one-time-code"` no input de email
+
+- **Crash em `/access/roles`: `Cannot read properties of undefined (reading 'length')`**
+  - Causa: frontend acessava `role.permissions.length` mas `getAllRoles` retorna `_count.permissions` (inteiro)
+  - Solucao: substituido por `role._count.permissions`
+
+- **Porta 3001 ocupada por processo externo (`megasenator/api-stub.js`, PID 75294)**
+  - Causa: outro projeto deixou processo node rodando na mesma porta
+  - Solucao: identificado via `lsof -i :3001` + `kill 75294`
+
+### Dados de Acesso Configurados
+
+- `admin@cowhealth.com` — senha `12345678` (hash bcrypt gerado e atualizado diretamente no banco)
+
+---
+
 # Alterações e Progresso de Angelo
 
 ...
