@@ -486,6 +486,151 @@ dist/assets/index-CoG3v4Bx.js   370.10 kB │ gzip: 111.84 kB
 - ✅ Mobile-first responsiveness
 
 
+## 2026-05-23 - Entregas JAFTE
+
+Escopo: analise comparativa dos projetos, planejamento do ecossistema IoT, implementacao do endpoint de ingestao MQTT no backend e implementacao completa das telas de gestao de acesso no frontend.
+
+---
+
+### Analise e Documentacao
+
+- Comparacao arquitetural completa entre `cow-health-web` (PHP/Laravel/Filament) e `cowhealth-ai-monorepo` (Node/React)
+  - Mapeamento de paridade de funcionalidades por camada (backend, frontend, dominio)
+  - Identificacao dos gaps criticos: ingestao MQTT, analise heuristica de saude e telas de gestao de acesso
+- Levantamento dos sinais vitais capturados pelos sensores fisicos:
+  - MAX30102 → frequencia cardiaca (BPM)
+  - MLX90614 → temperatura corporal infravermelha (Celsius)
+  - MPU-6050 → acelerometro (X/Y/Z) + giroscopio (X/Y/Z)
+- Documentacao das regras heuristicas de alerta (portadas do `AnalyzeCowHealth.php`):
+  - Parto iminente (CALVING): mudancas posturais > 10/hora + FC media > 90 + queda de temperatura em 12h
+  - Estresse termico (HEAT_STRESS): picos de agitacao > 15/30min + temperatura > 39°C + FC > 100
+
+### Novos Arquivos
+
+**Documentacao e Planejamento IoT**
+
+- `docs/iot-simulator-plan.md`
+  - Plano completo do projeto `cowhealth-iot-simulator` (repositorio separado)
+  - Faixas fisiologicas bovinas por estado (HEALTHY, HEAT_STRESS, CALVING, ALERT)
+  - Formato do payload MQTT (identico ao colar fisico)
+  - Arquitetura do fluxo: simulator.py → broker.emqx.io → worker.py → POST /mqtt/ingest → MySQL
+  - Estrutura de pastas do repositorio IoT
+  - Pseudocodigo de todos os modulos: cow_state.py, sensor_generator.py, payload_builder.py, simulator.py, worker.py, api_client.py
+  - Scripts one-shot: generate_collars.py (160 device_ids NNNNLLL), seed_collars_api.py
+  - Variaveis de ambiente, dependencias Python e sequencia de execucao
+
+- `/Users/jafte/PyCharmProject/cowhealth-iot-simulator/CLAUDE.md`
+  - Instrucoes permanentes para IA no repositorio IoT
+  - Stack, estrutura de pastas, formato do payload, faixas fisiologicas, convencoes de codigo, ordem de implementacao
+  - Referencia cruzada para o plano e para o backend
+
+**Backend — Ingestao MQTT**
+
+- `backend/src/middlewares/requireApiKey.ts`
+  - Middleware de autenticacao por API Key (header `Authorization: Bearer`)
+  - Valida contra `process.env.MQTT_WORKER_API_KEY`
+
+- `backend/src/services/mqttIngestService.ts`
+  - `validatePayload()`: valida campos obrigatorios e formato ISO 8601 do datetime
+  - `persistSensorData()`: persiste HeartRateData, TemperatureData, AccelerometerData com `measuredAt` do payload
+  - `analyzeHealth()`: replica logica do `AnalyzeCowHealth.php` — detecta CALVING e HEAT_STRESS via queries Prisma paralelas
+  - `notifyUsers()`: cria `Notification` para todos os usuarios ADMIN e MANAGER quando alerta detectado
+  - `ingestMqttPayload()`: ponto de entrada — localiza colar por `device_id` → vaca → persiste → analisa → notifica
+
+- `backend/src/controllers/mqttController.ts`
+  - Controller fino com `handleRequest` delegando para `ingestMqttPayload`
+
+- `backend/src/routes/mqttRoutes.ts`
+  - `POST /mqtt/ingest` protegido por `requireApiKey`
+
+**Frontend — Hooks de Acesso**
+
+- `frontend/src/features/access/hooks/useRoles.ts`
+  - `useRoles`, `useRole`, `useCreateRole`, `useUpdateRole`, `useDeleteRole`
+  - `useGrantPermission`, `useRevokePermission` (com `invalidateQueries` por roleId)
+
+- `frontend/src/features/access/hooks/useUsers.ts`
+  - `useUsers`, `useUser`, `useCreateUser`, `useUpdateUser`, `useDeleteUser`
+  - `useToggleActive`, `useAssignRole`, `useRemoveRole`
+
+- `frontend/src/features/access/hooks/usePermissions.ts`
+  - `usePermissions`, `useCreatePermission`, `useUpdatePermission`, `useDeletePermission`
+
+### Arquivos Modificados
+
+**Backend**
+
+- `backend/src/server.ts`
+  - Import e registro de `mqttRoutes` em `app.use("/mqtt", mqttRoutes)`
+
+- `backend/.env`
+  - Adicionada variavel `MQTT_WORKER_API_KEY="cowhealth-iot-secret-key"`
+
+- `backend/.env.example`
+  - Documentada variavel `MQTT_WORKER_API_KEY`
+
+**Frontend — Tipos**
+
+- `frontend/src/types/access.ts`
+  - Adicionado `RoleListItem` (shape do `GET /roles`: com `_count.users` e `_count.permissions`)
+  - Adicionado `RoleDetail` (shape do `GET /roles/:id`: com `permissions[]` e `users[]` aninhados)
+  - `Role` agora e alias de `RoleDetail` (retrocompatibilidade)
+  - `Permission.description` corrigido para `string | null`
+
+**Frontend — Services**
+
+- `frontend/src/services/rolesService.ts`
+  - Tipagem atualizada: `list()` retorna `RoleListItem[]`, `get()` retorna `RoleDetail`
+  - Bug corrigido: `grantPermission()` enviava `permissionId` na URL (`/roles/:id/permissions/:permissionId`), mas o backend le de `request.body.permissionId` (`POST /roles/:id/permissions`). Corrigido para `api.post(url, { permissionId })`
+
+**Frontend — Paginas (reescritas)**
+
+- `frontend/src/features/access/pages/UsersPage.tsx`
+  - Reescrita completa — era tabela read-only
+  - Barra de busca + botao "Novo usuario"
+  - Tabela com avatar (iniciais), nome + email (fonte mono), badge de perfil, status badge com dot
+  - Acoes por linha: Papeis | Editar | Ativar/Desativar | Excluir
+  - `CreateUserModal`: campos nome, e-mail, senha, perfil (select)
+  - `EditUserModal`: campos nome, e-mail, perfil (sem senha)
+  - `ManageRolesModal`: chips removiveis dos papeis atuais + select para adicionar novo papel
+  - `ConfirmDialog` para toggle ativo e para exclusao
+  - Skeleton de loading (3 barras), ErrorState, EmptyState com CTA
+
+- `frontend/src/features/access/pages/RolesPage.tsx`
+  - Reescrita completa — era grid read-only
+  - Barra de busca + botao "Novo papel"
+  - Grid de cards com nome, descricao, badges de contagem (`_count.permissions` e `_count.users`)
+  - Acoes por card: Editar | Excluir | Gerenciar permissoes
+  - `RoleFormModal`: campos nome e descricao
+  - `ManagePermissionsModal`: lista de todas as permissoes com checkbox (toggle imediato via grant/revoke), estado visual ativo/inativo por cor, skeleton de loading
+  - `ConfirmDialog` para exclusao
+  - Skeleton de loading (3 cards), ErrorState, EmptyState com CTA
+
+- `frontend/src/features/access/pages/PermissionsPage.tsx`
+  - Reescrita completa — era tabela read-only
+  - Barra de busca + botao "Nova permissao"
+  - Tabela com nome em `font-mono` (destaque accent), descricao, acoes
+  - `PermissionFormModal`: campos nome (com hint de convencao) e descricao
+  - `ConfirmDialog` para exclusao
+  - Skeleton de loading, ErrorState, EmptyState com CTA
+
+### Bugs Corrigidos
+
+- **`grantPermission` retornava 404 silencioso**
+  - Causa: frontend enviava `POST /roles/:id/permissions/:permissionId` (rota inexistente)
+  - Solucao: corrigido para `POST /roles/:id/permissions` com body `{ permissionId }` (contrato real do backend)
+
+- **Telas de acesso eram read-only (nao permitiam criar, editar nem excluir)**
+  - Causa: paginas so faziam `useQuery` sem mutations
+  - Solucao: implementacao completa de CRUD com hooks, modais e confirmacoes
+
+### Build Status
+
+- TypeScript backend: zero erros (`npx tsc --noEmit`)
+- TypeScript frontend: zero erros (`npx tsc --noEmit`)
+
+---
+
 # Alterações e Progresso de Angelo
 
 ...
