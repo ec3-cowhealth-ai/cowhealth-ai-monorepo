@@ -1,20 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
-import type { LoginInput, RegisterInput, AuthPayload } from "../types/auth";
-
-export const register = async ({ name, email, password }: RegisterInput) => {
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) throw new Error("Email ja cadastrado.");
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-        data: { name, email, passwordHash, profile: "VIEWER", active: true },
-    });
-
-    return { id: user.id, name: user.name, email: user.email };
-};
+import type { LoginInput, AuthPayload } from "../types/auth";
 
 export const login = async ({ email, password }: LoginInput) => {
     const user = await prisma.user.findUnique({ where: { email } });

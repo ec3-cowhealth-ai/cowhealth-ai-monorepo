@@ -130,6 +130,42 @@ const generateSensorReadings = (
 
 // ========== SEED MAIN ==========
 
+// TODO[RENATO]: Ajustar os seguintes pontos antes do próximo merge:
+//
+// 1. VOLUME DE DADOS — o seed atual cria 15 fazendas / 5 usuários / 30 colares / 150 vacas.
+//    O banco de desenvolvimento precisa de:
+//      - 5 fazendas
+//      - 160 vacas (32 por fazenda)
+//      - 200 colares (160 ACTIVE + 20 estoque INACTIVE + 10 MAINTENANCE + 5 INACTIVE + 5 BATTERY)
+//      - 8 usuários com 8 perfis distintos (ver lista abaixo)
+//
+// 2. NOME DOS COLARES — CRÍTICO PARA O SIMULADOR IoT
+//    O campo `Collar.name` é o `device_id` do simulador Python (cowhealth-iot-simulator).
+//    O worker MQTT localiza o colar via: WHERE name = device_id
+//    Os 160 colares ACTIVE DEVEM usar nomes no formato NNNNLLL (4 dígitos + 3 letras maiúsculas)
+//    gerados deterministicamente pelo script `generate_collars.py` com seed=42.
+//    Execute o script no repositório IoT e copie a lista gerada:
+//      cd cowhealth-iot-simulator
+//      python scripts/generate_collars.py   # → gera data/collar_ids.json
+//    Esses IDs devem ser hardcoded aqui como constante COLLAR_IDS para garantir
+//    paridade entre o simulador e o banco em qualquer máquina do time.
+//
+// 3. USUÁRIOS — 8 perfis distintos necessários (email: admin@cowhealth.com / senha: 12345678):
+//    - SuperAdmin      → profile: ADMIN
+//    - Administrador   → profile: ADMIN
+//    - Veterinario     → profile: MANAGER
+//    - Zootecnista     → profile: MANAGER
+//    - Gerente de Fazenda → profile: MANAGER
+//    - Operador de Campo  → profile: VIEWER
+//    - Financeiro      → profile: VIEWER
+//    - Observador      → profile: VIEWER
+//    Senha padrão: bcrypt com custo 12 (já está correto neste seed).
+//    Email canônico de admin: admin@cowhealth.com (atualmente está admin@admin.com — corrigir).
+//
+// 4. DISTRIBUIÇÃO DE STATUS DAS VACAS — usar distribuição realista:
+//    ~69% HEALTHY, ~12% HEAT_STRESS, ~12% ALERT, ~6% CALVING
+//    (atualmente usa randomElement que distribui 25% cada — distorce o dashboard)
+
 async function main() {
   console.log("🚀 Iniciando SEED com dados massivos...\n");
   console.log("🧹 Limpando banco de dados...");
