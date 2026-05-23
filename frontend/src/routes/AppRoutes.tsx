@@ -4,6 +4,8 @@ import { LoginPage } from "@pages/auth/LoginPage";
 import { RegisterPage } from "@pages/auth/RegisterPage";
 import { LandingPage } from "@features/landing";
 import { HomePage } from "@pages/home/HomePage";
+import { MapPage } from "@pages/map/MapPage";
+import { ProfilePage } from "@pages/profile/ProfilePage";
 import { DashboardPage } from "@features/dashboard/pages/DashboardPage";
 import { FarmsPage, FarmDetailPage } from "@features/farms";
 import { CollarsPage, CollarDetailPage } from "@features/collars";
@@ -47,6 +49,10 @@ export const AppRoutes = () => (
 
         {/* Notifications */}
         <Route path="/notifications" element={<NotificationsPage />} />
+
+        {/* Map & Profile */}
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* Access (Admin only) */}
         <Route path="/access" element={<AccessLayout />}>

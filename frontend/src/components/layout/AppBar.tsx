@@ -1,30 +1,38 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import { Icon } from "@components/ui/Icon";
 
 interface AppBarProps {
   title: string;
+  subtitle?: string;
+  showBack?: boolean;
   onBack?: () => void;
+  left?: ReactNode;
   actions?: ReactNode;
 }
 
-export const AppBar = ({ title, onBack, actions }: AppBarProps) => {
+export const AppBar = ({ title, subtitle, showBack, onBack, left, actions }: AppBarProps) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate(-1);
-    }
+    if (onBack) onBack();
+    else navigate(-1);
   };
 
   return (
     <header className="app-bar">
       <div className="app-bar__left">
-        <button className="app-bar__back" onClick={handleBack}>
-          ←
-        </button>
-        <h1 className="app-bar__title">{title}</h1>
+        {left ? (
+          left
+        ) : showBack ? (
+          <button className="app-bar__back" onClick={handleBack} aria-label="Voltar">
+            <Icon n="chevronLeft" s={20} />
+          </button>
+        ) : null}
+        <div className="app-bar__titles">
+          <h1 className="app-bar__title">{title}</h1>
+          {subtitle && <p className="app-bar__subtitle">{subtitle}</p>}
+        </div>
       </div>
       {actions && <div className="app-bar__actions">{actions}</div>}
     </header>

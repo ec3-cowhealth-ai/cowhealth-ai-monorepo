@@ -5,7 +5,7 @@
 [![Frontend](https://img.shields.io/badge/frontend-Vite%20%2B%20React%20Query%20%2B%20Axios-7DE2D1?style=for-the-badge)](./frontend)
 [![Backend](https://img.shields.io/badge/backend-Express%20%2B%20Prisma%20%2B%20JWT-131515?style=for-the-badge)](./backend)
 [![Database](https://img.shields.io/badge/database-MySQL-E8C66B?style=for-the-badge)](./backend/prisma/schema.prisma)
-[![Architecture](https://img.shields.io/badge/architecture-feature--oriented%20monorepo-6BB4E8?style=for-the-badge)](./docs/frontend-architecture.md)
+[![Architecture](https://img.shields.io/badge/architecture-feature--oriented%20monorepo-6BB4E8?style=for-the-badge)](docs/architecture/frontend-architecture.md)
 
 CowHealth AI is a bovine health monitoring platform organized as a web monorepo. The repository contains a React frontend, an Express + Prisma backend, a MySQL schema, and project documentation that describes the current architecture, design system, and implementation rules.
 
@@ -406,8 +406,8 @@ Refer to `docs/backend-architecture.md` for the authoritative route matrix.
 
 ## Useful References
 
-- [Frontend architecture](docs/frontend-architecture.md)
-- [Backend architecture](docs/backend-architecture.md)
+- [Frontend architecture](docs/architecture/frontend-architecture.md)
+- [Backend architecture](docs/architecture/backend-architecture.md)
 - [Prisma notes](docs/prisma.md)
 - [Design system references](agents/design.md)
 

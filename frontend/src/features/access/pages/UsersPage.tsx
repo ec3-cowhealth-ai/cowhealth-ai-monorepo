@@ -237,7 +237,7 @@ export const UsersPage = () => {
   const { mutate: createUser, isPending: creating } = useCreateUser();
   const { mutate: updateUser, isPending: updating } = useUpdateUser();
   const { mutate: deleteUser, isPending: deleting } = useDeleteUser();
-  const { mutate: toggleActive, isPending: toggling } = useToggleActive();
+  const { mutate: toggleActive } = useToggleActive();
 
   const filtered = useMemo(() => {
     if (!users) return [];
