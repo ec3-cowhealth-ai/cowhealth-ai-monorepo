@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { Icon } from "@components/ui/Icon";
+import { ChevronLeft } from "lucide-react";
 
 interface AppBarProps {
   title: string;
@@ -26,7 +26,7 @@ export const AppBar = ({ title, subtitle, showBack, onBack, left, actions }: App
           left
         ) : showBack ? (
           <button className="app-bar__back" onClick={handleBack} aria-label="Voltar">
-            <Icon n="chevronLeft" s={20} />
+            <ChevronLeft size={20} />
           </button>
         ) : null}
         <div className="app-bar__titles">

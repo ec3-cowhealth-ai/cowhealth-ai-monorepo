@@ -1,20 +1,21 @@
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
-import { Icon } from "@components/ui/Icon";
-import { CowMark } from "@components/ui/CowMark";
+import { List, Warehouse, Tag, User, ChevronRight, LogOut } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
 import { useMe, useLogout } from "@hooks/useAuth";
+
+const menuItems: { icon: ReactNode; label: string; path: string }[] = [
+  { icon: <List size={18} color="var(--text-secondary)" />, label: "Rebanho", path: "/cows" },
+  { icon: <Warehouse size={18} color="var(--text-secondary)" />, label: "Fazendas", path: "/farms" },
+  { icon: <Tag size={18} color="var(--text-secondary)" />, label: "Coleiras", path: "/collars" },
+  { icon: <User size={18} color="var(--text-secondary)" />, label: "Usuários", path: "/access/users" },
+];
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
   const { data: user } = useMe();
   const { logout } = useLogout();
-
-  const menuItems = [
-    { icon: "list" as const, label: "Rebanho", path: "/cows" },
-    { icon: "farm" as const, label: "Fazendas", path: "/farms" },
-    { icon: "collar" as const, label: "Coleiras", path: "/collars" },
-    { icon: "user" as const, label: "Usuários", path: "/access/users" },
-  ];
 
   return (
     <div className="app-page">
@@ -28,7 +29,7 @@ export const ProfilePage = () => {
             background: "var(--bg-elev-2)", display: "flex",
             alignItems: "center", justifyContent: "center",
           }}>
-            <CowMark s={30} />
+            <CowHead size={30} />
           </div>
           <div>
             <p style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>{user?.name ?? "—"}</p>
@@ -52,9 +53,9 @@ export const ProfilePage = () => {
                 color: "var(--text-primary)", textAlign: "left",
               }}
             >
-              <Icon n={item.icon} s={18} c="var(--text-secondary)" />
+              {item.icon}
               <span style={{ flex: 1, fontSize: 14 }}>{item.label}</span>
-              <Icon n="chevronRight" s={14} c="var(--text-muted)" />
+              <ChevronRight size={14} color="var(--text-muted)" />
             </button>
           ))}
         </div>
@@ -70,7 +71,7 @@ export const ProfilePage = () => {
             marginTop: 8,
           }}
         >
-          <Icon n="logout" s={18} c="var(--danger)" />
+          <LogOut size={18} color="var(--danger)" />
           <span style={{ fontSize: 14 }}>Sair</span>
         </button>
       </div>

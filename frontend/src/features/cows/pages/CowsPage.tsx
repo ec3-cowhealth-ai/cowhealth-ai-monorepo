@@ -2,8 +2,8 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import { Icon } from "@components/ui/Icon";
-import { CowMark } from "@components/ui/CowMark";
+import { Search, ChevronRight } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useCows } from "../hooks/useCows";
 import { useFarmContext } from "../../../context/FarmContext";
@@ -60,7 +60,7 @@ export const CowsPage = () => {
         subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
         actions={
           <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
-            <Icon n="search" s={20} />
+            <Search size={20} />
           </button>
         }
       />
@@ -104,7 +104,7 @@ export const CowsPage = () => {
           </div>
         ) : filtered.length === 0 ? (
           <div className="home-empty">
-            <CowMark s={40} />
+            <CowHead size={40} />
             <p>Nenhuma vaca encontrada</p>
           </div>
         ) : (
@@ -116,7 +116,7 @@ export const CowsPage = () => {
                 onClick={() => navigate(`/cows/${cow.id}`)}
               >
                 <div className="cow-row__avatar">
-                  <CowMark s={28} />
+                  <CowHead size={28} />
                 </div>
                 <div className="cow-row__info">
                   <span className="cow-row__tag">{cow.tag}</span>
@@ -128,7 +128,7 @@ export const CowsPage = () => {
                     pulse={cow.status === CowStatusValues.ALERT}
                   />
                   <span className="cow-row__status">{STATUS_LABEL[cow.status] ?? cow.status}</span>
-                  <Icon n="chevronRight" s={14} c="var(--text-muted)" />
+                  <ChevronRight size={14} color="var(--text-muted)" />
                 </div>
               </button>
             ))}

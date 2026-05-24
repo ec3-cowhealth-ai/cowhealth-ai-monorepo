@@ -5,8 +5,8 @@ import { useUnreadNotifications } from "@hooks/useNotifications";
 import { useDashboardOverview } from "@features/dashboard/hooks/useDashboard";
 import { useCows } from "@features/cows/hooks/useCows";
 import { AppBar } from "@components/layout";
-import { Icon } from "@components/ui/Icon";
-import { CowMark } from "@components/ui/CowMark";
+import { Bell, AlertTriangle, ChevronRight, Check, List, Map, Warehouse } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useFarmContext } from "../../context/FarmContext";
 import { CowStatusValues } from "../../types/cows";
@@ -55,10 +55,10 @@ export const HomePage = () => {
         subtitle={selectedFarm?.name ?? "Carregando…"}
         left={
           <button
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}
             onClick={() => setShowFarmPicker(true)}
           >
-            <CowMark s={32} />
+            <CowHead size={32} />
           </button>
         }
         actions={
@@ -67,7 +67,7 @@ export const HomePage = () => {
             onClick={() => navigate("/notifications")}
             style={{ position: "relative" }}
           >
-            <Icon n="bell" s={22} />
+            <Bell size={22} />
             {unreadCount > 0 && (
               <span className="app-bar__action-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
             )}
@@ -105,11 +105,14 @@ export const HomePage = () => {
                   color: "var(--text-primary)",
                 }}
               >
-                <CowMark s={24} primary={farm.id === selectedFarm?.id ? "var(--verdigris)" : "var(--text-muted)"} />
+                <CowHead
+                  size={24}
+                  color={farm.id === selectedFarm?.id ? "var(--verdigris)" : "var(--text-muted)"}
+                />
                 <span style={{ flex: 1, fontSize: 14, fontWeight: farm.id === selectedFarm?.id ? 700 : 400 }}>
                   {farm.name}
                 </span>
-                {farm.id === selectedFarm?.id && <Icon n="check" s={16} c="var(--verdigris)" />}
+                {farm.id === selectedFarm?.id && <Check size={16} color="var(--verdigris)" />}
               </button>
             ))}
           </div>
@@ -151,7 +154,7 @@ export const HomePage = () => {
             onClick={() => navigate("/notifications")}
             style={{ width: "100%", textAlign: "left", cursor: "pointer" }}
           >
-            <Icon n="alert" s={16} c="var(--danger)" />
+            <AlertTriangle size={16} color="var(--danger)" />
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>
                 {alertCount} {alertCount === 1 ? "vaca requer" : "vacas requerem"} atenção imediata
@@ -160,7 +163,7 @@ export const HomePage = () => {
                 Toque para ver os alertas
               </p>
             </div>
-            <Icon n="chevronRight" s={14} c="var(--text-muted)" />
+            <ChevronRight size={14} color="var(--text-muted)" />
           </button>
         )}
 
@@ -198,16 +201,16 @@ export const HomePage = () => {
           </div>
           <div className="quick-grid">
             <button className="quick-chip" onClick={() => navigate("/cows")}>
-              <Icon n="list" s={20} c="var(--verdigris)" />
+              <List size={20} color="var(--verdigris)" />
               <span>Rebanho</span>
             </button>
             <button className="quick-chip" onClick={() => navigate("/map")}>
-              <Icon n="map" s={20} c="var(--verdigris)" />
+              <Map size={20} color="var(--verdigris)" />
               <span>Mapa</span>
             </button>
             <button className="quick-chip" onClick={() => navigate("/notifications")}>
-              <span style={{ position: "relative" }}>
-                <Icon n="bell" s={20} c="var(--verdigris)" />
+              <span style={{ position: "relative", display: "flex" }}>
+                <Bell size={20} color="var(--verdigris)" />
                 {unreadCount > 0 && (
                   <span style={{
                     position: "absolute", top: -4, right: -4,
@@ -220,7 +223,7 @@ export const HomePage = () => {
               <span>Alertas</span>
             </button>
             <button className="quick-chip" onClick={() => navigate("/farms")}>
-              <Icon n="farm" s={20} c="var(--verdigris)" />
+              <Warehouse size={20} color="var(--verdigris)" />
               <span>Fazendas</span>
             </button>
           </div>

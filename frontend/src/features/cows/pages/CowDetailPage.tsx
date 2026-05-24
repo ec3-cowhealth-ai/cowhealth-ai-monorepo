@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import { Icon } from "@components/ui/Icon";
-import { CowMark } from "@components/ui/CowMark";
+import { AlertTriangle, Warehouse, Tag, Thermometer, Heart } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
 import { useCow, useCowHeartRateDaily, useCowTemperatureDaily } from "../hooks/useCows";
@@ -58,7 +58,7 @@ export const CowDetailPage = () => {
       <div className="app-page">
         <AppBar title="Detalhes" showBack />
         <div className="home-empty">
-          <Icon n="alert" s={36} c="var(--text-muted)" />
+          <AlertTriangle size={36} color="var(--text-muted)" />
           <p>Vaca não encontrada</p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export const CowDetailPage = () => {
             background: "var(--bg-elev-2)", display: "flex",
             alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}>
-            <CowMark s={32} />
+            <CowHead size={32} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -95,18 +95,18 @@ export const CowDetailPage = () => {
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {cow.farm && (
                 <button
-                  style={{ padding: "3px 8px", background: "var(--bg-elev-2)", border: "1px solid var(--border-subtle)", borderRadius: 12, fontSize: 11, color: "var(--text-secondary)", cursor: "pointer" }}
+                  style={{ padding: "3px 8px", background: "var(--bg-elev-2)", border: "1px solid var(--border-subtle)", borderRadius: 12, fontSize: 11, color: "var(--text-secondary)", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
                   onClick={() => navigate(`/farms/${cow.farm.id}`)}
                 >
-                  <Icon n="farm" s={11} /> {cow.farm.name}
+                  <Warehouse size={11} /> {cow.farm.name}
                 </button>
               )}
               {cow.collar && (
                 <button
-                  style={{ padding: "3px 8px", background: "var(--bg-elev-2)", border: "1px solid var(--border-subtle)", borderRadius: 12, fontSize: 11, color: "var(--text-secondary)", cursor: "pointer" }}
+                  style={{ padding: "3px 8px", background: "var(--bg-elev-2)", border: "1px solid var(--border-subtle)", borderRadius: 12, fontSize: 11, color: "var(--text-secondary)", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
                   onClick={() => navigate(`/collars/${cow.collar!.id}`)}
                 >
-                  <Icon n="collar" s={11} /> {cow.collar.name}
+                  <Tag size={11} /> {cow.collar.name}
                 </button>
               )}
             </div>
@@ -145,13 +145,13 @@ export const CowDetailPage = () => {
                 className={`filter-chip${sensorTab === "temp" ? " is-active" : ""}`}
                 onClick={() => setSensorTab("temp")}
               >
-                <Icon n="thermo" s={12} /> Temperatura
+                <Thermometer size={12} /> Temperatura
               </button>
               <button
                 className={`filter-chip${sensorTab === "hr" ? " is-active" : ""}`}
                 onClick={() => setSensorTab("hr")}
               >
-                <Icon n="heart" s={12} /> Freq. Cardíaca
+                <Heart size={12} /> Freq. Cardíaca
               </button>
             </div>
 

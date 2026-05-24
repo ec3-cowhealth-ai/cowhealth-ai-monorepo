@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import { Icon } from "@components/ui/Icon";
+import { Check, AlertTriangle, Bell, Activity } from "lucide-react";
 import {
   useNotifications,
   useUnreadNotifications,
@@ -15,10 +16,10 @@ const TYPE_COLOR: Record<string, string> = {
   INFO: "var(--info)",
 };
 
-const TYPE_ICON: Record<string, "alert" | "bell" | "activity"> = {
-  ALERT: "alert",
-  WARNING: "bell",
-  INFO: "activity",
+const TYPE_ICON: Record<string, ReactNode> = {
+  ALERT: <AlertTriangle size={14} />,
+  WARNING: <Bell size={14} />,
+  INFO: <Activity size={14} />,
 };
 
 const timeAgo = (dateStr: string) => {
@@ -54,7 +55,7 @@ export const NotificationsPage = () => {
         actions={
           unreadCount > 0 ? (
             <button className="app-bar__action" onClick={() => markAllAsRead()} title="Marcar tudo como lido">
-              <Icon n="check" s={20} />
+              <Check size={20} />
             </button>
           ) : undefined
         }
@@ -83,14 +84,13 @@ export const NotificationsPage = () => {
           </div>
         ) : notifications.length === 0 ? (
           <div className="home-empty">
-            <Icon n="check" s={36} c="var(--success)" />
+            <Check size={36} color="var(--success)" />
             <p>{tab === "unread" ? "Você está em dia!" : "Sem notificações"}</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {notifications.map((n) => {
               const color = TYPE_COLOR[n.type] ?? "var(--border-subtle)";
-              const iconName = TYPE_ICON[n.type] ?? "bell";
               return (
                 <button
                   key={n.id}
@@ -98,8 +98,8 @@ export const NotificationsPage = () => {
                   style={{ borderLeftColor: color, width: "100%", textAlign: "left", cursor: "pointer" }}
                   onClick={() => { if (!n.read) markAsRead(n.id); }}
                 >
-                  <span style={{ color, flexShrink: 0, marginTop: 2 }}>
-                    <Icon n={iconName} s={14} />
+                  <span style={{ color, flexShrink: 0, marginTop: 2, display: "flex" }}>
+                    {TYPE_ICON[n.type] ?? <Bell size={14} />}
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: n.read ? 400 : 600 }}>
