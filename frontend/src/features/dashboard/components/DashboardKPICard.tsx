@@ -2,25 +2,25 @@ interface DashboardKPICardProps {
   title: string;
   value: number;
   unit?: string;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   trendPercent?: number;
 }
 
 export const DashboardKPICard = ({
   title,
   value,
-  unit = '',
+  unit = "",
   trend,
   trendPercent,
 }: DashboardKPICardProps) => {
   const trendClass =
-    trend === 'up'
-      ? 'kpi-card__change--positive'
-      : trend === 'down'
-      ? 'kpi-card__change--negative'
-      : '';
+    trend === "up"
+      ? "kpi-card__change--positive"
+      : trend === "down"
+        ? "kpi-card__change--negative"
+        : "";
 
-  const trendArrow = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→';
+  const trendArrow = trend === "up" ? "↑" : trend === "down" ? "↓" : "→";
 
   return (
     <div className="kpi-card">

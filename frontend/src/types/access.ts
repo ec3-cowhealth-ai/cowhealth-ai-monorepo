@@ -4,7 +4,8 @@ export const UserProfileValues = {
   VIEWER: "VIEWER",
 } as const;
 
-export type UserProfile = typeof UserProfileValues[keyof typeof UserProfileValues];
+export type UserProfile =
+  (typeof UserProfileValues)[keyof typeof UserProfileValues];
 
 export interface Permission {
   id: string;
@@ -33,7 +34,9 @@ export interface RoleDetail {
   createdAt: string;
   updatedAt: string;
   permissions: Array<{ permission: { id: string; name: string } }>;
-  users: Array<{ user: { id: string; name: string; email: string; active: boolean } }>;
+  users: Array<{
+    user: { id: string; name: string; email: string; active: boolean };
+  }>;
 }
 
 // Manter Role para compatibilidade com código existente

@@ -1,15 +1,15 @@
-import { AppBar } from '@components/layout';
-import { LoadingSpinner } from '@components/common';
+import { AppBar } from "@components/layout";
+import { LoadingSpinner } from "@components/common";
 import {
   DashboardKPICard,
   CowsPerStatusChart,
   CowsPerFarmChart,
-} from '../index';
+} from "../index";
 import {
   useDashboardOverview,
   useCowsPerStatus,
   useCowsPerFarm,
-} from '../hooks/useDashboard';
+} from "../hooks/useDashboard";
 
 export const DashboardPage = () => {
   const { data: overview, isLoading: loadingOverview } = useDashboardOverview();
@@ -20,7 +20,14 @@ export const DashboardPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Dashboard" />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -41,21 +48,42 @@ export const DashboardPage = () => {
     <div className="app-page">
       <AppBar title="Dashboard" />
 
-      <section style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
+      <section
+        style={{
+          padding: "var(--s-4)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--s-5)",
+        }}
+      >
         <div className="grid grid--4">
-          <DashboardKPICard title="Total de Vacas" value={overview?.totalCows ?? 0} />
-          <DashboardKPICard title="Com Colar" value={overview?.cowsWithCollar ?? 0} />
+          <DashboardKPICard
+            title="Total de Vacas"
+            value={overview?.totalCows ?? 0}
+          />
+          <DashboardKPICard
+            title="Com Colar"
+            value={overview?.cowsWithCollar ?? 0}
+          />
           <DashboardKPICard
             title="Em Alerta"
             value={overview?.cowsInAlert ?? 0}
-            trend={overview && overview.cowsInAlert > 0 ? 'down' : 'neutral'}
+            trend={overview && overview.cowsInAlert > 0 ? "down" : "neutral"}
           />
-          <DashboardKPICard title="Fazendas Ativas" value={overview?.totalFarms ?? 0} />
-          <DashboardKPICard title="Colares Ativos" value={overview?.totalActiveCollars ?? 0} />
+          <DashboardKPICard
+            title="Fazendas Ativas"
+            value={overview?.totalFarms ?? 0}
+          />
+          <DashboardKPICard
+            title="Colares Ativos"
+            value={overview?.totalActiveCollars ?? 0}
+          />
           <DashboardKPICard
             title="Alertas Nao Lidos"
             value={overview?.unreadNotifications ?? 0}
-            trend={overview && overview.unreadNotifications > 0 ? 'down' : 'neutral'}
+            trend={
+              overview && overview.unreadNotifications > 0 ? "down" : "neutral"
+            }
           />
         </div>
 

@@ -1,5 +1,10 @@
 import api from "../lib/api";
-import type { User, UserListItem, CreateUserInput, UpdateUserInput } from "../types/access.ts";
+import type {
+  User,
+  UserListItem,
+  CreateUserInput,
+  UpdateUserInput,
+} from "../types/access.ts";
 
 export const usersService = {
   list: async () => {

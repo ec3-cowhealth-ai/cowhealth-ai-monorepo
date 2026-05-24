@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface FooterProps {
   onNavClick?: (link: string) => void;
@@ -15,10 +15,10 @@ interface FooterProps {
  */
 export const Footer: React.FC<FooterProps> = ({ onNavClick }) => {
   const navLinks = [
-    { href: '#about', label: 'Sobre' },
-    { href: '#privacy', label: 'Privacidade' },
-    { href: '#contact', label: 'Contato' },
-    { href: '#support', label: 'Suporte' },
+    { href: "#about", label: "Sobre" },
+    { href: "#privacy", label: "Privacidade" },
+    { href: "#contact", label: "Contato" },
+    { href: "#support", label: "Suporte" },
   ];
 
   return (
@@ -31,10 +31,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavClick }) => {
         <span className="footer-version">v1.0</span>
       </div>
 
-      <nav
-        className="footer-links"
-        aria-label="Links institucionais"
-      >
+      <nav className="footer-links" aria-label="Links institucionais">
         {navLinks.map((link) => (
           <a
             key={link.href}

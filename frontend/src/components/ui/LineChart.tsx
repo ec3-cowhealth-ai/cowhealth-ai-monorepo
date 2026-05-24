@@ -58,7 +58,9 @@ export const LineChart = ({
     pad.l + (data.length > 1 ? (i / (data.length - 1)) * iw : iw / 2);
   const ys = (v: number) => pad.t + ih - ((v - computedMin) / range) * ih;
 
-  const pathD = values.map((v, i) => `${i ? "L" : "M"} ${xs(i).toFixed(1)} ${ys(v).toFixed(1)}`).join(" ");
+  const pathD = values
+    .map((v, i) => `${i ? "L" : "M"} ${xs(i).toFixed(1)} ${ys(v).toFixed(1)}`)
+    .join(" ");
   const areaD = `${pathD} L ${xs(values.length - 1).toFixed(1)} ${(pad.t + ih).toFixed(1)} L ${xs(0).toFixed(1)} ${(pad.t + ih).toFixed(1)} Z`;
 
   // derive a safe CSS id from color string
@@ -72,7 +74,12 @@ export const LineChart = ({
   labelIndices.add(data.length - 1);
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} style={{ display: "block" }}>
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      width="100%"
+      height={h}
+      style={{ display: "block" }}
+    >
       <defs>
         <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.3" />
@@ -86,16 +93,23 @@ export const LineChart = ({
         return (
           <g key={i}>
             <line
-              x1={pad.l} x2={w - pad.r} y1={y} y2={y}
-              stroke="rgba(255,250,251,0.06)" strokeDasharray="2 4"
+              x1={pad.l}
+              x2={w - pad.r}
+              y1={y}
+              y2={y}
+              stroke="rgba(255,250,251,0.06)"
+              strokeDasharray="2 4"
             />
             <text
-              x={pad.l - 4} y={y + 3}
-              textAnchor="end" fontSize="9"
+              x={pad.l - 4}
+              y={y + 3}
+              textAnchor="end"
+              fontSize="9"
               fill="rgba(255,250,251,0.42)"
               fontFamily="var(--font-mono)"
             >
-              {v.toFixed(1)}{unit}
+              {v.toFixed(1)}
+              {unit}
             </text>
           </g>
         );
@@ -104,15 +118,26 @@ export const LineChart = ({
       {thresholds.map((t, i) => (
         <line
           key={i}
-          x1={pad.l} x2={w - pad.r}
-          y1={ys(t.v)} y2={ys(t.v)}
+          x1={pad.l}
+          x2={w - pad.r}
+          y1={ys(t.v)}
+          y2={ys(t.v)}
           stroke={t.c ?? "var(--danger)"}
-          strokeWidth="1" strokeDasharray="3 3" opacity="0.6"
+          strokeWidth="1"
+          strokeDasharray="3 3"
+          opacity="0.6"
         />
       ))}
 
       <path d={areaD} fill={`url(#${gradId})`} />
-      <path d={pathD} stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+      <path
+        d={pathD}
+        stroke={color}
+        strokeWidth="2"
+        fill="none"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
 
       {values.map((v, i) => (
         <circle key={i} cx={xs(i)} cy={ys(v)} r="2.4" fill={color} />
@@ -122,14 +147,16 @@ export const LineChart = ({
         labelIndices.has(i) ? (
           <text
             key={i}
-            x={xs(i)} y={h - 4}
-            textAnchor="middle" fontSize="9"
+            x={xs(i)}
+            y={h - 4}
+            textAnchor="middle"
+            fontSize="9"
             fill="rgba(255,250,251,0.42)"
             fontFamily="var(--font-mono)"
           >
             {d.date}
           </text>
-        ) : null
+        ) : null,
       )}
     </svg>
   );

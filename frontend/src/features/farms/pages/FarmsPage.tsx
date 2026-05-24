@@ -21,7 +21,7 @@ export const FarmsPage = () => {
     return farms.filter(
       (farm) =>
         farm.name.toLowerCase().includes(search.toLowerCase()) ||
-        farm.cnpj.includes(search)
+        farm.cnpj.includes(search),
     );
   }, [farms, search]);
 
@@ -35,7 +35,14 @@ export const FarmsPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Fazendas" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -47,7 +54,10 @@ export const FarmsPage = () => {
       <AppBar
         title="Fazendas"
         actions={
-          <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => setShowForm(true)}
+          >
             + Nova
           </button>
         }
@@ -70,7 +80,10 @@ export const FarmsPage = () => {
             title="Nenhuma fazenda encontrada"
             description="Crie sua primeira fazenda para começar"
             action={
-              <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowForm(true)}
+              >
                 Criar Fazenda
               </button>
             }

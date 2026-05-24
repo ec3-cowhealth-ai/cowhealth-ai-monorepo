@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { useFarms } from "@features/farms/hooks/useFarms";
 import type { Farm } from "../types/farms";
 
@@ -37,7 +43,9 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <FarmContext.Provider value={{ selectedFarm, setSelectedFarm, farms, isLoading }}>
+    <FarmContext.Provider
+      value={{ selectedFarm, setSelectedFarm, farms, isLoading }}
+    >
       {children}
     </FarmContext.Provider>
   );

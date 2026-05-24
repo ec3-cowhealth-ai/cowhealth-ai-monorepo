@@ -417,4 +417,3 @@ Refer to `docs/backend-architecture.md` for the authoritative route matrix.
 - The backend uses MySQL through Prisma. Make sure `DATABASE_URL` is valid before running schema-dependent work.
 - The frontend expects `VITE_API_URL` to point at the backend API.
 - The repo contains documentation artifacts and design references that are useful for implementation work, but the source code and Prisma schema remain the final truth for runtime behavior.
-

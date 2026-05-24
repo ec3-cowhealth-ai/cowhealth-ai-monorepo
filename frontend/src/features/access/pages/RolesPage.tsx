@@ -1,9 +1,19 @@
 import { useState, useMemo } from "react";
-import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
+import {
+  FormModal,
+  ConfirmDialog,
+  EmptyState,
+  ErrorState,
+} from "@components/common";
 import { X, Users } from "lucide-react";
 import {
-  useRoles, useRole, useCreateRole, useUpdateRole,
-  useDeleteRole, useGrantPermission, useRevokePermission,
+  useRoles,
+  useRole,
+  useCreateRole,
+  useUpdateRole,
+  useDeleteRole,
+  useGrantPermission,
+  useRevokePermission,
 } from "../hooks/useRoles";
 import { usePermissions } from "../hooks/usePermissions";
 import type { RoleListItem } from "../../../types/access.ts";
@@ -18,8 +28,17 @@ interface RoleFormModalProps {
   onSubmit: (data: { name: string; description: string }) => void;
 }
 
-function RoleFormModal({ open, role, onClose, isLoading, onSubmit }: RoleFormModalProps) {
-  const [form, setForm] = useState({ name: role?.name ?? "", description: role?.description ?? "" });
+function RoleFormModal({
+  open,
+  role,
+  onClose,
+  isLoading,
+  onSubmit,
+}: RoleFormModalProps) {
+  const [form, setForm] = useState({
+    name: role?.name ?? "",
+    description: role?.description ?? "",
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,15 +56,22 @@ function RoleFormModal({ open, role, onClose, isLoading, onSubmit }: RoleFormMod
     >
       <div className="form-field">
         <label className="form-field__label is-required">Nome</label>
-        <input className="form-field__input" value={form.name} required
+        <input
+          className="form-field__input"
+          value={form.name}
+          required
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="Ex: Veterinario" />
+          placeholder="Ex: Veterinario"
+        />
       </div>
       <div className="form-field">
         <label className="form-field__label">Descricao</label>
-        <input className="form-field__input" value={form.description}
+        <input
+          className="form-field__input"
+          value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
-          placeholder="Descricao opcional do papel" />
+          placeholder="Descricao opcional do papel"
+        />
       </div>
     </FormModal>
   );
@@ -59,14 +85,21 @@ interface ManagePermsModalProps {
   onClose: () => void;
 }
 
-function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalProps) {
+function ManagePermissionsModal({
+  roleId,
+  roleName,
+  onClose,
+}: ManagePermsModalProps) {
   const { data: roleDetail, isLoading } = useRole(roleId);
   const { data: allPermissions } = usePermissions();
   const { mutate: grant, isPending: granting } = useGrantPermission();
   const { mutate: revoke, isPending: revoking } = useRevokePermission();
 
   const grantedIds = useMemo(
-    () => new Set((roleDetail?.permissions ?? []).map((p) => String(p.permission.id))),
+    () =>
+      new Set(
+        (roleDetail?.permissions ?? []).map((p) => String(p.permission.id)),
+      ),
     [roleDetail],
   );
 
@@ -83,22 +116,47 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-card" style={{ maxWidth: 540 }} onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-card"
+        style={{ maxWidth: 540 }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-card__header">
           <div>
             <h2 className="modal-card__title">Permissoes</h2>
-            <p style={{ margin: "4px 0 0", fontSize: "var(--t-sm)", color: "var(--text-muted)" }}>
-              Papel: <strong style={{ color: "var(--text-primary)" }}>{roleName}</strong>
+            <p
+              style={{
+                margin: "4px 0 0",
+                fontSize: "var(--t-sm)",
+                color: "var(--text-muted)",
+              }}
+            >
+              Papel:{" "}
+              <strong style={{ color: "var(--text-primary)" }}>
+                {roleName}
+              </strong>
             </p>
           </div>
-          <button className="modal-card__close" onClick={onClose}><X size={16} /></button>
+          <button className="modal-card__close" onClick={onClose}>
+            <X size={16} />
+          </button>
         </div>
 
         <div className="modal-card__body">
           {isLoading || !allPermissions ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--s-2)",
+              }}
+            >
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="loading-skeleton" style={{ height: 44, borderRadius: "var(--r-sm)" }} />
+                <div
+                  key={i}
+                  className="loading-skeleton"
+                  style={{ height: 44, borderRadius: "var(--r-sm)" }}
+                />
               ))}
             </div>
           ) : allPermissions.length === 0 ? (
@@ -106,34 +164,66 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
               Nenhuma permissao cadastrada no sistema.
             </p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-1)", maxHeight: 360, overflowY: "auto" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--s-1)",
+                maxHeight: 360,
+                overflowY: "auto",
+              }}
+            >
               {allPermissions.map((perm) => {
                 const active = grantedIds.has(String(perm.id));
                 return (
-                  <label key={perm.id} style={{
-                    display: "flex", alignItems: "center", gap: "var(--s-3)",
-                    padding: "var(--s-3)", borderRadius: "var(--r-sm)",
-                    cursor: isPending ? "not-allowed" : "pointer",
-                    background: active ? "var(--primary-soft)" : "var(--bg-elev-2)",
-                    border: `1px solid ${active ? "var(--primary)" : "var(--border)"}`,
-                    transition: "background 0.15s ease, border-color 0.15s ease",
-                  }}>
+                  <label
+                    key={perm.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "var(--s-3)",
+                      padding: "var(--s-3)",
+                      borderRadius: "var(--r-sm)",
+                      cursor: isPending ? "not-allowed" : "pointer",
+                      background: active
+                        ? "var(--primary-soft)"
+                        : "var(--bg-elev-2)",
+                      border: `1px solid ${active ? "var(--primary)" : "var(--border)"}`,
+                      transition:
+                        "background 0.15s ease, border-color 0.15s ease",
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={active}
                       disabled={isPending}
                       onChange={() => togglePermission(String(perm.id))}
-                      style={{ accentColor: "var(--primary)", width: 16, height: 16 }}
+                      style={{
+                        accentColor: "var(--primary)",
+                        width: 16,
+                        height: 16,
+                      }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontSize: "var(--t-body)", fontWeight: 600,
-                        color: active ? "var(--accent)" : "var(--text-primary)",
-                      }}>
+                      <div
+                        style={{
+                          fontSize: "var(--t-body)",
+                          fontWeight: 600,
+                          color: active
+                            ? "var(--accent)"
+                            : "var(--text-primary)",
+                        }}
+                      >
                         {perm.name}
                       </div>
                       {perm.description && (
-                        <div style={{ fontSize: "var(--t-xs)", color: "var(--text-muted)", marginTop: 2 }}>
+                        <div
+                          style={{
+                            fontSize: "var(--t-xs)",
+                            color: "var(--text-muted)",
+                            marginTop: 2,
+                          }}
+                        >
                           {perm.description}
                         </div>
                       )}
@@ -146,7 +236,11 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
         </div>
 
         <div className="modal-card__footer">
-          <button className="btn btn-primary" onClick={onClose} style={{ flex: 1 }}>
+          <button
+            className="btn btn-primary"
+            onClick={onClose}
+            style={{ flex: 1 }}
+          >
             Concluir
           </button>
         </div>
@@ -162,7 +256,8 @@ export const RolesPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [editingRole, setEditingRole] = useState<RoleListItem | null>(null);
   const [deletingRole, setDeletingRole] = useState<RoleListItem | null>(null);
-  const [managingPermsRole, setManagingPermsRole] = useState<RoleListItem | null>(null);
+  const [managingPermsRole, setManagingPermsRole] =
+    useState<RoleListItem | null>(null);
 
   const { data: roles, isLoading, isError } = useRoles();
   const { mutate: createRole, isPending: creating } = useCreateRole();
@@ -177,26 +272,56 @@ export const RolesPage = () => {
 
   if (isLoading) {
     return (
-      <div style={{ marginTop: "var(--s-4)", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "var(--s-3)" }}>
+      <div
+        style={{
+          marginTop: "var(--s-4)",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: "var(--s-3)",
+        }}
+      >
         {[1, 2, 3].map((i) => (
-          <div key={i} className="loading-skeleton" style={{ height: 140, borderRadius: "var(--r-md)" }} />
+          <div
+            key={i}
+            className="loading-skeleton"
+            style={{ height: 140, borderRadius: "var(--r-md)" }}
+          />
         ))}
       </div>
     );
   }
 
-  if (isError) return <ErrorState title="Erro ao carregar papeis" description="Nao foi possivel carregar a lista." />;
+  if (isError)
+    return (
+      <ErrorState
+        title="Erro ao carregar papeis"
+        description="Nao foi possivel carregar a lista."
+      />
+    );
 
   return (
-    <div style={{ marginTop: "var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-3)" }}>
-
+    <div
+      style={{
+        marginTop: "var(--s-4)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--s-3)",
+      }}
+    >
       {/* Barra de acoes */}
       <div style={{ display: "flex", gap: "var(--s-3)", alignItems: "center" }}>
         <div className="form-field" style={{ flex: 1, margin: 0 }}>
-          <input className="form-field__input" placeholder="Buscar papel..."
-            value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input
+            className="form-field__input"
+            placeholder="Buscar papel..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={() => setShowCreate(true)}
+        >
           + Novo papel
         </button>
       </div>
@@ -206,33 +331,85 @@ export const RolesPage = () => {
         <EmptyState
           icon={<Users size={40} />}
           title="Nenhum papel encontrado"
-          description={search ? "Tente outro termo de busca." : "Crie o primeiro papel de acesso."}
-          action={!search ? <button className="btn btn-primary" onClick={() => setShowCreate(true)}>Criar papel</button> : undefined}
+          description={
+            search
+              ? "Tente outro termo de busca."
+              : "Crie o primeiro papel de acesso."
+          }
+          action={
+            !search ? (
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowCreate(true)}
+              >
+                Criar papel
+              </button>
+            ) : undefined
+          }
         />
       ) : (
         <div className="grid grid--2">
           {filtered.map((role) => (
-            <div key={role.id} className="card" style={{ display: "flex", flexDirection: "column", gap: "var(--s-3)" }}>
-
+            <div
+              key={role.id}
+              className="card"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--s-3)",
+              }}
+            >
               {/* Cabecalho */}
               <div>
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--s-2)" }}>
-                  <h4 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--t-body)", fontWeight: 700 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    gap: "var(--s-2)",
+                  }}
+                >
+                  <h4
+                    style={{
+                      margin: 0,
+                      fontFamily: "var(--font-display)",
+                      fontSize: "var(--t-body)",
+                      fontWeight: 700,
+                    }}
+                  >
                     {role.name}
                   </h4>
-                  <div style={{ display: "flex", gap: "var(--s-1)", flexShrink: 0 }}>
-                    <button className="btn btn-sm btn-ghost" style={{ height: 28, padding: "0 var(--s-2)" }}
-                      onClick={() => setEditingRole(role)}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "var(--s-1)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <button
+                      className="btn btn-sm btn-ghost"
+                      style={{ height: 28, padding: "0 var(--s-2)" }}
+                      onClick={() => setEditingRole(role)}
+                    >
                       Editar
                     </button>
-                    <button className="btn btn-sm btn-danger" style={{ height: 28, padding: "0 var(--s-2)" }}
-                      onClick={() => setDeletingRole(role)}>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      style={{ height: 28, padding: "0 var(--s-2)" }}
+                      onClick={() => setDeletingRole(role)}
+                    >
                       Excluir
                     </button>
                   </div>
                 </div>
                 {role.description && (
-                  <p style={{ margin: "var(--s-1) 0 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+                  <p
+                    style={{
+                      margin: "var(--s-1) 0 0",
+                      fontSize: "var(--t-sm)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
                     {role.description}
                   </p>
                 )}
@@ -240,13 +417,19 @@ export const RolesPage = () => {
 
               {/* Contadores */}
               <div style={{ display: "flex", gap: "var(--s-2)" }}>
-                <span className="badge">{role._count.permissions} permissao(oes)</span>
-                <span className="badge badge--muted">{role._count.users} usuario(s)</span>
+                <span className="badge">
+                  {role._count.permissions} permissao(oes)
+                </span>
+                <span className="badge badge--muted">
+                  {role._count.users} usuario(s)
+                </span>
               </div>
 
               {/* Gerenciar permissoes */}
-              <button className="btn btn-secondary btn-sm btn-full"
-                onClick={() => setManagingPermsRole(role)}>
+              <button
+                className="btn btn-secondary btn-sm btn-full"
+                onClick={() => setManagingPermsRole(role)}
+              >
                 Gerenciar permissoes
               </button>
             </div>
@@ -259,7 +442,9 @@ export const RolesPage = () => {
         open={showCreate}
         onClose={() => setShowCreate(false)}
         isLoading={creating}
-        onSubmit={(data) => createRole(data, { onSuccess: () => setShowCreate(false) })}
+        onSubmit={(data) =>
+          createRole(data, { onSuccess: () => setShowCreate(false) })
+        }
       />
 
       {editingRole && (
@@ -291,7 +476,11 @@ export const RolesPage = () => {
         description={`Tem certeza que deseja excluir o papel "${deletingRole?.name}"? Ele nao pode ter usuarios vinculados.`}
         confirmLabel={deleting ? "Excluindo..." : "Excluir"}
         isDangerous
-        onConfirm={() => deleteRole(String(deletingRole!.id), { onSuccess: () => setDeletingRole(null) })}
+        onConfirm={() =>
+          deleteRole(String(deletingRole!.id), {
+            onSuccess: () => setDeletingRole(null),
+          })
+        }
         onCancel={() => setDeletingRole(null)}
       />
     </div>

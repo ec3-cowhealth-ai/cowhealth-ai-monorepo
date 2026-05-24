@@ -33,7 +33,13 @@ export const Sidebar = () => {
       badge: unreadCount,
     },
     ...(isAdmin
-      ? [{ label: "Acesso", path: "/access/users", icon: <ShieldCheck size={18} /> }]
+      ? [
+          {
+            label: "Acesso",
+            path: "/access/users",
+            icon: <ShieldCheck size={18} />,
+          },
+        ]
       : []),
   ];
 
@@ -57,9 +63,7 @@ export const Sidebar = () => {
           >
             <span className="ic">{item.icon}</span>
             <span>{item.label}</span>
-            {item.badge ? (
-              <span className="badge">{item.badge}</span>
-            ) : null}
+            {item.badge ? <span className="badge">{item.badge}</span> : null}
           </button>
         ))}
       </div>

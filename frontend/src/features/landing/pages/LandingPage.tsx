@@ -1,12 +1,12 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HeroSection,
   FeaturesSection,
   CTASection,
   Footer,
-} from '../components';
-import { IcBroadcast } from '@components/icons/LandingIcons';
+} from "../components";
+import { IcBroadcast } from "@components/icons/LandingIcons";
 
 /**
  * LandingPage — Public landing page for CowHealth AI
@@ -28,21 +28,21 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignIn = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleSignUp = () => {
-    navigate('/register');
+    navigate("/register");
   };
 
   const handleScheduleDemo = () => {
     // TODO: Implement demo scheduling modal or redirect
-    console.log('Schedule demo');
+    console.log("Schedule demo");
   };
 
   const handleNavLink = (link: string) => {
     // TODO: Implement footer link navigation
-    console.log('Navigate to:', link);
+    console.log("Navigate to:", link);
   };
 
   return (
@@ -67,7 +67,7 @@ export const LandingPage: React.FC = () => {
           onCtaClick={handleSignIn}
           onLearnMoreClick={() => {
             // TODO: Scroll to features or play video
-            console.log('Learn more');
+            console.log("Learn more");
           }}
         />
 

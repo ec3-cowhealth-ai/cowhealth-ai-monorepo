@@ -22,7 +22,14 @@ export const CollarsPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Coleiras" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -46,19 +53,28 @@ export const CollarsPage = () => {
             className={`btn btn-sm ${statusFilter === CollarStatusValues.ACTIVE ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setStatusFilter(CollarStatusValues.ACTIVE)}
           >
-            Ativas ({collars?.filter((c) => c.status === CollarStatusValues.ACTIVE).length || 0})
+            Ativas (
+            {collars?.filter((c) => c.status === CollarStatusValues.ACTIVE)
+              .length || 0}
+            )
           </button>
           <button
             className={`btn btn-sm ${statusFilter === CollarStatusValues.INACTIVE ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setStatusFilter(CollarStatusValues.INACTIVE)}
           >
-            Inativas ({collars?.filter((c) => c.status === CollarStatusValues.INACTIVE).length || 0})
+            Inativas (
+            {collars?.filter((c) => c.status === CollarStatusValues.INACTIVE)
+              .length || 0}
+            )
           </button>
           <button
             className={`btn btn-sm ${statusFilter === CollarStatusValues.MAINTENANCE ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setStatusFilter(CollarStatusValues.MAINTENANCE)}
           >
-            Manutenção ({collars?.filter((c) => c.status === CollarStatusValues.MAINTENANCE).length || 0})
+            Manutenção (
+            {collars?.filter((c) => c.status === CollarStatusValues.MAINTENANCE)
+              .length || 0}
+            )
           </button>
         </div>
 

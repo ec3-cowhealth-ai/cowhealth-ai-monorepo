@@ -24,7 +24,14 @@ export const FarmDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes da Fazenda" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -35,7 +42,10 @@ export const FarmDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes da Fazenda" />
-        <EmptyState icon={<XCircle size={40} />} title="Fazenda não encontrada" />
+        <EmptyState
+          icon={<XCircle size={40} />}
+          title="Fazenda não encontrada"
+        />
       </div>
     );
   }
@@ -47,50 +57,122 @@ export const FarmDetailPage = () => {
       <div className="app-page__section">
         {/* Farm Info */}
         <div className="card">
-          <h3 style={{ margin: "0 0 var(--s-3) 0", fontSize: "var(--t-h2)", fontWeight: 700 }}>
+          <h3
+            style={{
+              margin: "0 0 var(--s-3) 0",
+              fontSize: "var(--t-h2)",
+              fontWeight: 700,
+            }}
+          >
             Informações
           </h3>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--s-3)" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "var(--s-3)",
+            }}
+          >
             <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 CNPJ
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {farm.cnpj}
               </p>
             </div>
 
             <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Telefone
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {farm.phone}
               </p>
             </div>
 
             <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Email
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {farm.email}
               </p>
             </div>
 
             <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Localização
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {farm.city}, {farm.state}
               </p>
             </div>
           </div>
 
-          <div style={{ marginTop: "var(--s-3)", paddingTop: "var(--s-3)", borderTop: "1px solid var(--border)" }}>
-            <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+          <div
+            style={{
+              marginTop: "var(--s-3)",
+              paddingTop: "var(--s-3)",
+              borderTop: "1px solid var(--border)",
+            }}
+          >
+            <p
+              style={{
+                margin: "0 0 var(--s-1) 0",
+                fontSize: "var(--t-sm)",
+                color: "var(--text-secondary)",
+              }}
+            >
               Endereço
             </p>
             <p style={{ margin: 0, fontSize: "var(--t-body)" }}>
@@ -101,20 +183,42 @@ export const FarmDetailPage = () => {
 
         {/* Cows Section */}
         <div>
-          <h3 style={{ margin: "var(--s-4) 0 var(--s-3) 0", fontSize: "var(--t-h2)", fontWeight: 700 }}>
+          <h3
+            style={{
+              margin: "var(--s-4) 0 var(--s-3) 0",
+              fontSize: "var(--t-h2)",
+              fontWeight: 700,
+            }}
+          >
             Vacas ({farmCows.length})
           </h3>
 
           {farmCows.length === 0 ? (
-            <EmptyState icon={<CowHead size={40} />} title="Nenhuma vaca vinculada" description="Esta fazenda não possui vacas registradas." />
+            <EmptyState
+              icon={<CowHead size={40} />}
+              title="Nenhuma vaca vinculada"
+              description="Esta fazenda não possui vacas registradas."
+            />
           ) : (
             <div className="grid grid--2">
               {farmCows.map((cow) => (
                 <div key={cow.id} className="card">
-                  <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "var(--t-body)",
+                      fontWeight: 600,
+                    }}
+                  >
                     {cow.tag}
                   </p>
-                  <p style={{ margin: "var(--s-1) 0 0 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+                  <p
+                    style={{
+                      margin: "var(--s-1) 0 0 0",
+                      fontSize: "var(--t-sm)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
                     Status: {cow.status}
                   </p>
                 </div>

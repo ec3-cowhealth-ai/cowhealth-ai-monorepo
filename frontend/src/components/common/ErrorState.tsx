@@ -18,9 +18,7 @@ export const ErrorState = ({
     <div className="error-state">
       <div className="error-state__icon">{icon}</div>
       <h3 className="error-state__title">{title}</h3>
-      {description && (
-        <p className="error-state__description">{description}</p>
-      )}
+      {description && <p className="error-state__description">{description}</p>}
       {action && <div className="error-state__action">{action}</div>}
     </div>
   );

@@ -5,7 +5,9 @@ import { XCircle } from "lucide-react";
 import { useCollar } from "../hooks/useCollars";
 import { CollarStatusValues } from "../../../types/collars.ts";
 
-const getStatusTone = (status: string): "success" | "warning" | "danger" | "muted" => {
+const getStatusTone = (
+  status: string,
+): "success" | "warning" | "danger" | "muted" => {
   switch (status) {
     case CollarStatusValues.ACTIVE:
       return "success";
@@ -30,7 +32,14 @@ export const CollarDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes do Colar" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -41,7 +50,10 @@ export const CollarDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes do Colar" />
-        <EmptyState icon={<XCircle size={40} />} title="Coleira não encontrada" />
+        <EmptyState
+          icon={<XCircle size={40} />}
+          title="Coleira não encontrada"
+        />
       </div>
     );
   }
@@ -53,7 +65,14 @@ export const CollarDetailPage = () => {
       <div className="app-page__section">
         {/* Collar Info */}
         <div className="card">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--s-3)" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "var(--s-3)",
+            }}
+          >
             <h3 style={{ margin: 0, fontSize: "var(--t-h2)", fontWeight: 700 }}>
               {collar.name}
             </h3>
@@ -62,21 +81,51 @@ export const CollarDetailPage = () => {
             </StatusBadge>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--s-3)" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "var(--s-3)",
+            }}
+          >
             <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Frequencia de Dados
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {collar.dataFrequency}
               </p>
             </div>
 
             <div>
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Cadastrado em
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {new Date(collar.createdAt).toLocaleDateString("pt-BR")}
               </p>
             </div>
@@ -85,7 +134,13 @@ export const CollarDetailPage = () => {
 
         {/* Linked Cow */}
         <div className="card">
-          <h3 style={{ margin: "0 0 var(--s-3) 0", fontSize: "var(--t-h2)", fontWeight: 700 }}>
+          <h3
+            style={{
+              margin: "0 0 var(--s-3) 0",
+              fontSize: "var(--t-h2)",
+              fontWeight: 700,
+            }}
+          >
             Vaca Vinculada
           </h3>
 
@@ -99,15 +154,34 @@ export const CollarDetailPage = () => {
               }}
               onClick={() => navigate(`/cows/${linkedCow.id}`)}
             >
-              <p style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-body)", fontWeight: 600 }}>
+              <p
+                style={{
+                  margin: "0 0 var(--s-1) 0",
+                  fontSize: "var(--t-body)",
+                  fontWeight: 600,
+                }}
+              >
                 {linkedCow.tag}
               </p>
-              <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--t-sm)",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Status: {linkedCow.status}
               </p>
             </div>
           ) : (
-            <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-secondary)", fontStyle: "italic" }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "var(--t-sm)",
+                color: "var(--text-secondary)",
+                fontStyle: "italic",
+              }}
+            >
               Nenhuma vaca vinculada
             </p>
           )}

@@ -12,15 +12,19 @@ Componentes e lógica da página de landing (pública, sem autenticação necess
 ## Componentes
 
 ### Hero
+
 Seção principal com título, subtítulo, visualização e CTAs.
 
 ### Features
+
 Cards com ícones, títulos, descrições e dados ao vivo (opcional).
 
 ### CTA
+
 Call-to-action card com mensagem e botões de ação.
 
 ### Footer
+
 Rodapé com links institucionais e copyright.
 
 ## Responsável

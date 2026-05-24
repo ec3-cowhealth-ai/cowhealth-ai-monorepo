@@ -121,46 +121,46 @@ Ao revisar PR, usar este checklist. Use severidade:
 
 ### 4.1 Conformidade (agents.md)
 
-| Critério | Checklist | Severidade |
-|----------|-----------|------------|
-| **Arquitetura** | Segue padrão do projeto (feature-based ou domain-centric)? Acoplamento baixo? | 🔴 |
-| **Naming** | Componentes/funções/arquivos com nomes claros e convenções? | 🟡 |
-| **TypeScript** | Sem `any` não-documentado? Tipos explícitos? | 🔴 |
-| **React** | Function components? Hooks corretos? Deps arrays? No stale closures? | 🔴 |
-| **Testes** | Unidade + componente quando relevante? Cobertura para lógica crítica? | 🟡 |
-| **Async/Concurrency** | Promises tratadas? Race conditions evitadas? | 🔴 |
-| **Segurança** | Sem hardcoded secrets? Inputs validados? dangerouslySetInnerHTML evitado? | 🔴 |
-| **Docs** | /docs/plan.md, /docs/design.md, /docs/tasks.md atualizados? | 🟡 |
-| **UML** | Se arquitetura/design muda, UML incluído? | 🟡 |
+| Critério              | Checklist                                                                     | Severidade |
+| --------------------- | ----------------------------------------------------------------------------- | ---------- |
+| **Arquitetura**       | Segue padrão do projeto (feature-based ou domain-centric)? Acoplamento baixo? | 🔴         |
+| **Naming**            | Componentes/funções/arquivos com nomes claros e convenções?                   | 🟡         |
+| **TypeScript**        | Sem `any` não-documentado? Tipos explícitos?                                  | 🔴         |
+| **React**             | Function components? Hooks corretos? Deps arrays? No stale closures?          | 🔴         |
+| **Testes**            | Unidade + componente quando relevante? Cobertura para lógica crítica?         | 🟡         |
+| **Async/Concurrency** | Promises tratadas? Race conditions evitadas?                                  | 🔴         |
+| **Segurança**         | Sem hardcoded secrets? Inputs validados? dangerouslySetInnerHTML evitado?     | 🔴         |
+| **Docs**              | /docs/plan.md, /docs/design.md, /docs/tasks.md atualizados?                   | 🟡         |
+| **UML**               | Se arquitetura/design muda, UML incluído?                                     | 🟡         |
 
 ### 4.2 Conformidade (design.md)
 
-| Critério | Checklist | Severidade |
-|----------|-----------|------------|
-| **Cores** | Usa tokens do design.md? Sem hardcoded hex? | 🔴 |
-| **Tipografia** | Space Grotesk / Manrope / JetBrains Mono? Escala respeitada? | 🔴 |
-| **Espaçamento** | Grid 4px? Escalas s-1…s-9? Consistente? | 🟡 |
-| **Componentes** | Botões, inputs, cards seguem padrões? | 🔴 |
-| **Acessibilidade** | WCAG AA mínimo? Tap targets ≥48px? Focus states? | 🔴 |
-| **Estados** | Loading = skeleton (não spinner anônimo)? Erro + ação? Offline declarado? | 🟡 |
-| **Responsividade** | Mobile-first? Safe areas (notch + home indicator)? | 🟡 |
+| Critério           | Checklist                                                                 | Severidade |
+| ------------------ | ------------------------------------------------------------------------- | ---------- |
+| **Cores**          | Usa tokens do design.md? Sem hardcoded hex?                               | 🔴         |
+| **Tipografia**     | Space Grotesk / Manrope / JetBrains Mono? Escala respeitada?              | 🔴         |
+| **Espaçamento**    | Grid 4px? Escalas s-1…s-9? Consistente?                                   | 🟡         |
+| **Componentes**    | Botões, inputs, cards seguem padrões?                                     | 🔴         |
+| **Acessibilidade** | WCAG AA mínimo? Tap targets ≥48px? Focus states?                          | 🔴         |
+| **Estados**        | Loading = skeleton (não spinner anônimo)? Erro + ação? Offline declarado? | 🟡         |
+| **Responsividade** | Mobile-first? Safe areas (notch + home indicator)?                        | 🟡         |
 
 ### 4.3 Build & Verification
 
-| Criterio | Checklist | Severidade |
-|----------|-----------|------------|
-| **Lint** | npm run lint passa? | 🔴 |
-| **TypeCheck** | npm run typecheck passa? | 🔴 |
-| **Testes** | npm run test passa? Ou skip com justificativa? | 🟡 |
-| **Build** | npm run build sem warnings críticos? | 🔴 |
+| Criterio      | Checklist                                      | Severidade |
+| ------------- | ---------------------------------------------- | ---------- |
+| **Lint**      | npm run lint passa?                            | 🔴         |
+| **TypeCheck** | npm run typecheck passa?                       | 🔴         |
+| **Testes**    | npm run test passa? Ou skip com justificativa? | 🟡         |
+| **Build**     | npm run build sem warnings críticos?           | 🔴         |
 
 ### 4.4 Documentação
 
-| Critério | Checklist | Severidade |
-|----------|-----------|------------|
-| **PR Description** | Explica o quê, por quê, como testar? | 🟡 |
-| **Arquivos alterados** | Lista clara + evidências em /docs/*? | 🟢 |
-| **ADR (se needed)** | Decisão arquitetural documentada? | 🟡 |
+| Critério               | Checklist                             | Severidade |
+| ---------------------- | ------------------------------------- | ---------- |
+| **PR Description**     | Explica o quê, por quê, como testar?  | 🟡         |
+| **Arquivos alterados** | Lista clara + evidências em /docs/\*? | 🟢         |
+| **ADR (se needed)**    | Decisão arquitetural documentada?     | 🟡         |
 
 ---
 
@@ -234,14 +234,14 @@ Uma feature está **pronta para merge** quando:
 
 Sempre chamar revisor expert quando:
 
-| Cenário | Revisor | Por quê |
-|---------|---------|---------|
-| **Nova rota / navegação** | Jcfs | Impacta arquitetura |
-| **Novo estado global** | Jcfs | Acoplamento, escalabilidade |
-| **Integração com API** | Jcfs | Contrato, segurança |
-| **Novo design / componente** | Ian | Brand consistency, acessibilidade |
-| **Refator significativo** | Jcfs | Risco de regressão |
-| **Mudança em /docs** | Jcfs | Manter docs coerentes |
+| Cenário                      | Revisor | Por quê                           |
+| ---------------------------- | ------- | --------------------------------- |
+| **Nova rota / navegação**    | Jcfs    | Impacta arquitetura               |
+| **Novo estado global**       | Jcfs    | Acoplamento, escalabilidade       |
+| **Integração com API**       | Jcfs    | Contrato, segurança               |
+| **Novo design / componente** | Ian     | Brand consistency, acessibilidade |
+| **Refator significativo**    | Jcfs    | Risco de regressão                |
+| **Mudança em /docs**         | Jcfs    | Manter docs coerentes             |
 
 ---
 
@@ -315,8 +315,8 @@ Sempre chamar revisor expert quando:
 
 ## 12. Changelog
 
-| Data | Mudança | Por quê |
-|------|---------|---------|
+| Data       | Mudança           | Por quê                                        |
+| ---------- | ----------------- | ---------------------------------------------- |
 | 2026-05-12 | Criado MANAGER.md | Necessário meta-agent para gestão de qualidade |
 
 ---

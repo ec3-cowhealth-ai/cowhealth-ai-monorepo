@@ -54,7 +54,11 @@ export const NotificationsPage = () => {
         subtitle={unreadCount > 0 ? `${unreadCount} não lidos` : "Tudo em dia"}
         actions={
           unreadCount > 0 ? (
-            <button className="app-bar__action" onClick={() => markAllAsRead()} title="Marcar tudo como lido">
+            <button
+              className="app-bar__action"
+              onClick={() => markAllAsRead()}
+              title="Marcar tudo como lido"
+            >
               <Check size={20} />
             </button>
           ) : undefined
@@ -79,7 +83,13 @@ export const NotificationsPage = () => {
         </div>
 
         {isLoading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "var(--s-8)" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "var(--s-8)",
+            }}
+          >
             <LoadingSpinner />
           </div>
         ) : notifications.length === 0 ? (
@@ -95,28 +105,65 @@ export const NotificationsPage = () => {
                 <button
                   key={n.id}
                   className={`alert-card alert-card--danger${n.read ? " alert-card--read" : ""}`}
-                  style={{ borderLeftColor: color, width: "100%", textAlign: "left", cursor: "pointer" }}
-                  onClick={() => { if (!n.read) markAsRead(n.id); }}
+                  style={{
+                    borderLeftColor: color,
+                    width: "100%",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    if (!n.read) markAsRead(n.id);
+                  }}
                 >
-                  <span style={{ color, flexShrink: 0, marginTop: 2, display: "flex" }}>
+                  <span
+                    style={{
+                      color,
+                      flexShrink: 0,
+                      marginTop: 2,
+                      display: "flex",
+                    }}
+                  >
                     {TYPE_ICON[n.type] ?? <Bell size={14} />}
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: n.read ? 400 : 600 }}>
+                    <p
+                      style={{
+                        margin: "0 0 2px 0",
+                        fontSize: 13,
+                        fontWeight: n.read ? 400 : 600,
+                      }}
+                    >
                       {n.title}
                     </p>
-                    <p style={{ margin: 0, fontSize: 11, color: "var(--text-muted)" }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 11,
+                        color: "var(--text-muted)",
+                      }}
+                    >
                       {n.message}
                     </p>
                   </div>
-                  <span style={{ fontSize: 10, color: "var(--text-muted)", flexShrink: 0 }}>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      flexShrink: 0,
+                    }}
+                  >
                     {timeAgo(n.createdAt)}
                   </span>
                   {!n.read && (
-                    <span style={{
-                      width: 6, height: 6, borderRadius: "50%",
-                      background: "var(--accent)", flexShrink: 0,
-                    }} />
+                    <span
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "var(--accent)",
+                        flexShrink: 0,
+                      }}
+                    />
                   )}
                 </button>
               );
