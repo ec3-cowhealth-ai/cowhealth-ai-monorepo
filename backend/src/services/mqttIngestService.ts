@@ -1,5 +1,6 @@
 import { CowStatus } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+import { classifyHealth, buildHealthSnapshot } from "./cowHealthAnalyzer";
 
 // ─── Tipos do payload MQTT ────────────────────────────────────────────────────
 
@@ -66,16 +67,15 @@ const persistSensorData = async (cowId: number, payload: MqttPayload) => {
     }
 };
 
-// ─── Análise de saúde ─────────────────────────────────────────────────────────
+// ─── Coleta de dados de sensores e análise de saúde ──────────────────────────
 
-const analyzeHealth = async (cowId: number): Promise<CowStatus | null> => {
-    const now = new Date();
-
-    // --- Parto iminente (CALVING) ---
+const analyzeHealth = async (cowId: number) => {
+    const now          = new Date();
     const oneHourAgo   = new Date(now.getTime() - 60 * 60 * 1000);
     const twelveHrsAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+    const thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
-    const [recentAccel, recentHr, recentTemps] = await Promise.all([
+    const [recentAccelZ, recentHr, recentTemps12, recentAccelXY, recentTemps30] = await Promise.all([
         prisma.accelerometerData.findMany({
             where:   { cowId, measuredAt: { gte: oneHourAgo } },
             select:  { accelZ: true },
@@ -92,29 +92,6 @@ const analyzeHealth = async (cowId: number): Promise<CowStatus | null> => {
             select:  { celsius: true },
             orderBy: { measuredAt: "asc" },
         }),
-    ]);
-
-    const posturalChanges = recentAccel.reduce((count, reading, i) => {
-        if (i === 0) return count;
-        return Math.abs(reading.accelZ - recentAccel[i - 1].accelZ) > 0.5 ? count + 1 : count;
-    }, 0);
-
-    const avgHr = recentHr.length > 0
-        ? recentHr.reduce((sum, r) => sum + r.bpm, 0) / recentHr.length
-        : 0;
-
-    const tempDelta = recentTemps.length >= 2
-        ? recentTemps[recentTemps.length - 1].celsius - recentTemps[0].celsius
-        : 0;
-
-    if (posturalChanges > 10 && avgHr > 90 && tempDelta < 0) {
-        return CowStatus.CALVING;
-    }
-
-    // --- Estresse térmico (HEAT_STRESS) ---
-    const thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000);
-
-    const [recentAccelXY, recentTemp30] = await Promise.all([
         prisma.accelerometerData.findMany({
             where:   { cowId, measuredAt: { gte: thirtyMinAgo } },
             select:  { accelX: true, accelY: true },
@@ -128,22 +105,8 @@ const analyzeHealth = async (cowId: number): Promise<CowStatus | null> => {
         }),
     ]);
 
-    const restlessPeaks = recentAccelXY.reduce((count, reading, i) => {
-        if (i === 0) return count;
-        const deltaX = Math.abs(reading.accelX - recentAccelXY[i - 1].accelX);
-        const deltaY = Math.abs(reading.accelY - recentAccelXY[i - 1].accelY);
-        return deltaX > 0.8 || deltaY > 0.8 ? count + 1 : count;
-    }, 0);
-
-    const avgTemp = recentTemp30.length > 0
-        ? recentTemp30.reduce((sum, r) => sum + r.celsius, 0) / recentTemp30.length
-        : 0;
-
-    if (avgTemp > 39.0 && avgHr > 100 && restlessPeaks > 15) {
-        return CowStatus.HEAT_STRESS;
-    }
-
-    return null;
+    const snapshot = buildHealthSnapshot(recentAccelZ, recentHr, recentTemps12, recentAccelXY, recentTemps30);
+    return classifyHealth(snapshot);
 };
 
 // ─── Envio de notificações ────────────────────────────────────────────────────

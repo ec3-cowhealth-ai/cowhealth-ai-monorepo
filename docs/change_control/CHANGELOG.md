@@ -4,6 +4,49 @@
 
 ---
 
+## 2026-05-24 - Geolocalização de fazendas, simulação de posição de vacas, fix loop de autenticação e documentação de tarefas do time (JCFS)
+
+Escopo: utilitário de simulação de coordenadas geográficas para vacas por fazenda; correção do loop infinito de reload causado pelo FarmProvider fora da rota protegida; atualização do tipo Farm com campos opcionais de latitude/longitude; geração de cards Triagen para o time (Angelo, Ian, Renato); PR de task documentando geolocalização das fazendas para integração com simulador MQTT; ajuste do .gitignore para rastrear .claude/SKILL.md.
+
+### Adicionado
+
+- `frontend/src/pages/map/simulateCowPositions.ts` — utilitário que distribui vacas em posições geográficas determinísticas (seed por `cow.id`) dentro de um raio de 600m ao redor das coordenadas da fazenda; usa fallback hardcoded das 5 fazendas enquanto a migration de geolocalização (PR #15) não for aplicada
+- `docs/tasks/farm-geolocation.md` — task document para Renato: schema Prisma, migration, seed com coordenadas e critérios de aceite
+- `docs/tasks/triagen-cards.yaml` — 13 cards Triagen (formato v2) cobrindo todas as tarefas pendentes de Angelo, Ian e Renato, com checklists e prioridades
+- `backend/src/helpers/fileStorage.ts` — helper para armazenamento de arquivos de foto de vaca
+- `backend/src/helpers/multerUpload.ts` — configuração do multer para upload de imagens
+- `backend/src/services/cowHealthAnalyzer.ts` — serviço de análise heurística de saúde bovina
+- `frontend/src/pages/map/CowDetailCard.tsx`, `CowPin.tsx`, `MapBackground.tsx`, `MapLegend.tsx` — componentes extraídos do MapPage para melhor separação de responsabilidades
+
+### Modificado
+
+- `frontend/src/types/farms.ts` — adicionados `latitude?: number` e `longitude?: number` ao tipo `Farm`
+- `frontend/src/components/layout/AppShell.tsx` — `FarmProvider` movido para dentro do AppShell (era em App.tsx), corrigindo loop infinito de reload quando o usuário não estava autenticado
+- `frontend/src/App.tsx` — removido `FarmProvider` (agora em AppShell)
+- `frontend/src/pages/map/MapPage.tsx` — refatorado com componentes extraídos
+- `frontend/src/hooks/usePermission.ts` — melhorias no hook de verificação de permissão
+- `frontend/src/features/farms/components/FarmForm.tsx` — atualizado formulário de fazenda
+- `backend/src/server.ts` — ajustes de configuração
+- `backend/src/services/dashboardService.ts` — filtro por `farmId` integrado ao merge com main
+- `backend/src/services/mqttIngestService.ts` — melhorias no serviço de ingestão MQTT
+- `backend/src/controllers/cowsController.ts`, `farmsController.ts` — atualizações de controllers
+- `backend/src/middlewares/requirePermission.ts` — ajustes no middleware de permissão
+- `.gitignore` — adicionada exceção `!.claude/SKILL.md`
+
+### Removido
+
+- `frontend/src/store/README.md`, `context/index.ts`, `reducers/index.ts` — store Redux removida (substituída pelo FarmContext)
+
+### PRs abertas
+
+- PR #15 — `feat/farm-geolocation` → task de geolocalização de fazendas (Renato)
+
+### Build Status
+
+- TypeScript frontend: zero erros
+
+---
+
 ## 2026-05-23 - Ícones bovinos coloridos por status + redirect logout para Landing Page (JCFS)
 
 Escopo: ícone `CowHead` (lucide-lab) colorido dinamicamente conforme status de saúde da vaca; migração completa do componente `Icon` customizado e `CowMark` para `lucide-react` em todas as telas pós-login; redirect de logout e sessão expirada apontando para a Landing Page.

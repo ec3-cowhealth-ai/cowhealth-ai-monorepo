@@ -1,10 +1,10 @@
-import path from "path";
-import fs from "fs";
 import { prisma } from "../lib/prisma";
+import { deleteFile } from "../helpers/fileStorage";
 import { assertUnique, querySensorData, aggregateDailyAverage } from "../helpers/serviceHelpers";
 import type { CreateCowInput, UpdateCowInput, SensorQueryInput } from "../types/cows";
 
 const MAX_PHOTOS = 3;
+
 
 // CRUD
 
@@ -107,8 +107,6 @@ export const deleteCow = async (cowId: number) => {
 
 // Fotos
 
-const UPLOADS_DIR = path.resolve(process.cwd(), "uploads");
-
 export const addCowPhoto = async (cowId: number, filename: string) => {
     const cow = await prisma.cow.findUnique({ where: { id: cowId } });
     if (!cow) throw new Error("Vaca não encontrada.");
@@ -132,8 +130,7 @@ export const removeCowPhoto = async (cowId: number, filename: string) => {
     const currentPhotos = (cow.photos as string[]) ?? [];
     if (!currentPhotos.includes(filename)) throw new Error("Foto não encontrada.");
 
-    const filePath = path.join(UPLOADS_DIR, filename);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    deleteFile(filename);
 
     return prisma.cow.update({
         where: { id: cowId },

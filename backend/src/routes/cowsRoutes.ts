@@ -1,10 +1,11 @@
 import { Router } from "express";
 import {
     listCows, showCow, storeCow, updateCowController, destroyCow,
-    upload, uploadPhoto, destroyPhoto,
+    uploadPhoto, destroyPhoto,
     listHeartRate, listTemperature, listAccelerometer,
     listHeartRateDaily, listTemperatureDaily,
 } from "../controllers/cowsController";
+import { cowUpload } from "../helpers/multerUpload";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
 
@@ -18,7 +19,7 @@ router.put("/:id",    requireAuth, requirePermission("Update Cow"),  updateCowCo
 router.delete("/:id", requireAuth, requirePermission("Delete Cow"),  destroyCow);
 
 // Fotos
-router.post("/:id/photos",             requireAuth, requirePermission("Update Cow"), upload.single("photo"), uploadPhoto);
+router.post("/:id/photos",             requireAuth, requirePermission("Update Cow"), cowUpload.single("photo"), uploadPhoto);
 router.delete("/:id/photos/:filename", requireAuth, requirePermission("Update Cow"), destroyPhoto);
 
 // Sensores — listagem paginada

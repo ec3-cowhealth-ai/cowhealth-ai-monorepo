@@ -20,10 +20,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// TODO[RENATO] CORS aberto — qualquer origem pode chamar a API.
+// Restringir para: app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }))
+// e adicionar ALLOWED_ORIGINS no .env com a URL do frontend.
 app.use(cors());
 app.use(express.json());
 
-// Serve os arquivos de fotos
+// TODO[RENATO] Fotos servidas publicamente sem autenticação — qualquer URL /uploads/<filename> é acessível.
+// Substituir por um endpoint autenticado: GET /cows/:id/photos/:filename protegido por requireAuth.
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
 // Rotas
@@ -48,6 +52,14 @@ app.get("/health", async (_request, response) => {
         response.status(503).json({ status: "error", db: "disconnected" });
     }
 });
+
+// TODO[RENATO] Sem global error handler — exceções não capturadas retornam HTML padrão do Express ou crasham o processo.
+// Adicionar antes do app.listen:
+//   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+//     if (err instanceof AppError) res.status(err.statusCode).json({ error: err.message });
+//     else res.status(500).json({ error: "Internal server error" });
+//   });
+// e criar shared/errors/AppError.ts com NotFoundError, ConflictError, ForbiddenError.
 
 // Inicialização
 const server = app.listen(PORT, () => {

@@ -163,10 +163,12 @@ vite.config.ts.timestamp-*
 .env.local
 .env
 docs/jcfs_tests/*
+docs/tasks
 .claude/*
 .claude/SKILL.md
 .claude/skill/*
 setup.ps1
 */frontendDev_JCFS/*
 docs/reviews/*
+cowhealth-db-dump.sql.gz
 

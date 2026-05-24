@@ -2,7 +2,7 @@
 version: 2
 id: 1
 title: "ANGELO — Proteger ações da UI por role"
-list: "Up next"
+list: "To Do"
 priority: High
 risk: Low
 labels:
@@ -152,7 +152,7 @@ checklists:
 version: 2
 id: 5
 title: "IAN — Bottom nav: suporte iOS e Android correto"
-list: "Up next"
+list: "To Do"
 priority: High
 risk: Low
 labels:
@@ -234,7 +234,7 @@ checklists:
 version: 2
 id: 7
 title: "IAN — Corrigir unreadNotifications: filtrar por userId"
-list: "Up next"
+list: "To Do"
 priority: High
 risk: Medium
 labels:
@@ -304,7 +304,7 @@ checklists:
 version: 2
 id: 9
 title: "RENATO — CORS restrito por origem"
-list: "Up next"
+list: "To Do"
 priority: High
 risk: Medium
 labels:
@@ -342,7 +342,7 @@ checklists:
 version: 2
 id: 10
 title: "RENATO — Uploads autenticados (remover static público)"
-list: "Up next"
+list: "To Do"
 priority: High
 risk: High
 labels:

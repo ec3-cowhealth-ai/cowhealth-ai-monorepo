@@ -16,6 +16,9 @@ export const getDashboardOverview = async (farmId?: number) => {
         prisma.cow.count({ where: { ...cowWhere, status: { in: ["ALERT", "HEAT_STRESS", "CALVING"] } } }),
         prisma.farm.count(),
         prisma.collar.count({ where: { status: "ACTIVE" } }),
+        // TODO[RENATO] Bug de segurança: conta notificações de TODOS os usuários do sistema.
+        // Corrigir para: prisma.notification.count({ where: { readAt: null, userId } })
+        // onde userId vem do token JWT (request.user.id) repassado até aqui via parâmetro.
         prisma.notification.count({ where: { readAt: null } }),
     ]);
 

@@ -10,6 +10,9 @@ export const requirePermission = (permissionName: string) =>
         return;
         }
 
+        // TODO[RENATO] Query no banco em CADA request autenticada (user→roles→permissions).
+        // Solução: embutir permissions[] no payload JWT no login e ler de request.user aqui,
+        // eliminando esta query. Ver authService.ts → login() para onde adicionar as permissions.
         const allowed = await userHasPermission(userId, permissionName);
 
         if (!allowed) {
