@@ -26,6 +26,13 @@ const statusTone = (s: string) => {
   return "success" as const;
 };
 
+const statusColor = (s: string) => {
+  if (s === CowStatusValues.ALERT) return "var(--danger)";
+  if (s === CowStatusValues.HEAT_STRESS) return "var(--warning)";
+  if (s === CowStatusValues.CALVING) return "var(--info)";
+  return "var(--success)";
+};
+
 export const CowsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -116,7 +123,7 @@ export const CowsPage = () => {
                 onClick={() => navigate(`/cows/${cow.id}`)}
               >
                 <div className="cow-row__avatar">
-                  <CowHead size={28} />
+                  <CowHead size={28} color={statusColor(cow.status)} />
                 </div>
                 <div className="cow-row__info">
                   <span className="cow-row__tag">{cow.tag}</span>

@@ -24,6 +24,13 @@ const statusTone = (s: string) => {
   return "success" as const;
 };
 
+const statusColor = (s: string) => {
+  if (s === CowStatusValues.ALERT) return "var(--danger)";
+  if (s === CowStatusValues.HEAT_STRESS) return "var(--warning)";
+  if (s === CowStatusValues.CALVING) return "var(--info)";
+  return "var(--success)";
+};
+
 const NOTIF_TONE: Record<string, string> = {
   ALERT: "var(--danger)",
   WARNING: "var(--warning)",
@@ -83,7 +90,7 @@ export const CowDetailPage = () => {
             background: "var(--bg-elev-2)", display: "flex",
             alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}>
-            <CowHead size={32} />
+            <CowHead size={32} color={statusColor(cow.status)} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
