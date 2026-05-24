@@ -98,7 +98,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Sveltekit cache directory
 .svelte-kit/
@@ -161,7 +160,6 @@ vite.config.ts.timestamp-*
 
 # User JCFS Specific
 .env.local
-.env
 docs/jcfs_tests/*
 docs/tasks
 .claude/*
@@ -169,6 +167,7 @@ docs/tasks
 .claude/skill/*
 setup.ps1
 */frontendDev_JCFS/*
-docs/reviews/*
+docs/reviews/20260523-222104-architecture-audit.md
+docs/reviews/20260523-223645-architecture-refactor.md
 cowhealth-db-dump.sql.gz
 
