@@ -4,6 +4,61 @@
 
 ---
 
+## 2026-05-23 - Ícones bovinos coloridos por status + redirect logout para Landing Page (JCFS)
+
+Escopo: ícone `CowHead` (lucide-lab) colorido dinamicamente conforme status de saúde da vaca; migração completa do componente `Icon` customizado e `CowMark` para `lucide-react` em todas as telas pós-login; redirect de logout e sessão expirada apontando para a Landing Page.
+
+### Adicionado
+
+- `frontend/src/components/ui/CowHeadIcon.tsx` — componente React compartilhado que envolve o node `cowHead` do `@lucide/lab` via `createLucideIcon`; elimina a repetição de `createLucideIcon` em cada arquivo
+
+**Frontend — Dependências**
+
+- `frontend/package.json` — instalado `@lucide/lab` para uso do `CowHead`
+
+### Modificado
+
+**Frontend — Ícones de vaca por status**
+
+O ícone `CowHead` agora recebe `color` dinamicamente com base no status da vaca, tornando o estado de saúde visualmente imediato na lista e no detalhe.
+
+- `frontend/src/features/cows/pages/CowsPage.tsx` — cada `CowHead` na lista recebe `color={statusColor(cow.status)}`
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `CowHead` no hero card recebe `color={statusColor(cow.status)}`
+
+Mapeamento de cores:
+
+| Status | Cor |
+|---|---|
+| Saudável | `var(--success)` — verde |
+| Alerta | `var(--danger)` — vermelho |
+| Estresse Térmico | `var(--warning)` — laranja |
+| Parto | `var(--info)` — azul |
+
+**Frontend — Migração Icon customizado → lucide-react**
+
+Todos os usos do componente `Icon` customizado (`@components/ui/Icon`) e `CowMark` foram substituídos por equivalentes Lucide em todas as telas pós-login.
+
+- `frontend/src/components/layout/AppBar.tsx` — `Icon n="chevronLeft"` → `<ChevronLeft />`
+- `frontend/src/components/layout/Sidebar.tsx` — `Beef` → `CowHead` (via `CowHeadIcon.tsx`)
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `Icon n="search/chevronRight"` → `Search`, `ChevronRight`; `CowMark` → `CowHead`
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `Icon n="alert/farm/collar/thermo/heart"` → `AlertTriangle`, `Warehouse`, `Tag`, `Thermometer`, `Heart`; `CowMark` → `CowHead`
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `Icon n="check/alert/bell/activity"` → `Check`, `AlertTriangle`, `Bell`, `Activity`; mapa de ícones por tipo refatorado para `ReactNode`
+- `frontend/src/pages/home/HomePage.tsx` — `Icon n="bell/alert/chevronRight/check/list/map/farm"` → Lucide equivalentes; `CowMark` → `CowHead`
+- `frontend/src/pages/profile/ProfilePage.tsx` — `Icon n="list/farm/collar/user/chevronRight/logout"` → Lucide equivalentes; `CowMark` → `CowHead`; `menuItems` refatorado para `ReactNode` em vez de strings
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `Beef` → `CowHead` (via `CowHeadIcon.tsx`)
+
+**Frontend — Logout**
+
+- `frontend/src/hooks/useAuth.ts` — `useLogout` redireciona para `/` (Landing Page) em vez de `/login`
+- `frontend/src/components/layout/Sidebar.tsx` — `handleLogout` redireciona para `/`
+- `frontend/src/lib/api.ts` — interceptor 401 redireciona para `/` em vez de `/login`
+
+### Build Status
+
+- TypeScript frontend: zero erros (`tsc --noEmit`)
+
+---
+
 ## 2026-05-23 - Design System Hi-Fi: 5 telas pós-login + filtro por fazenda em cascata (JCFS)
 
 Escopo: substituição completa das telas pós-login pelo Design System Hi-Fi (CowHealth AI — 5 telas · iPhone 14 Pro · Dark · PT-BR); adição de contexto global de fazenda selecionada com propagação em cascata até o Prisma; reescrita do mapa como planta interna de fazenda com piquetes/estábulos e pins de vaca em tempo real; criação de 5 layouts SVG únicos (um por fazenda).
