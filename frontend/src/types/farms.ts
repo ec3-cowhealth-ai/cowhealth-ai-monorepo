@@ -7,6 +7,8 @@ export interface Farm {
   state: string;
   phone: string;
   email: string;
+  latitude?: number;
+  longitude?: number;
   createdAt: string;
   updatedAt: string;
 }
