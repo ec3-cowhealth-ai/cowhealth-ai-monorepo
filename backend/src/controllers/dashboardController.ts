@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
-import {
-    getDashboardOverview,
-    getCowsPerStatus,
-    getCowsPerFarm
-} from "../services/dashboardService";
+import { getDashboardOverview, getCowsPerStatus, getCowsPerFarm } from "../services/dashboardService";
 
 export const overview = async (request: Request, response: Response): Promise<void> => {
     const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
