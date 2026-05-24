@@ -1,50 +1,29 @@
 import { Router } from "express";
 import {
-  listCows,
-  showCow,
-  storeCow,
-  updateCowController,
-  destroyCow,
-  uploadPhoto,
-  destroyPhoto,
-  listHeartRate,
-  listTemperature,
-  listAccelerometer,
-  listHeartRateDaily,
-  listTemperatureDaily,
+    listCows, showCow, storeCow, updateCowController, destroyCow,
+    upload, uploadPhoto, destroyPhoto, servePhoto,
+    listHeartRate, listTemperature, listAccelerometer,
+    listHeartRateDaily, listTemperatureDaily,
 } from "../controllers/cowsController";
 import { cowUpload } from "../helpers/multerUpload";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
+import { validateSchema } from "../middlewares/validateSchema";
+import { createCowSchema, updateCowSchema } from "../schemas/cowSchemas";
 
 const router = Router();
 
 // CRUD
-router.get("/", requireAuth, requirePermission("ViewAny Cow"), listCows);
-router.get("/:id", requireAuth, requirePermission("View Cow"), showCow);
-router.post("/", requireAuth, requirePermission("Create Cow"), storeCow);
-router.put(
-  "/:id",
-  requireAuth,
-  requirePermission("Update Cow"),
-  updateCowController,
-);
-router.delete("/:id", requireAuth, requirePermission("Delete Cow"), destroyCow);
+router.get("/",       requireAuth, requirePermission("ViewAny Cow"), listCows);
+router.get("/:id",    requireAuth, requirePermission("View Cow"),    showCow);
+router.post("/",      requireAuth, requirePermission("Create Cow"), validateSchema(createCowSchema), storeCow);
+router.put("/:id",    requireAuth, requirePermission("Update Cow"),  validateSchema(updateCowSchema), updateCowController);
+router.delete("/:id", requireAuth, requirePermission("Delete Cow"),  destroyCow);
 
-// Fotos
-router.post(
-  "/:id/photos",
-  requireAuth,
-  requirePermission("Update Cow"),
-  cowUpload.single("photo"),
-  uploadPhoto,
-);
-router.delete(
-  "/:id/photos/:filename",
-  requireAuth,
-  requirePermission("Update Cow"),
-  destroyPhoto,
-);
+// Fotos — upload, remoção e servir arquivo autenticado
+router.post("/:id/photos",             requireAuth, requirePermission("Update Cow"), upload.single("photo"), uploadPhoto);
+router.delete("/:id/photos/:filename", requireAuth, requirePermission("Update Cow"), destroyPhoto);
+router.get("/:id/photos/:filename",    requireAuth, requirePermission("View Cow"), servePhoto);
 
 // Sensores — listagem paginada
 router.get(

@@ -8,22 +8,20 @@ import usersRoutes from "./routes/usersRoutes";
 import rolesRoutes from "./routes/rolesRoutes";
 import permissionsRoutes from "./routes/permissionsRoutes";
 import permissionGroupsRoutes from "./routes/permissionGroupsRoutes";
-import farmsRoutes from "./routes/farmsRoutes";
-import collarsRoutes from "./routes/collarsRoutes";
-import cowsRoutes from "./routes/cowsRoutes";
-import dashboardRoutes from "./routes/dashboardRoutes";
-import notificationsRoutes from "./routes/notificationsRoutes";
-import mqttRoutes from "./routes/mqttRoutes";
+import farmsRoutes            from "./routes/farmsRoutes";
+import collarsRoutes          from "./routes/collarsRoutes";
+import cowsRoutes             from "./routes/cowsRoutes";
+import dashboardRoutes        from "./routes/dashboardRoutes";
+import notificationsRoutes    from "./routes/notificationsRoutes";
+import mqttRoutes             from "./routes/mqttRoutes";
+import { errorHandler }       from "./middlewares/errorHandler";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// TODO[RENATO] CORS aberto — qualquer origem pode chamar a API.
-// Restringir para: app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }))
-// e adicionar ALLOWED_ORIGINS no .env com a URL do frontend.
-app.use(cors());
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }));
 app.use(express.json());
 
 // TODO[RENATO] Fotos servidas publicamente sem autenticação — qualquer URL /uploads/<filename> é acessível.
@@ -53,13 +51,8 @@ app.get("/health", async (_request, response) => {
   }
 });
 
-// TODO[RENATO] Sem global error handler — exceções não capturadas retornam HTML padrão do Express ou crasham o processo.
-// Adicionar antes do app.listen:
-//   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-//     if (err instanceof AppError) res.status(err.statusCode).json({ error: err.message });
-//     else res.status(500).json({ error: "Internal server error" });
-//   });
-// e criar shared/errors/AppError.ts com NotFoundError, ConflictError, ForbiddenError.
+// Middleware de tratamento de erros
+app.use(errorHandler);
 
 // Inicialização
 const server = app.listen(PORT, () => {
