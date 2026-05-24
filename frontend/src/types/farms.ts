@@ -2,7 +2,7 @@
 // Corrigir para: id: number
 // e remover os Number(id) / String(id) espalhados no código (buscar por "Number(.*id)" e "String(.*id)").
 export interface Farm {
-  id: string;
+  id: number;
   name: string;
   cnpj: string;
   address: string;
@@ -26,6 +26,8 @@ export interface CreateFarmInput {
   state: string;
   phone: string;
   email: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type UpdateFarmInput = Partial<CreateFarmInput>;
