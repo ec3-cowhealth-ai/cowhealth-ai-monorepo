@@ -1,69 +1,40 @@
-# Features — Organização por Domínio
+# Features
 
-Cada feature é um domínio completo da aplicação com seus componentes, hooks, tipos e lógica.
+Each feature is a self-contained domain module with its own UI, hooks, services, types, and local documentation.
 
-## Estrutura Recomendada por Feature
+## Recommended Shape
 
-```
-features/auth/
-├── components/          # Componentes específicos (FormLogin, FormRegister, etc.)
-├── hooks/               # Hooks customizados da feature
-├── types/               # Tipos específicos da feature
-├── services/            # Services específicos da feature (opcional)
-├── index.ts             # Exports públicos
-└── README.md            # Documentação da feature
-```
-
-## Padrão de Imports
-
-### ❌ Errado (acoplamento entre features)
-
-```tsx
-import { LoginForm } from '@features/auth/components/LoginForm';
-
-export const DashboardPage = () => { ... }
+```text
+features/<name>/
+|-- components/
+|-- hooks/
+|-- pages/
+|-- services/
+|-- types/
+|-- README.md
+`-- index.ts
 ```
 
-### ✅ Correto (componentes compartilhados)
+## Import Rules
 
-```tsx
-import { Button } from '@components/common/Button';
-import { LoginForm } from '@features/auth/components/LoginForm';
+- Use shared UI from `src/components/` for reusable building blocks.
+- Keep feature-specific code inside the feature folder.
+- Move cross-feature logic to `src/hooks/`, `src/services/`, or `src/types/` only when it is truly shared.
 
-export const DashboardPage = () => { ... }
-```
+## Current Features
 
-## Features do CowHealth AI
+- `auth/` - login, register, session bootstrap
+- `dashboard/` - KPI cards and charts
+- `farms/` - farm management
+- `cows/` - cow management and health views
+- `collars/` - collar management
+- `notifications/` - alert center
+- `access/` - users, roles, permissions
+- `landing/` - public landing page
 
-| Feature          | Responsável | Descrição                                        |
-| ---------------- | ----------- | ------------------------------------------------ |
-| `auth/`          | Angelo      | Autenticação, login, registro                    |
-| `dashboard/`     | Ian         | Dashboard, gráficos, KPIs                        |
-| `farms/`         | Jafte       | Gerenciamento de fazendas                        |
-| `cows/`          | Jafte       | Gerenciamento de vacas, saúde                    |
-| `collars/`       | Jafte       | Gerenciamento de coleiras (wearables)            |
-| `notifications/` | Jafte       | Centro de notificações, alertas                  |
-| `access/`        | Jafte       | Controle de acesso (usuários, roles, permissões) |
+## Status Rule
 
-## Regra de Dependência (TODO[NOME])
+- Feature READMEs should describe the current implementation, not an old TODO list.
+- If a feature is still incomplete, say exactly what is missing and who owns it.
+- If a feature is stable, keep the README short and current.
 
-Quando uma feature depender do trabalho de outro responsável:
-
-```tsx
-// src/features/farms/FarmsPage.tsx
-export const FarmsPage = () => {
-  return (
-    <div>
-      <h1>Fazendas</h1>
-      {/* TODO[JAFTE]: Integrar listagem completa de fazendas */}
-      <p>Carregando...</p>
-    </div>
-  );
-};
-```
-
-Convenções:
-
-- `TODO[ANGELO]` — Autenticação/Registro
-- `TODO[IAN]` — Dashboard/Gráficos
-- `TODO[JAFTE]` — Demais features

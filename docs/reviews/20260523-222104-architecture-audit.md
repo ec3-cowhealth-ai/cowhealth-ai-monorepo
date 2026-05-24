@@ -175,7 +175,7 @@ Notification ownership is checked in the service layer:
 ```ts
 // notificationsService.ts:26
 if (notification.userId !== userId)
-  throw new Error("Sem permissão para esta ação.");
+  throw new Error("No permission for this action.");
 ```
 
 This authorization rule belongs in middleware or an application service, not in a data-access service. It creates an inconsistency — most authorization goes through `requirePermission`, but ownership authorization is scattered inside services.

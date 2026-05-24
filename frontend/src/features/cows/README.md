@@ -1,14 +1,14 @@
 # Feature: Cows
 
-Componentes e lógica para gerenciamento de vacas.
+Components and logic for cow management.
 
-## Estrutura
+## Structure
 
-- Componentes de listagem de vacas
-- Formulários de criação/edição
-- Componentes de detalhe e histórico de vaca
-- Componentes de sensores e saúde
+- Cow listing components
+- Creation/edition forms
+- Cow detail and history components
+- Sensor and health components
 
-## Responsável
+## Responsible
 
-Jafte (conforme matriz de responsabilidades)
+Jafte (according to the responsibility matrix)

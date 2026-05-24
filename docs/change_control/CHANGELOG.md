@@ -1,473 +1,473 @@
 # CHANGELOG
 
-# Alterações e Progresso de JCFS
+# Changes and Progress by JCFS
 
 ---
 
-## 2026-05-24 - Geolocalização de fazendas, simulação de posição de vacas, fix loop de autenticação e documentação de tarefas do time (JCFS)
+## 2026-05-24 - Farm geolocation, cow position simulation, authentication loop fix, and team task documentation (JCFS)
 
-Escopo: utilitário de simulação de coordenadas geográficas para vacas por fazenda; correção do loop infinito de reload causado pelo FarmProvider fora da rota protegida; atualização do tipo Farm com campos opcionais de latitude/longitude; geração de cards Triagen para o time (Angelo, Ian, Renato); PR de task documentando geolocalização das fazendas para integração com simulador MQTT; ajuste do .gitignore para rastrear .claude/SKILL.md.
+Scope: Utility for simulating geographic coordinates for cows by farm; fix for infinite reload loop caused by FarmProvider outside the protected route; update of the Farm type with optional latitude/longitude fields; generation of triage cards for the team (Angelo, Ian, Renato); PR task documenting farm geolocation for integration with the MQTT simulator; adjustment of .gitignore to track .claude/SKILL.md.
 
-### Adicionado
+### Added
 
-- `frontend/src/pages/map/simulateCowPositions.ts` — utilitário que distribui vacas em posições geográficas determinísticas (seed por `cow.id`) dentro de um raio de 600m ao redor das coordenadas da fazenda; usa fallback hardcoded das 5 fazendas enquanto a migration de geolocalização (PR #15) não for aplicada
-- `docs/tasks/farm-geolocation.md` — task document para Renato: schema Prisma, migration, seed com coordenadas e critérios de aceite
-- `docs/tasks/triagen-cards.yaml` — 13 cards Triagen (formato v2) cobrindo todas as tarefas pendentes de Angelo, Ian e Renato, com checklists e prioridades
-- `backend/src/helpers/fileStorage.ts` — helper para armazenamento de arquivos de foto de vaca
-- `backend/src/helpers/multerUpload.ts` — configuração do multer para upload de imagens
-- `backend/src/services/cowHealthAnalyzer.ts` — serviço de análise heurística de saúde bovina
-- `frontend/src/pages/map/CowDetailCard.tsx`, `CowPin.tsx`, `MapBackground.tsx`, `MapLegend.tsx` — componentes extraídos do MapPage para melhor separação de responsabilidades
+- `frontend/src/pages/map/simulateCowPositions.ts` — utility that distributes cows in deterministic geographic positions (seeded by `cow.id`) within a 600m radius around farm coordinates; uses hardcoded fallback for the 5 farms until the geolocation migration (PR #15) is applied.
+- `docs/tasks/farm-geolocation.md` — task document for Renato: Prisma schema, migration, seed with coordinates, and acceptance criteria.
+- `docs/tasks/triagen-cards.yaml` — 13 triage cards (v2 format) covering all pending tasks for Angelo, Ian, and Renato, with checklists and priorities.
+- `backend/src/helpers/fileStorage.ts` — helper for storing cow photo files.
+- `backend/src/helpers/multerUpload.ts` — multer configuration for image uploads.
+- `backend/src/services/cowHealthAnalyzer.ts` — heuristic service for bovine health analysis.
+- `frontend/src/pages/map/CowDetailCard.tsx`, `CowPin.tsx`, `MapBackground.tsx`, `MapLegend.tsx` — components extracted from MapPage for better separation of responsibilities.
 
-### Modificado
+### Changed
 
-- `frontend/src/types/farms.ts` — adicionados `latitude?: number` e `longitude?: number` ao tipo `Farm`
-- `frontend/src/components/layout/AppShell.tsx` — `FarmProvider` movido para dentro do AppShell (era em App.tsx), corrigindo loop infinito de reload quando o usuário não estava autenticado
-- `frontend/src/App.tsx` — removido `FarmProvider` (agora em AppShell)
-- `frontend/src/pages/map/MapPage.tsx` — refatorado com componentes extraídos
-- `frontend/src/hooks/usePermission.ts` — melhorias no hook de verificação de permissão
-- `frontend/src/features/farms/components/FarmForm.tsx` — atualizado formulário de fazenda
-- `backend/src/server.ts` — ajustes de configuração
-- `backend/src/services/dashboardService.ts` — filtro por `farmId` integrado ao merge com main
-- `backend/src/services/mqttIngestService.ts` — melhorias no serviço de ingestão MQTT
-- `backend/src/controllers/cowsController.ts`, `farmsController.ts` — atualizações de controllers
-- `backend/src/middlewares/requirePermission.ts` — ajustes no middleware de permissão
-- `.gitignore` — adicionada exceção `!.claude/SKILL.md`
+- `frontend/src/types/farms.ts` — added `latitude?: number` and `longitude?: number` to the `Farm` type.
+- `frontend/src/components/layout/AppShell.tsx` — `FarmProvider` moved inside AppShell (it was in App.tsx), fixing the infinite reload loop when the user was not authenticated.
+- `frontend/src/App.tsx` — removed `FarmProvider` (now in AppShell).
+- `frontend/src/pages/map/MapPage.tsx` — refactored with extracted components.
+- `frontend/src/hooks/usePermission.ts` — improvements in the permission check hook.
+- `frontend/src/features/farms/components/FarmForm.tsx` — updated farm form.
+- `backend/src/server.ts` — configuration adjustments.
+- `backend/src/services/dashboardService.ts` — `farmId` filter integrated into the merge with main.
+- `backend/src/services/mqttIngestService.ts` — improvements in the MQTT ingestion service.
+- `backend/src/controllers/cowsController.ts`, `farmsController.ts` — controller updates.
+- `backend/src/middlewares/requirePermission.ts` — adjustments in the permission middleware.
+- `.gitignore` — added exception `!.claude/SKILL.md`.
 
-### Removido
+### Removed
 
-- `frontend/src/store/README.md`, `context/index.ts`, `reducers/index.ts` — store Redux removida (substituída pelo FarmContext)
+- `frontend/src/store/README.md`, `context/index.ts`, `reducers/index.ts` — Redux store removed (replaced by FarmContext).
 
-### PRs abertas
+### Open PRs
 
-- PR #15 — `feat/farm-geolocation` → task de geolocalização de fazendas (Renato)
+- PR #15 — `feat/farm-geolocation` → farm geolocation task (Renato).
 
 ### Build Status
 
-- TypeScript frontend: zero erros
+- Frontend TypeScript: zero errors.
 
 ---
 
-## 2026-05-23 - Ícones bovinos coloridos por status + redirect logout para Landing Page (JCFS)
+## 2026-05-23 - Colored bovine icons by status + logout redirect to Landing Page (JCFS)
 
-Escopo: ícone `CowHead` (lucide-lab) colorido dinamicamente conforme status de saúde da vaca; migração completa do componente `Icon` customizado e `CowMark` para `lucide-react` em todas as telas pós-login; redirect de logout e sessão expirada apontando para a Landing Page.
+Scope: `CowHead` icon (lucide-lab) dynamically colored according to the cow's health status; complete migration of the custom `Icon` component and `CowMark` to `lucide-react` on all post-login screens; logout and expired session redirect pointing to the Landing Page.
 
-### Adicionado
+### Added
 
-- `frontend/src/components/ui/CowHeadIcon.tsx` — componente React compartilhado que envolve o node `cowHead` do `@lucide/lab` via `createLucideIcon`; elimina a repetição de `createLucideIcon` em cada arquivo
+- `frontend/src/components/ui/CowHeadIcon.tsx` — shared React component that wraps the `@lucide/lab` `cowHead` node via `createLucideIcon`; eliminates repetition of `createLucideIcon` in each file.
 
-**Frontend — Dependências**
+**Frontend — Dependencies**
 
-- `frontend/package.json` — instalado `@lucide/lab` para uso do `CowHead`
+- `frontend/package.json` — installed `@lucide/lab` for `CowHead` usage.
 
-### Modificado
+### Changed
 
-**Frontend — Ícones de vaca por status**
+**Frontend — Cow icons by status**
 
-O ícone `CowHead` agora recebe `color` dinamicamente com base no status da vaca, tornando o estado de saúde visualmente imediato na lista e no detalhe.
+The `CowHead` icon now receives `color` dynamically based on the cow's status, making the health state visually immediate in the list and detail.
 
-- `frontend/src/features/cows/pages/CowsPage.tsx` — cada `CowHead` na lista recebe `color={statusColor(cow.status)}`
-- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `CowHead` no hero card recebe `color={statusColor(cow.status)}`
+- `frontend/src/features/cows/pages/CowsPage.tsx` — each `CowHead` in the list receives `color={statusColor(cow.status)}`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `CowHead` in the hero card receives `color={statusColor(cow.status)}`.
 
-Mapeamento de cores:
+Color mapping:
 
-| Status | Cor |
+| Status | Color |
 |---|---|
-| Saudável | `var(--success)` — verde |
-| Alerta | `var(--danger)` — vermelho |
-| Estresse Térmico | `var(--warning)` — laranja |
-| Parto | `var(--info)` — azul |
+| Healthy | `var(--success)` — green |
+| Alert | `var(--danger)` — red |
+| Heat Stress | `var(--warning)` — orange |
+| Calving | `var(--info)` — blue |
 
-**Frontend — Migração Icon customizado → lucide-react**
+**Frontend — Migration custom Icon → lucide-react**
 
-Todos os usos do componente `Icon` customizado (`@components/ui/Icon`) e `CowMark` foram substituídos por equivalentes Lucide em todas as telas pós-login.
+All uses of the custom `Icon` component (`@components/ui/Icon`) and `CowMark` were replaced by Lucide equivalents on all post-login screens.
 
-- `frontend/src/components/layout/AppBar.tsx` — `Icon n="chevronLeft"` → `<ChevronLeft />`
-- `frontend/src/components/layout/Sidebar.tsx` — `Beef` → `CowHead` (via `CowHeadIcon.tsx`)
-- `frontend/src/features/cows/pages/CowsPage.tsx` — `Icon n="search/chevronRight"` → `Search`, `ChevronRight`; `CowMark` → `CowHead`
-- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `Icon n="alert/farm/collar/thermo/heart"` → `AlertTriangle`, `Warehouse`, `Tag`, `Thermometer`, `Heart`; `CowMark` → `CowHead`
-- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `Icon n="check/alert/bell/activity"` → `Check`, `AlertTriangle`, `Bell`, `Activity`; mapa de ícones por tipo refatorado para `ReactNode`
-- `frontend/src/pages/home/HomePage.tsx` — `Icon n="bell/alert/chevronRight/check/list/map/farm"` → Lucide equivalentes; `CowMark` → `CowHead`
-- `frontend/src/pages/profile/ProfilePage.tsx` — `Icon n="list/farm/collar/user/chevronRight/logout"` → Lucide equivalentes; `CowMark` → `CowHead`; `menuItems` refatorado para `ReactNode` em vez de strings
-- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `Beef` → `CowHead` (via `CowHeadIcon.tsx`)
+- `frontend/src/components/layout/AppBar.tsx` — `Icon n="chevronLeft"` → `<ChevronLeft />`.
+- `frontend/src/components/layout/Sidebar.tsx` — `Beef` → `CowHead` (via `CowHeadIcon.tsx`).
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `Icon n="search/chevronRight"` → `Search`, `ChevronRight`; `CowMark` → `CowHead`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `Icon n="alert/farm/collar/thermo/heart"` → `AlertTriangle`, `Warehouse`, `Tag`, `Thermometer`, `Heart`; `CowMark` → `CowHead`.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `Icon n="check/alert/bell/activity"` → `Check`, `AlertTriangle`, `Bell`, `Activity`; icon map by type refactored to `ReactNode`.
+- `frontend/src/pages/home/HomePage.tsx` — `Icon n="bell/alert/chevronRight/check/list/map/farm"` → Lucide equivalents; `CowMark` → `CowHead`.
+- `frontend/src/pages/profile/ProfilePage.tsx` — `Icon n="list/farm/collar/user/chevronRight/logout"` → Lucide equivalents; `CowMark` → `CowHead`; `menuItems` refactored to `ReactNode` instead of strings.
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `Beef` → `CowHead` (via `CowHeadIcon.tsx`).
 
 **Frontend — Logout**
 
-- `frontend/src/hooks/useAuth.ts` — `useLogout` redireciona para `/` (Landing Page) em vez de `/login`
-- `frontend/src/components/layout/Sidebar.tsx` — `handleLogout` redireciona para `/`
-- `frontend/src/lib/api.ts` — interceptor 401 redireciona para `/` em vez de `/login`
+- `frontend/src/hooks/useAuth.ts` — `useLogout` redirects to `/` (Landing Page) instead of `/login`.
+- `frontend/src/components/layout/Sidebar.tsx` — `handleLogout` redirects to `/`.
+- `frontend/src/lib/api.ts` — 401 interceptor redirects to `/` instead of `/login`.
 
 ### Build Status
 
-- TypeScript frontend: zero erros (`tsc --noEmit`)
+- Frontend TypeScript: zero errors (`tsc --noEmit`).
 
 ---
 
-## 2026-05-23 - Design System Hi-Fi: 5 telas pós-login + filtro por fazenda em cascata (JCFS)
+## 2026-05-23 - Hi-Fi Design System: 5 post-login screens + cascaded farm filter (JCFS)
 
-Escopo: substituição completa das telas pós-login pelo Design System Hi-Fi (CowHealth AI — 5 telas · iPhone 14 Pro · Dark · PT-BR); adição de contexto global de fazenda selecionada com propagação em cascata até o Prisma; reescrita do mapa como planta interna de fazenda com piquetes/estábulos e pins de vaca em tempo real; criação de 5 layouts SVG únicos (um por fazenda).
+Scope: Complete replacement of post-login screens with the Hi-Fi Design System (CowHealth AI — 5 screens · iPhone 14 Pro · Dark · PT-BR); addition of global selected farm context with cascade propagation to Prisma; rewrite of the map as a farm floor plan with paddocks/stables and real-time cow pins; creation of 5 unique SVG layouts (one per farm).
 
-### Adicionado
+### Added
 
-**Frontend — Componentes UI (`src/components/ui/`)**
+**Frontend — UI Components (`src/components/ui/`)**
 
-- `Icon.tsx` — renderizador SVG com 30+ ícones do Design System; props `{ n, s, c, sw, style }`; ícones: bell, search, home, list, alert, map, user, wifi, arrowUp, calendar, chevronLeft/Right, filter, plus, check, thermo, heart, activity, battery, logout, farm, collar
-- `StatusDot.tsx` — indicador colorido com animação `cowPulse`; tons `success | warn | danger | muted | info`
-- `Battery.tsx` — componente visual de percentual de bateria com cores por faixa (danger < 20 %, warning < 40 %, accent ≥ 40 %)
-- `CowMark.tsx` — logotipo SVG de vaca; props `{ s, primary, accent }`
-- `LineChart.tsx` — gráfico SVG nativo consumindo `SensorDailyPoint[]`; suporte a thresholds horizontais, gradiente de área, eixos X/Y automáticos, até 5 rótulos de data
+- `Icon.tsx` — SVG renderer with 30+ Design System icons; props `{ n, s, c, sw, style }`; icons: bell, search, home, list, alert, map, user, wifi, arrowUp, calendar, chevronLeft/Right, filter, plus, check, thermo, heart, activity, battery, logout, farm, collar.
+- `StatusDot.tsx` — colored indicator with `cowPulse` animation; tones `success | warn | danger | muted | info`.
+- `Battery.tsx` — visual battery percentage component with range-based colors (danger < 20%, warning < 40%, accent ≥ 40%).
+- `CowMark.tsx` — cow SVG logo; props `{ s, primary, accent }`.
+- `LineChart.tsx` — native SVG chart consuming `SensorDailyPoint[]`; support for horizontal thresholds, area gradient, automatic X/Y axes, up to 5 date labels.
 
-**Frontend — Contexto**
+**Frontend — Context**
 
-- `src/context/FarmContext.tsx` — `FarmProvider` expondo `selectedFarm`, `setSelectedFarm`, `farms`, `isLoading`; persiste `selectedFarmId` no `localStorage`; auto-seleciona a primeira fazenda na inicialização
+- `src/context/FarmContext.tsx` — `FarmProvider` exposing `selectedFarm`, `setSelectedFarm`, `farms`, `isLoading`; persists `selectedFarmId` in `localStorage`; auto-selects the first farm on initialization.
 
-**Frontend — Páginas novas**
+**Frontend — New Pages**
 
-- `src/pages/map/farmLayouts.ts` — 5 layouts SVG de plantas de fazenda: Aurora (campos + estábulo central), São Bento (corredor + piquetes laterais), Vale Verde (formato L + lagoa), Santa Clara (grade 3×2 de piquetes), Rio Bonito (linear + mata ciliar + rio); cada layout define zonas coloridas com labels, vias e posições de pins
-- `src/pages/map/MapPage.tsx` — mapa full-bleed da fazenda selecionada: fundo topográfico SVG, polígonos de zonas com labels, pins de vaca animados por status (dados reais filtrados por fazenda), legenda de contagem, card de detalhe ao tocar pin, botão "Próxima" para ciclar entre fazendas
-- `src/pages/profile/ProfilePage.tsx` — perfil do usuário com CowMark, email, perfil, menu de acesso rápido e logout
+- `src/pages/map/farmLayouts.ts` — 5 SVG farm floor plan layouts: Aurora (fields + central stable), São Bento (corridor + side paddocks), Vale Verde (L-shape + pond), Santa Clara (3×2 grid of paddocks), Rio Bonito (linear + riparian forest + river); each layout defines colored zones with labels, roads, and pin positions.
+- `src/pages/map/MapPage.tsx` — full-bleed map of the selected farm: SVG topographic background, zone polygons with labels, animated cow pins by status (real data filtered by farm), count legend, detail card on pin tap, "Next" button to cycle between farms.
+- `src/pages/profile/ProfilePage.tsx` — user profile with CowMark, email, profile, quick access menu, and logout.
 
-### Modificado
+### Changed
 
 **Frontend — Layout**
 
-- `src/components/layout/BottomNav.tsx` — migrado de 4 abas com emoji para 5 abas com `Icon` SVG (Início / Rebanho / Alertas / Mapa / Perfil); indicador Pearl Aqua `.bottom-nav__indicator` animado no item ativo; badge de não lidos em Alertas
-- `src/components/layout/AppBar.tsx` — adicionados props `subtitle`, `showBack`, `left`; back button usa `Icon` chevronLeft; slot `left` para avatar/logo personalizado
+- `src/components/layout/BottomNav.tsx` — migrated from 4 tabs with emoji to 5 tabs with SVG `Icon` (Home / Herd / Alerts / Map / Profile); Pearl Aqua `.bottom-nav__indicator` animated on active item; unread badge in Alerts.
+- `src/components/layout/AppBar.tsx` — added `subtitle`, `showBack`, `left` props; back button uses `Icon` chevronLeft; `left` slot for custom avatar/logo.
 
-**Frontend — Páginas reescritas**
+**Frontend — Rewritten Pages**
 
-- `src/pages/home/HomePage.tsx` — hero card com score de saúde + barra de progresso, strip de alerta crítico, fila horizontal de vacas em atenção, grid de acesso rápido; bottom sheet para troca de fazenda; todos os dados filtrados pela fazenda selecionada
-- `src/features/cows/pages/CowsPage.tsx` — layout `cow-row` com `CowMark` + `StatusDot`; filtro por fazenda via contexto; chips de status; busca colapsável; subtitle mostra nome da fazenda
-- `src/features/cows/pages/CowDetailPage.tsx` — hero card com CowMark + status + pills de fazenda/coleira; grid de métricas; `LineChart` com tabs Temperatura / FC; notificações recentes da vaca
-- `src/features/notifications/pages/NotificationsPage.tsx` — alert cards com borda esquerda colorida por tipo; chips Todos / Não lidos; `timeAgo` em PT-BR; marcar lido ao tocar; ação "marcar tudo" no AppBar
+- `src/pages/home/HomePage.tsx` — hero card with health score + progress bar, critical alert strip, horizontal row of cows needing attention, quick access grid; bottom sheet for farm switching; all data filtered by the selected farm.
+- `src/features/cows/pages/CowsPage.tsx` — `cow-row` layout with `CowMark` + `StatusDot`; farm filter via context; status chips; collapsible search; subtitle shows farm name.
+- `src/features/cows/pages/CowDetailPage.tsx` — hero card with CowMark + status + farm/collar pills; metrics grid; `LineChart` with Temperature / HR tabs; recent cow notifications.
+- `src/features/notifications/pages/NotificationsPage.tsx` — alert cards with type-colored left border; All / Unread chips; `timeAgo` in PT-BR; mark as read on tap; "mark all" action in AppBar.
 
-**Frontend — Rotas**
+**Frontend — Routes**
 
-- `src/routes/AppRoutes.tsx` — adicionadas rotas `/map` → `MapPage` e `/profile` → `ProfilePage`
+- `src/routes/AppRoutes.tsx` — added routes `/map` → `MapPage` and `/profile` → `ProfilePage`.
 
 **Frontend — App**
 
-- `src/App.tsx` — envolvido com `<FarmProvider>` dentro do `QueryClientProvider`
+- `src/App.tsx` — wrapped with `<FarmProvider>` inside `QueryClientProvider`.
 
 **Frontend — CSS**
 
-- `src/styles/App.css` — reescrita completa do Design System autenticado (sem bloco `:root`, que reside em `landing.css`): `bottom-nav` 5 colunas 64px com `.bottom-nav__indicator` Pearl Aqua; `app-bar` 56px com `.app-bar__titles`, `.app-bar__subtitle`, `.app-bar__action-badge`; `@keyframes cowPulse`; novas classes: `.app-content`, `.home-hero`, `.home-hero__bar`, `.home-hero__bar-fill`, `.home-stat`, `.home-section`, `.home-section__header`, `.alert-card`, `.alert-card--danger`, `.alert-card--read`, `.quick-grid`, `.quick-chip`, `.cow-row`, `.cow-row__meta`, `.cow-row__right`, `.cow-row__status`, `.filter-chips`, `.filter-chip`, `.home-empty`
+- `src/styles/App.css` — complete rewrite of the authenticated Design System (without the `:root` block, which resides in `landing.css`): `bottom-nav` 5 columns 64px with Pearl Aqua `.bottom-nav__indicator`; `app-bar` 56px with `.app-bar__titles`, `.app-bar__subtitle`, `.app-bar__action-badge`; `@keyframes cowPulse`; new classes: `.app-content`, `.home-hero`, `.home-hero__bar`, `.home-hero__bar-fill`, `.home-stat`, `.home-section`, `.home-section__header`, `.alert-card`, `.alert-card--danger`, `.alert-card--read`, `.quick-grid`, `.quick-chip`, `.cow-row`, `.cow-row__meta`, `.cow-row__right`, `.cow-row__status`, `.filter-chips`, `.filter-chip`, `.home-empty`.
 
 **Frontend — Hooks**
 
-- `src/features/dashboard/hooks/useDashboard.ts` — `useDashboardOverview(farmId?)` e `useCowsPerStatus(farmId?)` incluem `farmId` no `queryKey` e repassam ao service
+- `src/features/dashboard/hooks/useDashboard.ts` — `useDashboardOverview(farmId?)` and `useCowsPerStatus(farmId?)` include `farmId` in the `queryKey` and pass it to the service.
 
 **Frontend — Services**
 
-- `src/services/dashboardService.ts` — `getDashboardOverview(farmId?)` e `getCowsPerStatus(farmId?)` enviam `?farmId=` quando informado
+- `src/services/dashboardService.ts` — `getDashboardOverview(farmId?)` and `getCowsPerStatus(farmId?)` send `?farmId=` when provided.
 
 **Backend — Services**
 
-- `src/services/dashboardService.ts` — `getDashboardOverview(farmId?)`: filtra `prisma.cow.count()` com `where: { farmId }`; quando `farmId` fornecido retorna a própria fazenda como `topFarm`; `getCowsPerStatus(farmId?)`: adiciona `where: { farmId }` ao `groupBy`
-- `src/services/cowsService.ts` — `getAllCows(farmId?)`: adiciona `where: farmId ? { farmId } : undefined` ao `findMany`
+- `src/services/dashboardService.ts` — `getDashboardOverview(farmId?)`: filters `prisma.cow.count()` with `where: { farmId }`; when `farmId` provided, returns the farm itself as `topFarm`; `getCowsPerStatus(farmId?)`: adds `where: { farmId }` to the `groupBy`.
+- `src/services/cowsService.ts` — `getAllCows(farmId?)`: adds `where: farmId ? { farmId } : undefined` to the `findMany`.
 
 **Backend — Controllers**
 
-- `src/controllers/dashboardController.ts` — `overview` e `cowsPerStatus` leem `request.query.farmId` e repassam como `number`
-- `src/controllers/cowsController.ts` — `listCows` lê `request.query.farmId` e repassa para `getAllCows`
+- `src/controllers/dashboardController.ts` — `overview` and `cowsPerStatus` read `request.query.farmId` and pass it as `number`.
+- `src/controllers/cowsController.ts` — `listCows` reads `request.query.farmId` and passes it to `getAllCows`.
 
-### Corrigido
+### Fixed
 
-- **Dashboard exibia 160 vacas (todas as fazendas)** quando o admin acessava fazenda específica
-  Causa: backend sem suporte a `farmId`; frontend sem estado de fazenda selecionada
-  Solução: `FarmContext` + query param `?farmId=` em cascata até o Prisma
+- **Dashboard displayed 160 cows (all farms)** when admin accessed a specific farm.
+  Cause: backend lacked `farmId` support; frontend lacked selected farm state.
+  Solution: `FarmContext` + query param `?farmId=` cascaded down to Prisma.
 
-- **Mapa exibia visão global multi-fazenda** em vez de planta interna
-  Causa: `MapPage` anterior usava pins fixos de localização geográfica das fazendas
-  Solução: reescrito com `farmLayouts.ts` — planta interna com zonas SVG e pins de vacas filtrados
+- **Map displayed global multi-farm view** instead of internal floor plan.
+  Cause: previous `MapPage` used fixed pins for geographic location of farms.
+  Solution: rewritten with `farmLayouts.ts` — internal floor plan with SVG zones and filtered cow pins.
 
-- **`isPending: toggling` declarado e nunca usado** em `UsersPage` (erro TypeScript pré-existente)
-  Solução: removido do destructuring
+- **`isPending: toggling` declared but never used** in `UsersPage` (pre-existing TypeScript error).
+  Solution: removed from destructuring.
 
 ### Build Status
 
-- TypeScript frontend: zero erros — 842 modules transformados (`npm run build`)
-- TypeScript backend: sem erros de tipo nas funções modificadas
+- Frontend TypeScript: zero errors — 842 modules transformed (`npm run build`).
+- Backend TypeScript: no type errors in modified functions.
 
 ---
 
-## 2026-05-23 - FarmContext + Mapa Refatorado + Ícones Lucide React (JCFS)
+## 2026-05-23 - FarmContext + Refactored Map + Lucide React Icons (JCFS)
 
-Escopo: contexto global de fazenda selecionada, refatoração completa do mapa, farm layouts estáticos, ajustes no backend de cows/dashboard, e substituição de todos os emojis por ícones vetoriais via `lucide-react`.
+Scope: Global selected farm context, complete map refactoring, static farm layouts, adjustments in cows/dashboard backend, and replacement of all emojis with vector icons via `lucide-react`.
 
-### Adicionado
+### Added
 
-**Frontend — Contexto**
+**Frontend — Context**
 
-- `frontend/src/context/FarmContext.tsx` — contexto global de fazenda selecionada; expõe `selectedFarm` e `setSelectedFarm` para filtrar dados por fazenda em toda a aplicação
+- `frontend/src/context/FarmContext.tsx` — global selected farm context; exposes `selectedFarm` and `setSelectedFarm` to filter data by farm across the application.
 
-**Frontend — Mapa**
+**Frontend — Map**
 
-- `frontend/src/pages/map/farmLayouts.ts` — layouts estáticos de fazendas (posições de setores, currais e pontos de interesse); dado local para renderização do mapa sem depender de endpoint externo
+- `frontend/src/pages/map/farmLayouts.ts` — static farm layouts (sector positions, corrals, and points of interest); local data for map rendering without depending on external endpoint.
 
-**Frontend — Dependências**
+**Frontend — Dependencies**
 
-- `frontend/package.json` — instalada `lucide-react` para substituição de emojis por ícones vetoriais consistentes
+- `frontend/package.json` — installed `lucide-react` for replacing emojis with consistent vector icons.
 
-### Modificado
+### Changed
 
 **Backend — Cows**
 
-- `backend/src/controllers/cowsController.ts` — ajustes na resposta do controller
-- `backend/src/services/cowsService.ts` — ajustes na lógica de filtragem
+- `backend/src/controllers/cowsController.ts` — adjustments in controller response.
+- `backend/src/services/cowsService.ts` — adjustments in filtering logic.
 
 **Backend — Dashboard**
 
-- `backend/src/controllers/dashboardController.ts` — ajustes na resposta dos KPIs
-- `backend/src/services/dashboardService.ts` — refatoração da lógica de agregação de dados por fazenda
+- `backend/src/controllers/dashboardController.ts` — adjustments in KPI response.
+- `backend/src/services/dashboardService.ts` — refactoring of data aggregation logic by farm.
 
 **Frontend — Dashboard**
 
-- `frontend/src/services/dashboardService.ts` — atualizado para suportar filtro por `farmId`
-- `frontend/src/features/dashboard/hooks/useDashboard.ts` — hooks atualizados para consumir `FarmContext` e passar `farmId` nas queries
+- `frontend/src/services/dashboardService.ts` — updated to support `farmId` filter.
+- `frontend/src/features/dashboard/hooks/useDashboard.ts` — hooks updated to consume `FarmContext` and pass `farmId` in queries.
 
 **Frontend — Home**
 
-- `frontend/src/pages/home/HomePage.tsx` — refatorado para usar `FarmContext`; seletor de fazenda integrado à página inicial
+- `frontend/src/pages/home/HomePage.tsx` — refactored to use `FarmContext`; farm selector integrated into the home page.
 
-**Frontend — Mapa**
+**Frontend — Map**
 
-- `frontend/src/pages/map/MapPage.tsx` — refatoração completa: renderização baseada em `farmLayouts.ts`, integração com `FarmContext`, novo layout visual de setores e currais
+- `frontend/src/pages/map/MapPage.tsx` — complete refactoring: rendering based on `farmLayouts.ts`, integration with `FarmContext`, new visual layout of sectors and corrals.
 
 **Frontend — Cows**
 
-- `frontend/src/features/cows/pages/CowsPage.tsx` — filtro por fazenda via `FarmContext` integrado
+- `frontend/src/features/cows/pages/CowsPage.tsx` — integrated farm filter via `FarmContext`.
 
 **Frontend — App**
 
-- `frontend/src/App.tsx` — `FarmContext.Provider` adicionado ao wrapper de providers globais
+- `frontend/src/App.tsx` — `FarmContext.Provider` added to global providers wrapper.
 
-**Frontend — Ícones (lucide-react)**
+**Frontend — Icons (lucide-react)**
 
-Todos os emojis foram removidos do código-fonte e substituídos por componentes Lucide. **Impacto: `icon` prop de `EmptyState` e `ErrorState` mudou de `string` para `ReactNode`** — quem passar string literal nesses props receberá erro de TypeScript.
+All emojis were removed from the source code and replaced by Lucide components. **Impact: `icon` prop of `EmptyState` and `ErrorState` changed from `string` to `ReactNode`** — passing a string literal to these props will result in a TypeScript error.
 
-- `frontend/src/components/common/EmptyState.tsx` — `icon?: string` → `icon?: ReactNode`; default `<Inbox size={40} />`
-- `frontend/src/components/common/ErrorState.tsx` — `icon?: string` → `icon?: ReactNode`; default `<AlertTriangle size={40} />`
-- `frontend/src/components/common/FormModal.tsx` — `✕` → `<X size={16} />`
-- `frontend/src/components/common/ConfirmDialog.tsx` — `✕` → `<X size={16} />`
-- `frontend/src/components/layout/Sidebar.tsx` — emojis de navegação → `Home`, `Warehouse`, `Tag`, `Beef`, `Bell`, `ShieldCheck`, `LogOut`
-- `frontend/src/components/layout/BottomNav.tsx` — custom `Icon` SVG component → `Home`, `List`, `Bell`, `Map`, `User` (Lucide)
-- `frontend/src/features/notifications/components/NotificationCard.tsx` — mapa de emojis por tipo → `AlertTriangle`, `Bell`, `Info`, `XCircle`, `Megaphone`
-- `frontend/src/pages/auth/LoginPage.tsx` — emoji `🐄` removido do título `CowHealth AI`
-- `frontend/src/features/access/pages/AccessLayout.tsx` — `🔒` → `<Lock size={40} />`
-- `frontend/src/features/access/pages/RolesPage.tsx` — `✕` → `<X />`, `🎭` → `<Users size={40} />`
-- `frontend/src/features/access/pages/PermissionsPage.tsx` — `🔑` → `<Key size={40} />`
-- `frontend/src/features/access/pages/UsersPage.tsx` — `✕` → `<X />`, `👤` → `<User size={40} />`
-- `frontend/src/features/farms/pages/FarmsPage.tsx` — `🏡` → `<Warehouse size={40} />`
-- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `❌` → `<XCircle />`, `🐄` → `<Beef />`
-- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — `❌` → `<XCircle size={40} />`
+- `frontend/src/components/common/EmptyState.tsx` — `icon?: string` → `icon?: ReactNode`; default `<Inbox size={40} />`.
+- `frontend/src/components/common/ErrorState.tsx` — `icon?: string` → `icon?: ReactNode`; default `<AlertTriangle size={40} />`.
+- `frontend/src/components/common/FormModal.tsx` — `✕` → `<X size={16} />`.
+- `frontend/src/components/common/ConfirmDialog.tsx` — `✕` → `<X size={16} />`.
+- `frontend/src/components/layout/Sidebar.tsx` — navigation emojis → `Home`, `Warehouse`, `Tag`, `Beef`, `Bell`, `ShieldCheck`, `LogOut`.
+- `frontend/src/components/layout/BottomNav.tsx` — custom `Icon` SVG component → `Home`, `List`, `Bell`, `Map`, `User` (Lucide).
+- `frontend/src/features/notifications/components/NotificationCard.tsx` — emoji map by type → `AlertTriangle`, `Bell`, `Info`, `XCircle`, `Megaphone`.
+- `frontend/src/pages/auth/LoginPage.tsx` — emoji `🐄` removed from `CowHealth AI` title.
+- `frontend/src/features/access/pages/AccessLayout.tsx` — `🔒` → `<Lock size={40} />`.
+- `frontend/src/features/access/pages/RolesPage.tsx` — `✕` → `<X />`, `🎭` → `<Users size={40} />`.
+- `frontend/src/features/access/pages/PermissionsPage.tsx` — `🔑` → `<Key size={40} />`.
+- `frontend/src/features/access/pages/UsersPage.tsx` — `✕` → `<X />`, `👤` → `<User size={40} />`.
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — `🏡` → `<Warehouse size={40} />`.
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `❌` → `<XCircle />`, `🐄` → `<Beef />`.
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — `❌` → `<XCircle size={40} />`.
 
 ### Build Status
 
-- TypeScript frontend: zero erros (`tsc --noEmit`)
+- Frontend TypeScript: zero errors (`tsc --noEmit`).
 
 ---
 
-## 2026-05-23 - Backend MQTT + Gestão de Acesso + Auth + Dashboard + Ambiente (JCFS)
+## 2026-05-23 - Backend MQTT + Access Management + Auth + Dashboard + Environment (JCFS)
 
-Escopo: endpoint de ingestão MQTT, análise heurística de saúde, telas de gestão de acesso completas, dashboard com dados reais, correção de tipos TypeScript, configuração de ambiente e seed massivo de dados.
+Scope: MQTT ingestion endpoint, heuristic health analysis, complete access management screens, dashboard with real data, TypeScript type corrections, environment configuration, and massive data seed.
 
-### Adicionado
+### Added
 
-**Backend — Ingestão MQTT**
+**Backend — MQTT Ingestion**
 
-- `backend/src/middlewares/requireApiKey.ts` — middleware de autenticação por API Key (`Authorization: Bearer`)
-- `backend/src/services/mqttIngestService.ts` — validação de payload, persistência de HeartRateData / TemperatureData / AccelerometerData, análise heurística de CALVING e HEAT_STRESS, disparo de notificações para ADMIN e MANAGER
-- `backend/src/controllers/mqttController.ts` — controller fino delegando para `ingestMqttPayload`
-- `backend/src/routes/mqttRoutes.ts` — `POST /mqtt/ingest` protegido por `requireApiKey`
+- `backend/src/middlewares/requireApiKey.ts` — API Key authentication middleware (`Authorization: Bearer`).
+- `backend/src/services/mqttIngestService.ts` — payload validation, persistence of HeartRateData / TemperatureData / AccelerometerData, heuristic analysis of CALVING and HEAT_STRESS, notification triggering for ADMIN and MANAGER.
+- `backend/src/controllers/mqttController.ts` — thin controller delegating to `ingestMqttPayload`.
+- `backend/src/routes/mqttRoutes.ts` — `POST /mqtt/ingest` protected by `requireApiKey`.
 
-**Documentação IoT**
+**IoT Documentation**
 
-- `docs/iot-simulator-plan.md` — plano completo do simulador Python: faixas fisiológicas bovinas, formato do payload MQTT, arquitetura do fluxo, pseudocódigo de todos os módulos e sequência de execução
-- `cowhealth-iot-simulator/CLAUDE.md` — instruções permanentes para IA no repositório IoT separado
+- `docs/iot-simulator-plan.md` — complete plan for the Python simulator: bovine physiological ranges, MQTT payload format, flow architecture, pseudocode for all modules, and execution sequence.
+- `cowhealth-iot-simulator/CLAUDE.md` — permanent instructions for AI in the separate IoT repository.
 
 **Frontend — Dashboard**
 
-- `frontend/src/services/dashboardService.ts` — serviço com os 3 endpoints de dashboard
-- `frontend/src/features/dashboard/hooks/useDashboard.ts` — hooks `useDashboardOverview`, `useCowsPerStatus`, `useCowsPerFarm`
-- `frontend/src/features/dashboard/components/DashboardKPICard.tsx`
-- `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx` — PieChart com Recharts
-- `frontend/src/features/dashboard/components/CowsPerFarmChart.tsx` — BarChart com Recharts
-- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — LineChart com Recharts
+- `frontend/src/services/dashboardService.ts` — service with 3 dashboard endpoints.
+- `frontend/src/features/dashboard/hooks/useDashboard.ts` — `useDashboardOverview`, `useCowsPerStatus`, `useCowsPerFarm` hooks.
+- `frontend/src/features/dashboard/components/DashboardKPICard.tsx`.
+- `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx` — PieChart with Recharts.
+- `frontend/src/features/dashboard/components/CowsPerFarmChart.tsx` — BarChart with Recharts.
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — LineChart with Recharts.
 
 **Frontend — Auth**
 
-- `frontend/src/pages/auth/RegisterPage.tsx`
+- `frontend/src/pages/auth/RegisterPage.tsx`.
 
-**Frontend — Hooks de Acesso**
+**Frontend — Access Hooks**
 
-- `frontend/src/features/access/hooks/useRoles.ts` — `useRoles`, `useRole`, `useCreateRole`, `useUpdateRole`, `useDeleteRole`, `useGrantPermission`, `useRevokePermission`
-- `frontend/src/features/access/hooks/useUsers.ts` — `useUsers`, `useUser`, `useCreateUser`, `useUpdateUser`, `useDeleteUser`, `useToggleActive`, `useAssignRole`, `useRemoveRole`
-- `frontend/src/features/access/hooks/usePermissions.ts` — `usePermissions`, `useCreatePermission`, `useUpdatePermission`, `useDeletePermission`
+- `frontend/src/features/access/hooks/useRoles.ts` — `useRoles`, `useRole`, `useCreateRole`, `useUpdateRole`, `useDeleteRole`, `useGrantPermission`, `useRevokePermission`.
+- `frontend/src/features/access/hooks/useUsers.ts` — `useUsers`, `useUser`, `useCreateUser`, `useUpdateUser`, `useDeleteUser`, `useToggleActive`, `useAssignRole`, `useRemoveRole`.
+- `frontend/src/features/access/hooks/usePermissions.ts` — `usePermissions`, `useCreatePermission`, `useUpdatePermission`, `useDeletePermission`.
 
-### Modificado
+### Changed
 
 **Backend**
 
-- `backend/src/server.ts` — registro de `mqttRoutes` em `app.use("/mqtt", mqttRoutes)`
-- `backend/src/types/auth.ts` — adicionada interface `RegisterInput { name, email, password }`
-- `backend/src/services/authService.ts` — adicionada função `register()` com hash bcrypt e perfil VIEWER
-- `backend/src/controllers/authController.ts` — adicionado `registerController`
-- `backend/src/routes/authRoutes.ts` — adicionada rota `POST /register` (pública)
-- `backend/.env` / `backend/.env.example` — adicionada variável `MQTT_WORKER_API_KEY`
+- `backend/src/server.ts` — registration of `mqttRoutes` in `app.use("/mqtt", mqttRoutes)`.
+- `backend/src/types/auth.ts` — added `RegisterInput { name, email, password }` interface.
+- `backend/src/services/authService.ts` — added `register()` function with bcrypt hash and VIEWER profile.
+- `backend/src/controllers/authController.ts` — added `registerController`.
+- `backend/src/routes/authRoutes.ts` — added `POST /register` route (public).
+- `backend/.env` / `backend/.env.example` — added `MQTT_WORKER_API_KEY` variable.
 
 **Frontend — Auth**
 
-- `frontend/src/features/auth/components/LoginForm.tsx` — implementação com `react-hook-form` + `zod`, `autoComplete="off"` para evitar preenchimento automático do Chrome
-- `frontend/src/features/auth/components/RegisterForm.tsx` — implementado do zero com validações e integração com `useRegister()`
-- `frontend/src/services/authService.ts` — adicionado `registerService()`
-- `frontend/src/hooks/useAuth.ts` — adicionado `useRegister()` com redirect para `/login` no `onSuccess`
-- `frontend/src/routes/AppRoutes.tsx` — substituído `RegisterPlaceholder` por `<RegisterPage />` real
+- `frontend/src/features/auth/components/LoginForm.tsx` — implementation with `react-hook-form` + `zod`, `autoComplete="off"` to prevent Chrome autofill.
+- `frontend/src/features/auth/components/RegisterForm.tsx` — implemented from scratch with validations and `useRegister()` integration.
+- `frontend/src/services/authService.ts` — added `registerService()`.
+- `frontend/src/hooks/useAuth.ts` — added `useRegister()` with redirect to `/login` on `onSuccess`.
+- `frontend/src/routes/AppRoutes.tsx` — replaced `RegisterPlaceholder` with real `<RegisterPage />`.
 
 **Frontend — Dashboard**
 
-- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — substituído mock data por hooks reais, loading state, KPIs adicionais (`totalActiveCollars`, `unreadNotifications`)
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — replaced mock data with real hooks, loading state, additional KPIs (`totalActiveCollars`, `unreadNotifications`).
 
 **Frontend — Cows**
 
-- `frontend/src/features/cows/components/SensorChart.tsx` — interface corrigida: `{ timestamp, value }` → `{ date, average }`
-- `frontend/src/features/cows/pages/CowDetailPage.tsx` — removidas 2 queries desnecessárias; `farm` e `collar` extraídos diretamente de `cow.farm` e `cow.collar`
+- `frontend/src/features/cows/components/SensorChart.tsx` — corrected interface: `{ timestamp, value }` → `{ date, average }`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — removed 2 unnecessary queries; `farm` and `collar` extracted directly from `cow.farm` and `cow.collar`.
 
 **Frontend — Collars**
 
-- `frontend/src/features/collars/components/CollarCard.tsx` — `collar.identifier` → `collar.name`; removidos campos `batteryPercentage` e `lastSync`
-- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — removida query extra; `linkedCow = collar?.cow` (já aninhado)
+- `frontend/src/features/collars/components/CollarCard.tsx` — `collar.identifier` → `collar.name`; removed `batteryPercentage` and `lastSync` fields.
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — removed extra query; `linkedCow = collar?.cow` (already nested).
 
 **Frontend — Farms**
 
-- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — removido filtro client-side `c.farmId === id`
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — removed client-side filter `c.farmId === id`.
 
 **Frontend — Access**
 
-- `frontend/src/features/access/pages/UsersPage.tsx` — reescrita completa: busca, `CreateUserModal`, `EditUserModal`, `ManageRolesModal`, toggle ativo, exclusão com confirmação
-- `frontend/src/features/access/pages/RolesPage.tsx` — reescrita completa: busca, `RoleFormModal`, `ManagePermissionsModal` com checkboxes em tempo real; corrigido `role.permissions.length` → `role._count.permissions`
-- `frontend/src/features/access/pages/PermissionsPage.tsx` — reescrita completa: busca, `PermissionFormModal`, exclusão com confirmação
+- `frontend/src/features/access/pages/UsersPage.tsx` — complete rewrite: search, `CreateUserModal`, `EditUserModal`, `ManageRolesModal`, active toggle, deletion with confirmation.
+- `frontend/src/features/access/pages/RolesPage.tsx` — complete rewrite: search, `RoleFormModal`, `ManagePermissionsModal` with real-time checkboxes; fixed `role.permissions.length` → `role._count.permissions`.
+- `frontend/src/features/access/pages/PermissionsPage.tsx` — complete rewrite: search, `PermissionFormModal`, deletion with confirmation.
 
 **Frontend — Hooks**
 
-- `frontend/src/hooks/useNotifications.ts` — `useMarkNotificationAsRead` e `useMarkAllAsRead` convertidos de objetos fake para `useMutation` real com `invalidateQueries`
+- `frontend/src/hooks/useNotifications.ts` — `useMarkNotificationAsRead` and `useMarkAllAsRead` converted from fake objects to real `useMutation` with `invalidateQueries`.
 
-**Frontend — Tipos**
+**Frontend — Types**
 
-- `frontend/src/types/cows.ts` — `id: string` → `number`; `dateOfBirth` → `birthDate`; `farmId` → `farm { id, name }`; `collarId` → `collar { id, name, status }`; `HeartRateDailyPoint` → `SensorDailyPoint { date, average }`
-- `frontend/src/types/collars.ts` — `identifier` → `name`; removidos `batteryPercentage` e `lastSync`; `cowId` → `cow { id, tag, name }`
-- `frontend/src/types/access.ts` — adicionados `RoleListItem` e `RoleDetail`; `Permission.description` → `string | null`
+- `frontend/src/types/cows.ts` — `id: string` → `number`; `dateOfBirth` → `birthDate`; `farmId` → `farm { id, name }`; `collarId` → `collar { id, name, status }`; `HeartRateDailyPoint` → `SensorDailyPoint { date, average }`.
+- `frontend/src/types/collars.ts` — `identifier` → `name`; removed `batteryPercentage` and `lastSync`; `cowId` → `cow { id, tag, name }`.
+- `frontend/src/types/access.ts` — added `RoleListItem` and `RoleDetail`; `Permission.description` → `string | null`.
 
 **Frontend — Services**
 
-- `frontend/src/services/rolesService.ts` — tipagem atualizada; corrigido `grantPermission()` que enviava `permissionId` na URL em vez do body
+- `frontend/src/services/rolesService.ts` — updated typing; fixed `grantPermission()` which sent `permissionId` in the URL instead of the body.
 
-**Frontend — Dependências**
+**Frontend — Dependencies**
 
-- `frontend/package.json` — instalados `react-hook-form`, `@hookform/resolvers`, `zod`, `recharts`
+- `frontend/package.json` — installed `react-hook-form`, `@hookform/resolvers`, `zod`, `recharts`.
 
-**Ambiente**
+**Environment**
 
-- `backend/.env` — criado a partir do `.env.example`; `DATABASE_URL` configurada com porta `33071`
-- `frontend/.env` — criado a partir do `.env.example`; `VITE_API_URL=http://localhost:3001`
+- `backend/.env` — created from `.env.example`; `DATABASE_URL` configured with port `33071`.
+- `frontend/.env` — created from `.env.example`; `VITE_API_URL=http://localhost:3001`.
 
-### Removido
+### Removed
 
-- `backend/prisma/run_seed.sh` — removido: bypass do Prisma ORM com credenciais MySQL hardcoded
-- `backend/prisma/seed_data.sql` — removido: operações SQL diretas, senhas em texto puro
-- `backend/src/routes/authRoutes.ts` — removida rota `POST /register` (pública sem autenticação, rejeitada em code review)
-- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — removido do dashboard (LineChart com dados categóricos não faz sentido sem endpoint de série temporal)
+- `backend/prisma/run_seed.sh` — removed: Prisma ORM bypass with hardcoded MySQL credentials.
+- `backend/prisma/seed_data.sql` — removed: direct SQL operations, plain text passwords.
+- `backend/src/routes/authRoutes.ts` — removed `POST /register` route (public without authentication, rejected in code review).
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — removed from dashboard (LineChart with categorical data makes no sense without time series endpoint).
 
-### Corrigido
+### Fixed
 
-- **Frontend chamava `localhost:3000/auth/login` (si mesmo) em vez de `localhost:3001`**
-  Causa: `frontend/.env` não existia; `VITE_API_URL` era `undefined`
-  Solução: criado `frontend/.env` com `VITE_API_URL=http://localhost:3001`
+- **Frontend called `localhost:3000/auth/login` (self) instead of `localhost:3001`**
+  Cause: `frontend/.env` did not exist; `VITE_API_URL` was `undefined`.
+  Solution: created `frontend/.env` with `VITE_API_URL=http://localhost:3001`.
 
-- **`grantPermission` retornava 404 silencioso**
-  Causa: frontend enviava `POST /roles/:id/permissions/:permissionId` (rota inexistente)
-  Solução: corrigido para `POST /roles/:id/permissions` com body `{ permissionId }`
+- **`grantPermission` returned silent 404**
+  Cause: frontend sent `POST /roles/:id/permissions/:permissionId` (non-existent route).
+  Solution: fixed to `POST /roles/:id/permissions` with body `{ permissionId }`.
 
-- **Crash em `/access/roles`: `Cannot read properties of undefined (reading 'length')`**
-  Causa: `role.permissions.length` — mas `getAllRoles` retorna `_count.permissions` (inteiro)
-  Solução: substituído por `role._count.permissions`
+- **Crash in `/access/roles`: `Cannot read properties of undefined (reading 'length')`**
+  Cause: `role.permissions.length` — but `getAllRoles` returns `_count.permissions` (integer).
+  Solution: replaced with `role._count.permissions`.
 
-- **Marcar notificação como lida não atualizava a UI**
-  Causa: `useMarkNotificationAsRead` retornava objeto fake sem integração com React Query
-  Solução: convertido para `useMutation` com `invalidateQueries(["notifications"])`
+- **Marking notification as read did not update the UI**
+  Cause: `useMarkNotificationAsRead` returned fake object without React Query integration.
+  Solution: converted to `useMutation` with `invalidateQueries(["notifications"])`.
 
-- **Dados chegavam no banco mas não apareciam nas telas**
-  Causa: tipos TypeScript divergentes do contrato real da API (`timestamp/value` vs `date/average`, `identifier` vs `name`, etc.)
-  Solução: todos os tipos alinhados com o shape real dos endpoints
+- **Data arrived in the database but did not appear on screens**
+  Cause: TypeScript types divergent from actual API contract (`timestamp/value` vs `date/average`, `identifier` vs `name`, etc.).
+  Solution: all types aligned with the real shape of the endpoints.
 
-- **Chrome preenchendo campo de email com conta Google do usuário**
-  Causa: formulário sem `autoComplete`
-  Solução: `autoComplete="off"` no `<form>` + `autoComplete="one-time-code"` no input de email
+- **Chrome filling email field with user's Google account**
+  Cause: form without `autoComplete`.
+  Solution: `autoComplete="off"` on `<form>` + `autoComplete="one-time-code"` on email input.
 
-- **Porta 3001 ocupada por processo externo**
-  Causa: outro projeto com processo Node na mesma porta
-  Solução: identificado via `lsof -i :3001` + `kill {PID}`
-
-### Build Status
-
-- TypeScript backend: zero erros (`npx tsc --noEmit`)
-- TypeScript frontend: zero erros — 837 modules | 284ms
-
----
-
-## 2026-05-15 - Landing Page: responsividade iOS/Android + correção de scroll (JCFS)
-
-Escopo: otimização mobile da landing page e correção de bug de scroll.
-
-### Modificado
-
-- `frontend/index.html` — adicionadas meta tags iOS/Android: `viewport-fit=cover`, `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`
-- `frontend/src/styles/landing.css` — adicionadas regras globais, `.stage` com `min-height: 100dvh`, `.app` com `overflow-y: auto`, `padding` com `env(safe-area-inset-*)`, `overscroll-behavior-y: none`
-- `frontend/src/features/landing/pages/LandingPage.tsx` — conteúdo envolvido em `<div className="stage">`
-
-### Corrigido
-
-- **Scroll do mouse não funcionava na landing page**
-  Causa: `overflow-y: auto` ausente no CSS do `.app`
-  Solução: restaurado `overflow-y: auto; overflow-x: hidden` + `scrollbar-width: none`
+- **Port 3001 occupied by external process**
+  Cause: another project with Node process on the same port.
+  Solution: identified via `lsof -i :3001` + `kill {PID}`.
 
 ### Build Status
 
-- TypeScript: zero erros | Vite: zero erros
+- Backend TypeScript: zero errors (`npx tsc --noEmit`).
+- Frontend TypeScript: zero errors — 837 modules | 284ms.
 
 ---
 
-## 2026-05-14 - Estrutura base do frontend conforme instruções do professor (JCFS)
+## 2026-05-15 - Landing Page: iOS/Android responsiveness + scroll fix (JCFS)
 
-Escopo: apenas `frontend/` — sem alterações no backend.
+Scope: mobile optimization of the landing page and scroll bug fix.
 
-### Adicionado
+### Changed
 
-- `frontend/src/routes/AppRoutes.tsx` — roteamento centralizado
-- `frontend/src/config/environment.ts` — configuração de ambiente centralizada
-- `frontend/src/components/charts/ChartContainer.tsx` e `index.ts`
-- `frontend/src/components/common/index.ts`
-- `frontend/src/components/layout/index.ts`
-- `frontend/src/components/feedback/index.ts`
-- `frontend/src/utils/index.ts`
+- `frontend/index.html` — added iOS/Android meta tags: `viewport-fit=cover`, `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`.
+- `frontend/src/styles/landing.css` — added global rules, `.stage` with `min-height: 100dvh`, `.app` with `overflow-y: auto`, `padding` with `env(safe-area-inset-*)`, `overscroll-behavior-y: none`.
+- `frontend/src/features/landing/pages/LandingPage.tsx` — content wrapped in `<div className="stage">`.
 
-### Modificado
+### Fixed
 
-- `frontend/src/App.tsx` — simplificado para composição de providers globais e roteamento via `AppRoutes`
-- `frontend/vite.config.ts` — aliases: `@`, `@components`, `@features`, `@pages`, `@hooks`, `@services`, `@routes`, `@config`, `@utils`, `@types`
-- `frontend/tsconfig.app.json` — adicionados `baseUrl` e `paths` alinhados ao Vite
-- `frontend/src/lib/api.ts` — `baseURL` passa a usar `environment.apiUrl`
-- `frontend/.env.example` — adicionadas variáveis `VITE_API_URL`, `VITE_APP_NAME`, `VITE_ENV`
+- **Mouse scroll did not work on landing page**
+  Cause: `overflow-y: auto` missing in `.app` CSS.
+  Solution: restored `overflow-y: auto; overflow-x: hidden` + `scrollbar-width: none`.
+
+### Build Status
+
+- TypeScript: zero errors | Vite: zero errors.
 
 ---
 
-# Alterações e Progresso de Angelo
+## 2026-05-14 - Frontend base structure per professor's instructions (JCFS)
+
+Scope: `frontend/` only — no backend changes.
+
+### Added
+
+- `frontend/src/routes/AppRoutes.tsx` — centralized routing.
+- `frontend/src/config/environment.ts` — centralized environment configuration.
+- `frontend/src/components/charts/ChartContainer.tsx` and `index.ts`.
+- `frontend/src/components/common/index.ts`.
+- `frontend/src/components/layout/index.ts`.
+- `frontend/src/components/feedback/index.ts`.
+- `frontend/src/utils/index.ts`.
+
+### Changed
+
+- `frontend/src/App.tsx` — simplified to global provider composition and routing via `AppRoutes`.
+- `frontend/vite.config.ts` — aliases: `@`, `@components`, `@features`, `@pages`, `@hooks`, `@services`, `@routes`, `@config`, `@utils`, `@types`.
+- `frontend/tsconfig.app.json` — added `baseUrl` and `paths` aligned with Vite.
+- `frontend/src/lib/api.ts` — `baseURL` now uses `environment.apiUrl`.
+- `frontend/.env.example` — added `VITE_API_URL`, `VITE_APP_NAME`, `VITE_ENV` variables.
+
+---
+
+# Changes and Progress by Angelo
 
 ...
 
-# Alterações e Progresso de Ian
+# Changes and Progress by Ian
 
 ...
 
-# Alterações e Progresso de Renato
+# Changes and Progress by Renato
 
 ...

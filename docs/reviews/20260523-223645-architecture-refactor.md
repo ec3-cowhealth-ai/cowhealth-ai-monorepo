@@ -501,18 +501,18 @@ export class CreateCowUseCase {
   async execute(dto: CreateCowDTO): Promise<Cow> {
     const tagConflict = await this.cowRepo.findByTag(dto.tag);
     if (tagConflict)
-      throw new ConflictError("Já existe uma vaca com esta tag.");
+      throw new ConflictError("A cow with this tag already exists.");
 
     const farm = await this.farmRepo.findById(dto.farmId);
-    if (!farm) throw new NotFoundError("Fazenda não encontrada.");
+    if (!farm) throw new NotFoundError("Farm not found.");
 
     if (dto.collarId) {
       const collar = await this.collarRepo.findById(dto.collarId);
-      if (!collar) throw new NotFoundError("Colar não encontrado.");
+      if (!collar) throw new NotFoundError("Collar not found.");
 
       const collarInUse = await this.cowRepo.findByCollarId(dto.collarId);
       if (collarInUse)
-        throw new ConflictError("Este colar já está vinculado a outra vaca.");
+        throw new ConflictError("This collar is already linked to another cow.");
     }
 
     return this.cowRepo.create(dto);
@@ -536,10 +536,10 @@ export class IngestTelemetryUseCase {
 
     const collar = await this.collarRepo.findByName(payload.device_id);
     if (!collar)
-      throw new NotFoundError(`Colar não encontrado: ${payload.device_id}`);
+      throw new NotFoundError(`Collar not found: ${payload.device_id}`);
     if (!collar.cow)
       throw new NotFoundError(
-        `Nenhuma vaca vinculada ao colar ${payload.device_id}`,
+        `No cow linked to collar ${payload.device_id}`,
       );
 
     await this.sensorRepo.saveAll(collar.cow.id, payload);
@@ -998,7 +998,7 @@ Adding a new sensor type (e.g., rumination data) only touches `ISensorRepository
 
 ### Scalability
 
-A new module (e.g., `veterinary-records`) is added by creating `modules/veterinary/` with its own domain, application, infrastructure, and presentation. It does not touch any existing module. The same pattern applies on the frontend: `features/veterinary/`.
+ a new module (e.g., `veterinary-records`) is added by creating `modules/veterinary/` with its own domain, application, infrastructure, and presentation. It does not touch any existing module. The same pattern applies on the frontend: `features/veterinary/`.
 
 ### Architectural Clarity
 

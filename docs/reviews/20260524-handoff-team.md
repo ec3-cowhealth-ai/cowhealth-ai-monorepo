@@ -1,119 +1,119 @@
-# Handoff para Angelo, Ian e Renato — 2026-05-24
+# Handoff for Angelo, Ian, and Renato — 2026-05-24
 
-Este documento descreve o estado atual do projeto, o que já foi feito, e o que cada um precisa entregar agora.
+This document describes the current state of the project, what has already been done, and what each person needs to deliver now.
 
 ---
 
-## Estado geral
+## General state
 
-O projeto está funcional com banco, backend e frontend integrados.
-Build passa com **zero erros de TypeScript** em frontend e backend.
+The project is functional with the database, backend, and frontend integrated.
+Build passes with **zero TypeScript errors** in the frontend and backend.
 
-### O que já existe e funciona
+### What already exists and works
 
-| Tela / Funcionalidade                             | Status |
+| Screen / Functionality                            | Status |
 | ------------------------------------------------- | ------ |
-| Landing Page                                      | Pronta |
-| Login + Register (formulário + validação Zod)     | Pronto |
-| Dashboard com KPIs e gráficos (Recharts)          | Pronto |
-| Lista e detalhe de Vacas (com sensores)           | Pronto |
-| Lista e detalhe de Colares                        | Pronto |
-| Lista e detalhe de Fazendas                       | Pronto |
-| Notificações (marcar lida, marcar todas)          | Pronto |
-| Gestão de Acesso: Usuários, Papéis, Permissões    | Pronto |
-| Mapa com layout de fazenda e pins de vaca         | Pronto |
-| Perfil do usuário                                 | Pronto |
-| Ingestão MQTT + análise heurística de saúde       | Pronto |
-| Contexto de fazenda selecionada (FarmContext)     | Pronto |
-| Seed com 160 vacas, 5 fazendas, dados de sensores | Pronto |
+| Landing Page                                      | Ready  |
+| Login + Register (form + Zod validation)          | Ready  |
+| Dashboard with KPIs and charts (Recharts)         | Ready  |
+| Cow List and detail (with sensors)                | Ready  |
+| Collar List and detail                            | Ready  |
+| Farm List and detail                              | Ready  |
+| Notifications (mark read, mark all)               | Ready  |
+| Access Management: Users, Roles, Permissions      | Ready  |
+| Map with farm layout and cow pins                 | Ready  |
+| User profile                                      | Ready  |
+| MQTT ingestion + heuristic health analysis        | Ready  |
+| Selected farm context (FarmContext)               | Ready  |
+| Seed with 160 cows, 5 farms, sensor data          | Ready  |
 
 ---
 
-## Angelo — O que falta para você
+## Angelo — What's missing for you
 
-### 0. Proteger ações da UI por role (PRINCIPAL — é isso que o professor quer)
+### 0. Protect UI actions by role (MAIN — this is what the professor wants)
 
-O professor quer "telas para todos os roles implementadas". Hoje qualquer usuário logado vê todos os botões de criar/editar/deletar. Um VIEWER não deveria ver essas ações.
+The professor wants "screens for all roles implemented". Today, any logged-in user sees all create/edit/delete buttons. A VIEWER should not see these actions.
 
-As telas existem. O hook `useHasPermission` já existe em `frontend/src/hooks/usePermission.ts`.
-Falta aplicá-lo para condicionar os botões em cada página.
+The screens exist. The `useHasPermission` hook already exists in `frontend/src/hooks/usePermission.ts`.
+It remains to be applied to condition the buttons on each page.
 
-**Padrão a seguir em cada página:**
+**Pattern to follow on each page:**
 
 ```tsx
 import { useHasPermission } from "@hooks/usePermission";
 
-// dentro do componente:
+// inside the component:
 const canCreate = useHasPermission("Create Farm");
 const canEdit = useHasPermission("Update Farm");
 const canDelete = useHasPermission("Delete Farm");
 
-// no JSX — esconder o botão se não tiver permissão:
+// in JSX — hide the button if no permission:
 {
   canCreate && (
     <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-      Nova Fazenda
+      New Farm
     </button>
   );
 }
 ```
 
-**Mapa de páginas e permissões:**
+**Page and permission map:**
 
-| Página                 | Botão/Ação      | Permissão necessária |
-| ---------------------- | --------------- | -------------------- |
-| `FarmsPage.tsx`        | "Nova Fazenda"  | `"Create Farm"`      |
-| `FarmDetailPage.tsx`   | Editar fazenda  | `"Update Farm"`      |
-| `FarmDetailPage.tsx`   | Excluir fazenda | `"Delete Farm"`      |
-| `CowsPage.tsx`         | "Nova Vaca"     | `"Create Cow"`       |
-| `CowDetailPage.tsx`    | Editar vaca     | `"Update Cow"`       |
-| `CowDetailPage.tsx`    | Excluir vaca    | `"Delete Cow"`       |
-| `CollarsPage.tsx`      | "Novo Colar"    | `"Create Collar"`    |
-| `CollarDetailPage.tsx` | Editar colar    | `"Update Collar"`    |
-| `CollarDetailPage.tsx` | Excluir colar   | `"Delete Collar"`    |
+| Page                   | Button/Action  | Required Permission |
+| ---------------------- | -------------- | -------------------- |
+| `FarmsPage.tsx`        | "New Farm"     | `"Create Farm"`      |
+| `FarmDetailPage.tsx`   | Edit farm      | `"Update Farm"`      |
+| `FarmDetailPage.tsx`   | Delete farm    | `"Delete Farm"`      |
+| `CowsPage.tsx`         | "New Cow"      | `"Create Cow"`       |
+| `CowDetailPage.tsx`    | Edit cow       | `"Update Cow"`       |
+| `CowDetailPage.tsx`    | Delete cow     | `"Delete Cow"`       |
+| `CollarsPage.tsx`      | "New Collar"   | `"Create Collar"`    |
+| `CollarDetailPage.tsx` | Edit collar    | `"Update Collar"`    |
+| `CollarDetailPage.tsx` | Delete collar  | `"Delete Collar"`    |
 
-**Como verificar que está funcionando:**
+**How to verify that it's working:**
 
-1. Logar como `admin@admin.com` — deve ver todos os botões
-2. Logar como `ana@farm.com` (Viewer) — botões de criar/editar/deletar devem sumir
-3. Logar como `pedro@farm.com` (Manager) — deve ver botões operacionais mas não /access
+1. Log in as `admin@admin.com` — should see all buttons.
+2. Log in as `ana@farm.com` (Viewer) — create/edit/delete buttons should disappear.
+3. Log in as `pedro@farm.com` (Manager) — should see operational buttons but not /access.
 
-Após cada página, rodar `npm run build` para garantir zero erros de TypeScript.
+After each page, run `npm run build` to ensure zero TypeScript errors.
 
 ---
 
-### 1. Ajustar acesso Farm → Cows por role (investigar + propor mudança)
+### 1. Adjust Farm → Cows access by role (investigate + propose change)
 
-**Contexto — o que o banco tem hoje:**
+**Context — what the database has today:**
 
-| Role            | Usuários                                   | Permissões relevantes                                         |
+| Role            | Users                                      | Relevant permissions                                          |
 | --------------- | ------------------------------------------ | ------------------------------------------------------------- |
-| `SuperAdmin`    | admin@admin.com                            | Todas                                                         |
-| `Administrador` | pedro@farm.com (MANAGER)                   | Tudo exceto gerenciar Permissões                              |
-| `Veterinario`   | joao@vet.com, maria@farm.com, ana@farm.com | Ver qualquer coisa + tudo sobre Cow + tudo sobre Notification |
+| `SuperAdmin`    | admin@admin.com                            | All                                                           |
+| `Administrator` | pedro@farm.com (MANAGER)                   | Everything except managing Permissions                        |
+| `Veterinarian`  | joao@vet.com, maria@farm.com, ana@farm.com | View anything + everything about Cow + everything about Notification |
 
-**O problema:** o filtro de permissões do `vetRole` no seed (`seed.ts` linha ~238) inclui tudo que contém `"Cow"` — isso dá `Create Cow`, `Update Cow` e `Delete Cow` para `maria@farm.com` e `ana@farm.com`, que têm `profile: VIEWER`. Um Observador consegue criar e deletar vacas.
+**The problem:** the permission filter for `vetRole` in the seed (`seed.ts` line ~238) includes everything that contains `"Cow"` — this gives `Create Cow`, `Update Cow`, and `Delete Cow` to `maria@farm.com` and `ana@farm.com`, who have `profile: VIEWER`. An Observer can create and delete cows.
 
-**O que investigar:**
-Abrir `backend/prisma/seed.ts` e localizar o bloco `vetRole`. O filtro atual é:
+**What to investigate:**
+Open `backend/prisma/seed.ts` and locate the `vetRole` block. The current filter is:
 
 ```ts
 p.name.includes("ViewAny") ||
   p.name.includes("View") ||
-  p.name.includes("Cow") || // ← dá Create/Update/Delete Cow para viewers
-  p.name.includes("Notification"); // ← dá Create/Update/Delete Notification para viewers
+  p.name.includes("Cow") || // ← gives Create/Update/Delete Cow to viewers
+  p.name.includes("Notification"); // ← gives Create/Update/Delete Notification to viewers
 ```
 
-**O que corrigir no seed:**
+**What to correct in the seed:**
 
-Separar o `vetRole` em dois roles mais precisos:
+Separate `vetRole` into two more precise roles:
 
 ```ts
-// Role para quem cuida da saúde animal (Veterinário — MANAGER)
-// pode ver tudo + criar/editar/deletar vacas
+// Role for those who take care of animal health (Veterinarian — MANAGER)
+// can view everything + create/edit/delete cows
 const vetRole = await prisma.role.create({
   data: {
-    name: "Veterinario",
+    name: "Veterinarian",
     permissions: {
       create: createdPermissions
         .filter(
@@ -128,11 +128,11 @@ const vetRole = await prisma.role.create({
   },
 });
 
-// Role para quem só observa (Observador — VIEWER)
-// só leitura: sem Create/Update/Delete em nenhuma entidade
+// Role for those who only observe (Observer — VIEWER)
+// read-only: no Create/Update/Delete on any entity
 const observerRole = await prisma.role.create({
   data: {
-    name: "Observador",
+    name: "Observer",
     permissions: {
       create: createdPermissions
         .filter(
@@ -143,57 +143,57 @@ const observerRole = await prisma.role.create({
   },
 });
 
-// Atribuir corretamente:
+// Assign correctly:
 // { email: "maria@farm.com", role: observerRole }
 // { email: "ana@farm.com",   role: observerRole }
 // { email: "joao@vet.com",   role: vetRole }
 ```
 
-**Proposta de mudança a documentar e discutir com o grupo:**
+**Proposed change to document and discuss with the group:**
 
-Hoje o acesso a Farm → Cows é global — qualquer usuário autenticado vê todas as fazendas e todas as vacas. Isso não reflete a realidade de um produtor que só gerencia sua própria fazenda.
+Today, access to Farm → Cows is global — any authenticated user sees all farms and all cows. This does not reflect the reality of a producer who only manages their own farm.
 
-Proposta: adicionar tabela `UserFarm` (relação N:N entre User e Farm) e filtrar os endpoints `/farms` e `/cows` para retornar apenas os dados da fazenda do usuário logado, exceto para SuperAdmin que vê tudo.
+Proposal: add `UserFarm` table (N:N relationship between User and Farm) and filter `/farms` and `/cows` endpoints to return only the logged-in user's farm data, except for SuperAdmin who sees everything.
 
 ```
 User ──< UserFarm >── Farm ──< Cow
 ```
 
-Isso é uma mudança de schema (Prisma migration) — discutir com o grupo antes de implementar para não quebrar o seed nem os outros endpoints.
+This is a schema change (Prisma migration) — discuss with the group before implementing to avoid breaking the seed or other endpoints.
 
 ---
 
-### 3. Corrigir `Farm.id`: `string` → `number`
+### 3. Correct `Farm.id`: `string` → `number`
 
-**Arquivo:** `frontend/src/types/farms.ts`
+**File:** `frontend/src/types/farms.ts`
 
-O backend retorna `id` como inteiro, mas o tipo está declarado como `string`.
-Isso causa casts `Number(id)` / `String(id)` espalhados no código.
+The backend returns `id` as an integer, but the type is declared as `string`.
+This causes `Number(id)` / `String(id)` casts scattered in the code.
 
 ```ts
-// ATUAL (errado)
+// CURRENT (wrong)
 export interface Farm {
   id: string;
   ...
 }
 
-// CORRETO
+// CORRECT
 export interface Farm {
   id: number;
   ...
 }
 ```
 
-Após mudar, rodar `npm run build` e corrigir todos os erros de tipo que aparecerem.
-Procurar por `Number(.*id)` e `String(.*id)` no frontend para limpar os casts desnecessários.
+After changing, run `npm run build` and fix all type errors that appear.
+Search for `Number(.*id)` and `String(.*id)` in the frontend to clean up unnecessary casts.
 
 ---
 
-### 4. Criar enum de nomes de permissão
+### 4. Create permission names enum
 
-**Arquivo a criar:** `frontend/src/config/permissions.ts`
+**File to create:** `frontend/src/config/permissions.ts`
 
-Hoje `useHasPermission("View Cow")` aceita qualquer string — um typo silencia o guard sem erro.
+Today `useHasPermission("View Cow")` accepts any string — a typo silences the guard without error.
 
 ```ts
 // frontend/src/config/permissions.ts
@@ -227,31 +227,31 @@ export const PERMISSIONS = {
 export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 ```
 
-Depois mudar `useHasPermission` em `frontend/src/hooks/usePermission.ts`:
+Then change `useHasPermission` in `frontend/src/hooks/usePermission.ts`:
 
 ```ts
-// de:
+// from:
 export const useHasPermission = (permissionName: string): boolean => {
-// para:
+// to:
 export const useHasPermission = (permissionName: PermissionName): boolean => {
 ```
 
-Confirmar os nomes exatos consultando o banco ou `backend/prisma/seed.ts`.
+Confirm exact names by consulting the database or `backend/prisma/seed.ts`.
 
 ---
 
-## Ian — O que falta para você
+## Ian — What's missing for you
 
-### 1. Bottom nav mobile — suporte iOS e Android correto
+### 1. Mobile bottom nav — correct iOS and Android support
 
-**Arquivos:** `frontend/src/styles/App.css` + `frontend/src/components/layout/BottomNav.tsx`
+**Files:** `frontend/src/styles/App.css` + `frontend/src/components/layout/BottomNav.tsx`
 
-O CSS atual tem `padding-bottom: env(safe-area-inset-bottom, 0)` mas a altura fica fixa em `64px`, o que causa dois problemas:
+The current CSS has `padding-bottom: env(safe-area-inset-bottom, 0)` but the height remains fixed at `64px`, which causes two problems:
 
-- **iOS** (notch/Dynamic Island): o padding empurra o conteúdo interno mas a barra não cresce — os ícones ficam espremidos atrás do home indicator
-- **Android** (gesture navigation): a barra não cede espaço para a gesture bar, ficando cortada em dispositivos sem botões físicos
+- **iOS** (notch/Dynamic Island): the padding pushes internal content but the bar doesn't grow — icons are squeezed behind the home indicator.
+- **Android** (gesture navigation): the bar does not yield space for the gesture bar, appearing cut off on devices without physical buttons.
 
-**Correção no CSS** — substituir o bloco `.bottom-nav`:
+**CSS fix** — replace the `.bottom-nav` block:
 
 ```css
 .bottom-nav {
@@ -259,45 +259,45 @@ O CSS atual tem `padding-bottom: env(safe-area-inset-bottom, 0)` mas a altura fi
   grid-template-columns: repeat(5, 1fr);
   background: var(--bg-elev-1);
   border-top: 1px solid var(--border);
-  /* altura real = 64px de conteúdo + safe area embaixo */
+  /* real height = 64px content + safe area below */
   padding-bottom: env(safe-area-inset-bottom, 0px);
   height: calc(64px + env(safe-area-inset-bottom, 0px));
   position: sticky;
   bottom: 0;
   z-index: 20;
-  /* evita scroll bounce sobrepor a barra no iOS */
+  /* prevents scroll bounce from overlapping bar on iOS */
   -webkit-transform: translateZ(0);
 }
 ```
 
-**Correção nos itens** — os botões devem ocupar apenas os 64px de conteúdo, não o padding de safe area:
+**Item fix** — buttons should only occupy the 64px of content, not the safe area padding:
 
 ```css
 .bottom-nav__item {
-  height: 64px; /* fixar altura do item, não herdar do grid */
-  align-self: start; /* ancora no topo do grid, não estica */
-  /* restante permanece igual */
+  height: 64px; /* fix item height, do not inherit from grid */
+  align-self: start; /* anchor to grid top, do not stretch */
+  /* rest remains the same */
 }
 ```
 
-**Teste obrigatório:**
+**Mandatory test:**
 
-- iOS Safari: abrir no iPhone (ou DevTools › iPhone 14 Pro) — indicador home não deve sobrepor ícones
-- Android Chrome: modo gestos — barra deve dar espaço para a gesture area
-- Ambos com rotação de tela — barra deve se adaptar (em landscape, safe-area-inset muda de lado)
+- iOS Safari: open on iPhone (or DevTools › iPhone 14 Pro) — home indicator should not overlap icons.
+- Android Chrome: gesture mode — bar should yield space for the gesture area.
+- Both with screen rotation — bar should adapt (in landscape, safe-area-inset changes sides).
 
 ---
 
-### 2. Cards de Rebanho — mudar de lista para tile (grade 2 colunas)
+### 2. Herd Cards — change from list to tile (2-column grid)
 
-**Arquivo:** `frontend/src/features/cows/pages/CowsPage.tsx`
+**File:** `frontend/src/features/cows/pages/CowsPage.tsx`
 
-Hoje usa `cow-row` (layout horizontal em lista). Mudar para grade de 2 tiles por linha — mais visual, mais informação visível de uma vez, padrão esperado para listagens de rebanho em apps agropecuários.
+Today it uses `cow-row` (horizontal list layout). Change to a 2-tile-per-row grid — more visual, more information visible at once, expected standard for herd listings in agricultural apps.
 
-**Substituir o bloco de lista** (linha ~118 em diante):
+**Replace the list block** (line ~118 onwards):
 
 ```tsx
-// ANTES — lista vertical
+// BEFORE — vertical list
 <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
   {filtered.map((cow: Cow) => (
     <button key={cow.id} className="cow-row" onClick={...}>
@@ -306,7 +306,7 @@ Hoje usa `cow-row` (layout horizontal em lista). Mudar para grade de 2 tiles por
   ))}
 </div>
 
-// DEPOIS — grade de tiles
+// AFTER — tile grid
 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--s-3)" }}>
   {filtered.map((cow: Cow) => (
     <button
@@ -340,18 +340,18 @@ Hoje usa `cow-row` (layout horizontal em lista). Mudar para grade de 2 tiles por
 </div>
 ```
 
-Verificar se a classe `.card` existe em `App.css` antes de usar — se não existir, usar `className="kpi-card"` ou criar o estilo inline.
+Verify if `.card` class exists in `App.css` before using — if not, use `className="kpi-card"` or create inline style.
 
 ---
 
-### 3. Corrigir `unreadNotifications` no dashboard (bug de segurança)
+### 3. Correct `unreadNotifications` in dashboard (security bug)
 
-**Arquivo:** `backend/src/services/dashboardService.ts`
-**Arquivo:** `backend/src/controllers/dashboardController.ts`
+**File:** `backend/src/services/dashboardService.ts`
+**File:** `backend/src/controllers/dashboardController.ts`
 
-O contador atual mostra notificações não-lidas de **todos os usuários** — qualquer Viewer vê o total global.
+The current counter shows unread notifications from **all users** — any Viewer sees the global total.
 
-**Passo 1:** Ler o `userId` do token JWT no controller:
+**Step 1:** Read `userId` from the JWT token in the controller:
 
 ```ts
 // backend/src/controllers/dashboardController.ts
@@ -362,32 +362,32 @@ export const overview = async (
   const farmId = request.query.farmId
     ? Number(request.query.farmId)
     : undefined;
-  const userId = request.user!.sub; // já disponível via requireAuth
+  const userId = request.user!.sub; // already available via requireAuth
   await handleRequest(response, () => getDashboardOverview(farmId, userId));
 };
 ```
 
-**Passo 2:** Receber e usar `userId` no service:
+**Step 2:** Receive and use `userId` in the service:
 
 ```ts
 // backend/src/services/dashboardService.ts
 export const getDashboardOverview = async (farmId?: number, userId?: number) => {
     ...
-    prisma.notification.count({ where: { readAt: null, userId } }),  // filtrar pelo usuário
+    prisma.notification.count({ where: { readAt: null, userId } }),  // filter by user
     ...
 };
 ```
 
 ---
 
-### 4. Implementar `DashboardOverviewChart` (LineChart de série temporal)
+### 4. Implement `DashboardOverviewChart` (time series LineChart)
 
-Este gráfico foi removido porque não existe endpoint de série temporal ainda.
+This chart was removed because a time series endpoint does not exist yet.
 
-**Backend:** criar `GET /dashboard/health-timeline` que retorna contagem de vacas por status por dia nos últimos 7 dias:
+**Backend:** create `GET /dashboard/health-timeline` that returns cow count by status per day in the last 7 days:
 
 ```ts
-// Resposta esperada:
+// Expected response:
 [
   { date: "2026-05-18", healthy: 140, alert: 12, heatStress: 5, calving: 3 },
   { date: "2026-05-19", healthy: 138, alert: 14, ... },
@@ -395,34 +395,34 @@ Este gráfico foi removido porque não existe endpoint de série temporal ainda.
 ]
 ```
 
-**Frontend:** reativar `DashboardOverviewChart.tsx` com `LineChart` do Recharts consumindo este endpoint.
+**Frontend:** reactivate `DashboardOverviewChart.tsx` with `LineChart` from Recharts consuming this endpoint.
 
 ---
 
-## Renato — O que falta para você
+## Renato — What's missing for you
 
-Os itens estão marcados com `TODO[RENATO]` no código. Os arquivos são:
+Items are marked with `TODO[RENATO]` in the code. The files are:
 
-### 1. CORS restrito — `backend/src/server.ts`
+### 1. Restricted CORS — `backend/src/server.ts`
 
 ```ts
-// ATUAL
+// CURRENT
 app.use(cors());
 
-// CORRETO
+// CORRECT
 app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }));
-// Adicionar no .env: ALLOWED_ORIGINS=http://localhost:5173
+// Add to .env: ALLOWED_ORIGINS=http://localhost:5173
 ```
 
-### 2. Uploads autenticados — `backend/src/server.ts`
+### 2. Authenticated Uploads — `backend/src/server.ts`
 
-Remover a linha:
+Remove the line:
 
 ```ts
 app.use("/uploads", express.static(...));
 ```
 
-Criar endpoint autenticado:
+Create authenticated endpoint:
 
 ```ts
 router.get(
@@ -437,7 +437,7 @@ router.get(
 
 ### 3. Global error handler — `backend/src/server.ts`
 
-Adicionar **antes** do `app.listen`:
+Add **before** `app.listen`:
 
 ```ts
 import { Request, Response, NextFunction } from "express";
@@ -448,11 +448,11 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 ```
 
-### 4. Validação de input nos controllers
+### 4. Input validation in controllers
 
-Todos os `request.body` chegam sem validação. Instalar Zod se não estiver, criar schemas e aplicar como middleware.
+All `request.body` arrive without validation. Install Zod if not already, create schemas, and apply as middleware.
 
-Exemplo para fazendas — criar `backend/src/routes/schemas/farmSchemas.ts`:
+Example for farms — create `backend/src/routes/schemas/farmSchemas.ts`:
 
 ```ts
 import { z } from "zod";
@@ -468,7 +468,7 @@ export const createFarmSchema = z.object({
 });
 ```
 
-Aplicar na rota:
+Apply to route:
 
 ```ts
 router.post(
@@ -480,7 +480,7 @@ router.post(
 );
 ```
 
-Onde `validateSchema` é um middleware factory:
+Where `validateSchema` is a middleware factory:
 
 ```ts
 // backend/src/helpers/validateSchema.ts
@@ -499,14 +499,14 @@ export const validateSchema =
   };
 ```
 
-Aplicar em **todos** os controllers que recebem POST/PUT: farms, cows, collars, users, roles, permissions, auth.
+Apply to **all** controllers that receive POST/PUT: farms, cows, collars, users, roles, permissions, auth.
 
-### 5. `requirePermission` sem DB query por request — `backend/src/middlewares/requirePermission.ts`
+### 5. `requirePermission` without DB query per request — `backend/src/middlewares/requirePermission.ts`
 
-Embutir `permissions[]` no payload JWT no login:
+Embed `permissions[]` in the JWT payload on login:
 
 ```ts
-// backend/src/services/authService.ts — na função login()
+// backend/src/services/authService.ts — in login() function
 const permissions = await prisma.permission.findMany({
   where: { roles: { some: { users: { some: { userId: user.id } } } } },
   select: { name: true },
@@ -517,7 +517,7 @@ const token = jwt.sign(
 );
 ```
 
-No middleware, ler de `request.user` sem query adicional:
+In the middleware, read from `request.user` without additional query:
 
 ```ts
 const allowed = request.user?.permissions?.includes(permissionName) ?? false;
@@ -525,7 +525,7 @@ const allowed = request.user?.permissions?.includes(permissionName) ?? false;
 
 ---
 
-## Como rodar o projeto
+## How to run the project
 
 ```bash
 # Backend
@@ -536,19 +536,19 @@ npx prisma db push
 npx prisma db seed
 npm run dev
 
-# Frontend (outro terminal)
+# Frontend (another terminal)
 cd frontend
 npm install
 npm run dev
 ```
 
-Credenciais de teste: `admin@admin.com` / `password123`
+Test credentials: `admin@admin.com` / `password123`
 
 ---
 
 ## Branches
 
-- Criar branch `feature/<nome>-<descricao>` a partir de `main`
-- Abrir PR para `develop`
-- Rodar `npm run build` antes de abrir PR (deve passar com zero erros)
-- Atualizar `docs/change_control/CHANGELOG.md` na sua seção
+- Create `feature/<name>-<description>` branch from `main`.
+- Open PR to `develop`.
+- Run `npm run build` before opening PR (must pass with zero errors).
+- Update `docs/change_control/CHANGELOG.md` in your section.
