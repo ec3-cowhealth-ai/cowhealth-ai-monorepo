@@ -1,13 +1,13 @@
 # Feature: Farms
 
-Componentes e lógica para gerenciamento de fazendas.
+Components and logic for farm management.
 
-## Estrutura
+## Structure
 
-- Componentes de listagem de fazendas
-- Formulários de criação/edição
-- Componentes de detalhe da fazenda
+- Farm listing components
+- Creation/edition forms
+- Farm detail components
 
-## Responsável
+## Responsible
 
-Jafte (conforme matriz de responsabilidades)
+Jafte (according to the responsibility matrix)

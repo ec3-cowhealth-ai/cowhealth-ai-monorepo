@@ -1,10 +1,11 @@
-export const UserProfileValues = {
+export const USER_PROFILE_VALUES = {
   ADMIN: "ADMIN",
   MANAGER: "MANAGER",
   VIEWER: "VIEWER",
 } as const;
 
-export type UserProfile = typeof UserProfileValues[keyof typeof UserProfileValues];
+export type UserProfile =
+  (typeof USER_PROFILE_VALUES)[keyof typeof USER_PROFILE_VALUES];
 
 export interface Permission {
   id: string;
@@ -33,7 +34,9 @@ export interface RoleDetail {
   createdAt: string;
   updatedAt: string;
   permissions: Array<{ permission: { id: string; name: string } }>;
-  users: Array<{ user: { id: string; name: string; email: string; active: boolean } }>;
+  users: Array<{
+    user: { id: string; name: string; email: string; active: boolean };
+  }>;
 }
 
 // Manter Role para compatibilidade com código existente

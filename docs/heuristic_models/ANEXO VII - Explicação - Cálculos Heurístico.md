@@ -1,245 +1,245 @@
-## 1. **Doença Respiratória Bovina (DRB)**
+## 1. **Bovine Respiratory Disease (BRD)**
 
-### **Variáveis necessárias**:
+### **Required variables**:
 
--   `avg_temp` (temperatura média corporal)
+-   `avg_temp` (average body temperature)
     
--   `avg_hr` (frequência cardíaca média)
+-   `avg_hr` (average heart rate)
     
--   Nível de **atividade**
+-   **Activity** level
     
 
-### **Fórmula matemática:**
+### **Mathematical formula:**
 
-$$DRB(x) = \begin{cases} 1, & \text{se } \overline{T}_{30}(x) > 39{,}3 \land \overline{HR}_{30}(x) > 90 \land Atividade(x) = \text{"baixa"} \\ 0, & \text{caso contrário} \end{cases}$$
+$$BRD(x) = \begin{cases} 1, & \text{if } \overline{T}_{30}(x) > 39.3 \land \overline{HR}_{30}(x) > 90 \land Activity(x) = \text{"low"} \\ 0, & \text{otherwise} \end{cases}$$
 
-### **Como calcular:**
+### **How to calculate:**
 
--   `avg_temp`: média da temperatura medida por 30 amostras consecutivas do sensor MLX90614.
+-   `avg_temp`: average temperature measured by 30 consecutive samples from the MLX90614 sensor.
     
--   `avg_hr`: média de 30 leituras do sensor MAX30102.
+-   `avg_hr`: average of 30 readings from the MAX30102 sensor.
     
--   Atividade baixa: aceleração total abaixo de um limiar por mais de 30 minutos. A aceleração pode ser calculada por:
+-   Low activity: total acceleration below a threshold for more than 30 minutes. Acceleration can be calculated by:
     
     $$A_{total} = \sqrt{a_x^2 + a_y^2 + a_z^2}$$
 
-### **Fonte científica:**
+### **Scientific source:**
 
--   [B 1442_1, University of Georgia]: temperatura >39,3 °C e aumento na frequência cardíaca indicam febre e estresse respiratório.
+-   [B 1442_1, University of Georgia]: temperature >39.3 °C and increased heart rate indicate fever and respiratory stress.
     
--   [Lindahl et al., 2015]: baixa movimentação associada a infecção respiratória.
-    
-
-----------
-
-## 2. **Mastite Sistêmica**
-
-### **Variável necessária**:
-
--   Padrão de **postura** anormal
-    
-
-### **Fórmula matemática:**
-
-$$Mastite(x) = \begin{cases} 1, & T(x) > 39{,}5 \land HR(x) > 110 \land Postura(x) = \text{"anormal"} \\ 0, & \text{caso contrário} \end{cases}$$
-
-### **Como calcular:**
-
--   "Postura anormal" ocorre quando o animal se mantém por longos períodos sem deitar ou adota inclinação irregular captada por giroscópio.
-    
--   O sensor MPU6050 capta mudanças no ângulo de inclinação:  
-    Se o eixo z permanece com valores < 0,3g por mais de 2 horas = possível dor associada.
-    
-
-### **Fonte científica:**
-
--   [Lameness_Pain_Behavior]: vacas com mastite passam menos tempo deitadas.
-    
--   [Cook & Nordlund, 2004]: dor altera comportamento postural de forma mensurável.
+-   [Lindahl et al., 2015]: low movement associated with respiratory infection.
     
 
 ----------
 
-## 3. **Cetose (Doença metabólica)**
+## 2. **Systemic Mastitis**
 
-### **Variáveis necessárias**:
+### **Required variable**:
 
--   `hr_variabilidade` (variabilidade da frequência cardíaca)
-    
--   Atividade baixa
-    
--   Temperatura corporal
+-   Abnormal **posture** pattern
     
 
-### **Fórmula matemática:**
+### **Mathematical formula:**
 
-$$Cetose(x) = \begin{cases} 1, & Desvio(HR) > \theta \land Atividade(x) = \text{"baixa"} \land T(x) < 38{,}0 \\ 0, & \text{caso contrário} \end{cases}$$
+$$Mastitis(x) = \begin{cases} 1, & T(x) > 39.5 \land HR(x) > 110 \land Posture(x) = \text{"abnormal"} \\ 0, & \text{otherwise} \end{cases}$$
 
-### **Como calcular:**
+### **How to calculate:**
 
--   `hr_variabilidade` = desvio padrão das últimas 30 medições de HR.
+-   "Abnormal posture" occurs when the animal remains for long periods without lying down or adopts an irregular tilt captured by gyroscope.
     
--   Atividade baixa: aceleração total < 0,2g por mais de 1 hora.
-    
--   Temperatura < 38 °C captada pelo MLX90614 pode indicar metabolismo deprimido.
+-   The MPU6050 sensor captures changes in the tilt angle:  
+    If the z-axis remains with values < 0.3g for more than 2 hours = possible associated pain.
     
 
-### **Fonte científica:**
+### **Scientific source:**
 
--   [APSC-167]: cetose leva à letargia e flutuação da FC.
+-   [Lameness_Pain_Behavior]: cows with mastitis spend less time lying down.
     
--   [UtahStateDairyVet]: hipotermia moderada pode ocorrer em vacas com distúrbios metabólicos.
+-   [Cook & Nordlund, 2004]: pain alters postural behavior in a measurable way.
     
 
 ----------
 
-## 4. **Estresse Térmico**
+## 3. **Ketosis (Metabolic disease)**
 
-### **Variáveis necessárias**:
+### **Required variables**:
 
--   Temperatura corporal
+-   `hr_variability` (heart rate variability)
     
--   Frequência cardíaca
+-   Low activity
     
--   Padrão de **movimento inquieto**
-    
-
-### **Fórmula matemática:**
-
-$$Estresse(x) = \begin{cases} 1, & T(x) > 39{,}0 \land HR(x) > 100 \land Movimento(x) = \text{"inquieto"} \\ 0, & \text{caso contrário} \end{cases}$$
-
-### **Como calcular:**
-
--   Movimento inquieto = >15 variações bruscas em aceleração nos últimos 5 minutos.
-    
--   Pode ser identificado por pico de variação em `a_x` e `a_y`.
+-   Body temperature
     
 
-### **Fonte científica:**
+### **Mathematical formula:**
 
--   [B 1442_1]: estresse térmico leva à hiperatividade momentânea.
+$$Ketosis(x) = \begin{cases} 1, & Dev(HR) > \theta \land Activity(x) = \text{"low"} \land T(x) < 38.0 \\ 0, & \text{otherwise} \end{cases}$$
+
+### **How to calculate:**
+
+-   `hr_variability` = standard deviation of the last 30 HR measurements.
     
--   [Grandin, 2012]: ambientes quentes e mal ventilados provocam irritabilidade.
+-   Low activity: total acceleration < 0.2g for more than 1 hour.
     
-
-----------
-
-## 5. **Claudicação (Problemas nos cascos)**
-
-### **Variáveis necessárias**:
-
--   Assimetria da marcha (`marcha_assimetrica`)
-    
--   Postura anormal
-    
--   FC elevada
+-   Temperature < 38 °C captured by the MLX90614 may indicate depressed metabolism.
     
 
-### **Fórmula matemática:**
+### **Scientific source:**
 
-$$Claudicacao(x) = \begin{cases} 1, & Assimetria_{marcha} > \theta_{gait} \land Postura = \text{"incomum"} \land HR > 90 \\ 0, & \text{caso contrário} \end{cases}$$
-
-### **Como calcular:**
-
--   `marcha_assimetrica`: diferença entre aceleração em passos do lado esquerdo e direito.
+-   [APSC-167]: ketosis leads to lethargy and HR fluctuation.
     
--   Necessário calibrar individualmente por animal.
-    
--   Sensor MPU6050 identifica marcha assimétrica com padrão de aceleração assimétrico em `a_x`.
-    
-
-### **Fonte científica:**
-
--   [Lameness_Pain_Behavior]: claudicação afeta simetria da marcha.
-    
--   [Huxley, 2007]: dor afeta padrão locomotor e FC.
+-   [UtahStateDairyVet]: moderate hypothermia can occur in cows with metabolic disorders.
     
 
 ----------
 
-## 6. **Parto iminente**
+## 4. **Heat Stress**
 
-### **Variáveis necessárias**:
+### **Required variables**:
 
--   Número de **mudanças posturais**
+-   Body temperature
     
--   FC
+-   Heart rate
     
--   Queda de temperatura
-    
-
-### **Fórmula matemática:**
-
-$$Parto(x) = \begin{cases} 1, & Mudanças_{postura}(x) > 10 \text{ em 1h} \land HR > 90 \land \Delta T < 0 \\ 0, & \text{caso contrário} \end{cases}$$
-
-### **Como calcular:**
-
--   Mudanças posturais = contagem de transições sentada/em pé via sensor giroscópio (eixo z).
-    
--   Queda de temperatura: MLX90614 registra declínio nas últimas 12 horas.
+-   **Restless movement** pattern
     
 
-### **Fonte científica:**
+### **Mathematical formula:**
 
--   [Cook & Nordlund, 2004]: vacas inquietas no pré-parto mudam de postura com frequência.
-    
--   [Lindahl et al., 2015]: pré-parto está associado à redução de temperatura retal.
-    
+$$Stress(x) = \begin{cases} 1, & T(x) > 39.0 \land HR(x) > 100 \land Movement(x) = \text{"restless"} \\ 0, & \text{otherwise} \end{cases}$$
 
-----------
+### **How to calculate:**
 
-## 7. **Desidratação ou Choque**
-
-### **Variáveis necessárias**:
-
--   Saturação de oxigênio (SpO₂)
+-   Restless movement = >15 sudden variations in acceleration in the last 5 minutes.
     
--   FC
-    
--   Temperatura de extremidades
-    
--   Letargia
+-   Can be identified by peak variation in `a_x` and `a_y`.
     
 
-### **Fórmula matemática:**
+### **Scientific source:**
 
-$$Choque(x) = \begin{cases} 1, & SpO_2 < 88 \land HR > 120 \land T_{ext} < 35{,}0 \land Atividade = \text{"letárgica"} \\ 0, & \text{caso contrário} \end{cases}$$
-
-### **Como calcular:**
-
--   Letargia: <10 movimentos por hora detectados via acelerômetro.
+-   [B 1442_1]: heat stress leads to momentary hyperactivity.
     
--   Temperatura das extremidades: medida por MLX90614 com sensor posicionado em membros.
-    
-
-### **Fonte científica:**
-
--   [UtahStateDairyVet]: vacas em choque reduzem fluxo nas extremidades e tornam-se imóveis.
-    
--   [APSC-167]: SpO₂ <88% = hipóxia crítica.
+-   [Grandin, 2012]: hot and poorly ventilated environments cause irritability.
     
 
 ----------
 
-## 8. **Escala de Severidade – Atividade**
+## 5. **Lameness (Hoof problems)**
 
-### **Categorização:**
+### **Required variables**:
 
--   Atividade = “normal”, “baixa” ou “letárgica”
+-   Gait asymmetry (`marcha_assimetrica`)
+    
+-   Abnormal posture
+    
+-   Elevated HR
     
 
-$$Escore_{atividade}(x) = \begin{cases} 3, & \text{"letárgica"} \\ 2, & \text{"baixa"} \\ 1, & \text{"normal"} \\ 0, & \text{"ativa"} \end{cases}$$
+### **Mathematical formula:**
 
-### **Como calcular:**
+$$Lameness(x) = \begin{cases} 1, & Gait_{asymmetry} > \theta_{gait} \land Posture = \text{"unusual"} \land HR > 90 \\ 0, & \text{otherwise} \end{cases}$$
 
--   **Letárgica**: <10 movimentos/hora
+### **How to calculate:**
+
+-   `marcha_assimetrica`: difference between acceleration in steps of the left and right sides.
     
--   **Baixa**: 10–30 movimentos/hora
+-   Individual calibration per animal required.
+    
+-   MPU6050 sensor identifies asymmetric gait with an asymmetric acceleration pattern in `a_x`.
+    
+
+### **Scientific source:**
+
+-   [Lameness_Pain_Behavior]: lameness affects gait symmetry.
+    
+-   [Huxley, 2007]: pain affects locomotor pattern and HR.
+    
+
+----------
+
+## 6. **Imminent Calving**
+
+### **Required variables**:
+
+-   Number of **postural changes**
+    
+-   HR
+    
+-   Temperature drop
+    
+
+### **Mathematical formula:**
+
+$$Calving(x) = \begin{cases} 1, & Postural\_changes(x) > 10 \text{ in 1h} \land HR > 90 \land \Delta T < 0 \\ 0, & \text{otherwise} \end{cases}$$
+
+### **How to calculate:**
+
+-   Postural changes = count of sitting/standing transitions via gyroscope sensor (z-axis).
+    
+-   Temperature drop: MLX90614 records decline in the last 12 hours.
+    
+
+### **Scientific source:**
+
+-   [Cook & Nordlund, 2004]: restless cows in pre-calving change posture frequently.
+    
+-   [Lindahl et al., 2015]: pre-calving is associated with a reduction in rectal temperature.
+    
+
+----------
+
+## 7. **Dehydration or Shock**
+
+### **Required variables**:
+
+-   Oxygen saturation (SpO₂)
+    
+-   HR
+    
+-   Extremity temperature
+    
+-   Lethargy
+    
+
+### **Mathematical formula:**
+
+$$Shock(x) = \begin{cases} 1, & SpO_2 < 88 \land HR > 120 \land T_{ext} < 35.0 \land Activity = \text{"lethargic"} \\ 0, & \text{otherwise} \end{cases}$$
+
+### **How to calculate:**
+
+-   Lethargy: <10 movements per hour detected via accelerometer.
+    
+-   Extremity temperature: measured by MLX90614 with sensor positioned on limbs.
+    
+
+### **Scientific source:**
+
+-   [UtahStateDairyVet]: cows in shock reduce flow in extremities and become immobile.
+    
+-   [APSC-167]: SpO₂ <88% = critical hypoxia.
+    
+
+----------
+
+## 8. **Severity Scale – Activity**
+
+### **Categorization:**
+
+-   Activity = “normal”, “low” or “lethargic”
+    
+
+$$Activity_{score}(x) = \begin{cases} 3, & \text{"lethargic"} \\ 2, & \text{"low"} \\ 1, & \text{"normal"} \\ 0, & \text{"active"} \end{cases}$$
+
+### **How to calculate:**
+
+-   **Lethargic**: <10 movements/hour
+    
+-   **Low**: 10–30 movements/hour
     
 -   **Normal**: 31–60
     
--   **Ativa**: >60  
-    Todos medidos por MPU6050 com janela de 1 hora.
+-   **Active**: >60  
+    All measured by MPU6050 with a 1-hour window.
     
 
 ----------

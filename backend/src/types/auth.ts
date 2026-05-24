@@ -1,6 +1,6 @@
 export interface LoginInput {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export interface AuthPayload {
@@ -16,4 +16,5 @@ declare global {
             user?: AuthPayload;
         }
     }
+  }
 }

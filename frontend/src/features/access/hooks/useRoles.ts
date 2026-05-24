@@ -1,12 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { rolesService } from "@services/rolesService";
-import type { CreateRoleInput, UpdateRoleInput } from "../../../types/access.ts";
+import type {
+  CreateRoleInput,
+  UpdateRoleInput,
+} from "../../../types/access.ts";
 
 export const useRoles = () =>
   useQuery({ queryKey: ["roles"], queryFn: () => rolesService.list() });
 
 export const useRole = (id: string) =>
-  useQuery({ queryKey: ["roles", id], queryFn: () => rolesService.get(id), enabled: !!id });
+  useQuery({
+    queryKey: ["roles", id],
+    queryFn: () => rolesService.get(id),
+    enabled: !!id,
+  });
 
 export const useCreateRole = () => {
   const qc = useQueryClient();
@@ -39,17 +46,29 @@ export const useDeleteRole = () => {
 export const useGrantPermission = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ roleId, permissionId }: { roleId: string; permissionId: string }) =>
-      rolesService.grantPermission(roleId, permissionId),
-    onSuccess: (_, { roleId }) => qc.invalidateQueries({ queryKey: ["roles", roleId] }),
+    mutationFn: ({
+      roleId,
+      permissionId,
+    }: {
+      roleId: string;
+      permissionId: string;
+    }) => rolesService.grantPermission(roleId, permissionId),
+    onSuccess: (_, { roleId }) =>
+      qc.invalidateQueries({ queryKey: ["roles", roleId] }),
   });
 };
 
 export const useRevokePermission = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ roleId, permissionId }: { roleId: string; permissionId: string }) =>
-      rolesService.revokePermission(roleId, permissionId),
-    onSuccess: (_, { roleId }) => qc.invalidateQueries({ queryKey: ["roles", roleId] }),
+    mutationFn: ({
+      roleId,
+      permissionId,
+    }: {
+      roleId: string;
+      permissionId: string;
+    }) => rolesService.revokePermission(roleId, permissionId),
+    onSuccess: (_, { roleId }) =>
+      qc.invalidateQueries({ queryKey: ["roles", roleId] }),
   });
 };

@@ -1,185 +1,185 @@
-# Plano: Implementacao das Heuristicas Completas (ANEXO VII)
+# Plan: Implementation of Complete Heuristics (ANNEX VII)
 
-Data planejada: 2026-05-24
-
----
-
-## Contexto
-
-O ANEXO VII define 8 heuristicas de diagnostico. Hoje foram implementadas apenas 2 (CALVING e HEAT_STRESS) no `mqttIngestService.ts`. As 6 restantes estao documentadas mas sem codigo.
+Planned date: 2026-05-24
 
 ---
 
-## Etapa 1 — Banco de dados (Prisma)
+## Context
 
-**Arquivo:** `backend/prisma/schema.prisma`
+ANNEX VII defines 8 diagnostic heuristics. Today, only 2 (CALVING and HEAT_STRESS) were implemented in `mqttIngestService.ts`. The remaining 6 are documented but without code.
 
-Adicionar os 6 novos valores ao enum `CowStatus`:
+---
+
+## Step 1 — Database (Prisma)
+
+**File:** `backend/prisma/schema.prisma`
+
+Add the 6 new values to the `CowStatus` enum:
 
 ```
-BRD          # Doenca Respiratoria Bovina
-MASTITIS     # Mastite Sistemica
-KETOSIS      # Cetose
-LAMENESS     # Claudicacao
-SHOCK        # Desidratacao / Choque
-AT_RISK      # Escala de severidade (score >= 3)
+BRD          # Bovine Respiratory Disease
+MASTITIS     # Systemic Mastitis
+KETOSIS      # Ketosis
+LAMENESS     # Lameness
+SHOCK        # Dehydration / Shock
+AT_RISK      # Severity scale (score >= 3)
 ```
 
-Apos editar o schema, rodar:
+After editing the schema, run:
 ```bash
 npx prisma migrate dev --name add_health_statuses
 ```
 
 ---
 
-## Etapa 2 — Backend: expandir `analyzeHealth()`
+## Step 2 — Backend: Expand `analyzeHealth()`
 
-**Arquivo:** `backend/src/services/mqttIngestService.ts`
+**File:** `backend/src/services/mqttIngestService.ts`
 
-Adicionar 6 novos blocos de analise dentro de `analyzeHealth()`, em ordem de severidade (mais grave primeiro):
+Add 6 new analysis blocks inside `analyzeHealth()`, in order of severity (most serious first):
 
-### 2.1 Desidratacao / Choque (SHOCK) — prioridade maxima
+### 2.1 Dehydration / Shock (SHOCK) — highest priority
 ```
-SpO2 < 88 AND HR > 120 AND temp_extremidades < 35.0 AND atividade = "letargica"
-Letargia: < 10 movimentos/hora (contagem de leituras acelerometro com variacao > 0.1g)
+SpO2 < 88 AND HR > 120 AND extremity_temp < 35.0 AND activity = "lethargic"
+Lethargy: < 10 movements/hour (count of accelerometer readings with variation > 0.1g)
 ```
-Observacao: sensor SpO2 (MAX30102 tambem mede SpO2) — verificar se o campo ja existe no schema ou adicionar `spo2` em `HeartRateData`.
+Note: SpO2 sensor (MAX30102 also measures SpO2) — check if the field already exists in the schema or add `spo2` to `HeartRateData`.
 
-### 2.2 Doenca Respiratoria Bovina (BRD)
+### 2.2 Bovine Respiratory Disease (BRD)
 ```
-avg_temp_30 > 39.3 AND avg_hr_30 > 90 AND SpO2 < 92 AND atividade = "baixa"
-Atividade baixa: 10-30 movimentos/hora
-```
-
-### 2.3 Mastite Sistemica (MASTITIS)
-```
-temp > 39.5 AND hr > 110 AND eixo_z < 0.3g por mais de 2 horas (postura anormal)
+avg_temp_30 > 39.3 AND avg_hr_30 > 90 AND SpO2 < 92 AND activity = "low"
+Low activity: 10-30 movements/hour
 ```
 
-### 2.4 Cetose (KETOSIS)
+### 2.3 Systemic Mastitis (MASTITIS)
 ```
-desvio_padrao_hr_30 > 12 AND atividade = "baixa" AND temp < 38.0
-```
-
-### 2.5 Claudicacao (LAMENESS)
-```
-assimetria_accel_x > limiar AND hr > 90
-Assimetria: diferenca entre picos alternados de accel_x (padrao de marcha)
-Nota: requer calibracao por animal — usar limiar global 0.4g inicialmente
+temp > 39.5 AND hr > 110 AND z_axis < 0.3g for more than 2 hours (abnormal posture)
 ```
 
-### 2.6 Escala de Severidade / Risco Elevado (AT_RISK)
+### 2.4 Ketosis (KETOSIS)
+```
+hr_std_dev_30 > 12 AND activity = "low" AND temp < 38.0
+```
+
+### 2.5 Lameness (LAMENESS)
+```
+accel_x_asymmetry > threshold AND hr > 90
+Asymmetry: difference between alternating peaks of accel_x (gait pattern)
+Note: requires individual animal calibration — use 0.4g global threshold initially
+```
+
+### 2.6 Severity Scale / High Risk (AT_RISK)
 ```
 score = 0
-score += 1 se avg_temp > 39.3
-score += 1 se avg_hr > 90
-score += 1 se SpO2 < 92
-score += 1 se atividade = "baixa"
-Se score >= 3 -> AT_RISK
+score += 1 if avg_temp > 39.3
+score += 1 if avg_hr > 90
+score += 1 if SpO2 < 92
+score += 1 if activity = "low"
+If score >= 3 -> AT_RISK
 ```
 
 ---
 
-## Etapa 3 — Backend: atualizar `STATUS_LABELS`
+## Step 3 — Backend: Update `STATUS_LABELS`
 
-**Arquivo:** `backend/src/services/mqttIngestService.ts`
+**File:** `backend/src/services/mqttIngestService.ts`
 
-Adicionar os novos labels para as notificacoes:
+Add new labels for notifications:
 
 ```typescript
 const STATUS_LABELS: Record<string, string> = {
-    CALVING:    "parto iminente",
-    HEAT_STRESS: "estresse termico",
-    BRD:        "doenca respiratoria bovina",
-    MASTITIS:   "mastite sistemica",
-    KETOSIS:    "cetose",
-    LAMENESS:   "claudicacao",
-    SHOCK:      "desidratacao ou choque",
-    AT_RISK:    "risco elevado de infeccao",
+    CALVING:    "imminent calving",
+    HEAT_STRESS: "heat stress",
+    BRD:        "bovine respiratory disease",
+    MASTITIS:   "systemic mastitis",
+    KETOSIS:    "ketosis",
+    LAMENESS:   "lameness",
+    SHOCK:      "dehydration or shock",
+    AT_RISK:    "high risk of infection",
 };
 ```
 
 ---
 
-## Etapa 4 — Backend: campo SpO2
+## Step 4 — Backend: SpO2 field
 
-**Arquivo:** `backend/prisma/schema.prisma`
+**File:** `backend/prisma/schema.prisma`
 
-Verificar se `HeartRateData` ja tem campo `spo2`. Se nao tiver, adicionar:
+Check if `HeartRateData` already has an `spo2` field. If not, add:
 ```
-spo2  Float?   # saturacao de oxigenio (%)
+spo2  Float?   # oxygen saturation (%)
 ```
 
-**Arquivo:** `backend/src/services/mqttIngestService.ts`
+**File:** `backend/src/services/mqttIngestService.ts`
 
-Atualizar `persistSensorData()` para salvar `spo2` se presente no payload:
+Update `persistSensorData()` to save `spo2` if present in payload:
 ```typescript
-// payload.sensors.max30102 pode ter { heart_rate, spo2 }
+// payload.sensors.max30102 may have { heart_rate, spo2 }
 ```
 
-**Arquivo:** `/Users/jafte/PyCharmProject/cowhealth-iot-simulator` (IoT repo)
+**File:** `/Users/jafte/PyCharmProject/cowhealth-iot-simulator` (IoT repo)
 
-Atualizar o simulador para gerar `spo2` no payload do MAX30102 (range normal: 95-100%).
-
----
-
-## Etapa 5 — Frontend: badges e labels
-
-**Arquivo:** `frontend/src/types/cows.ts`
-
-Adicionar os 6 novos valores ao tipo `CowStatus`.
-
-**Arquivo:** `frontend/src/features/cows/components/CowStatusBadge.tsx`
-
-Adicionar cores e labels para cada novo status:
-- `BRD` -> badge laranja ("Resp. Bovina")
-- `MASTITIS` -> badge vermelho escuro ("Mastite")
-- `KETOSIS` -> badge roxo ("Cetose")
-- `LAMENESS` -> badge amarelo ("Claudicacao")
-- `SHOCK` -> badge vermelho critico ("Choque")
-- `AT_RISK` -> badge laranja escuro ("Risco Elevado")
-
-**Arquivo:** `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx`
-
-Adicionar as novas fatias/barras ao grafico de status.
+Update simulator to generate `spo2` in MAX30102 payload (normal range: 95-100%).
 
 ---
 
-## Etapa 6 — Testes manuais
+## Step 5 — Frontend: Badges and labels
 
-Testar cada heuristica via `POST /mqtt/ingest` com payloads fabricados:
+**File:** `frontend/src/types/cows.ts`
 
-| Condicao | temp | hr | accel | spo2 |
+Add the 6 new values to the `CowStatus` type.
+
+**File:** `frontend/src/features/cows/components/CowStatusBadge.tsx`
+
+Add colors and labels for each new status:
+- `BRD` -> orange badge ("Bov. Resp.")
+- `MASTITIS` -> dark red badge ("Mastitis")
+- `KETOSIS` -> purple badge ("Ketosis")
+- `LAMENESS` -> yellow badge ("Lameness")
+- `SHOCK` -> critical red badge ("Shock")
+- `AT_RISK` -> dark orange badge ("High Risk")
+
+**File:** `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx`
+
+Add new slices/bars to the status chart.
+
+---
+
+## Step 6 — Manual tests
+
+Test each heuristic via `POST /mqtt/ingest` with fabricated payloads:
+
+| Condition | temp | hr | accel | spo2 |
 |---|---|---|---|---|
-| BRD | 39.5 | 95 | baixa | 90 |
-| MASTITIS | 40.0 | 115 | eixo_z < 0.3 x 2h | - |
-| KETOSIS | 37.5 | variavel | baixa | - |
-| LAMENESS | - | 95 | assimetrico | - |
-| SHOCK | 34.0 | 125 | letargica | 86 |
-| AT_RISK | 39.5 | 95 | baixa | 90 |
+| BRD | 39.5 | 95 | low | 90 |
+| MASTITIS | 40.0 | 115 | z_axis < 0.3 x 2h | - |
+| KETOSIS | 37.5 | variable | low | - |
+| LAMENESS | - | 95 | asymmetric | - |
+| SHOCK | 34.0 | 125 | lethargic | 86 |
+| AT_RISK | 39.5 | 95 | low | 90 |
 
 ---
 
-## Ordem de execucao recomendada
+## Recommended execution order
 
-1. Schema Prisma (enum + campo spo2) + migrate
-2. `persistSensorData` — salvar spo2
-3. `analyzeHealth` — adicionar os 6 blocos
-4. `STATUS_LABELS` — adicionar novos labels
+1. Prisma Schema (enum + spo2 field) + migrate
+2. `persistSensorData` — save spo2
+3. `analyzeHealth` — add the 6 blocks
+4. `STATUS_LABELS` — add new labels
 5. Frontend: `CowStatus` type + `CowStatusBadge`
 6. Frontend: `CowsPerStatusChart`
-7. IoT simulator: adicionar spo2 ao payload
-8. Testes manuais por heuristica
+7. IoT simulator: add spo2 to payload
+8. Manual tests per heuristic
 
 ---
 
-## Arquivos a modificar (resumo)
+## Files to modify (summary)
 
-| Arquivo | Mudanca |
+| File | Change |
 |---|---|
-| `backend/prisma/schema.prisma` | enum CowStatus + HeartRateData.spo2 |
+| `backend/prisma/schema.prisma` | CowStatus enum + HeartRateData.spo2 |
 | `backend/src/services/mqttIngestService.ts` | persistSensorData + analyzeHealth + STATUS_LABELS |
 | `frontend/src/types/cows.ts` | CowStatus enum |
-| `frontend/src/features/cows/components/CowStatusBadge.tsx` | novos badges |
-| `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx` | novos status no grafico |
-| `/Users/jafte/PyCharmProject/cowhealth-iot-simulator` | spo2 no payload |
+| `frontend/src/features/cows/components/CowStatusBadge.tsx` | new badges |
+| `frontend/src/features/dashboard/components/CowsPerStatusChart.tsx` | new status in chart |
+| `/Users/jafte/PyCharmProject/cowhealth-iot-simulator` | spo2 in payload |

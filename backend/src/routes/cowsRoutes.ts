@@ -5,6 +5,7 @@ import {
     listHeartRate, listTemperature, listAccelerometer,
     listHeartRateDaily, listTemperatureDaily,
 } from "../controllers/cowsController";
+import { cowUpload } from "../helpers/multerUpload";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
 import { validateSchema } from "../middlewares/validateSchema";
@@ -25,12 +26,37 @@ router.delete("/:id/photos/:filename", requireAuth, requirePermission("Update Co
 router.get("/:id/photos/:filename",    requireAuth, requirePermission("View Cow"), servePhoto);
 
 // Sensores — listagem paginada
-router.get("/:id/heart-rate",    requireAuth, requirePermission("View Cow"), listHeartRate);
-router.get("/:id/temperature",   requireAuth, requirePermission("View Cow"), listTemperature);
-router.get("/:id/accelerometer", requireAuth, requirePermission("View Cow"), listAccelerometer);
+router.get(
+  "/:id/heart-rate",
+  requireAuth,
+  requirePermission("View Cow"),
+  listHeartRate,
+);
+router.get(
+  "/:id/temperature",
+  requireAuth,
+  requirePermission("View Cow"),
+  listTemperature,
+);
+router.get(
+  "/:id/accelerometer",
+  requireAuth,
+  requirePermission("View Cow"),
+  listAccelerometer,
+);
 
 // Sensores — média diária dos últimos 7 dias
-router.get("/:id/heart-rate/daily",  requireAuth, requirePermission("View Cow"), listHeartRateDaily);
-router.get("/:id/temperature/daily", requireAuth, requirePermission("View Cow"), listTemperatureDaily);
+router.get(
+  "/:id/heart-rate/daily",
+  requireAuth,
+  requirePermission("View Cow"),
+  listHeartRateDaily,
+);
+router.get(
+  "/:id/temperature/daily",
+  requireAuth,
+  requirePermission("View Cow"),
+  listTemperatureDaily,
+);
 
 export default router;

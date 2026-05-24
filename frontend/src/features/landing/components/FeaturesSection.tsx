@@ -1,13 +1,17 @@
-import React from 'react';
+import React from "react";
 import {
   IcHeartPulse,
   IcAlertTriangle,
   IcBarChart,
-} from '@components/icons/LandingIcons';
+} from "@components/icons/LandingIcons";
 
 interface Feature {
   id: string;
-  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  icon: React.ComponentType<{
+    size?: number;
+    color?: string;
+    strokeWidth?: number;
+  }>;
   title: string;
   description: string;
   metadata: string;
@@ -21,30 +25,30 @@ interface FeaturesSectionProps {
 
 const FEATURES: Feature[] = [
   {
-    id: 'monitor',
+    id: "monitor",
     icon: IcHeartPulse,
-    title: 'Monitoramento contínuo',
+    title: "Monitoramento contínuo",
     description:
-      'Frequência cardíaca, temperatura e atividade a cada batida — direto da coleira.',
-    metadata: '24/7',
+      "Frequência cardíaca, temperatura e atividade a cada batida — direto da coleira.",
+    metadata: "24/7",
     primary: true,
     showVitals: true,
   },
   {
-    id: 'alerts',
+    id: "alerts",
     icon: IcAlertTriangle,
-    title: 'Alertas inteligentes',
+    title: "Alertas inteligentes",
     description:
-      'Notificação imediata de anomalias, cio e períodos críticos com causa provável.',
-    metadata: '< 30s',
+      "Notificação imediata de anomalias, cio e períodos críticos com causa provável.",
+    metadata: "< 30s",
   },
   {
-    id: 'reports',
+    id: "reports",
     icon: IcBarChart,
-    title: 'Histórico e relatórios',
+    title: "Histórico e relatórios",
     description:
-      'Tendências do rebanho e relatórios em PDF para decisões fundamentadas.',
-    metadata: 'PDF',
+      "Tendências do rebanho e relatórios em PDF para decisões fundamentadas.",
+    metadata: "PDF",
   },
 ];
 
@@ -93,9 +97,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, showVitals }) => {
   const Icon = feature.icon;
 
   return (
-    <article
-      className={`feature-card${feature.primary ? ' is-primary' : ''}`}
-    >
+    <article className={`feature-card${feature.primary ? " is-primary" : ""}`}>
       <div className="feature-icon">
         <Icon size={20} color="var(--verdigris)" strokeWidth={1.7} />
       </div>
@@ -117,9 +119,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, showVitals }) => {
  */
 const MiniVitals: React.FC = () => {
   const vitals = [
-    { label: 'BPM', value: '72', unit: '/min' },
-    { label: 'Temp.', value: '38.6', unit: '°C' },
-    { label: 'Atividade', value: '94', unit: '%', warn: true },
+    { label: "BPM", value: "72", unit: "/min" },
+    { label: "Temp.", value: "38.6", unit: "°C" },
+    { label: "Atividade", value: "94", unit: "%", warn: true },
   ];
 
   return (
@@ -127,7 +129,7 @@ const MiniVitals: React.FC = () => {
       {vitals.map((vital) => (
         <div key={vital.label} className="vital">
           <div className="label">{vital.label}</div>
-          <div className={`value${vital.warn ? ' warn' : ''}`}>
+          <div className={`value${vital.warn ? " warn" : ""}`}>
             {vital.value}
             <span className="u"> {vital.unit}</span>
           </div>

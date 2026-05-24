@@ -129,6 +129,41 @@ if (isSuccess) {
 
 When you destructure, each variable becomes independent. Checking `isSuccess` doesn't narrow `data` because TypeScript doesn't track the relationship between separate variables.
 
+## Naming: Const-Enum Objects Must Use UPPER_SNAKE_CASE
+
+When a `const` object is used as an enum replacement (pattern: `{ KEY: "VALUE" } as const`),
+it **must** be named in `UPPER_SNAKE_CASE`. This convention is enforced by ESLint for all
+exported `const` objects in `src/types/`.
+
+```typescript
+// DO
+export const COW_STATUS_VALUES = {
+  HEALTHY: "HEALTHY",
+  ALERT:   "ALERT",
+} as const;
+
+export type CowStatus = (typeof COW_STATUS_VALUES)[keyof typeof COW_STATUS_VALUES];
+
+// DON'T — PascalCase is reserved for classes, interfaces, and type aliases
+export const CowStatusValues = { ... } as const; // ❌ ESLint error
+```
+
+> **Enforced by:** `@typescript-eslint/naming-convention` in `eslint.config.js`,
+> scoped to `src/types/**/*.ts`.
+> **Blocked in CI by:** `.github/workflows/lint.yml` — PRs que violarem esta regra
+> falharão automaticamente no check de lint antes do merge.
+
+Existing const-enum objects in `src/types/`:
+
+| Old name (banned) | New name (correct) | File |
+|---|---|---|
+| `CowStatusValues` | `COW_STATUS_VALUES` | `types/cows.ts` |
+| `CollarStatusValues` | `COLLAR_STATUS_VALUES` | `types/collars.ts` |
+| `DataFrequencyValues` | `DATA_FREQUENCY_VALUES` | `types/collars.ts` |
+| `UserProfileValues` | `USER_PROFILE_VALUES` | `types/access.ts` |
+
+---
+
 ## Avoid enum
 
 TypeScript `enum` generates runtime code that can't be stripped by type-only transpilers (esbuild, swc in strip-only mode). Use const arrays instead:

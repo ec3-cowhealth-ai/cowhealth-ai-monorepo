@@ -1,10 +1,14 @@
 import { Router } from "express";
 import {
-    listPermissionGroups, showPermissionGroup,
-    storePermissionGroup, updatePermissionGroupController,
-    destroyPermissionGroup,
-    addPermission, removePermission,
-    grantPermissions, revokePermissions,
+  listPermissionGroups,
+  showPermissionGroup,
+  storePermissionGroup,
+  updatePermissionGroupController,
+  destroyPermissionGroup,
+  addPermission,
+  removePermission,
+  grantPermissions,
+  revokePermissions,
 } from "../controllers/permissionGroupsController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";

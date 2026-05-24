@@ -24,6 +24,6 @@ export interface DashboardData {
 }
 
 export interface DashboardOverview {
-  period: 'today' | 'week' | 'month';
+  period: "today" | "week" | "month";
   data: DashboardData;
 }

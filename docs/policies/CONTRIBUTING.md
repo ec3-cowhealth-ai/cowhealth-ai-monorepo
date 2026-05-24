@@ -71,6 +71,7 @@ Run and pass before opening PR:
 - Follow strict SRD (single-responsibility discipline) for modules and type definitions.
 - Use `Recharts` for all charts through shared chart wrappers/components.
 - Use `TODO[NOME]` markers for cross-owner integration points.
+- **Const-enum objects in `src/types/` must be named in `UPPER_SNAKE_CASE`** (e.g. `COW_STATUS_VALUES`, not `CowStatusValues`). This is enforced by ESLint — `npm run lint` will fail otherwise. See [`docs/references/code-style.md`](../references/code-style.md) for the full pattern.
 
 ## 7. Branch Protection and Merge
 

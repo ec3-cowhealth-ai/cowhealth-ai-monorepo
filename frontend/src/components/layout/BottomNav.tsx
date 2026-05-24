@@ -3,10 +3,20 @@ import { useUnreadNotifications } from "@hooks/useNotifications";
 import { Home, List, Bell, Map, User } from "lucide-react";
 import type { ReactNode } from "react";
 
-const NAV_ITEMS: { label: string; path: string; icon: ReactNode; badge?: boolean }[] = [
+const NAV_ITEMS: {
+  label: string;
+  path: string;
+  icon: ReactNode;
+  badge?: boolean;
+}[] = [
   { label: "Início", path: "/home", icon: <Home size={20} /> },
   { label: "Rebanho", path: "/cows", icon: <List size={20} /> },
-  { label: "Alertas", path: "/notifications", icon: <Bell size={20} />, badge: true },
+  {
+    label: "Alertas",
+    path: "/notifications",
+    icon: <Bell size={20} />,
+    badge: true,
+  },
   { label: "Mapa", path: "/map", icon: <Map size={20} /> },
   { label: "Perfil", path: "/profile", icon: <User size={20} /> },
 ];
@@ -34,7 +44,9 @@ export const BottomNav = () => {
             <span style={{ position: "relative" }}>
               {item.icon}
               {badgeCount > 0 && (
-                <span className="bottom-nav__badge">{badgeCount > 9 ? "9+" : badgeCount}</span>
+                <span className="bottom-nav__badge">
+                  {badgeCount > 9 ? "9+" : badgeCount}
+                </span>
               )}
             </span>
             <span>{item.label}</span>

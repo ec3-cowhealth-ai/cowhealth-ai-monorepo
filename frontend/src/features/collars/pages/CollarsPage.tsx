@@ -4,7 +4,7 @@ import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
 import { CollarCard } from "../components/CollarCard";
 import { useCollars } from "../hooks/useCollars";
-import { CollarStatusValues } from "../../../types/collars.ts";
+import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 
 export const CollarsPage = () => {
   const navigate = useNavigate();
@@ -22,7 +22,14 @@ export const CollarsPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Coleiras" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -43,22 +50,31 @@ export const CollarsPage = () => {
             Todas ({collars?.length || 0})
           </button>
           <button
-            className={`btn btn-sm ${statusFilter === CollarStatusValues.ACTIVE ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter(CollarStatusValues.ACTIVE)}
+            className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.ACTIVE ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.ACTIVE)}
           >
-            Ativas ({collars?.filter((c) => c.status === CollarStatusValues.ACTIVE).length || 0})
+            Ativas (
+            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.ACTIVE)
+              .length || 0}
+            )
           </button>
           <button
-            className={`btn btn-sm ${statusFilter === CollarStatusValues.INACTIVE ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter(CollarStatusValues.INACTIVE)}
+            className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.INACTIVE ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.INACTIVE)}
           >
-            Inativas ({collars?.filter((c) => c.status === CollarStatusValues.INACTIVE).length || 0})
+            Inativas (
+            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.INACTIVE)
+              .length || 0}
+            )
           </button>
           <button
-            className={`btn btn-sm ${statusFilter === CollarStatusValues.MAINTENANCE ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter(CollarStatusValues.MAINTENANCE)}
+            className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.MAINTENANCE ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.MAINTENANCE)}
           >
-            Manutenção ({collars?.filter((c) => c.status === CollarStatusValues.MAINTENANCE).length || 0})
+            Manutenção (
+            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.MAINTENANCE)
+              .length || 0}
+            )
           </button>
         </div>
 

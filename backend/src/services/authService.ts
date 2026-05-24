@@ -65,51 +65,57 @@ export const userHasPermission = async (
 };
 
 export const getMe = async (userId: number) => {
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      profile: true,
+      active: true,
+      createdAt: true,
+      roles: {
         select: {
-        id:        true,
-        name:      true,
-        email:     true,
-        profile:   true,
-        active:    true,
-        createdAt: true,
-        roles: {
+          role: {
             select: {
-            role: {
+              id: true,
+              name: true,
+              permissions: {
                 select: {
-                id:   true,
-                name: true,
-                permissions: {
-                    select: {
-                    permission: { select: { id: true, name: true } },
-                    },
+                  permission: { select: { id: true, name: true } },
                 },
-                },
+              },
             },
-            },
+          },
         },
-        },
-    });
+      },
+    },
+  });
 
-    if (!user) throw new Error("Usuario não encontrado.");
+  if (!user) throw new Error("Usuario não encontrado.");
 
-    const permissionSet = new Map<number, string>();
-    for (const userRole of user.roles) {
-        for (const rolePermission of userRole.role.permissions) {
-        const { id, name } = rolePermission.permission;
-        permissionSet.set(id, name);
-        }
+  const permissionSet = new Map<number, string>();
+  for (const userRole of user.roles) {
+    for (const rolePermission of userRole.role.permissions) {
+      const { id, name } = rolePermission.permission;
+      permissionSet.set(id, name);
     }
+  }
 
-    return {
-        id:          user.id,
-        name:        user.name,
-        email:       user.email,
-        profile:     user.profile,
-        active:      user.active,
-        createdAt:   user.createdAt,
-        roles:       user.roles.map((userRole) => ({ id: userRole.role.id, name: userRole.role.name })),
-        permissions: Array.from(permissionSet.entries()).map(([id, name]) => ({ id, name })),
-    };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    profile: user.profile,
+    active: user.active,
+    createdAt: user.createdAt,
+    roles: user.roles.map((userRole) => ({
+      id: userRole.role.id,
+      name: userRole.role.name,
+    })),
+    permissions: Array.from(permissionSet.entries()).map(([id, name]) => ({
+      id,
+      name,
+    })),
+  };
 };
