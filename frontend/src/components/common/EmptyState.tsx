@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
+import { Inbox } from "lucide-react";
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
 }
 
 export const EmptyState = ({
-  icon = "📭",
+  icon = <Inbox size={40} />,
   title,
   description,
   action,

@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState, StatusBadge } from "@components/common";
+import { XCircle } from "lucide-react";
 import { useCollar } from "../hooks/useCollars";
 import { CollarStatusValues } from "../../../types/collars.ts";
 
@@ -40,7 +41,7 @@ export const CollarDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes do Colar" />
-        <EmptyState icon="❌" title="Coleira não encontrada" />
+        <EmptyState icon={<XCircle size={40} />} title="Coleira não encontrada" />
       </div>
     );
   }

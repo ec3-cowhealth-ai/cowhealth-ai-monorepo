@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
+import { X, Users } from "lucide-react";
 import {
   useRoles, useRole, useCreateRole, useUpdateRole,
   useDeleteRole, useGrantPermission, useRevokePermission,
@@ -90,7 +91,7 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
               Papel: <strong style={{ color: "var(--text-primary)" }}>{roleName}</strong>
             </p>
           </div>
-          <button className="modal-card__close" onClick={onClose}>✕</button>
+          <button className="modal-card__close" onClick={onClose}><X size={16} /></button>
         </div>
 
         <div className="modal-card__body">
@@ -203,7 +204,7 @@ export const RolesPage = () => {
       {/* Grid de cards */}
       {filtered.length === 0 ? (
         <EmptyState
-          icon="🎭"
+          icon={<Users size={40} />}
           title="Nenhum papel encontrado"
           description={search ? "Tente outro termo de busca." : "Crie o primeiro papel de acesso."}
           action={!search ? <button className="btn btn-primary" onClick={() => setShowCreate(true)}>Criar papel</button> : undefined}

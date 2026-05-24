@@ -1,13 +1,14 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Icon } from "@components/ui/Icon";
+import { Home, List, Bell, Map, User } from "lucide-react";
+import type { ReactNode } from "react";
 
-const NAV_ITEMS = [
-  { label: "Início", path: "/home", icon: "home" as const },
-  { label: "Rebanho", path: "/cows", icon: "list" as const },
-  { label: "Alertas", path: "/notifications", icon: "bell" as const, badge: true },
-  { label: "Mapa", path: "/map", icon: "map" as const },
-  { label: "Perfil", path: "/profile", icon: "user" as const },
+const NAV_ITEMS: { label: string; path: string; icon: ReactNode; badge?: boolean }[] = [
+  { label: "Início", path: "/home", icon: <Home size={20} /> },
+  { label: "Rebanho", path: "/cows", icon: <List size={20} /> },
+  { label: "Alertas", path: "/notifications", icon: <Bell size={20} />, badge: true },
+  { label: "Mapa", path: "/map", icon: <Map size={20} /> },
+  { label: "Perfil", path: "/profile", icon: <User size={20} /> },
 ];
 
 export const BottomNav = () => {
@@ -31,7 +32,7 @@ export const BottomNav = () => {
           >
             <span className="bottom-nav__indicator" />
             <span style={{ position: "relative" }}>
-              <Icon n={item.icon} s={20} />
+              {item.icon}
               {badgeCount > 0 && (
                 <span className="bottom-nav__badge">{badgeCount > 9 ? "9+" : badgeCount}</span>
               )}

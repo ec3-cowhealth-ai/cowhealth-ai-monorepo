@@ -4,6 +4,83 @@
 
 ---
 
+## 2026-05-23 - FarmContext + Mapa Refatorado + Ícones Lucide React (JCFS)
+
+Escopo: contexto global de fazenda selecionada, refatoração completa do mapa, farm layouts estáticos, ajustes no backend de cows/dashboard, e substituição de todos os emojis por ícones vetoriais via `lucide-react`.
+
+### Adicionado
+
+**Frontend — Contexto**
+
+- `frontend/src/context/FarmContext.tsx` — contexto global de fazenda selecionada; expõe `selectedFarm` e `setSelectedFarm` para filtrar dados por fazenda em toda a aplicação
+
+**Frontend — Mapa**
+
+- `frontend/src/pages/map/farmLayouts.ts` — layouts estáticos de fazendas (posições de setores, currais e pontos de interesse); dado local para renderização do mapa sem depender de endpoint externo
+
+**Frontend — Dependências**
+
+- `frontend/package.json` — instalada `lucide-react` para substituição de emojis por ícones vetoriais consistentes
+
+### Modificado
+
+**Backend — Cows**
+
+- `backend/src/controllers/cowsController.ts` — ajustes na resposta do controller
+- `backend/src/services/cowsService.ts` — ajustes na lógica de filtragem
+
+**Backend — Dashboard**
+
+- `backend/src/controllers/dashboardController.ts` — ajustes na resposta dos KPIs
+- `backend/src/services/dashboardService.ts` — refatoração da lógica de agregação de dados por fazenda
+
+**Frontend — Dashboard**
+
+- `frontend/src/services/dashboardService.ts` — atualizado para suportar filtro por `farmId`
+- `frontend/src/features/dashboard/hooks/useDashboard.ts` — hooks atualizados para consumir `FarmContext` e passar `farmId` nas queries
+
+**Frontend — Home**
+
+- `frontend/src/pages/home/HomePage.tsx` — refatorado para usar `FarmContext`; seletor de fazenda integrado à página inicial
+
+**Frontend — Mapa**
+
+- `frontend/src/pages/map/MapPage.tsx` — refatoração completa: renderização baseada em `farmLayouts.ts`, integração com `FarmContext`, novo layout visual de setores e currais
+
+**Frontend — Cows**
+
+- `frontend/src/features/cows/pages/CowsPage.tsx` — filtro por fazenda via `FarmContext` integrado
+
+**Frontend — App**
+
+- `frontend/src/App.tsx` — `FarmContext.Provider` adicionado ao wrapper de providers globais
+
+**Frontend — Ícones (lucide-react)**
+
+Todos os emojis foram removidos do código-fonte e substituídos por componentes Lucide. **Impacto: `icon` prop de `EmptyState` e `ErrorState` mudou de `string` para `ReactNode`** — quem passar string literal nesses props receberá erro de TypeScript.
+
+- `frontend/src/components/common/EmptyState.tsx` — `icon?: string` → `icon?: ReactNode`; default `<Inbox size={40} />`
+- `frontend/src/components/common/ErrorState.tsx` — `icon?: string` → `icon?: ReactNode`; default `<AlertTriangle size={40} />`
+- `frontend/src/components/common/FormModal.tsx` — `✕` → `<X size={16} />`
+- `frontend/src/components/common/ConfirmDialog.tsx` — `✕` → `<X size={16} />`
+- `frontend/src/components/layout/Sidebar.tsx` — emojis de navegação → `Home`, `Warehouse`, `Tag`, `Beef`, `Bell`, `ShieldCheck`, `LogOut`
+- `frontend/src/components/layout/BottomNav.tsx` — custom `Icon` SVG component → `Home`, `List`, `Bell`, `Map`, `User` (Lucide)
+- `frontend/src/features/notifications/components/NotificationCard.tsx` — mapa de emojis por tipo → `AlertTriangle`, `Bell`, `Info`, `XCircle`, `Megaphone`
+- `frontend/src/pages/auth/LoginPage.tsx` — emoji `🐄` removido do título `CowHealth AI`
+- `frontend/src/features/access/pages/AccessLayout.tsx` — `🔒` → `<Lock size={40} />`
+- `frontend/src/features/access/pages/RolesPage.tsx` — `✕` → `<X />`, `🎭` → `<Users size={40} />`
+- `frontend/src/features/access/pages/PermissionsPage.tsx` — `🔑` → `<Key size={40} />`
+- `frontend/src/features/access/pages/UsersPage.tsx` — `✕` → `<X />`, `👤` → `<User size={40} />`
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — `🏡` → `<Warehouse size={40} />`
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `❌` → `<XCircle />`, `🐄` → `<Beef />`
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — `❌` → `<XCircle size={40} />`
+
+### Build Status
+
+- TypeScript frontend: zero erros (`tsc --noEmit`)
+
+---
+
 ## 2026-05-23 - Backend MQTT + Gestão de Acesso + Auth + Dashboard + Ambiente (JCFS)
 
 Escopo: endpoint de ingestão MQTT, análise heurística de saúde, telas de gestão de acesso completas, dashboard com dados reais, correção de tipos TypeScript, configuração de ambiente e seed massivo de dados.

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
+import { Key } from "lucide-react";
 import { usePermissions, useCreatePermission, useUpdatePermission, useDeletePermission } from "../hooks/usePermissions";
 import type { Permission } from "../../../types/access.ts";
 
@@ -103,7 +104,7 @@ export const PermissionsPage = () => {
       {/* Conteudo */}
       {filtered.length === 0 ? (
         <EmptyState
-          icon="🔑"
+          icon={<Key size={40} />}
           title="Nenhuma permissao encontrada"
           description={search ? "Tente outro termo de busca." : "Crie a primeira permissao do sistema."}
           action={!search ? <button className="btn btn-primary" onClick={() => setShowCreate(true)}>Criar permissao</button> : undefined}

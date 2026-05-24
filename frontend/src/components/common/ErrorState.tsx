@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface ErrorStateProps {
-  icon?: string;
+  icon?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
 }
 
 export const ErrorState = ({
-  icon = "⚠️",
+  icon = <AlertTriangle size={40} />,
   title,
   description,
   action,

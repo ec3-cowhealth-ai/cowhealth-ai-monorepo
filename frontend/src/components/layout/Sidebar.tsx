@@ -1,6 +1,15 @@
+import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
 import { useUnreadNotifications } from "@hooks/useNotifications";
+import { Home, Warehouse, Tag, Beef, Bell, ShieldCheck, LogOut } from "lucide-react";
+
+interface NavItem {
+  label: string;
+  path: string;
+  icon: ReactNode;
+  badge?: number;
+}
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -11,19 +20,19 @@ export const Sidebar = () => {
   const unreadCount = notifications?.length || 0;
   const isAdmin = user?.profile === "ADMIN";
 
-  const navItems = [
-    { label: "Home", path: "/home", icon: "🏠" },
-    { label: "Fazendas", path: "/farms", icon: "🏡" },
-    { label: "Coleiras", path: "/collars", icon: "⌚" },
-    { label: "Vacas", path: "/cows", icon: "🐄" },
+  const navItems: NavItem[] = [
+    { label: "Home", path: "/home", icon: <Home size={18} /> },
+    { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
+    { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
+    { label: "Vacas", path: "/cows", icon: <Beef size={18} /> },
     {
       label: "Notificações",
       path: "/notifications",
-      icon: "🔔",
+      icon: <Bell size={18} />,
       badge: unreadCount,
     },
     ...(isAdmin
-      ? [{ label: "Acesso", path: "/access/users", icon: "🔐" }]
+      ? [{ label: "Acesso", path: "/access/users", icon: <ShieldCheck size={18} /> }]
       : []),
   ];
 
@@ -69,7 +78,7 @@ export const Sidebar = () => {
           className="sidebar__logout"
           title="Logout"
         >
-          🚪
+          <LogOut size={18} />
         </button>
       </div>
     </nav>

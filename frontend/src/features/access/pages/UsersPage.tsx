@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
+import { X, User } from "lucide-react";
 import {
   useUsers, useUser, useCreateUser, useUpdateUser,
   useDeleteUser, useToggleActive, useAssignRole, useRemoveRole,
@@ -146,7 +147,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
       <div className="modal-card" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-card__header">
           <h2 className="modal-card__title">Papéis do usuário</h2>
-          <button className="modal-card__close" onClick={onClose}>✕</button>
+          <button className="modal-card__close" onClick={onClose}><X size={16} /></button>
         </div>
 
         <div className="modal-card__body">
@@ -174,8 +175,8 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
                         <button
                           onClick={() => remove({ userId, roleId: String(role.id) })}
                           disabled={removing}
-                          style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, lineHeight: 1, opacity: 0.7 }}
-                        >✕</button>
+                          style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, lineHeight: 1, opacity: 0.7, display: "flex" }}
+                        ><X size={12} /></button>
                       </span>
                     ))}
                   </div>
@@ -276,7 +277,7 @@ export const UsersPage = () => {
       {/* Conteúdo */}
       {filtered.length === 0 ? (
         <EmptyState
-          icon="👤"
+          icon={<User size={40} />}
           title="Nenhum usuário encontrado"
           description={search ? "Tente outro termo de busca." : "Crie o primeiro usuário do sistema."}
           action={!search ? <button className="btn btn-primary" onClick={() => setShowCreate(true)}>Criar usuário</button> : undefined}

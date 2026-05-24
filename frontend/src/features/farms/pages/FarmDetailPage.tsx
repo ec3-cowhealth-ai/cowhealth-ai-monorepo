@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
+import { XCircle, Beef } from "lucide-react";
 import { cowsService } from "@services/cowsService";
 import { useFarm } from "../hooks/useFarms";
 
@@ -33,7 +34,7 @@ export const FarmDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes da Fazenda" />
-        <EmptyState icon="❌" title="Fazenda não encontrada" />
+        <EmptyState icon={<XCircle size={40} />} title="Fazenda não encontrada" />
       </div>
     );
   }
@@ -104,7 +105,7 @@ export const FarmDetailPage = () => {
           </h3>
 
           {farmCows.length === 0 ? (
-            <EmptyState icon="🐄" title="Nenhuma vaca vinculada" description="Esta fazenda não possui vacas registradas." />
+            <EmptyState icon={<Beef size={40} />} title="Nenhuma vaca vinculada" description="Esta fazenda não possui vacas registradas." />
           ) : (
             <div className="grid grid--2">
               {farmCows.map((cow) => (
