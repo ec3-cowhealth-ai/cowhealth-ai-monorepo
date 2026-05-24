@@ -5,10 +5,10 @@ export const getDashboardOverview = async (farmId?: number) => {
 
     const [
         totalCows,
-        cowsWithCollar,
-        cowsInAlert,
+        healthyCows,
+        unhealthyCows,
         totalFarms,
-        totalCollars,
+        totalActiveCollars,
         unreadNotifications,
     ] = await Promise.all([
         prisma.cow.count({ where: cowWhere }),
@@ -32,10 +32,10 @@ export const getDashboardOverview = async (farmId?: number) => {
 
     return {
         totalCows,
-        cowsWithCollar,
-        cowsInAlert,
+        healthyCows,
+        unhealthyCows,
         totalFarms,
-        totalActiveCollars: totalCollars,
+        totalActiveCollars,
         unreadNotifications,
         topFarm: topFarm
             ? { id: topFarm.id, name: topFarm.name, cowCount: topFarm._count.cows }
@@ -52,8 +52,8 @@ export const getCowsPerStatus = async (farmId?: number) => {
     });
 
     return statusGroups.map((group) => ({
-        status: group.status,
-        count:  group._count.status,
+        label: group.status,
+        value: group._count.status,
     }));
 };
 
@@ -69,8 +69,7 @@ export const getCowsPerFarm = async () => {
     });
 
     return farms.map((farm) => ({
-        id:       farm.id,
-        name:     farm.name,
-        cowCount: farm._count.cows,
+        label: farm.name,
+        value: farm._count.cows,
     }));
 };
