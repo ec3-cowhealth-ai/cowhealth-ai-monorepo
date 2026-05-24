@@ -4,6 +4,94 @@
 
 ---
 
+## 2026-05-23 - Design System Hi-Fi: 5 telas pós-login + filtro por fazenda em cascata (JCFS)
+
+Escopo: substituição completa das telas pós-login pelo Design System Hi-Fi (CowHealth AI — 5 telas · iPhone 14 Pro · Dark · PT-BR); adição de contexto global de fazenda selecionada com propagação em cascata até o Prisma; reescrita do mapa como planta interna de fazenda com piquetes/estábulos e pins de vaca em tempo real; criação de 5 layouts SVG únicos (um por fazenda).
+
+### Adicionado
+
+**Frontend — Componentes UI (`src/components/ui/`)**
+
+- `Icon.tsx` — renderizador SVG com 30+ ícones do Design System; props `{ n, s, c, sw, style }`; ícones: bell, search, home, list, alert, map, user, wifi, arrowUp, calendar, chevronLeft/Right, filter, plus, check, thermo, heart, activity, battery, logout, farm, collar
+- `StatusDot.tsx` — indicador colorido com animação `cowPulse`; tons `success | warn | danger | muted | info`
+- `Battery.tsx` — componente visual de percentual de bateria com cores por faixa (danger < 20 %, warning < 40 %, accent ≥ 40 %)
+- `CowMark.tsx` — logotipo SVG de vaca; props `{ s, primary, accent }`
+- `LineChart.tsx` — gráfico SVG nativo consumindo `SensorDailyPoint[]`; suporte a thresholds horizontais, gradiente de área, eixos X/Y automáticos, até 5 rótulos de data
+
+**Frontend — Contexto**
+
+- `src/context/FarmContext.tsx` — `FarmProvider` expondo `selectedFarm`, `setSelectedFarm`, `farms`, `isLoading`; persiste `selectedFarmId` no `localStorage`; auto-seleciona a primeira fazenda na inicialização
+
+**Frontend — Páginas novas**
+
+- `src/pages/map/farmLayouts.ts` — 5 layouts SVG de plantas de fazenda: Aurora (campos + estábulo central), São Bento (corredor + piquetes laterais), Vale Verde (formato L + lagoa), Santa Clara (grade 3×2 de piquetes), Rio Bonito (linear + mata ciliar + rio); cada layout define zonas coloridas com labels, vias e posições de pins
+- `src/pages/map/MapPage.tsx` — mapa full-bleed da fazenda selecionada: fundo topográfico SVG, polígonos de zonas com labels, pins de vaca animados por status (dados reais filtrados por fazenda), legenda de contagem, card de detalhe ao tocar pin, botão "Próxima" para ciclar entre fazendas
+- `src/pages/profile/ProfilePage.tsx` — perfil do usuário com CowMark, email, perfil, menu de acesso rápido e logout
+
+### Modificado
+
+**Frontend — Layout**
+
+- `src/components/layout/BottomNav.tsx` — migrado de 4 abas com emoji para 5 abas com `Icon` SVG (Início / Rebanho / Alertas / Mapa / Perfil); indicador Pearl Aqua `.bottom-nav__indicator` animado no item ativo; badge de não lidos em Alertas
+- `src/components/layout/AppBar.tsx` — adicionados props `subtitle`, `showBack`, `left`; back button usa `Icon` chevronLeft; slot `left` para avatar/logo personalizado
+
+**Frontend — Páginas reescritas**
+
+- `src/pages/home/HomePage.tsx` — hero card com score de saúde + barra de progresso, strip de alerta crítico, fila horizontal de vacas em atenção, grid de acesso rápido; bottom sheet para troca de fazenda; todos os dados filtrados pela fazenda selecionada
+- `src/features/cows/pages/CowsPage.tsx` — layout `cow-row` com `CowMark` + `StatusDot`; filtro por fazenda via contexto; chips de status; busca colapsável; subtitle mostra nome da fazenda
+- `src/features/cows/pages/CowDetailPage.tsx` — hero card com CowMark + status + pills de fazenda/coleira; grid de métricas; `LineChart` com tabs Temperatura / FC; notificações recentes da vaca
+- `src/features/notifications/pages/NotificationsPage.tsx` — alert cards com borda esquerda colorida por tipo; chips Todos / Não lidos; `timeAgo` em PT-BR; marcar lido ao tocar; ação "marcar tudo" no AppBar
+
+**Frontend — Rotas**
+
+- `src/routes/AppRoutes.tsx` — adicionadas rotas `/map` → `MapPage` e `/profile` → `ProfilePage`
+
+**Frontend — App**
+
+- `src/App.tsx` — envolvido com `<FarmProvider>` dentro do `QueryClientProvider`
+
+**Frontend — CSS**
+
+- `src/styles/App.css` — reescrita completa do Design System autenticado (sem bloco `:root`, que reside em `landing.css`): `bottom-nav` 5 colunas 64px com `.bottom-nav__indicator` Pearl Aqua; `app-bar` 56px com `.app-bar__titles`, `.app-bar__subtitle`, `.app-bar__action-badge`; `@keyframes cowPulse`; novas classes: `.app-content`, `.home-hero`, `.home-hero__bar`, `.home-hero__bar-fill`, `.home-stat`, `.home-section`, `.home-section__header`, `.alert-card`, `.alert-card--danger`, `.alert-card--read`, `.quick-grid`, `.quick-chip`, `.cow-row`, `.cow-row__meta`, `.cow-row__right`, `.cow-row__status`, `.filter-chips`, `.filter-chip`, `.home-empty`
+
+**Frontend — Hooks**
+
+- `src/features/dashboard/hooks/useDashboard.ts` — `useDashboardOverview(farmId?)` e `useCowsPerStatus(farmId?)` incluem `farmId` no `queryKey` e repassam ao service
+
+**Frontend — Services**
+
+- `src/services/dashboardService.ts` — `getDashboardOverview(farmId?)` e `getCowsPerStatus(farmId?)` enviam `?farmId=` quando informado
+
+**Backend — Services**
+
+- `src/services/dashboardService.ts` — `getDashboardOverview(farmId?)`: filtra `prisma.cow.count()` com `where: { farmId }`; quando `farmId` fornecido retorna a própria fazenda como `topFarm`; `getCowsPerStatus(farmId?)`: adiciona `where: { farmId }` ao `groupBy`
+- `src/services/cowsService.ts` — `getAllCows(farmId?)`: adiciona `where: farmId ? { farmId } : undefined` ao `findMany`
+
+**Backend — Controllers**
+
+- `src/controllers/dashboardController.ts` — `overview` e `cowsPerStatus` leem `request.query.farmId` e repassam como `number`
+- `src/controllers/cowsController.ts` — `listCows` lê `request.query.farmId` e repassa para `getAllCows`
+
+### Corrigido
+
+- **Dashboard exibia 160 vacas (todas as fazendas)** quando o admin acessava fazenda específica
+  Causa: backend sem suporte a `farmId`; frontend sem estado de fazenda selecionada
+  Solução: `FarmContext` + query param `?farmId=` em cascata até o Prisma
+
+- **Mapa exibia visão global multi-fazenda** em vez de planta interna
+  Causa: `MapPage` anterior usava pins fixos de localização geográfica das fazendas
+  Solução: reescrito com `farmLayouts.ts` — planta interna com zonas SVG e pins de vacas filtrados
+
+- **`isPending: toggling` declarado e nunca usado** em `UsersPage` (erro TypeScript pré-existente)
+  Solução: removido do destructuring
+
+### Build Status
+
+- TypeScript frontend: zero erros — 842 modules transformados (`npm run build`)
+- TypeScript backend: sem erros de tipo nas funções modificadas
+
+---
+
 ## 2026-05-23 - FarmContext + Mapa Refatorado + Ícones Lucide React (JCFS)
 
 Escopo: contexto global de fazenda selecionada, refatoração completa do mapa, farm layouts estáticos, ajustes no backend de cows/dashboard, e substituição de todos os emojis por ícones vetoriais via `lucide-react`.
