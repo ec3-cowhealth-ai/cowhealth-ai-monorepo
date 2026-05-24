@@ -2,8 +2,10 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
-import { XCircle } from "lucide-react";
-import { CowHead } from "@lucide/lab";
+import { XCircle, createLucideIcon } from "lucide-react";
+import { cowHead } from "@lucide/lab";
+
+const CowHead = createLucideIcon("CowHead", cowHead);
 import { cowsService } from "@services/cowsService";
 import { useFarm } from "../hooks/useFarms";
 

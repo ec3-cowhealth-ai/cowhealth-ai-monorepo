@@ -2,8 +2,10 @@ import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut } from "lucide-react";
-import { CowHead } from "@lucide/lab";
+import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut, createLucideIcon } from "lucide-react";
+import { cowHead } from "@lucide/lab";
+
+const CowHead = createLucideIcon("CowHead", cowHead);
 
 interface NavItem {
   label: string;
