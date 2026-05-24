@@ -17,6 +17,7 @@ features/auth/
 ## Padrão de Imports
 
 ### ❌ Errado (acoplamento entre features)
+
 ```tsx
 import { LoginForm } from '@features/auth/components/LoginForm';
 
@@ -24,6 +25,7 @@ export const DashboardPage = () => { ... }
 ```
 
 ### ✅ Correto (componentes compartilhados)
+
 ```tsx
 import { Button } from '@components/common/Button';
 import { LoginForm } from '@features/auth/components/LoginForm';
@@ -33,15 +35,15 @@ export const DashboardPage = () => { ... }
 
 ## Features do CowHealth AI
 
-| Feature | Responsável | Descrição |
-|---------|------------|-----------|
-| `auth/` | Angelo | Autenticação, login, registro |
-| `dashboard/` | Ian | Dashboard, gráficos, KPIs |
-| `farms/` | Jafte | Gerenciamento de fazendas |
-| `cows/` | Jafte | Gerenciamento de vacas, saúde |
-| `collars/` | Jafte | Gerenciamento de coleiras (wearables) |
-| `notifications/` | Jafte | Centro de notificações, alertas |
-| `access/` | Jafte | Controle de acesso (usuários, roles, permissões) |
+| Feature          | Responsável | Descrição                                        |
+| ---------------- | ----------- | ------------------------------------------------ |
+| `auth/`          | Angelo      | Autenticação, login, registro                    |
+| `dashboard/`     | Ian         | Dashboard, gráficos, KPIs                        |
+| `farms/`         | Jafte       | Gerenciamento de fazendas                        |
+| `cows/`          | Jafte       | Gerenciamento de vacas, saúde                    |
+| `collars/`       | Jafte       | Gerenciamento de coleiras (wearables)            |
+| `notifications/` | Jafte       | Centro de notificações, alertas                  |
+| `access/`        | Jafte       | Controle de acesso (usuários, roles, permissões) |
 
 ## Regra de Dependência (TODO[NOME])
 
@@ -61,6 +63,7 @@ export const FarmsPage = () => {
 ```
 
 Convenções:
+
 - `TODO[ANGELO]` — Autenticação/Registro
 - `TODO[IAN]` — Dashboard/Gráficos
 - `TODO[JAFTE]` — Demais features

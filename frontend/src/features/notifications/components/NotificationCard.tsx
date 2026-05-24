@@ -55,18 +55,34 @@ export const NotificationCard = ({
       onClick={handleClick}
     >
       <div style={{ display: "flex", gap: "var(--s-3)" }}>
-        <div style={{ flexShrink: 0, display: "flex", alignItems: "flex-start" }}>
+        <div
+          style={{ flexShrink: 0, display: "flex", alignItems: "flex-start" }}
+        >
           {getIcon(notification.type)}
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h4 style={{ margin: "0 0 var(--s-1) 0", fontSize: "var(--t-body)", fontWeight: 600 }}>
+          <h4
+            style={{
+              margin: "0 0 var(--s-1) 0",
+              fontSize: "var(--t-body)",
+              fontWeight: 600,
+            }}
+          >
             {notification.title}
           </h4>
-          <p style={{ margin: "0 0 var(--s-2) 0", fontSize: "var(--t-sm)", color: "var(--text-secondary)" }}>
+          <p
+            style={{
+              margin: "0 0 var(--s-2) 0",
+              fontSize: "var(--t-sm)",
+              color: "var(--text-secondary)",
+            }}
+          >
             {notification.message}
           </p>
-          <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)" }}>
+          <p
+            style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)" }}
+          >
             {getTimeAgo(notification.createdAt)}
             {notification.cowId && " • Clique para ver vaca"}
           </p>

@@ -119,11 +119,11 @@ npm run build      # Build production
 
 ## 👤 Times e Ownership
 
-| Função | Responsável |
-|--------|------------|
-| Arquitetura & Backend | Jcfs |
-| Frontend & Design | Ian |
-| QA / Validação | (a definir) |
+| Função                | Responsável |
+| --------------------- | ----------- |
+| Arquitetura & Backend | Jcfs        |
+| Frontend & Design     | Ian         |
+| QA / Validação        | (a definir) |
 
 ---
 

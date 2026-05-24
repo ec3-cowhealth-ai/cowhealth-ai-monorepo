@@ -5,6 +5,7 @@
 ## 📋 Tarefas
 
 ### ✅ Implementado
+
 - Estrutura de pastas criada
 - Tipos básicos definidos
 - Componentes esqueleto criados
@@ -14,6 +15,7 @@
 ### 🚀 TODO
 
 #### 1. KPI Cards
+
 **Arquivo:** `components/DashboardKPICard.tsx`
 
 - [ ] Estilizar card com Tailwind CSS
@@ -27,6 +29,7 @@
 - [ ] Hover effect / transições
 
 #### 2. Overview Chart
+
 **Arquivo:** `components/DashboardOverviewChart.tsx`
 
 - [ ] Instalar `recharts`:
@@ -39,6 +42,7 @@
 - [ ] Responsivo em mobile
 
 #### 3. Cows Per Status Chart
+
 **Arquivo:** `components/CowsPerStatusChart.tsx`
 
 - [ ] Implementar gráfico de pizza (PieChart)
@@ -50,6 +54,7 @@
 - [ ] Legend
 
 #### 4. Cows Per Farm Chart
+
 **Arquivo:** `components/CowsPerFarmChart.tsx`
 
 - [ ] Implementar gráfico de barras (BarChart)
@@ -58,6 +63,7 @@
 - [ ] Responsivo
 
 #### 5. DashboardPage
+
 **Arquivo:** `pages/DashboardPage.tsx`
 
 - [ ] Criar hooks para buscar dados
@@ -66,6 +72,7 @@
 - [ ] Seção de alertas recentes (últimos 5)
 
 #### 6. Hooks e Services
+
 **Criar em:** `hooks/` e `services/` ou usar globais
 
 - [ ] `useDashboardOverview()` → GET `/dashboard/overview?period=week`

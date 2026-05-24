@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { collarsService } from "@services/collarsService";
-import type { CreateCollarInput, UpdateCollarInput } from "../../../types/collars.ts";
+import type {
+  CreateCollarInput,
+  UpdateCollarInput,
+} from "../../../types/collars.ts";
 
 export const useCollars = () => {
   return useQuery({

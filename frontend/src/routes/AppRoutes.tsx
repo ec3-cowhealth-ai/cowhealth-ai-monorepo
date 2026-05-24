@@ -18,10 +18,6 @@ import {
   PermissionsPage,
 } from "@features/access";
 
-
-
-
-
 export const AppRoutes = () => (
   <BrowserRouter>
     <Routes>

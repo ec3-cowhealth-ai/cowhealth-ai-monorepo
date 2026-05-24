@@ -5,7 +5,7 @@ export const CowStatusValues = {
   ALERT: "ALERT",
 } as const;
 
-export type CowStatus = typeof CowStatusValues[keyof typeof CowStatusValues];
+export type CowStatus = (typeof CowStatusValues)[keyof typeof CowStatusValues];
 
 export interface Cow {
   id: number;
@@ -38,7 +38,7 @@ export interface CreateCowInput {
 export type UpdateCowInput = Partial<CreateCowInput>;
 
 export interface SensorDailyPoint {
-  date: string;    // formato "dd/MM" ex: "17/05" — ja vem pronto do backend
+  date: string; // formato "dd/MM" ex: "17/05" — ja vem pronto do backend
   average: number;
 }
 

@@ -1,5 +1,5 @@
 export interface SensorQueryOptions {
-    startDate?: string;
-    endDate?: string;
-    limit?: number;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
 }

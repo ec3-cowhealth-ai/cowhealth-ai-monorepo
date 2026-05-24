@@ -1,5 +1,10 @@
 import api from "../lib/api";
-import type { RoleListItem, RoleDetail, CreateRoleInput, UpdateRoleInput } from "../types/access.ts";
+import type {
+  RoleListItem,
+  RoleDetail,
+  CreateRoleInput,
+  UpdateRoleInput,
+} from "../types/access.ts";
 
 export const rolesService = {
   list: async () => {

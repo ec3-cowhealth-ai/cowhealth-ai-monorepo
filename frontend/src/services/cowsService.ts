@@ -37,7 +37,7 @@ export const cowsService = {
   getHeartRateDaily: async (cowId: string, days: number = 7) => {
     const response = await api.get<HeartRateDailyPoint[]>(
       `/cows/${cowId}/heart-rate/daily`,
-      { params: { days } }
+      { params: { days } },
     );
     return response.data;
   },
@@ -45,7 +45,7 @@ export const cowsService = {
   getTemperatureDaily: async (cowId: string, days: number = 7) => {
     const response = await api.get<TemperatureDailyPoint[]>(
       `/cows/${cowId}/temperature/daily`,
-      { params: { days } }
+      { params: { days } },
     );
     return response.data;
   },
@@ -53,11 +53,11 @@ export const cowsService = {
   getHeartRate: async (
     cowId: string,
     page: number = 1,
-    pageSize: number = 100
+    pageSize: number = 100,
   ) => {
     const response = await api.get<SensorPage<HeartRateDailyPoint>>(
       `/cows/${cowId}/heart-rate`,
-      { params: { page, pageSize } }
+      { params: { page, pageSize } },
     );
     return response.data;
   },
@@ -65,11 +65,11 @@ export const cowsService = {
   getTemperature: async (
     cowId: string,
     page: number = 1,
-    pageSize: number = 100
+    pageSize: number = 100,
   ) => {
     const response = await api.get<SensorPage<TemperatureDailyPoint>>(
       `/cows/${cowId}/temperature`,
-      { params: { page, pageSize } }
+      { params: { page, pageSize } },
     );
     return response.data;
   },
@@ -81,7 +81,7 @@ export const cowsService = {
     const response = await api.post<{ filename: string }>(
       `/cows/${cowId}/photos`,
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return response.data;
   },

@@ -16,8 +16,23 @@ interface StatusDotProps {
 export const StatusDot = ({ tone = "success", pulse }: StatusDotProps) => {
   const color = TONE_COLORS[tone];
   return (
-    <span style={{ position: "relative", display: "inline-block", width: 8, height: 8, flexShrink: 0 }}>
-      <span style={{ position: "absolute", inset: 0, borderRadius: 99, background: color }} />
+    <span
+      style={{
+        position: "relative",
+        display: "inline-block",
+        width: 8,
+        height: 8,
+        flexShrink: 0,
+      }}
+    >
+      <span
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: 99,
+          background: color,
+        }}
+      />
       {pulse && (
         <span
           style={{

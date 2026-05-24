@@ -25,7 +25,9 @@ export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "unread"],
     queryFn: async () => {
-      const response = await api.get<Notification[]>("/notifications?read=false");
+      const response = await api.get<Notification[]>(
+        "/notifications?read=false",
+      );
       return response.data;
     },
   });

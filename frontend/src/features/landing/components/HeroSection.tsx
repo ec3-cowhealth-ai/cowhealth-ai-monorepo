@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   IcBroadcast,
   IcHeartPulse,
@@ -7,12 +7,12 @@ import {
   IcAlertTriangle,
   IcArrowRight,
   IcPlay,
-} from '@components/icons/LandingIcons';
+} from "@components/icons/LandingIcons";
 
 interface HeroSectionProps {
   onCtaClick?: () => void;
   onLearnMoreClick?: () => void;
-  visualKind?: 'collar' | 'cow' | 'dashboard';
+  visualKind?: "collar" | "cow" | "dashboard";
 }
 
 /**
@@ -29,15 +29,15 @@ interface HeroSectionProps {
 export const HeroSection: React.FC<HeroSectionProps> = ({
   onCtaClick,
   onLearnMoreClick,
-  visualKind = 'collar',
+  visualKind = "collar",
 }) => {
   return (
     <section className="section hero">
       <div className="eyebrow">PLATAFORMA DE PECUÁRIA INTELIGENTE</div>
 
       <h1 className="hero-title">
-        Monitore a saúde do{' '}
-        <span className="accent">seu rebanho</span> em tempo real
+        Monitore a saúde do <span className="accent">seu rebanho</span> em tempo
+        real
       </h1>
 
       <p className="hero-sub">
@@ -51,11 +51,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* CTAs */}
       <div className="cta-stack">
-        <button
-          className="btn btn-primary"
-          type="button"
-          onClick={onCtaClick}
-        >
+        <button className="btn btn-primary" type="button" onClick={onCtaClick}>
           Entrar na minha conta
           <span className="ic">
             <IcArrowRight size={18} strokeWidth={2} />
@@ -81,12 +77,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
  * HeroVisual — Three variants: collar (animated, with ECG wave), cow (silhouette), dashboard (mini preview)
  */
 interface HeroVisualProps {
-  kind: 'collar' | 'cow' | 'dashboard';
+  kind: "collar" | "cow" | "dashboard";
 }
 
 const HeroVisual: React.FC<HeroVisualProps> = ({ kind }) => {
-  if (kind === 'cow') return <HeroVisualCow />;
-  if (kind === 'dashboard') return <HeroVisualDashboard />;
+  if (kind === "cow") return <HeroVisualCow />;
+  if (kind === "dashboard") return <HeroVisualDashboard />;
   return <HeroVisualCollar />;
 };
 
@@ -148,12 +144,12 @@ const HeroVisualCollar: React.FC = () => {
         viewBox="0 0 360 40"
         preserveAspectRatio="none"
         style={{
-          position: 'relative',
+          position: "relative",
           zIndex: 1,
-          width: '100%',
+          width: "100%",
           height: 36,
           marginTop: -8,
-          display: 'block',
+          display: "block",
         }}
         aria-hidden="true"
       >
@@ -192,7 +188,7 @@ const HeroVisualCow: React.FC = () => {
           width="220"
           height="180"
           viewBox="0 0 220 180"
-          style={{ position: 'relative', zIndex: 2 }}
+          style={{ position: "relative", zIndex: 2 }}
           aria-hidden="true"
         >
           <defs>
@@ -247,18 +243,35 @@ const HeroVisualCow: React.FC = () => {
             strokeWidth="3.5"
             strokeLinecap="round"
           />
-          <circle cx="68" cy="98" r="6" fill="#339989" stroke="#7DE2D1" strokeWidth="1.4" />
+          <circle
+            cx="68"
+            cy="98"
+            r="6"
+            fill="#339989"
+            stroke="#7DE2D1"
+            strokeWidth="1.4"
+          />
           <circle cx="68" cy="98" r="2.2" fill="#7DE2D1" />
         </svg>
 
         {/* Pulse rings for cow visual */}
         <span
           className="ring r1"
-          style={{ width: 130, height: 130, left: 'calc(50% - 85px)', top: '20px' }}
+          style={{
+            width: 130,
+            height: 130,
+            left: "calc(50% - 85px)",
+            top: "20px",
+          }}
         />
         <span
           className="ring r2"
-          style={{ width: 130, height: 130, left: 'calc(50% - 85px)', top: '20px' }}
+          style={{
+            width: 130,
+            height: 130,
+            left: "calc(50% - 85px)",
+            top: "20px",
+          }}
         />
 
         {/* Floating vitals */}
@@ -287,83 +300,106 @@ const HeroVisualCow: React.FC = () => {
  */
 const HeroVisualDashboard: React.FC = () => {
   return (
-    <div className="hero-viz" style={{ padding: '24px 16px' }}>
+    <div className="hero-viz" style={{ padding: "24px 16px" }}>
       <div className="hero-viz-grid" />
 
       <div
         style={{
-          position: 'relative',
+          position: "relative",
           zIndex: 1,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           gap: 10,
         }}
       >
         {/* Mini dashboard card */}
         <div
           style={{
-            background: 'rgba(11,13,13,0.55)',
-            border: '1px solid rgba(255, 250, 251, 0.12)',
+            background: "rgba(11,13,13,0.55)",
+            border: "1px solid rgba(255, 250, 251, 0.12)",
             borderRadius: 12,
             padding: 14,
-            boxShadow: '0 14px 30px rgba(0,0,0,0.45)',
+            boxShadow: "0 14px 30px rgba(0,0,0,0.45)",
           }}
         >
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 10,
+            }}
+          >
             <div
               style={{
-                fontFamily: 'var(--font-mono)',
+                fontFamily: "var(--font-mono)",
                 fontSize: 10,
                 fontWeight: 600,
-                letterSpacing: '0.16em',
-                color: 'rgba(255, 250, 251, 0.42)',
-                textTransform: 'uppercase',
+                letterSpacing: "0.16em",
+                color: "rgba(255, 250, 251, 0.42)",
+                textTransform: "uppercase",
               }}
             >
               Rebanho · 234 cab.
             </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: '#7DE2D1' }}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                fontWeight: 600,
+                color: "#7DE2D1",
+              }}
+            >
               <span className="pulse-dot" />
               AO VIVO
             </span>
           </div>
 
           {/* Stats grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3,1fr)",
+              gap: 8,
+            }}
+          >
             {[
-              { label: 'Saudáveis', value: '218', color: '#7DE2D1' },
-              { label: 'Atenção', value: '14', color: '#E8C66B' },
-              { label: 'Crítico', value: '2', color: '#E87C5C' },
+              { label: "Saudáveis", value: "218", color: "#7DE2D1" },
+              { label: "Atenção", value: "14", color: "#E8C66B" },
+              { label: "Crítico", value: "2", color: "#E87C5C" },
             ].map((stat) => (
               <div
                 key={stat.label}
                 style={{
-                  background: 'rgba(0,0,0,0.35)',
+                  background: "rgba(0,0,0,0.35)",
                   borderRadius: 8,
-                  padding: '8px 10px',
-                  border: '1px solid rgba(255, 250, 251, 0.06)',
+                  padding: "8px 10px",
+                  border: "1px solid rgba(255, 250, 251, 0.06)",
                 }}
               >
                 <div
                   style={{
-                    fontFamily: 'var(--font-mono)',
+                    fontFamily: "var(--font-mono)",
                     fontSize: 9,
                     fontWeight: 600,
-                    letterSpacing: '0.12em',
-                    color: 'rgba(255, 250, 251, 0.42)',
-                    textTransform: 'uppercase',
+                    letterSpacing: "0.12em",
+                    color: "rgba(255, 250, 251, 0.42)",
+                    textTransform: "uppercase",
                   }}
                 >
                   {stat.label}
                 </div>
                 <div
                   style={{
-                    fontFamily: 'var(--font-display)',
+                    fontFamily: "var(--font-display)",
                     fontSize: 22,
                     fontWeight: 700,
                     color: stat.color,
-                    fontVariantNumeric: 'tabular-nums',
+                    fontVariantNumeric: "tabular-nums",
                     lineHeight: 1,
                   }}
                 >
@@ -377,7 +413,12 @@ const HeroVisualDashboard: React.FC = () => {
           <svg
             viewBox="0 0 280 60"
             preserveAspectRatio="none"
-            style={{ width: '100%', height: 50, marginTop: 12, display: 'block' }}
+            style={{
+              width: "100%",
+              height: 50,
+              marginTop: 12,
+              display: "block",
+            }}
             aria-hidden="true"
           >
             <defs>

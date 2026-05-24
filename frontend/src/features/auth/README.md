@@ -5,6 +5,7 @@
 ## 📋 Tarefas
 
 ### ✅ Implementado
+
 - Estrutura de pastas criada
 - Tipos básicos definidos
 - Componentes esqueleto criados
@@ -12,6 +13,7 @@
 ### 🚀 TODO
 
 #### 1. LoginForm Component
+
 **Arquivo:** `components/LoginForm.tsx`
 
 - [ ] Implementar formulário com `react-hook-form`
@@ -25,6 +27,7 @@
 - [ ] Loading state durante envio
 
 #### 2. RegisterForm Component
+
 **Arquivo:** `components/RegisterForm.tsx`
 
 - [ ] Implementar formulário com `react-hook-form` + `Zod`
@@ -40,6 +43,7 @@
 - [ ] Validações de força de senha visual
 
 #### 3. Hooks
+
 **Arquivo:** `@hooks/useAuth.ts`
 
 - [ ] Validar `useLogin()` — já existe
@@ -48,17 +52,20 @@
 - [ ] Validar `useMe()` — já existe
 
 #### 4. Services
+
 **Considerar criar:** `features/auth/services/authService.ts`
 
 - [ ] Mover ou criar `registerService()` se não existir
 
 #### 5. Tipos
+
 **Arquivo:** `types/index.ts`
 
 - [ ] Expandir com tipos de erro
 - [ ] Adicionar tipos de resposta do servidor
 
 #### 6. Testes (Opcional)
+
 - [ ] Testes unitários para validação de formulário
 - [ ] Teste de submissão com sucesso/erro
 
