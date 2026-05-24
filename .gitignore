@@ -164,7 +164,7 @@ vite.config.ts.timestamp-*
 .env
 docs/jcfs_tests/*
 .claude/*
-!.claude/SKILL.md
+.claude/SKILL.md
 .claude/skill/*
 setup.ps1
 */frontendDev_JCFS/*
