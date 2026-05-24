@@ -44,11 +44,11 @@ const ACTIVE_COLLAR_IDS: string[] = [
 // Dados de fazendas
 
 const farmData = [
-  { name: "Fazenda Aurora",          cnpj: "11.111.111/0001-01", city: "Curitiba",        state: "PR", phone: "(41) 99000-0001", email: "aurora@cowhealth.com" },
-  { name: "Fazenda São Bento",       cnpj: "22.222.222/0001-02", city: "Londrina",        state: "PR", phone: "(43) 99000-0002", email: "saobento@cowhealth.com" },
-  { name: "Fazenda Boa Esperanca",   cnpj: "33.333.333/0001-03", city: "Maringa",         state: "PR", phone: "(44) 99000-0003", email: "boaesperanca@cowhealth.com" },
-  { name: "Fazenda Santa Clara",     cnpj: "44.444.444/0001-04", city: "Ponta Grossa",   state: "PR", phone: "(42) 99000-0004", email: "santaclara@cowhealth.com" },
-  { name: "Fazenda Vale Verde",      cnpj: "55.555.555/0001-05", city: "Cascavel",        state: "PR", phone: "(45) 99000-0005", email: "valeverde@cowhealth.com" },
+  { name: "Fazenda Aurora",        cnpj: "11.111.111/0001-01", city: "Curitiba",      state: "PR", phone: "(41) 99000-0001", email: "aurora@cowhealth.com",       latitude: -23.401850, longitude: -51.124920 },
+  { name: "Fazenda Sao Bento",     cnpj: "22.222.222/0001-02", city: "Londrina",      state: "PR", phone: "(43) 99000-0002", email: "saobento@cowhealth.com",     latitude: -19.829420, longitude: -47.867680 },
+  { name: "Fazenda Boa Esperanca", cnpj: "33.333.333/0001-03", city: "Maringa",       state: "PR", phone: "(44) 99000-0003", email: "boaesperanca@cowhealth.com", latitude: -16.765300, longitude: -49.072400 },
+  { name: "Fazenda Santa Clara",   cnpj: "44.444.444/0001-04", city: "Ponta Grossa",  state: "PR", phone: "(42) 99000-0004", email: "santaclara@cowhealth.com",   latitude: -20.603800, longitude: -48.628600 },
+  { name: "Fazenda Vale Verde",    cnpj: "55.555.555/0001-05", city: "Cascavel",      state: "PR", phone: "(45) 99000-0005", email: "valeverde@cowhealth.com",    latitude: -15.739500, longitude: -56.048200 },
 ];
 
 // Distribuição de status das vacas
