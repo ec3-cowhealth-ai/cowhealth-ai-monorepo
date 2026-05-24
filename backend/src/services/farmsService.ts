@@ -13,6 +13,8 @@ export const getAllFarms = async () => {
             state:     true,
             phone:     true,
             email:     true,
+            latitude:  true,
+            longitude: true,
             createdAt: true,
             _count: { select: { cows: true } },
         },
@@ -32,6 +34,8 @@ export const getFarmById = async (farmId: number) => {
             state:     true,
             phone:     true,
             email:     true,
+            latitude:  true,
+            longitude: true,
             createdAt: true,
             updatedAt: true,
             cows: {
@@ -56,7 +60,16 @@ export const createFarm = async (data: CreateFarmInput) => {
 
     return prisma.farm.create({
         data,
-        select: { id: true, name: true, cnpj: true, city: true, state: true, createdAt: true },
+        select: {
+            id:        true,
+            name:      true,
+            cnpj:      true,
+            city:      true,
+            state:     true,
+            latitude:  true,
+            longitude: true,
+            createdAt: true,
+        },
     });
 };
 
@@ -71,7 +84,16 @@ export const updateFarm = async (farmId: number, data: UpdateFarmInput) => {
     return prisma.farm.update({
         where: { id: farmId },
         data,
-        select: { id: true, name: true, cnpj: true, city: true, state: true, updatedAt: true },
+        select: {
+            id:        true,
+            name:      true,
+            cnpj:      true,
+            city:      true,
+            state:     true,
+            latitude:  true,
+            longitude: true,
+            updatedAt: true,
+        },
     });
 };
 
