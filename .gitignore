@@ -168,4 +168,5 @@ docs/jcfs_tests/*
 .claude/skill/*
 setup.ps1
 */frontendDev_JCFS/*
+docs/reviews/*
 
