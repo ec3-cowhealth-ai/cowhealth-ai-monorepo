@@ -1,5 +1,5 @@
 export interface Farm {
-  id: string;
+  id: number;
   name: string;
   cnpj: string;
   address: string;
@@ -7,6 +7,8 @@ export interface Farm {
   state: string;
   phone: string;
   email: string;
+  latitude?: number;
+  longitude?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +23,8 @@ export interface CreateFarmInput {
   state: string;
   phone: string;
   email: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type UpdateFarmInput = Partial<CreateFarmInput>;
