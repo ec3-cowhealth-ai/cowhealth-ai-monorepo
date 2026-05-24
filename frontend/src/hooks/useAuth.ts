@@ -46,7 +46,7 @@ export const useLogout = () => {
     const logout = () => {
         localStorage.removeItem("token");
         queryClient.clear();
-        navigate("/login");
+        navigate("/");
     };
 
     return { logout };

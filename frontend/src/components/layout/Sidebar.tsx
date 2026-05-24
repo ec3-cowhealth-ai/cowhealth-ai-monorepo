@@ -39,7 +39,7 @@ export const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   const isActive = (path: string) => location.pathname.startsWith(path);
