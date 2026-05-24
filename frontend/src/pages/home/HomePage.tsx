@@ -1,348 +1,230 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { useMe } from "@hooks/useAuth";
+import { useUnreadNotifications } from "@hooks/useNotifications";
+import { useDashboardOverview } from "@features/dashboard/hooks/useDashboard";
+import { useCows } from "@features/cows/hooks/useCows";
 import { AppBar } from "@components/layout";
-import { LoadingSpinner, StatusBadge } from "@components/common";
-import { cowsService } from "@services/cowsService";
-import type { Cow } from "../../types/cows";
+import { Bell, AlertTriangle, ChevronRight, Check, List, Map, Warehouse } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
+import { StatusDot } from "@components/ui/StatusDot";
+import { useFarmContext } from "../../context/FarmContext";
 import { CowStatusValues } from "../../types/cows";
+import type { Cow } from "../../types/cows";
+import type { Farm } from "../../types/farms";
+
+const greeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return "Bom dia";
+  if (h < 18) return "Boa tarde";
+  return "Boa noite";
+};
+
+const statusTone = (s: string) => {
+  if (s === CowStatusValues.ALERT) return "danger" as const;
+  if (s === CowStatusValues.HEAT_STRESS) return "warn" as const;
+  if (s === CowStatusValues.CALVING) return "info" as const;
+  return "success" as const;
+};
 
 export const HomePage = () => {
   const navigate = useNavigate();
   const { data: user } = useMe();
+  const { selectedFarm, setSelectedFarm, farms } = useFarmContext();
+  const [showFarmPicker, setShowFarmPicker] = useState(false);
 
-  // Get all cows
-  const { data: cows, isLoading: cowsLoading } = useQuery({
-    queryKey: ["cows"],
-    queryFn: () => cowsService.list(),
-  });
+  const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
+  const { data: overview } = useDashboardOverview(farmId);
+  const { data: cows } = useCows({ farmId });
+  const { data: unread } = useUnreadNotifications();
 
-  if (cowsLoading) {
-    return (
-      <div className="app-page">
-        <AppBar title="Home" onBack={undefined} />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
-          <LoadingSpinner />
-        </div>
-      </div>
-    );
-  }
+  const unreadCount = unread?.length || 0;
+  const total = overview?.totalCows ?? cows?.length ?? 0;
+  const alertCount = overview?.cowsInAlert ?? 0;
+  const healthyCount = cows?.filter((c: Cow) => c.status === CowStatusValues.HEALTHY).length ?? 0;
+  const healthPct = total > 0 ? Math.round((healthyCount / total) * 100) : 0;
 
-  const greeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Bom dia";
-    if (hour < 18) return "Boa tarde";
-    return "Boa noite";
-  };
-
-  // Calculate herd status
-  const herdStatus = {
-    healthy: cows?.filter((c: Cow) => c.status === CowStatusValues.HEALTHY).length || 0,
-    calving: cows?.filter((c: Cow) => c.status === CowStatusValues.CALVING).length || 0,
-    heat_stress:
-      cows?.filter((c: Cow) => c.status === CowStatusValues.HEAT_STRESS).length || 0,
-    alert: cows?.filter((c: Cow) => c.status === CowStatusValues.ALERT).length || 0,
-  };
-
-  // Get cows in attention
-  const cowsInAttention = cows
-    ?.filter(
-      (c: Cow) =>
-        c.status === CowStatusValues.ALERT || c.status === CowStatusValues.HEAT_STRESS
-    )
-    .slice(0, 3) || [];
+  const attention = cows
+    ?.filter((c: Cow) => c.status !== CowStatusValues.HEALTHY)
+    .slice(0, 6) ?? [];
 
   return (
     <div className="app-page">
-      <AppBar title="Home" onBack={undefined} />
-
-      <div className="app-page__section">
-        {/* Greeting */}
-        <div style={{ padding: "var(--s-2)" }}>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "var(--t-sm)",
-              color: "var(--text-secondary)",
-            }}
+      <AppBar
+        title={`${greeting()}, ${user?.name?.split(" ")[0] ?? ""}`}
+        subtitle={selectedFarm?.name ?? "Carregando…"}
+        left={
+          <button
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}
+            onClick={() => setShowFarmPicker(true)}
           >
-            {greeting()},
-          </p>
-          <h2
-            style={{
-              margin: "var(--s-1) 0 0 0",
-              fontSize: "var(--t-h1)",
-              color: "var(--text-primary)",
-            }}
+            <CowHead size={32} />
+          </button>
+        }
+        actions={
+          <button
+            className="app-bar__action"
+            onClick={() => navigate("/notifications")}
+            style={{ position: "relative" }}
           >
-            {user?.name}
-          </h2>
-        </div>
+            <Bell size={22} />
+            {unreadCount > 0 && (
+              <span className="app-bar__action-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
+            )}
+          </button>
+        }
+      />
 
-        {/* Herd Status */}
+      {/* Farm picker modal */}
+      {showFarmPicker && (
         <div
-          className="card"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "var(--s-3)",
+            position: "fixed", inset: 0, zIndex: 200,
+            background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "flex-end",
           }}
+          onClick={() => setShowFarmPicker(false)}
         >
-          <div>
-            <p
-              style={{
-                margin: "0 0 var(--s-1) 0",
-                fontSize: "var(--t-sm)",
-                color: "var(--text-secondary)",
-              }}
-            >
-              Saudáveis
-            </p>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--success)",
-              }}
-            >
-              {herdStatus.healthy}
-            </p>
-          </div>
-          <div>
-            <p
-              style={{
-                margin: "0 0 var(--s-1) 0",
-                fontSize: "var(--t-sm)",
-                color: "var(--text-secondary)",
-              }}
-            >
-              Em Parto
-            </p>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--info)",
-              }}
-            >
-              {herdStatus.calving}
-            </p>
-          </div>
-          <div>
-            <p
-              style={{
-                margin: "0 0 var(--s-1) 0",
-                fontSize: "var(--t-sm)",
-                color: "var(--text-secondary)",
-              }}
-            >
-              Estresse Térmico
-            </p>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--warning)",
-              }}
-            >
-              {herdStatus.heat_stress}
-            </p>
-          </div>
-          <div>
-            <p
-              style={{
-                margin: "0 0 var(--s-1) 0",
-                fontSize: "var(--t-sm)",
-                color: "var(--text-secondary)",
-              }}
-            >
-              Alertas
-            </p>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "28px",
-                fontWeight: 700,
-                color: "var(--danger)",
-              }}
-            >
-              {herdStatus.alert}
-            </p>
-          </div>
-        </div>
-
-        {/* Cows in Attention */}
-        {cowsInAttention.length > 0 && (
-          <>
-            <div>
-              <h3
-                style={{
-                  margin: "var(--s-4) 0 var(--s-3) 0",
-                  fontSize: "var(--t-h2)",
-                  fontWeight: 700,
-                }}
-              >
-                Vacas em Atenção
-              </h3>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                  gap: "var(--s-3)",
-                }}
-              >
-                {cowsInAttention.map((cow: Cow) => (
-                  <div
-                    key={cow.id}
-                    className="card card--clickable"
-                    onClick={() => navigate(`/cows/${cow.id}`)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <p
-                      style={{
-                        margin: "0 0 var(--s-2) 0",
-                        fontSize: "var(--t-sm)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {cow.tag}
-                    </p>
-                    <StatusBadge
-                      tone={
-                        cow.status === CowStatusValues.ALERT ? "danger" : "warning"
-                      }
-                    >
-                      {cow.status}
-                    </StatusBadge>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Quick Access */}
-        <div>
-          <h3
-            style={{
-              margin: "var(--s-4) 0 var(--s-3) 0",
-              fontSize: "var(--t-h2)",
-              fontWeight: 700,
-            }}
-          >
-            Acesso Rápido
-          </h3>
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "var(--s-3)",
+              width: "100%", background: "var(--bg-elev-1)",
+              borderRadius: "20px 20px 0 0", padding: "20px 16px 32px",
+              border: "1px solid var(--border)",
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => navigate("/farms")}
-              className="card card--clickable"
-              style={{
-                border: "none",
-                cursor: "pointer",
-                padding: "var(--s-4)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: "32px", marginBottom: "var(--s-2)" }}>
-                🏡
-              </div>
-              <p
+            <p style={{ margin: "0 0 16px 0", fontWeight: 700, fontSize: 15 }}>Trocar fazenda</p>
+            {farms.map((farm: Farm) => (
+              <button
+                key={farm.id}
+                onClick={() => { setSelectedFarm(farm); setShowFarmPicker(false); }}
                 style={{
-                  margin: 0,
-                  fontSize: "var(--t-body)",
-                  fontWeight: 600,
+                  display: "flex", alignItems: "center", gap: 12, width: "100%",
+                  padding: "12px 8px", background: "transparent", border: "none",
+                  borderBottom: "1px solid var(--border-subtle)", cursor: "pointer",
+                  color: "var(--text-primary)",
                 }}
               >
-                Fazendas
-              </p>
-            </button>
+                <CowHead
+                  size={24}
+                  color={farm.id === selectedFarm?.id ? "var(--verdigris)" : "var(--text-muted)"}
+                />
+                <span style={{ flex: 1, fontSize: 14, fontWeight: farm.id === selectedFarm?.id ? 700 : 400 }}>
+                  {farm.name}
+                </span>
+                {farm.id === selectedFarm?.id && <Check size={16} color="var(--verdigris)" />}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-            <button
-              onClick={() => navigate("/collars")}
-              className="card card--clickable"
-              style={{
-                border: "none",
-                cursor: "pointer",
-                padding: "var(--s-4)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: "32px", marginBottom: "var(--s-2)" }}>
-                ⌚
-              </div>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: "var(--t-body)",
-                  fontWeight: 600,
-                }}
-              >
-                Coleiras
-              </p>
-            </button>
+      <div className="app-content">
+        {/* Hero */}
+        <div className="home-hero">
+          <div className="home-hero__left">
+            <p className="home-hero__label">Saúde do Rebanho</p>
+            <p className="home-hero__score">
+              {healthPct}<span style={{ fontSize: 20, fontWeight: 400 }}>%</span>
+            </p>
+            <div className="home-hero__bar">
+              <div className="home-hero__bar-fill" style={{ width: `${healthPct}%` }} />
+            </div>
+          </div>
+          <div className="home-hero__stats">
+            <div className="home-stat">
+              <span className="home-stat__value" style={{ color: "var(--success)" }}>{healthyCount}</span>
+              <span className="home-stat__label">Saudáveis</span>
+            </div>
+            <div className="home-stat">
+              <span className="home-stat__value" style={{ color: "var(--danger)" }}>{alertCount}</span>
+              <span className="home-stat__label">Alertas</span>
+            </div>
+            <div className="home-stat">
+              <span className="home-stat__value">{total}</span>
+              <span className="home-stat__label">Total</span>
+            </div>
+          </div>
+        </div>
 
-            <button
-              onClick={() => navigate("/cows")}
-              className="card card--clickable"
-              style={{
-                border: "none",
-                cursor: "pointer",
-                padding: "var(--s-4)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: "32px", marginBottom: "var(--s-2)" }}>
-                🐄
-              </div>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: "var(--t-body)",
-                  fontWeight: 600,
-                }}
-              >
-                Vacas
+        {/* Alerta crítico */}
+        {alertCount > 0 && (
+          <button
+            className="alert-card alert-card--danger"
+            onClick={() => navigate("/notifications")}
+            style={{ width: "100%", textAlign: "left", cursor: "pointer" }}
+          >
+            <AlertTriangle size={16} color="var(--danger)" />
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>
+                {alertCount} {alertCount === 1 ? "vaca requer" : "vacas requerem"} atenção imediata
               </p>
-            </button>
+              <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--text-muted)" }}>
+                Toque para ver os alertas
+              </p>
+            </div>
+            <ChevronRight size={14} color="var(--text-muted)" />
+          </button>
+        )}
 
-            <button
-              onClick={() => navigate("/notifications")}
-              className="card card--clickable"
-              style={{
-                border: "none",
-                cursor: "pointer",
-                padding: "var(--s-4)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: "32px", marginBottom: "var(--s-2)" }}>
-                🔔
-              </div>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: "var(--t-body)",
-                  fontWeight: 600,
-                }}
-              >
-                Notificações
-              </p>
+        {/* Vacas em atenção */}
+        {attention.length > 0 && (
+          <div className="home-section">
+            <div className="home-section__header">
+              <span className="home-section__title">Em Atenção</span>
+              <button className="home-section__link" onClick={() => navigate("/cows")}>Ver todas</button>
+            </div>
+            <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+              {attention.map((cow: Cow) => (
+                <button
+                  key={cow.id}
+                  onClick={() => navigate(`/cows/${cow.id}`)}
+                  style={{
+                    flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
+                    padding: "6px 10px", background: "var(--bg-elev-2)",
+                    border: "1px solid var(--border-subtle)", borderRadius: 20,
+                    cursor: "pointer", fontSize: 12, color: "var(--text-primary)",
+                  }}
+                >
+                  <StatusDot tone={statusTone(cow.status)} pulse={cow.status === CowStatusValues.ALERT} />
+                  {cow.tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Acesso rápido */}
+        <div className="home-section">
+          <div className="home-section__header">
+            <span className="home-section__title">Acesso Rápido</span>
+          </div>
+          <div className="quick-grid">
+            <button className="quick-chip" onClick={() => navigate("/cows")}>
+              <List size={20} color="var(--verdigris)" />
+              <span>Rebanho</span>
+            </button>
+            <button className="quick-chip" onClick={() => navigate("/map")}>
+              <Map size={20} color="var(--verdigris)" />
+              <span>Mapa</span>
+            </button>
+            <button className="quick-chip" onClick={() => navigate("/notifications")}>
+              <span style={{ position: "relative", display: "flex" }}>
+                <Bell size={20} color="var(--verdigris)" />
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: "absolute", top: -4, right: -4,
+                    background: "var(--danger)", color: "#fff", borderRadius: 99,
+                    fontSize: 9, width: 14, height: 14,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>{unreadCount}</span>
+                )}
+              </span>
+              <span>Alertas</span>
+            </button>
+            <button className="quick-chip" onClick={() => navigate("/farms")}>
+              <Warehouse size={20} color="var(--verdigris)" />
+              <span>Fazendas</span>
             </button>
           </div>
         </div>

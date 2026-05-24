@@ -7,7 +7,7 @@ import {
 
 interface Feature {
   id: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
   title: string;
   description: string;
   metadata: string;

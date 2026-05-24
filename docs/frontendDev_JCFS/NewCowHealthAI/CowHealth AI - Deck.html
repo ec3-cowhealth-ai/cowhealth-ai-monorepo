@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<title>CowHealth AI — Deck</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  :root { --slide-w: 1920px; --slide-h: 1080px; }
+  html, body { margin: 0; padding: 0; background: #0b0c0c; }
+  deck-stage { background: #0b0c0c; }
+  deck-stage > section {
+    width: var(--slide-w); height: var(--slide-h);
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    background: radial-gradient(ellipse at 30% 20%, #1a1d1d 0%, #0b0c0c 60%);
+    color: var(--text-primary, #FFFAFB);
+    font-family: var(--font-body, 'Manrope', Arial, sans-serif);
+    padding: 0 120px;
+    gap: 80px;
+    box-sizing: border-box;
+  }
+  deck-stage > section.cover {
+    grid-template-columns: 1fr;
+    background: linear-gradient(135deg, #131515 0%, #0b1716 50%, #0a1a18 100%);
+    text-align: left;
+    padding: 120px;
+  }
+  deck-stage > section.section-title {
+    grid-template-columns: 1fr;
+    background: linear-gradient(135deg, #0e2120 0%, #0b0c0c 100%);
+    text-align: left;
+    padding: 120px;
+  }
+  .slide-copy { max-width: 760px; }
+  .slide-eyebrow {
+    font-family: var(--font-mono, 'JetBrains Mono', 'Courier New', monospace);
+    font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #7DE2D1; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+  }
+  .slide-eyebrow::before { content: ''; width: 28px; height: 1px; background: #7DE2D1; display: inline-block; }
+  .slide-title {
+    font-family: var(--font-display, 'Space Grotesk', Georgia, serif);
+    font-size: 80px; font-weight: 700; line-height: 0.95; letter-spacing: -0.025em;
+    margin: 0 0 24px; color: #FFFAFB;
+  }
+  .slide-title .accent { color: #7DE2D1; }
+  .slide-sub {
+    font-size: 22px; line-height: 1.5; color: #c8cfce; margin: 0 0 32px;
+    max-width: 620px;
+  }
+  .slide-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
+  .slide-bullets li {
+    font-size: 18px; line-height: 1.5; color: #d6dcdb;
+    padding-left: 28px; position: relative;
+  }
+  .slide-bullets li::before {
+    content: ''; position: absolute; left: 0; top: 12px;
+    width: 14px; height: 2px; background: #339989;
+  }
+  .slide-bullets li b { color: #7DE2D1; font-weight: 600; }
+
+  .slide-phone {
+    transform: scale(1.05);
+    transform-origin: center center;
+    filter: drop-shadow(0 40px 80px rgba(0,0,0,0.5)) drop-shadow(0 0 1px rgba(125,226,209,0.15));
+  }
+
+  /* Cover */
+  .cover-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; height: 100%;
+  }
+  .cover-mark {
+    font-family: var(--font-mono, 'JetBrains Mono', 'Courier New', monospace);
+    font-size: 13px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: #7DE2D1; margin-bottom: 40px;
+  }
+  .cover-title {
+    font-family: var(--font-display, 'Space Grotesk', Georgia, serif);
+    font-size: 140px; font-weight: 700; line-height: 0.9; letter-spacing: -0.04em;
+    margin: 0 0 32px; color: #FFFAFB;
+  }
+  .cover-title .accent { color: #7DE2D1; display: block; }
+  .cover-sub { font-size: 26px; line-height: 1.45; color: #b9c0bf; max-width: 580px; }
+  .cover-meta {
+    display: flex; gap: 48px; margin-top: 80px;
+    font-family: var(--font-mono, 'JetBrains Mono', 'Courier New', monospace);
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #6c7574;
+  }
+  .cover-meta b { display: block; color: #FFFAFB; font-weight: 500; font-size: 16px; letter-spacing: 0.05em; margin-top: 6px; text-transform: none;}
+  .cover-stack { display: grid; gap: 32px; }
+  .cover-stack .row { display: flex; gap: 12px; }
+  .cover-stack .sw { width: 80px; height: 80px; border-radius: 14px; }
+
+  /* Section title slide */
+  .section-num {
+    font-family: var(--font-mono, 'JetBrains Mono', 'Courier New', monospace);
+    font-size: 16px; letter-spacing: 0.3em; color: #7DE2D1; margin-bottom: 32px;
+  }
+  .section-h {
+    font-family: var(--font-display, 'Space Grotesk', Georgia, serif);
+    font-size: 160px; font-weight: 700; line-height: 0.92; letter-spacing: -0.035em;
+    margin: 0 0 32px; color: #FFFAFB; max-width: 1400px;
+  }
+  .section-h .accent { color: #7DE2D1; }
+  .section-desc { font-size: 24px; color: #b9c0bf; max-width: 720px; line-height: 1.5; }
+
+  /* Closing slide */
+  .ds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; margin-top: 56px; }
+  .ds-cell h4 {
+    font-family: var(--font-mono, 'JetBrains Mono', 'Courier New', monospace);
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: #7DE2D1; margin: 0 0 16px;
+  }
+  .ds-cell p { font-size: 16px; color: #d6dcdb; line-height: 1.55; margin: 0; }
+  .ds-swatches { display: flex; gap: 6px; margin-top: 12px; }
+  .ds-sw { width: 36px; height: 36px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); }
+
+  /* Logo mark */
+  .logo-mark {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: linear-gradient(135deg, #339989 0%, #7DE2D1 100%);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 700; color: #0b0c0c; font-size: 24px;
+    letter-spacing: -0.04em;
+  }
+
+  /* Hide phone status bar's blinking cursor in static export */
+  .blink { animation: none !important; opacity: 1 !important; }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- 1 — COVER -->
+  <section class="cover" data-screen-label="01 Capa">
+    <div class="cover-grid">
+      <div>
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:48px;">
+          <span class="logo-mark">C</span>
+          <span style="font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -0.01em;">CowHealth <span style="color:#7DE2D1">AI</span></span>
+        </div>
+        <div class="cover-mark">Hi-Fi Mockups · v1.0</div>
+        <h1 class="cover-title">Saúde do rebanho<span class="accent">no bolso.</span></h1>
+        <p class="cover-sub">12 telas mobile high-fidelity para monitoramento contínuo de bovinos via coleira inteligente. Dark-first, projetado para uso em campo.</p>
+        <div class="cover-meta">
+          <div>Plataforma<b>iOS · 390×844</b></div>
+          <div>Idioma<b>PT-BR</b></div>
+          <div>Persona<b>Pecuarista · Veterinário · Gestor</b></div>
+        </div>
+      </div>
+      <div class="cover-stack" style="justify-self: end;">
+        <div class="row"><span class="sw" style="background:#131515"></span><span class="sw" style="background:#2B2C28"></span></div>
+        <div class="row" style="margin-left: 40px;"><span class="sw" style="background:#339989"></span><span class="sw" style="background:#7DE2D1"></span></div>
+        <div class="row" style="margin-left: 80px;"><span class="sw" style="background:#FFFAFB"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 — Design System summary -->
+  <section data-screen-label="02 Design System">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">02 · Design System</div>
+      <h2 class="slide-title">Sistema <span class="accent">enxuto</span>, decisões claras.</h2>
+      <p class="slide-sub">Tokens derivados da paleta Onyx para uso outdoor: alto contraste, leitura rápida e densidade de dados sem ruído visual.</p>
+      <div class="ds-grid">
+        <div class="ds-cell">
+          <h4>Cor</h4>
+          <p>Onyx base · Verdigris primária · Pearl Aqua accent.</p>
+          <div class="ds-swatches">
+            <span class="ds-sw" style="background:#131515"></span>
+            <span class="ds-sw" style="background:#2B2C28"></span>
+            <span class="ds-sw" style="background:#339989"></span>
+            <span class="ds-sw" style="background:#7DE2D1"></span>
+            <span class="ds-sw" style="background:#FFFAFB"></span>
+          </div>
+        </div>
+        <div class="ds-cell">
+          <h4>Tipografia</h4>
+          <p><b style="color:#FFFAFB">Space Grotesk</b> display<br/><b style="color:#FFFAFB">Manrope</b> body<br/><b style="color:#FFFAFB">JetBrains Mono</b> dados</p>
+        </div>
+        <div class="ds-cell">
+          <h4>Sistema</h4>
+          <p>Grid 4px · Radii 8/12/16/20<br/>App bar 56 · Tap target 48<br/>Safe area 16</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-phone" id="phone-ds">
+      <!-- placeholder, screen rendered by JSX below -->
+    </div>
+  </section>
+
+  <!-- 3 — Section: Acesso -->
+  <section class="section-title" data-screen-label="03 Acesso">
+    <div class="section-num">— Parte 01</div>
+    <h2 class="section-h">Acesso e <span class="accent">primeiro contato.</span></h2>
+    <p class="section-desc">Splash, onboarding e login. Apresentação da marca, do produto e do papel do usuário antes do dashboard.</p>
+  </section>
+
+  <!-- 4 — Splash -->
+  <section data-screen-label="04 Splash">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 01 · Splash</div>
+      <h2 class="slide-title">Boot da marca em <span class="accent">800ms</span>.</h2>
+      <p class="slide-sub">Logo monolítico sobre Onyx puro. Sincronização silenciosa em background; nenhum spinner para evitar a sensação de "esperando".</p>
+      <ul class="slide-bullets">
+        <li><b>Marca primeiro:</b> tipografia da marca em escala display</li>
+        <li><b>Sem fricção:</b> auto-transiciona para login ou home se sessão válida</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-splash"></div>
+  </section>
+
+  <!-- 5 — Onboarding -->
+  <section data-screen-label="05 Onboarding">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 02 · Onboarding</div>
+      <h2 class="slide-title">Três promessas, <span class="accent">uma pergunta.</span></h2>
+      <p class="slide-sub">Carrossel curto que apresenta o valor (alerta precoce, telemetria contínua, modo offline). Termina pedindo o papel do usuário — produtor, veterinário ou gestor.</p>
+      <ul class="slide-bullets">
+        <li><b>Stepper visual</b> com 3 cards · ilustração placeholder pronta para arte final</li>
+        <li><b>Pular sempre disponível</b> no canto superior direito</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-onboarding"></div>
+  </section>
+
+  <!-- 6 — Login -->
+  <section data-screen-label="06 Login">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 03 · Login</div>
+      <h2 class="slide-title">Entrar é uma <span class="accent">linha reta.</span></h2>
+      <p class="slide-sub">Username + senha. Chips de papel selecionam o perfil ativo (RF12). Botões alternativos abaixo: cadastrar e recuperar senha.</p>
+      <ul class="slide-bullets">
+        <li><b>Inputs 48px</b> para uso com luva</li>
+        <li><b>CTA primário</b> Verdigris · alto contraste</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-login"></div>
+  </section>
+
+  <!-- 7 — Section: Núcleo -->
+  <section class="section-title" data-screen-label="07 Núcleo">
+    <div class="section-num">— Parte 02</div>
+    <h2 class="section-h">Núcleo do <span class="accent">app.</span></h2>
+    <p class="section-desc">Dashboard, rebanho, detalhe da vaca e histórico. O caminho de 3 cliques entre o sintoma e o dado.</p>
+  </section>
+
+  <!-- 8 — Home -->
+  <section data-screen-label="08 Home">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 04 · Home / Dashboard</div>
+      <h2 class="slide-title">A fazenda <span class="accent">numa olhada.</span></h2>
+      <p class="slide-sub">KPI hero (animais saudáveis), card de alerta crítico em destaque, atalhos para rebanho e mapa, e estado do rebanho próximo ao parto.</p>
+      <ul class="slide-bullets">
+        <li><b>Alerta crítico</b> sempre acima da dobra · Pearl Aqua sobre Verdigris</li>
+        <li><b>Sincronização</b> com badge de offline e timestamp da última coleta</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-home"></div>
+  </section>
+
+  <!-- 9 — Rebanho -->
+  <section data-screen-label="09 Rebanho">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 05 · Rebanho</div>
+      <h2 class="slide-title">Lista por <span class="accent">risco.</span></h2>
+      <p class="slide-sub">Catálogo de animais ordenado pelo score de risco (RF27). Filtros por fazenda, lote e estado fisiológico (gestante, lactante, etc.).</p>
+      <ul class="slide-bullets">
+        <li><b>Score visual</b> em barra horizontal por animal</li>
+        <li><b>Busca</b> por brinco eletrônico, nome ou ID do colar</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-herd"></div>
+  </section>
+
+  <!-- 10 — Detalhe -->
+  <section data-screen-label="10 Detalhe">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 06 · Detalhe da Vaca</div>
+      <h2 class="slide-title">Da vaca ao <span class="accent">gráfico</span> em 1 toque.</h2>
+      <p class="slide-sub">Hero com foto, ID e brinco. Tabs Visão Geral / Temperatura / Tabela. Gráfico de linha com janelas 24h/7d/30d e marcadores de eventos (parto, vacina).</p>
+      <ul class="slide-bullets">
+        <li><b>Modo de coleta</b> editável (RF10A — Higher · Default · Lower)</li>
+        <li><b>Estado do colar</b>: bateria, sinal e modo no canto superior</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-cow"></div>
+  </section>
+
+  <!-- 11 — Histórico -->
+  <section data-screen-label="11 Histórico">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 07 · Histórico</div>
+      <h2 class="slide-title">Tabela <span class="accent">crua</span>, exportável.</h2>
+      <p class="slide-sub">Tabela rolável com timestamp, temperatura, atividade, ruminação e status. Indicadores semânticos (vermelho/âmbar/verde) por linha.</p>
+      <ul class="slide-bullets">
+        <li><b>Exportar CSV / JSON</b> (RF19) no header da tabela</li>
+        <li><b>Sticky header</b> e linha mais recente em destaque Pearl Aqua</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-hist"></div>
+  </section>
+
+  <!-- 12 — Section: Alertas -->
+  <section class="section-title" data-screen-label="12 Alertas">
+    <div class="section-num">— Parte 03</div>
+    <h2 class="section-h">Alertas e <span class="accent">geografia.</span></h2>
+    <p class="section-desc">A camada que reduz o tempo de resposta. Push, badge e localização do animal no piquete.</p>
+  </section>
+
+  <!-- 13 — Alertas -->
+  <section data-screen-label="13 Alertas">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 08 · Alertas</div>
+      <h2 class="slide-title">Triagem por <span class="accent">severidade.</span></h2>
+      <p class="slide-sub">Inbox cronológica agrupada por severidade. Cada card carrega ID do animal, métrica disparadora e ação primária (ver gráfico, marcar como visto).</p>
+      <ul class="slide-bullets">
+        <li><b>Crítico · Atenção · Info</b> — cores semânticas terrosas</li>
+        <li><b>Swipe</b> para arquivar; long-press abre detalhe</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-alerts"></div>
+  </section>
+
+  <!-- 14 — Mapa -->
+  <section data-screen-label="14 Mapa">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 09 · Mapa da Fazenda</div>
+      <h2 class="slide-title">Onde está cada <span class="accent">colar.</span></h2>
+      <p class="slide-sub">Mapa da fazenda com pins por animal, agrupados por piquete. Heatmap opcional para densidade. Bottom sheet com lista do que está visível.</p>
+      <ul class="slide-bullets">
+        <li><b>Pins coloridos</b> pelo score de risco</li>
+        <li><b>Geofence</b> por piquete, com alerta de saída</li>
+      </ul>
+    </div>
+    <div class="slide-phone" id="phone-map"></div>
+  </section>
+
+  <!-- 15 — Section: Conta -->
+  <section class="section-title" data-screen-label="15 Conta">
+    <div class="section-num">— Parte 04</div>
+    <h2 class="section-h">Conta e <span class="accent">estados.</span></h2>
+    <p class="section-desc">Perfil, configurações e os três estados que todo app esquece de desenhar: vazio, sincronizando e offline.</p>
+  </section>
+
+  <!-- 16 — Perfil -->
+  <section data-screen-label="16 Perfil">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 10 · Perfil</div>
+      <h2 class="slide-title">Identidade <span class="accent">profissional.</span></h2>
+      <p class="slide-sub">Cabeçalho com avatar, nome e papel (CRMV se veterinário). Lista de fazendas vinculadas e atalho para alternar entre elas.</p>
+    </div>
+    <div class="slide-phone" id="phone-profile"></div>
+  </section>
+
+  <!-- 17 — Settings -->
+  <section data-screen-label="17 Configurações">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 11 · Configurações</div>
+      <h2 class="slide-title">Controles <span class="accent">curados.</span></h2>
+      <p class="slide-sub">Notificações por severidade, modo de coleta padrão das coleiras, unidades, idioma e exportação. Sem labirintos de submenus.</p>
+    </div>
+    <div class="slide-phone" id="phone-settings"></div>
+  </section>
+
+  <!-- 18 — Estado vazio -->
+  <section data-screen-label="18 Vazio">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 12a · Estado Vazio</div>
+      <h2 class="slide-title">Vazio com <span class="accent">propósito.</span></h2>
+      <p class="slide-sub">Quando ainda não há animais cadastrados. Ilustração leve, copy direta e CTA claro: "Adicionar primeira vaca".</p>
+    </div>
+    <div class="slide-phone" id="phone-empty"></div>
+  </section>
+
+  <!-- 19 — Loading -->
+  <section data-screen-label="19 Sincronizando">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 12b · Loading</div>
+      <h2 class="slide-title">Sincronia <span class="accent">honesta.</span></h2>
+      <p class="slide-sub">Skeleton em vez de spinner. Mostra exatamente o que vai aparecer, com progresso quando há volume relevante (>3s).</p>
+    </div>
+    <div class="slide-phone" id="phone-loading"></div>
+  </section>
+
+  <!-- 20 — Erro -->
+  <section data-screen-label="20 Sem conexão">
+    <div class="slide-copy">
+      <div class="slide-eyebrow">Tela 12c · Sem conexão</div>
+      <h2 class="slide-title">Offline é um <span class="accent">primeiro caso.</span></h2>
+      <p class="slide-sub">RNFU3 + pré-parto remoto. Banner persistente, dados em cache e ação clara para tentar de novo.</p>
+    </div>
+    <div class="slide-phone" id="phone-error"></div>
+  </section>
+
+  <!-- 21 — Closing -->
+  <section class="section-title" data-screen-label="21 Próximos passos">
+    <div class="section-num">— Próximos passos</div>
+    <h2 class="section-h">Da tela ao <span class="accent">protótipo.</span></h2>
+    <p class="section-desc">Variações do Dashboard por papel · integração real do mapa · fluxo de pareamento de coleira · light mode · handoff em código.</p>
+  </section>
+
+</deck-stage>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Capa. CowHealth AI: 12 telas mobile high-fidelity para monitoramento contínuo de bovinos. Foco em uso em campo: dark-first, contraste alto e densidade de dados controlada.",
+  "Design System em uma página. Paleta Onyx, tipografia Space Grotesk + Manrope + JetBrains Mono, e fundamentos de espaçamento. Tudo derivado da paleta enviada e dos blueprints técnicos.",
+  "Parte 1 — Acesso. Vamos começar pelo primeiro contato do usuário com o app: splash, onboarding e login.",
+  "Splash. Marca em escala display sobre Onyx puro. Sincronização silenciosa em background. Sem spinner para não dar sensação de espera.",
+  "Onboarding. Carrossel curto com três promessas: alerta precoce, telemetria contínua e modo offline. Termina perguntando o papel do usuário.",
+  "Login. Username e senha com inputs de 48 pixels para uso com luva. Chips de papel selecionam o perfil ativo, atendendo o requisito funcional doze.",
+  "Parte 2 — Núcleo. Dashboard, rebanho, detalhe e histórico. Esse é o caminho crítico do app, pensado em três cliques entre o sintoma e o dado.",
+  "Home. KPI principal no topo, alerta crítico sempre acima da dobra, atalhos rápidos e visão de pré-parto. Badge de offline com timestamp da última sincronização.",
+  "Rebanho. Lista ordenada por score de risco. Filtros por fazenda, lote e estado fisiológico. Busca por brinco, nome ou ID do colar.",
+  "Detalhe da vaca. Hero com foto e identificação. Tabs Visão Geral, Temperatura e Tabela. Gráfico com janelas de tempo e marcadores de eventos como parto e vacina.",
+  "Histórico. Tabela crua e exportável em CSV ou JSON, atendendo o requisito funcional dezenove. Indicadores semânticos por linha.",
+  "Parte 3 — Alertas e geografia. A camada que reduz o tempo de resposta no campo.",
+  "Alertas. Inbox por severidade: crítico, atenção e info. Cada card tem ID do animal, métrica disparadora e ação primária. Swipe para arquivar.",
+  "Mapa. Pins por animal agrupados por piquete, coloridos pelo score de risco. Geofence por piquete dispara alerta quando o animal sai da área.",
+  "Parte 4 — Conta e estados. Fechando com perfil, configurações e os três estados que todo app esquece: vazio, sincronizando e offline.",
+  "Perfil. Avatar, nome e papel profissional. Veterinário mostra CRMV. Lista de fazendas vinculadas com troca rápida.",
+  "Configurações. Notificações por severidade, modo de coleta padrão das coleiras, unidades e idioma. Sem labirintos.",
+  "Estado vazio. Quando ainda não há animais cadastrados. Ilustração leve, copy direta e CTA claro.",
+  "Sincronizando. Skeleton em vez de spinner. Mostra a estrutura do que vai aparecer.",
+  "Sem conexão. Banner persistente, dados em cache e ação clara para tentar novamente. Atende o requisito de uso pré-parto remoto.",
+  "Próximos passos. Variações do dashboard por papel, integração real do mapa, fluxo de pareamento de coleira, light mode e handoff em código."
+]
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="deck-stage.js"></script>
+
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="screens-1.jsx"></script>
+<script type="text/babel" src="screens-2.jsx"></script>
+<script type="text/babel" src="screens-3.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const mounts = [
+  ['phone-ds',         <PhoneFrame time="08:42"><HomeScreen/></PhoneFrame>],
+  ['phone-splash',     <PhoneFrame time="08:42"><SplashScreen/></PhoneFrame>],
+  ['phone-onboarding', <PhoneFrame time="08:42"><OnboardingScreen/></PhoneFrame>],
+  ['phone-login',      <PhoneFrame time="08:42"><LoginScreen/></PhoneFrame>],
+  ['phone-home',       <PhoneFrame time="08:43"><HomeScreen/></PhoneFrame>],
+  ['phone-herd',       <PhoneFrame time="08:43"><HerdScreen/></PhoneFrame>],
+  ['phone-cow',        <PhoneFrame time="08:44"><CowDetailScreen/></PhoneFrame>],
+  ['phone-hist',       <PhoneFrame time="08:44"><HistoryScreen/></PhoneFrame>],
+  ['phone-alerts',     <PhoneFrame time="08:45"><AlertsScreen/></PhoneFrame>],
+  ['phone-map',        <PhoneFrame time="08:45"><MapScreen/></PhoneFrame>],
+  ['phone-profile',    <PhoneFrame time="08:46"><ProfileScreen/></PhoneFrame>],
+  ['phone-settings',   <PhoneFrame time="08:46"><SettingsScreen/></PhoneFrame>],
+  ['phone-empty',      <PhoneFrame time="08:47"><StateEmpty/></PhoneFrame>],
+  ['phone-loading',    <PhoneFrame time="08:47"><StateLoading/></PhoneFrame>],
+  ['phone-error',      <PhoneFrame time="08:47"><StateError/></PhoneFrame>],
+];
+mounts.forEach(([id, el]) => {
+  const node = document.getElementById(id);
+  if (node) ReactDOM.createRoot(node).render(el);
+});
+</script>
+
+</body>
+</html>

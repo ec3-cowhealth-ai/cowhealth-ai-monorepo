@@ -46,7 +46,7 @@ export const LoginPage = () => {
               color: "var(--text-primary)",
             }}
           >
-            🐄 CowHealth AI
+            CowHealth AI
           </h1>
         </div>
 

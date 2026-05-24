@@ -13,6 +13,7 @@ import collarsRoutes          from "./routes/collarsRoutes";
 import cowsRoutes             from "./routes/cowsRoutes";
 import dashboardRoutes        from "./routes/dashboardRoutes";
 import notificationsRoutes    from "./routes/notificationsRoutes";
+import mqttRoutes             from "./routes/mqttRoutes";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use("/collars",           collarsRoutes);
 app.use("/cows",              cowsRoutes);
 app.use("/dashboard",         dashboardRoutes);
 app.use("/notifications",     notificationsRoutes);
+app.use("/mqtt",              mqttRoutes);
 
 // Teste de conexão com o Banco de Dados
 app.get("/health", async (_request, response) => {

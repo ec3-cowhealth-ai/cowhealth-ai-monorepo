@@ -8,8 +8,9 @@ const MAX_PHOTOS = 3;
 
 // CRUD
 
-export const getAllCows = async () => {
+export const getAllCows = async (farmId?: number) => {
     return prisma.cow.findMany({
+        where: farmId ? { farmId } : undefined,
         select: {
             id:        true,
             tag:       true,

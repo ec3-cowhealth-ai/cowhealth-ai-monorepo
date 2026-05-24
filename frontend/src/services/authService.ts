@@ -6,3 +6,7 @@ export const loginService = (data: LoginInput) =>
 
 export const getMeService = () =>
     api.get<AuthUser>("/auth/me").then((response) => response.data);
+
+export const registerService = (data: { name: string; email: string; password: string }) =>
+    api.post<{ id: number; name: string; email: string }>("/auth/register", data)
+        .then((response) => response.data);

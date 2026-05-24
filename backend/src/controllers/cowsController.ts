@@ -43,8 +43,9 @@ export const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024
 
 // CRUD
 
-export const listCows = async (_request: Request, response: Response): Promise<void> => {
-    const cows = await getAllCows();
+export const listCows = async (request: Request, response: Response): Promise<void> => {
+    const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
+    const cows = await getAllCows(farmId);
     response.json(cows);
 };
 

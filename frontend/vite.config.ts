@@ -23,4 +23,8 @@ export default defineConfig({
       "@types": path.resolve(__dirname, "./src/types"),
     },
   },
+  server: {
+    port: 3000,
+    open: true,
+  },
 });

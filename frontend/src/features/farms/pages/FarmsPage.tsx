@@ -2,9 +2,11 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
+import { Warehouse } from "lucide-react";
 import { FarmCard } from "../components/FarmCard";
 import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
+import type { CreateFarmInput } from "../../../types/farms";
 
 export const FarmsPage = () => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ export const FarmsPage = () => {
     );
   }, [farms, search]);
 
-  const handleCreateFarm = (data: any) => {
+  const handleCreateFarm = (data: CreateFarmInput) => {
     createFarm(data, {
       onSuccess: () => setShowForm(false),
     });
@@ -64,7 +66,7 @@ export const FarmsPage = () => {
 
         {filteredFarms.length === 0 ? (
           <EmptyState
-            icon="🏡"
+            icon={<Warehouse size={40} />}
             title="Nenhuma fazenda encontrada"
             description="Crie sua primeira fazenda para começar"
             action={

@@ -1,125 +1,67 @@
-/**
- * DashboardPage
- * TODO[IAN]: Implementar página de dashboard completa
- *
- * Estrutura esperada:
- * 1. Header com período seletor (hoje, semana, mês)
- * 2. Grid de KPI cards (total de vacas, saudáveis, em risco, doentes)
- * 3. Gráfico de visão geral (tendência)
- * 4. Gráfico de vacas por status (pizza)
- * 5. Gráfico de vacas por fazenda (barra)
- * 6. Seção de alertas recentes
- *
- * Integração com backend:
- * - GET /dashboard/overview (com parâmetro ?period=week)
- * - GET /dashboard/cows-per-status
- * - GET /dashboard/cows-per-farm
- */
-
 import { AppBar } from '@components/layout';
+import { LoadingSpinner } from '@components/common';
 import {
   DashboardKPICard,
-  DashboardOverviewChart,
   CowsPerStatusChart,
   CowsPerFarmChart,
 } from '../index';
-import type { DashboardData } from '../types';
+import {
+  useDashboardOverview,
+  useCowsPerStatus,
+  useCowsPerFarm,
+} from '../hooks/useDashboard';
 
 export const DashboardPage = () => {
-  // TODO[IAN]: Implementar hooks para buscar dados:
-  // const { data: dashboardData, isLoading } = useDashboardOverview();
-  // const { data: cowsPerStatus } = useCowsPerStatus();
-  // const { data: cowsPerFarm } = useCowsPerFarm();
+  const { data: overview, isLoading: loadingOverview } = useDashboardOverview();
+  const { data: cowsPerStatus, isLoading: loadingStatus } = useCowsPerStatus();
+  const { data: cowsPerFarm, isLoading: loadingFarm } = useCowsPerFarm();
 
-  // Mock data para desenvolvimento
-  const mockDashboardData: DashboardData = {
-    totalCows: 150,
-    healthyCows: 120,
-    unhealthyCows: 30,
-    totalFarms: 5,
-    cowsPerStatus: [
-      { label: 'Saudáveis', value: 120 },
-      { label: 'Em Risco', value: 20 },
-      { label: 'Doentes', value: 10 },
-    ],
-    cowsPerFarm: [
-      { label: 'Fazenda A', value: 50 },
-      { label: 'Fazenda B', value: 40 },
-      { label: 'Fazenda C', value: 30 },
-      { label: 'Fazenda D', value: 20 },
-      { label: 'Fazenda E', value: 10 },
-    ],
-  };
+  if (loadingOverview || loadingStatus || loadingFarm) {
+    return (
+      <div className="app-page">
+        <AppBar title="Dashboard" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
+  }
 
-  // TODO[IAN]: Implementar loading state
-  // if (isLoading) return <LoadingSpinner />;
+  const statusData = (cowsPerStatus ?? []).map((item) => ({
+    label: item.status,
+    value: item.count,
+  }));
+
+  const farmData = (cowsPerFarm ?? []).map((item) => ({
+    label: item.name,
+    value: item.cowCount,
+  }));
 
   return (
     <div className="app-page">
       <AppBar title="Dashboard" />
 
-      <section style={{ padding: 'var(--s-4)' }}>
-        {/* TODO[IAN]: Adicionar seletor de período */}
-        <div className="period-selector">
-          {/* <button>Hoje</button>
-          <button>Semana</button>
-          <button>Mês</button> */}
-        </div>
-
-        {/* KPI Cards */}
-        {/* TODO[IAN]: Implementar grid responsivo com KPI cards */}
-        <div className="kpi-grid">
+      <section style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
+        <div className="grid grid--4">
+          <DashboardKPICard title="Total de Vacas" value={overview?.totalCows ?? 0} />
+          <DashboardKPICard title="Com Colar" value={overview?.cowsWithCollar ?? 0} />
           <DashboardKPICard
-            title="Total de Vacas"
-            value={mockDashboardData.totalCows}
-            trend="up"
-            trendPercent={5}
+            title="Em Alerta"
+            value={overview?.cowsInAlert ?? 0}
+            trend={overview && overview.cowsInAlert > 0 ? 'down' : 'neutral'}
           />
+          <DashboardKPICard title="Fazendas Ativas" value={overview?.totalFarms ?? 0} />
+          <DashboardKPICard title="Colares Ativos" value={overview?.totalActiveCollars ?? 0} />
           <DashboardKPICard
-            title="Vacas Saudáveis"
-            value={mockDashboardData.healthyCows}
-            unit="%"
-            trend="up"
-            trendPercent={8}
-          />
-          <DashboardKPICard
-            title="Em Risco"
-            value={mockDashboardData.unhealthyCows}
-            trend="down"
-            trendPercent={3}
-          />
-          <DashboardKPICard
-            title="Fazendas Ativas"
-            value={mockDashboardData.totalFarms}
-            trend="neutral"
+            title="Alertas Nao Lidos"
+            value={overview?.unreadNotifications ?? 0}
+            trend={overview && overview.unreadNotifications > 0 ? 'down' : 'neutral'}
           />
         </div>
 
-        {/* Charts */}
-        <div className="charts-grid">
-          {/* TODO[IAN]: Implementar grid com 2-3 colunas dependendo de mobile/desktop */}
-          <div className="chart-wrapper">
-            <DashboardOverviewChart
-              data={mockDashboardData.cowsPerStatus}
-              title="Visão Geral — Últimos 7 dias"
-              period="week"
-            />
-          </div>
-
-          <div className="chart-wrapper">
-            <CowsPerStatusChart data={mockDashboardData.cowsPerStatus} />
-          </div>
-
-          <div className="chart-wrapper">
-            <CowsPerFarmChart data={mockDashboardData.cowsPerFarm} />
-          </div>
-        </div>
-
-        {/* Recent Alerts */}
-        {/* TODO[IAN]: Implementar seção de alertas recentes */}
-        <div className="recent-alerts">
-          <h3>Alertas Recentes</h3>
-          <p>Nenhum alerta no momento</p>
+        <div className="grid grid--2">
+          <CowsPerStatusChart data={statusData} />
+          <CowsPerFarmChart data={farmData} />
         </div>
       </section>
     </div>
