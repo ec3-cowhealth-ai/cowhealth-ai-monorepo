@@ -7,6 +7,11 @@ import { classifyHealth, buildHealthSnapshot } from "./cowHealthAnalyzer";
 interface MqttPayload {
   device_id: string;
   datetime: string;
+  location?: {
+    lat: number;
+    lng: number;
+    accuracy_m?: number;
+  };
   sensors: {
     max30102?: { heart_rate: number };
     mlx?: { object_temp: number };
@@ -168,6 +173,13 @@ export const ingestMqttPayload = async (body: unknown) => {
     throw new Error(`Nenhuma vaca vinculada ao colar ${payload.device_id}`);
 
   await persistSensorData(cow.id, payload);
+
+  if (payload.location?.lat != null && payload.location?.lng != null) {
+    await prisma.cow.update({
+      where: { id: cow.id },
+      data: { lastLat: payload.location.lat, lastLng: payload.location.lng },
+    });
+  }
 
   const detectedStatus = await analyzeHealth(cow.id);
 

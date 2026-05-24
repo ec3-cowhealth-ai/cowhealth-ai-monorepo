@@ -167,6 +167,8 @@ model Cow {
   weight    Float? // peso em kg
   photos    Json? // array de nomes de arquivo para galeria de identificacao
   status    CowStatus @default(HEALTHY)
+  lastLat   Float?    @map("last_lat")
+  lastLng   Float?    @map("last_lng")
   farmId    Int       @map("farm_id")
   collarId  Int?      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
 
