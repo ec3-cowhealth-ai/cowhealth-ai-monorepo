@@ -18,7 +18,7 @@ import {
   useCowTemperatureDaily,
 } from "../hooks/useCows";
 import { useNotifications } from "@hooks/useNotifications";
-import { CowStatusValues } from "../../../types/cows";
+import { COW_STATUS_VALUES } from "../../../types/cows";
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY: "Saudável",
@@ -28,16 +28,16 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const statusTone = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "danger" as const;
-  if (s === CowStatusValues.HEAT_STRESS) return "warn" as const;
-  if (s === CowStatusValues.CALVING) return "info" as const;
+  if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
+  if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
   return "success" as const;
 };
 
 const statusColor = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "var(--danger)";
-  if (s === CowStatusValues.HEAT_STRESS) return "var(--warning)";
-  if (s === CowStatusValues.CALVING) return "var(--info)";
+  if (s === COW_STATUS_VALUES.ALERT) return "var(--danger)";
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "var(--warning)";
+  if (s === COW_STATUS_VALUES.CALVING) return "var(--info)";
   return "var(--success)";
 };
 
@@ -127,7 +127,7 @@ export const CowDetailPage = () => {
             >
               <StatusDot
                 tone={tone}
-                pulse={cow.status === CowStatusValues.ALERT}
+                pulse={cow.status === COW_STATUS_VALUES.ALERT}
               />
               <span
                 style={{

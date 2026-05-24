@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { CowMark } from "@components/ui/CowMark";
 import { StatusDot } from "@components/ui/StatusDot";
 import { Icon } from "@components/ui/Icon";
-import { CowStatusValues } from "../../types/cows";
+import { COW_STATUS_VALUES } from "../../types/cows";
 import type { Cow } from "../../types/cows";
 
 interface CowDetailCardProps {
@@ -13,9 +13,9 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
   const navigate = useNavigate();
 
   const tone =
-    cow.status === CowStatusValues.ALERT
+    cow.status === COW_STATUS_VALUES.ALERT
       ? "danger"
-      : cow.status === CowStatusValues.HEALTHY
+      : cow.status === COW_STATUS_VALUES.HEALTHY
         ? "success"
         : "warn";
 
@@ -49,7 +49,7 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
           <CowMark
             s={26}
             primary={
-              cow.status === CowStatusValues.ALERT
+              cow.status === COW_STATUS_VALUES.ALERT
                 ? "var(--danger)"
                 : "var(--verdigris)"
             }
@@ -57,7 +57,7 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
           <span style={{ position: "absolute", bottom: -2, right: -2 }}>
             <StatusDot
               tone={tone}
-              pulse={cow.status === CowStatusValues.ALERT}
+              pulse={cow.status === COW_STATUS_VALUES.ALERT}
             />
           </span>
         </div>

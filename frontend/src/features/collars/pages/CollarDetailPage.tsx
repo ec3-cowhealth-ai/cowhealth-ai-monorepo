@@ -3,17 +3,17 @@ import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState, StatusBadge } from "@components/common";
 import { XCircle } from "lucide-react";
 import { useCollar } from "../hooks/useCollars";
-import { CollarStatusValues } from "../../../types/collars.ts";
+import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 
 const getStatusTone = (
   status: string,
 ): "success" | "warning" | "danger" | "muted" => {
   switch (status) {
-    case CollarStatusValues.ACTIVE:
+    case COLLAR_STATUS_VALUES.ACTIVE:
       return "success";
-    case CollarStatusValues.MAINTENANCE:
+    case COLLAR_STATUS_VALUES.MAINTENANCE:
       return "warning";
-    case CollarStatusValues.BATTERY:
+    case COLLAR_STATUS_VALUES.BATTERY:
       return "danger";
     default:
       return "muted";

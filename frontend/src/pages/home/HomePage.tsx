@@ -17,7 +17,7 @@ import {
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useFarmContext } from "../../context/FarmContext";
-import { CowStatusValues } from "../../types/cows";
+import { COW_STATUS_VALUES } from "../../types/cows";
 import type { Cow } from "../../types/cows";
 import type { Farm } from "../../types/farms";
 
@@ -29,9 +29,9 @@ const greeting = () => {
 };
 
 const statusTone = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "danger" as const;
-  if (s === CowStatusValues.HEAT_STRESS) return "warn" as const;
-  if (s === CowStatusValues.CALVING) return "info" as const;
+  if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
+  if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
   return "success" as const;
 };
 
@@ -50,12 +50,12 @@ export const HomePage = () => {
   const total = overview?.totalCows ?? cows?.length ?? 0;
   const alertCount = overview?.cowsInAlert ?? 0;
   const healthyCount =
-    cows?.filter((c: Cow) => c.status === CowStatusValues.HEALTHY).length ?? 0;
+    cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length ?? 0;
   const healthPct = total > 0 ? Math.round((healthyCount / total) * 100) : 0;
 
   const attention =
     cows
-      ?.filter((c: Cow) => c.status !== CowStatusValues.HEALTHY)
+      ?.filter((c: Cow) => c.status !== COW_STATUS_VALUES.HEALTHY)
       .slice(0, 6) ?? [];
 
   return (
@@ -276,7 +276,7 @@ export const HomePage = () => {
                 >
                   <StatusDot
                     tone={statusTone(cow.status)}
-                    pulse={cow.status === CowStatusValues.ALERT}
+                    pulse={cow.status === COW_STATUS_VALUES.ALERT}
                   />
                   {cow.tag}
                 </button>

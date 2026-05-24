@@ -7,7 +7,7 @@ import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useCows } from "../hooks/useCows";
 import { useFarmContext } from "../../../context/FarmContext";
-import { CowStatusValues } from "../../../types/cows";
+import { COW_STATUS_VALUES } from "../../../types/cows";
 import type { Cow } from "../../../types/cows";
 
 type StatusFilter = "" | "HEALTHY" | "ALERT" | "HEAT_STRESS" | "CALVING";
@@ -20,16 +20,16 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const statusTone = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "danger" as const;
-  if (s === CowStatusValues.HEAT_STRESS) return "warn" as const;
-  if (s === CowStatusValues.CALVING) return "info" as const;
+  if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
+  if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
   return "success" as const;
 };
 
 const statusColor = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "var(--danger)";
-  if (s === CowStatusValues.HEAT_STRESS) return "var(--warning)";
-  if (s === CowStatusValues.CALVING) return "var(--info)";
+  if (s === COW_STATUS_VALUES.ALERT) return "var(--danger)";
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "var(--warning)";
+  if (s === COW_STATUS_VALUES.CALVING) return "var(--info)";
   return "var(--success)";
 };
 
@@ -47,16 +47,16 @@ export const CowsPage = () => {
     () => ({
       all: cows?.length || 0,
       healthy:
-        cows?.filter((c: Cow) => c.status === CowStatusValues.HEALTHY).length ||
+        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length ||
         0,
       alert:
-        cows?.filter((c: Cow) => c.status === CowStatusValues.ALERT).length ||
+        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT).length ||
         0,
       heat:
-        cows?.filter((c: Cow) => c.status === CowStatusValues.HEAT_STRESS)
+        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEAT_STRESS)
           .length || 0,
       calving:
-        cows?.filter((c: Cow) => c.status === CowStatusValues.CALVING).length ||
+        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.CALVING).length ||
         0,
     }),
     [cows],
@@ -108,10 +108,10 @@ export const CowsPage = () => {
           {(
             [
               ["", "Todas", counts.all],
-              [CowStatusValues.HEALTHY, "Saudáveis", counts.healthy],
-              [CowStatusValues.ALERT, "Alertas", counts.alert],
-              [CowStatusValues.HEAT_STRESS, "Estresse", counts.heat],
-              [CowStatusValues.CALVING, "Parto", counts.calving],
+              [COW_STATUS_VALUES.HEALTHY, "Saudáveis", counts.healthy],
+              [COW_STATUS_VALUES.ALERT, "Alertas", counts.alert],
+              [COW_STATUS_VALUES.HEAT_STRESS, "Estresse", counts.heat],
+              [COW_STATUS_VALUES.CALVING, "Parto", counts.calving],
             ] as [StatusFilter, string, number][]
           ).map(([val, label, count]) => (
             <button
@@ -159,7 +159,7 @@ export const CowsPage = () => {
                 <div className="cow-row__right">
                   <StatusDot
                     tone={statusTone(cow.status)}
-                    pulse={cow.status === CowStatusValues.ALERT}
+                    pulse={cow.status === COW_STATUS_VALUES.ALERT}
                   />
                   <span className="cow-row__status">
                     {STATUS_LABEL[cow.status] ?? cow.status}

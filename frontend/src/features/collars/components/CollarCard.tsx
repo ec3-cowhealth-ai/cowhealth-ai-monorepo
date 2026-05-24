@@ -1,6 +1,6 @@
 import { StatusBadge } from "@components/common";
 import type { Collar } from "../../../types/collars.ts";
-import { CollarStatusValues } from "../../../types/collars.ts";
+import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 
 interface CollarCardProps {
   collar: Collar;
@@ -11,11 +11,11 @@ const getStatusTone = (
   status: string,
 ): "success" | "warning" | "danger" | "muted" => {
   switch (status) {
-    case CollarStatusValues.ACTIVE:
+    case COLLAR_STATUS_VALUES.ACTIVE:
       return "success";
-    case CollarStatusValues.MAINTENANCE:
+    case COLLAR_STATUS_VALUES.MAINTENANCE:
       return "warning";
-    case CollarStatusValues.BATTERY:
+    case COLLAR_STATUS_VALUES.BATTERY:
       return "danger";
     default:
       return "muted";

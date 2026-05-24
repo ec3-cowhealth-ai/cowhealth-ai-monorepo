@@ -3,7 +3,7 @@ import { AppBar } from "@components/layout";
 import { Icon } from "@components/ui/Icon";
 import { useCows } from "@features/cows/hooks/useCows";
 import { useFarmContext } from "../../context/FarmContext";
-import { CowStatusValues } from "../../types/cows";
+import { COW_STATUS_VALUES } from "../../types/cows";
 import type { Cow } from "../../types/cows";
 import { FARM_LAYOUTS } from "./farmLayouts";
 import { MapBackground } from "./MapBackground";
@@ -22,23 +22,23 @@ export const MapPage = () => {
   const layout =
     FARM_LAYOUTS[farmIndex >= 0 ? farmIndex % FARM_LAYOUTS.length : 0];
 
-  const alertCows = cows.filter((c: Cow) => c.status === CowStatusValues.ALERT);
+  const alertCows = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT);
   const warnCows = cows.filter(
     (c: Cow) =>
-      c.status === CowStatusValues.HEAT_STRESS ||
-      c.status === CowStatusValues.CALVING,
+      c.status === COW_STATUS_VALUES.HEAT_STRESS ||
+      c.status === COW_STATUS_VALUES.CALVING,
   );
   const okCount = cows.filter(
-    (c: Cow) => c.status === CowStatusValues.HEALTHY,
+    (c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY,
   ).length;
 
   const pins = layout.defaultPins.map((pin, i) => {
     const cow = cows[i] as Cow | undefined;
     let tone: "success" | "warn" | "danger" | "neutral" = "success";
-    if (cow?.status === CowStatusValues.ALERT) tone = "danger";
+    if (cow?.status === COW_STATUS_VALUES.ALERT) tone = "danger";
     else if (
-      cow?.status === CowStatusValues.HEAT_STRESS ||
-      cow?.status === CowStatusValues.CALVING
+      cow?.status === COW_STATUS_VALUES.HEAT_STRESS ||
+      cow?.status === COW_STATUS_VALUES.CALVING
     )
       tone = "warn";
     return { ...pin, tone, cow };
