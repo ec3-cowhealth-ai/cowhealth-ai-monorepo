@@ -2380,6 +2380,266 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
+  - name: Validation Error Cases (422)
+    meta:
+      id: fld_val_error_cases_main
+      created: 1778000000000
+      modified: 1778000000000
+      sortKey: -1777904165600
+      description: "Testa validacao Zod — todos devem retornar 422 com details[]"
+    children:
+      - url: "{{ _.api.base_url }}farms"
+        name: Create Farm - Body Vazio
+        meta:
+          id: req_val_farm_empty
+          created: 1778000000001
+          modified: 1778000000001
+          isPrivate: false
+          description: "Sem campos obrigatorios — espera 422"
+          sortKey: -1778000000001
+        method: POST
+        body:
+          mimeType: application/json
+          text: "{}"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: Create Farm - Email Invalido
+        meta:
+          id: req_val_farm_email
+          created: 1778000000002
+          modified: 1778000000002
+          isPrivate: false
+          description: "Email invalido — espera 422 com details[field=email]"
+          sortKey: -1778000000002
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Fazenda Teste",
+              "cnpj": "12.345.678/0001-99",
+              "email": "nao-e-um-email"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows"
+        name: Create Cow - Sem farmId
+        meta:
+          id: req_val_cow_no_farm
+          created: 1778000000003
+          modified: 1778000000003
+          isPrivate: false
+          description: "farmId e obrigatorio — espera 422"
+          sortKey: -1778000000003
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "tag": "BR-999",
+              "name": "Vaca Teste"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login - Email Invalido
+        meta:
+          id: req_val_login_email
+          created: 1778000000004
+          modified: 1778000000004
+          isPrivate: false
+          description: "Email sem @ — espera 422"
+          sortKey: -1778000000004
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "nao-e-um-email",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}collars"
+        name: Create Collar - Body Vazio
+        meta:
+          id: req_val_collar_empty
+          created: 1778000000005
+          modified: 1778000000005
+          isPrivate: false
+          description: "Nome e obrigatorio — espera 422"
+          sortKey: -1778000000005
+        method: POST
+        body:
+          mimeType: application/json
+          text: "{}"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}users"
+        name: Create User - Senha Curta
+        meta:
+          id: req_val_user_password
+          created: 1778000000006
+          modified: 1778000000006
+          isPrivate: false
+          description: "Senha com menos de 8 caracteres — espera 422"
+          sortKey: -1778000000006
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Teste",
+              "email": "teste@cowhealth.com",
+              "password": "123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms/1"
+        name: Update Farm - Body Vazio (200 esperado)
+        meta:
+          id: req_val_farm_update_empty
+          created: 1778000000007
+          modified: 1778000000007
+          isPrivate: false
+          description: "updateFarmSchema e partial — body vazio deve retornar 200, nao 422"
+          sortKey: -1778000000007
+        method: PUT
+        body:
+          mimeType: application/json
+          text: "{}"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Authenticated Photos
+    meta:
+      id: fld_auth_photos_main
+      created: 1778001000000
+      modified: 1778001000000
+      sortKey: -1777904165590
+      description: "Testa acesso autenticado a fotos de vacas"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/photos/nome-do-arquivo.jpg"
+        name: Get Photo - Com Token
+        meta:
+          id: req_photo_with_token
+          created: 1778001000001
+          modified: 1778001000001
+          isPrivate: false
+          description: "Com token valido deve retornar a foto ou 404 se nao existir"
+          sortKey: -1778001000001
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/photos/nome-do-arquivo.jpg"
+        name: Get Photo - Sem Token (401)
+        meta:
+          id: req_photo_no_token
+          created: 1778001000002
+          modified: 1778001000002
+          isPrivate: false
+          description: "Sem token deve retornar 401 — foto nao e mais publica"
+          sortKey: -1778001000002
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:

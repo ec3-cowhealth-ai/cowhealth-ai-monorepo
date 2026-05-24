@@ -14,13 +14,14 @@ import cowsRoutes             from "./routes/cowsRoutes";
 import dashboardRoutes        from "./routes/dashboardRoutes";
 import notificationsRoutes    from "./routes/notificationsRoutes";
 import mqttRoutes             from "./routes/mqttRoutes";
+import { errorHandler }       from "./middlewares/errorHandler";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }));
 app.use(express.json());
 
 // Serve os arquivos de fotos
@@ -48,6 +49,9 @@ app.get("/health", async (_request, response) => {
         response.status(503).json({ status: "error", db: "disconnected" });
     }
 });
+
+// Middleware de tratamento de erros
+app.use(errorHandler);
 
 // Inicialização
 const server = app.listen(PORT, () => {
