@@ -1,5 +1,4 @@
 // Fazendas
-
 export interface CreateFarmInput {
     name: string;
     cnpj: string;
@@ -8,6 +7,8 @@ export interface CreateFarmInput {
     state?: string;
     phone?: string;
     email?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 export interface UpdateFarmInput {
@@ -18,18 +19,19 @@ export interface UpdateFarmInput {
     state?: string;
     phone?: string;
     email?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 // Colares
-
 export interface CreateCollarInput {
     name: string;
-    status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+    status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE" | "BATTERY";
     dataFrequency?: "HIGHER" | "DEFAULT" | "LOWER";
 }
 
 export interface UpdateCollarInput {
     name?: string;
-    status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+    status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE" | "BATTERY";
     dataFrequency?: "HIGHER" | "DEFAULT" | "LOWER";
 }
