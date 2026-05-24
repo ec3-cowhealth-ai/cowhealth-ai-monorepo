@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Home, Warehouse, Tag, Beef, Bell, ShieldCheck, LogOut } from "lucide-react";
+import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut } from "lucide-react";
+import { CowHead } from "@lucide/lab";
 
 interface NavItem {
   label: string;
@@ -24,7 +25,7 @@ export const Sidebar = () => {
     { label: "Home", path: "/home", icon: <Home size={18} /> },
     { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
     { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
-    { label: "Vacas", path: "/cows", icon: <Beef size={18} /> },
+    { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },
     {
       label: "Notificações",
       path: "/notifications",
