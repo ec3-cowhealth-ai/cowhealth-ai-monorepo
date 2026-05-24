@@ -6,6 +6,7 @@ import { Icon } from "@components/ui/Icon";
 import { CowMark } from "@components/ui/CowMark";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useCows } from "../hooks/useCows";
+import { useFarmContext } from "../../../context/FarmContext";
 import { CowStatusValues } from "../../../types/cows";
 import type { Cow } from "../../../types/cows";
 
@@ -31,7 +32,9 @@ export const CowsPage = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [showSearch, setShowSearch] = useState(false);
 
-  const { data: cows, isLoading } = useCows();
+  const { selectedFarm } = useFarmContext();
+  const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
+  const { data: cows, isLoading } = useCows({ farmId });
 
   const counts = useMemo(() => ({
     all: cows?.length || 0,
@@ -54,7 +57,7 @@ export const CowsPage = () => {
     <div className="app-page">
       <AppBar
         title="Rebanho"
-        subtitle={`${counts.all} animais`}
+        subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
         actions={
           <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
             <Icon n="search" s={20} />

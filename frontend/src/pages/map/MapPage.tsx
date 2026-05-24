@@ -1,168 +1,263 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { Icon } from "@components/ui/Icon";
+import { CowMark } from "@components/ui/CowMark";
 import { StatusDot } from "@components/ui/StatusDot";
-import { useDashboardOverview, useCowsPerStatus } from "@features/dashboard/hooks/useDashboard";
-import { useFarms } from "@features/farms/hooks/useFarms";
+import { useCows } from "@features/cows/hooks/useCows";
+import { useFarmContext } from "../../context/FarmContext";
+import { CowStatusValues } from "../../types/cows";
+import type { Cow } from "../../types/cows";
+import { FARM_LAYOUTS } from "./farmLayouts";
 
-// Static farm positions on the SVG canvas (normalized 0-100)
-const FARM_POSITIONS = [
-  { key: 0, x: 28, y: 35 },
-  { key: 1, x: 60, y: 25 },
-  { key: 2, x: 72, y: 55 },
-  { key: 3, x: 38, y: 65 },
-  { key: 4, x: 18, y: 62 },
-];
+const PIN_COLORS = {
+  success: "var(--accent)",
+  warn: "var(--warning)",
+  danger: "var(--danger)",
+  neutral: "var(--text-muted)",
+};
 
 export const MapPage = () => {
   const navigate = useNavigate();
-  const { data: overview } = useDashboardOverview();
-  const { data: statusData } = useCowsPerStatus();
-  const { data: farms } = useFarms();
+  const { selectedFarm, farms, setSelectedFarm } = useFarmContext();
+  const [selectedCow, setSelectedCow] = useState<Cow | null>(null);
 
-  const total = overview?.totalCows ?? 0;
-  const alerts = overview?.cowsInAlert ?? 0;
-  const collars = overview?.cowsWithCollar ?? 0;
+  const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
+  const { data: cows = [] } = useCows({ farmId });
 
-  const getStatus = (i: number) => {
-    if (!statusData || i >= statusData.length) return "success" as const;
-    const s = statusData[i]?.status;
-    if (s === "ALERT") return "danger" as const;
-    if (s === "HEAT_STRESS") return "warn" as const;
-    if (s === "CALVING") return "info" as const;
-    return "success" as const;
-  };
+  // Índice da fazenda para determinar o layout (0-4 ciclicamente)
+  const farmIndex = farms.findIndex((f) => f.id === selectedFarm?.id);
+  const layout = FARM_LAYOUTS[farmIndex >= 0 ? farmIndex % FARM_LAYOUTS.length : 0];
+
+  const alertCows = cows.filter((c: Cow) => c.status === CowStatusValues.ALERT);
+  const warnCows = cows.filter((c: Cow) =>
+    c.status === CowStatusValues.HEAT_STRESS || c.status === CowStatusValues.CALVING
+  );
+  const okCount = cows.filter((c: Cow) => c.status === CowStatusValues.HEALTHY).length;
+
+  // Distribui vacas reais sobre os pins padrão do layout
+  const pins = layout.defaultPins.map((pin, i) => {
+    const cow = cows[i] as Cow | undefined;
+    let tone: "success" | "warn" | "danger" | "neutral" = "success";
+    if (cow?.status === CowStatusValues.ALERT) tone = "danger";
+    else if (cow?.status === CowStatusValues.HEAT_STRESS || cow?.status === CowStatusValues.CALVING) tone = "warn";
+    return { ...pin, tone, cow };
+  });
 
   return (
-    <div className="app-page">
-      <AppBar
-        title="Mapa"
-        subtitle={`${overview?.totalFarms ?? 0} fazendas`}
-      />
+    <div className="app-page" style={{ padding: 0, position: "relative", overflow: "hidden" }}>
+      {/* Mapa full-bleed */}
+      <div style={{ position: "absolute", inset: 0 }}>
+        <svg
+          viewBox={layout.viewBox}
+          width="100%"
+          height="100%"
+          preserveAspectRatio="xMidYMid slice"
+          style={{ display: "block" }}
+        >
+          <defs>
+            <pattern id="topo" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M0 30 Q15 20 30 30 T60 30" stroke="rgba(125,226,209,0.06)" fill="none" />
+              <path d="M0 50 Q15 42 30 50 T60 50" stroke="rgba(125,226,209,0.04)" fill="none" />
+            </pattern>
+            <radialGradient id="vig" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stopColor="rgba(43,44,40,0)" />
+              <stop offset="100%" stopColor="rgba(11,13,13,0.65)" />
+            </radialGradient>
+          </defs>
 
-      <div className="app-content">
-        {/* Map canvas */}
-        <div className="card" style={{ padding: 0, overflow: "hidden", position: "relative" }}>
-          <svg
-            viewBox="0 0 100 80"
-            width="100%"
-            style={{ display: "block", background: "var(--bg-elev-1)" }}
-          >
-            {/* Background grid */}
-            {[20, 40, 60, 80].map((v) => (
-              <g key={v}>
-                <line x1={v} y1={0} x2={v} y2={80} stroke="rgba(255,255,255,0.04)" strokeWidth="0.3" />
-                <line x1={0} y1={v} x2={100} y2={v} stroke="rgba(255,255,255,0.04)" strokeWidth="0.3" />
-              </g>
-            ))}
+          {/* Fundo */}
+          <rect width="100%" height="100%" fill="#0F1311" />
+          <rect width="100%" height="100%" fill="url(#topo)" />
 
-            {/* Region blob */}
-            <ellipse cx={50} cy={42} rx={38} ry={28} fill="var(--verdigris)" opacity={0.06} />
-            <ellipse cx={50} cy={42} rx={38} ry={28} fill="none" stroke="var(--verdigris)" strokeWidth="0.4" opacity={0.15} />
+          {/* Zonas */}
+          {layout.zones.map((zone, i) => (
+            <g key={i}>
+              <polygon
+                points={zone.points}
+                fill={zone.fill}
+                stroke={zone.stroke}
+                strokeWidth="1.5"
+                strokeDasharray="4 6"
+              />
+              <text
+                x={zone.labelX}
+                y={zone.labelY}
+                fontSize="11"
+                fontFamily="var(--font-mono)"
+                fill={`rgba(255,250,251,${zone.tone === "warn" ? "0.65" : zone.tone === "danger" ? "0.7" : "0.45"})`}
+                textAnchor="middle"
+              >
+                {zone.label}
+              </text>
+            </g>
+          ))}
 
-            {/* Farm pins */}
-            {FARM_POSITIONS.map((pos, i) => {
-              const farm = farms?.[i];
-              const tone = getStatus(i);
-              const pinColor =
-                tone === "danger" ? "var(--danger)" :
-                tone === "warn" ? "var(--warning)" :
-                tone === "info" ? "var(--info)" :
-                "var(--verdigris)";
+          {/* Vias */}
+          {layout.roads.map((road, i) => (
+            <path
+              key={i}
+              d={road.d}
+              stroke="rgba(255,250,251,0.07)"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+          ))}
 
-              return (
-                <g key={pos.key} style={{ cursor: "pointer" }} onClick={() => farm && navigate(`/farms/${farm.id}`)}>
-                  {/* Pulse ring */}
-                  {tone === "danger" && (
-                    <circle cx={pos.x} cy={pos.y} r={5} fill={pinColor} opacity={0.15} />
-                  )}
-                  <circle cx={pos.x} cy={pos.y} r={3.2} fill={pinColor} opacity={0.9} />
-                  <circle cx={pos.x} cy={pos.y} r={1.4} fill="#fff" opacity={0.8} />
-                  {/* Label */}
-                  {farm && (
-                    <text
-                      x={pos.x} y={pos.y + 6.5}
-                      textAnchor="middle"
-                      fontSize="3.2"
-                      fill="rgba(255,255,255,0.6)"
-                      fontFamily="var(--font-sans)"
-                    >
-                      {farm.name.length > 12 ? farm.name.slice(0, 12) + "…" : farm.name}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
+          {/* Vinheta */}
+          <rect width="100%" height="100%" fill="url(#vig)" />
+        </svg>
 
-            {/* Compass */}
-            <text x={93} y={7} fontSize="4" fill="rgba(255,255,255,0.3)" textAnchor="middle" fontFamily="var(--font-mono)">N</text>
-            <line x1={93} y1={8.5} x2={93} y2={12} stroke="rgba(255,255,255,0.2)" strokeWidth="0.4" />
-          </svg>
-
-          {/* Map legend overlay */}
-          <div style={{
-            position: "absolute", bottom: 8, left: 8,
-            display: "flex", flexDirection: "column", gap: 3,
-          }}>
-            {[
-              { tone: "success" as const, label: "Saudável" },
-              { tone: "warn" as const, label: "Estresse" },
-              { tone: "danger" as const, label: "Alerta" },
-            ].map((item) => (
-              <div key={item.tone} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: "rgba(255,255,255,0.5)" }}>
-                <StatusDot tone={item.tone} />
-                {item.label}
+        {/* Pins de vaca (sobre o SVG via div absoluto) */}
+        {pins.map((pin, i) => {
+          const color = PIN_COLORS[pin.tone];
+          const isSelected = selectedCow?.id === pin.cow?.id;
+          return (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                left: `${pin.x}%`,
+                top: `${pin.y}%`,
+                transform: "translate(-50%,-50%)",
+                zIndex: 5,
+                cursor: pin.cow ? "pointer" : "default",
+              }}
+              onClick={() => pin.cow && setSelectedCow(isSelected ? null : pin.cow)}
+            >
+              <div style={{ position: "relative", width: 28, height: 28 }}>
+                {pin.tone !== "success" && (
+                  <div style={{
+                    position: "absolute", inset: 0, borderRadius: 99,
+                    background: color, opacity: 0.22,
+                    animation: "cowPulse 1.8s ease-out infinite",
+                  }} />
+                )}
+                <div style={{
+                  position: "absolute", inset: isSelected ? 2 : 5,
+                  borderRadius: 99, background: color,
+                  display: "grid", placeItems: "center",
+                  fontFamily: "var(--font-mono)", fontSize: 9,
+                  fontWeight: 700,
+                  color: "var(--text-inverse)",
+                  border: isSelected ? `2px solid #fff` : "none",
+                  transition: "inset 0.15s ease",
+                }}>
+                  {pin.label ?? (pin.cow ? "·" : "")}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* KPI strip */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
-          <div className="kpi-card">
-            <p className="kpi-card__label">Total</p>
-            <p className="kpi-card__value">{total}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-card__label">Alertas</p>
-            <p className="kpi-card__value" style={{ color: alerts > 0 ? "var(--danger)" : undefined }}>{alerts}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-card__label">c/ Coleira</p>
-            <p className="kpi-card__value">{collars}</p>
-          </div>
-        </div>
-
-        {/* Farms list */}
-        {farms && farms.length > 0 && (
-          <div>
-            <p style={{ margin: "0 0 8px 0", fontWeight: 600, fontSize: 13, color: "var(--text-secondary)" }}>
-              Fazendas
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {farms.map((farm, i) => (
-                <button
-                  key={farm.id}
-                  onClick={() => navigate(`/farms/${farm.id}`)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    padding: "10px 12px", background: "var(--bg-elev-1)",
-                    border: "none", borderRadius: 8, cursor: "pointer",
-                    color: "var(--text-primary)", textAlign: "left",
-                  }}
-                >
-                  <StatusDot tone={getStatus(i)} />
-                  <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{farm.name}</span>
-                  <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                    {(farm as { cowCount?: number }).cowCount ?? "—"} vacas
-                  </span>
-                  <Icon n="chevronRight" s={13} c="var(--text-muted)" />
-                </button>
-              ))}
             </div>
-          </div>
-        )}
+          );
+        })}
       </div>
+
+      {/* Barra de cima — AppBar */}
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <AppBar
+          title={selectedFarm?.name ?? "Mapa"}
+          subtitle="Mapa da Fazenda"
+          showBack={false}
+          left={undefined}
+          actions={undefined}
+        />
+      </div>
+
+      {/* Search + filtro */}
+      <div style={{
+        position: "absolute", top: 64, left: 0, right: 0, zIndex: 10,
+        padding: "8px 16px", display: "flex", gap: 8,
+      }}>
+        <div style={{
+          flex: 1, height: 44, borderRadius: 12,
+          background: "rgba(19,21,21,0.85)", backdropFilter: "blur(12px)",
+          border: "1px solid var(--border)",
+          display: "flex", alignItems: "center", padding: "0 14px", gap: 10,
+        }}>
+          <Icon n="search" s={16} c="var(--text-muted)" />
+          <span style={{ flex: 1, fontSize: 14, color: "var(--text-muted)" }}>
+            Buscar piquete ou vaca…
+          </span>
+        </div>
+        {/* Seletor de fazenda */}
+        <button
+          style={{
+            height: 44, borderRadius: 12, paddingInline: 12,
+            background: "rgba(19,21,21,0.85)", backdropFilter: "blur(12px)",
+            border: "1px solid var(--border)", color: "var(--text-primary)",
+            display: "flex", alignItems: "center", gap: 6, fontSize: 12,
+            cursor: "pointer", whiteSpace: "nowrap",
+          }}
+          onClick={() => {
+            const idx = farms.findIndex((f) => f.id === selectedFarm?.id);
+            const next = farms[(idx + 1) % farms.length];
+            if (next) setSelectedFarm(next);
+          }}
+        >
+          <Icon n="chevronRight" s={14} />
+          Próxima
+        </button>
+      </div>
+
+      {/* Legenda */}
+      <div style={{
+        position: "absolute", top: 120, right: 16, zIndex: 10,
+        background: "rgba(19,21,21,0.85)", backdropFilter: "blur(12px)",
+        border: "1px solid var(--border)", borderRadius: 10,
+        padding: "8px 10px", display: "flex", flexDirection: "column", gap: 6,
+      }}>
+        {[
+          { l: `OK · ${okCount}`, tone: "success" as const },
+          { l: `Atenção · ${warnCows.length}`, tone: "warn" as const },
+          { l: `Críticas · ${alertCows.length}`, tone: "danger" as const },
+        ].map((x) => (
+          <span key={x.l} style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: "var(--text-secondary)" }}>
+            <StatusDot tone={x.tone} />
+            {x.l}
+          </span>
+        ))}
+      </div>
+
+      {/* Card da vaca selecionada */}
+      {selectedCow && (
+        <div style={{
+          position: "absolute", bottom: 80, left: 16, right: 16, zIndex: 10,
+          background: "rgba(19,21,21,0.92)", backdropFilter: "blur(20px)",
+          border: "1px solid var(--border)", borderRadius: 16, padding: 14,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 10,
+              background: "var(--bg-elev-2)", display: "grid",
+              placeItems: "center", position: "relative",
+            }}>
+              <CowMark s={26} primary={selectedCow.status === CowStatusValues.ALERT ? "var(--danger)" : "var(--verdigris)"} />
+              <span style={{ position: "absolute", bottom: -2, right: -2 }}>
+                <StatusDot
+                  tone={selectedCow.status === CowStatusValues.ALERT ? "danger" : selectedCow.status === CowStatusValues.HEALTHY ? "success" : "warn"}
+                  pulse={selectedCow.status === CowStatusValues.ALERT}
+                />
+              </span>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontWeight: 700, fontFamily: "var(--font-display)" }}>{selectedCow.name}</span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-muted)" }}>#{selectedCow.tag}</span>
+              </div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+                {selectedCow.farm?.name}
+                {selectedCow.collar && ` · ${selectedCow.collar.name}`}
+              </div>
+            </div>
+            <button
+              onClick={() => navigate(`/cows/${selectedCow.id}`)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
+            >
+              <Icon n="chevronRight" s={18} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

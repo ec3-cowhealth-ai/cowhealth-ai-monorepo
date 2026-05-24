@@ -21,11 +21,11 @@ export interface CowFarmItem {
     cowCount: number;
 }
 
-export const getDashboardOverview = () =>
-    api.get<DashboardOverviewResponse>("/dashboard/overview").then((r) => r.data);
+export const getDashboardOverview = (farmId?: string) =>
+    api.get<DashboardOverviewResponse>("/dashboard/overview", { params: farmId ? { farmId } : {} }).then((r) => r.data);
 
-export const getCowsPerStatus = () =>
-    api.get<CowStatusItem[]>("/dashboard/cows-per-status").then((r) => r.data);
+export const getCowsPerStatus = (farmId?: string) =>
+    api.get<CowStatusItem[]>("/dashboard/cows-per-status", { params: farmId ? { farmId } : {} }).then((r) => r.data);
 
 export const getCowsPerFarm = () =>
     api.get<CowFarmItem[]>("/dashboard/cows-per-farm").then((r) => r.data);
