@@ -80,6 +80,14 @@ export const destroyPhoto = async (request: Request, response: Response): Promis
     await handleRequest(response, () => removeCowPhoto(Number(request.params.id), filename), 200, 404);
 };
 
+export const servePhoto = (request: Request, response: Response): void => {
+    const filename = path.basename(String(request.params.filename));
+    const filePath = path.resolve(process.cwd(), "uploads", filename);
+    response.sendFile(filePath, (error) => {
+        if (error) response.status(404).json({ error: "Foto não encontrada." });
+    });
+};
+
 // Sensores — listagem paginada
 
 export const listHeartRate = async (request: Request, response: Response): Promise<void> => {
