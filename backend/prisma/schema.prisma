@@ -7,12 +7,6 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-
-  // The datasource property `url` is no longer supported in schema files.
-  // Move connection URLs for Migrate to `prisma.config.ts` and pass either `adapter` for a direct database connection or `accelerateUrl` for Accelerate to the `PrismaClient` constructor.
-  // See https://pris.ly/d/config-datasource and https://pris.ly/d/prisma7-client-config
-
-  // TODO: RENATO -> Atualizar para nova configuração de datasource conforme documentação acima, removendo a propriedade `url` do schema.prisma e configurando a conexão no prisma.config.ts.
 }
 
 // Enums
@@ -141,6 +135,8 @@ model Farm {
   state     String?
   phone     String?
   email     String?
+  latitude  Float?
+  longitude Float?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
