@@ -10,8 +10,8 @@ Use this file as the working checklist for code and doc changes. For the current
 
 1. [README.md](/README.md)
 2. [docs/README.md](/docs/README.md)
-3. [agents/agents.md](/agents/agents.md)
-4. [agents/design.md](/agents/design.md)
+3. [docs/agents/agents.md](/docs/agents/agents.md)
+4. [docs/agents/design.md](/docs/agents/design.md)
 5. [docs/architecture/frontend-architecture.md](/docs/architecture/frontend-architecture.md)
 6. [docs/architecture/backend-architecture.md](/docs/architecture/backend-architecture.md)
 

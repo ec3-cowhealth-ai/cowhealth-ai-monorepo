@@ -34,6 +34,6 @@ Jcfs (according to the responsibility matrix)
 ## Notes
 
 - The landing is **public** — it does not require authentication.
-- Uses the design system from `agents/design.md`.
+- Uses the design system from `docs/agents/design.md`.
 - Fixed palette in `src/styles/landing.css` (CSS variables).
 - Optional components: tweaks for A/B testing.

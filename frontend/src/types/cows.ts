@@ -12,6 +12,8 @@ export interface Cow {
   tag: string;
   name: string;
   status: CowStatus;
+  lastLat?: number | null;
+  lastLng?: number | null;
   breed: string;
   weight: number;
   birthDate?: string;

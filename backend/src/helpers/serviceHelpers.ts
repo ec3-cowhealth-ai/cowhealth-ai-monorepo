@@ -12,7 +12,7 @@ import { SensorQueryOptions } from "../types/sensors";
  * const farm = await findOrThrow("farm", farmId, "Fazenda não encontrada.");
  */
 export const findOrThrow = async <T>(
-  model: { findUnique: (args: any) => Promise<T | null> },
+  model: { findUnique: (args: { where: { id: number } }) => Promise<T | null> },
   id: number,
   errorMessage: string,
 ): Promise<T> => {
@@ -35,8 +35,8 @@ export const findOrThrow = async <T>(
  * await assertUnique(prisma.collar, { name: data.name }, "Já existe um colar com este nome.", collarId);
  */
 export const assertUnique = async (
-  model: { findFirst: (args: any) => Promise<any> },
-  field: Record<string, any>,
+  model: { findFirst: (args: { where: object }) => Promise<unknown> },
+  field: Record<string, unknown>,
   errorMessage: string,
   excludeId?: number,
 ): Promise<void> => {
@@ -60,7 +60,7 @@ export const assertUnique = async (
  * @param options    - Filtros opcionais: startDate, endDate, limit
  */
 export const querySensorData = async <T>(
-  model: { findMany: (args: any) => Promise<T[]> },
+  model: { findMany: (args: object) => Promise<T[]> },
   cowId: number,
   selectFields: Record<string, boolean>,
   options: SensorQueryOptions,
@@ -92,7 +92,7 @@ export const querySensorData = async <T>(
  * @param field   - Nome do campo numérico a calcular a média
  */
 export const aggregateDailyAverage = (
-  records: Array<{ measuredAt: Date; [key: string]: any }>,
+  records: Array<{ measuredAt: Date } & Record<string, unknown>>,
   field: string,
 ): Array<{ date: string; average: number }> => {
   const dailyGroups = new Map<string, number[]>();
@@ -107,7 +107,7 @@ export const aggregateDailyAverage = (
       dailyGroups.set(dateLabel, []);
     }
 
-    dailyGroups.get(dateLabel)!.push(record[field]);
+    dailyGroups.get(dateLabel)!.push(record[field] as number);
   }
 
   return Array.from(dailyGroups.entries()).map(([date, values]) => ({

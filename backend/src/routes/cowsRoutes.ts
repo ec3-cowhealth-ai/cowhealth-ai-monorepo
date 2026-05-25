@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
     listCows, showCow, storeCow, updateCowController, destroyCow,
-    upload, uploadPhoto, destroyPhoto, servePhoto,
+    uploadPhoto, destroyPhoto, servePhoto,
     listHeartRate, listTemperature, listAccelerometer,
     listHeartRateDaily, listTemperatureDaily,
 } from "../controllers/cowsController";
@@ -21,7 +21,7 @@ router.put("/:id",    requireAuth, requirePermission("Update Cow"),  validateSch
 router.delete("/:id", requireAuth, requirePermission("Delete Cow"),  destroyCow);
 
 // Fotos — upload, remoção e servir arquivo autenticado
-router.post("/:id/photos",             requireAuth, requirePermission("Update Cow"), upload.single("photo"), uploadPhoto);
+router.post("/:id/photos",             requireAuth, requirePermission("Update Cow"), cowUpload.single("photo"), uploadPhoto);
 router.delete("/:id/photos/:filename", requireAuth, requirePermission("Update Cow"), destroyPhoto);
 router.get("/:id/photos/:filename",    requireAuth, requirePermission("View Cow"), servePhoto);
 
