@@ -1,7 +1,7 @@
-All notable changes to this project are documented in `/docs/change_control/CHANGELOG.md`.
-Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+# All notable changes to this project are documented in `/docs/change_control/CHANGELOG.md`.
 
----
+
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Make sure to observe the following specs:
 
 ## How to register your changes
 
