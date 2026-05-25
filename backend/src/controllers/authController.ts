@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import { login, getMe } from "../services/authService";
 import { handleRequest } from "../helpers/controllerHelpers";
 
-export const loginController = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const loginController = async (request: Request, response: Response): Promise<void> => {
   const { email, password } = request.body;
 
   if (!email || !password) {
@@ -16,9 +13,6 @@ export const loginController = async (
   await handleRequest(response, () => login({ email, password }), 200, 401);
 };
 
-export const meController = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const meController = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => getMe(request.user!.sub), 200, 404);
 };

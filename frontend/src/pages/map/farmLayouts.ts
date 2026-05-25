@@ -91,11 +91,7 @@ const aurora: FarmLayout = {
 // Fazenda 1 — São Bento (terreno irregular, corredor central)
 const saoBento: FarmLayout = {
   viewBox: "0 0 390 620",
-  roads: [
-    { d: "M80 0 Q100 310 80 620" },
-    { d: "M0 200 L390 180" },
-    { d: "M0 440 L390 460" },
-  ],
+  roads: [{ d: "M80 0 Q100 310 80 620" }, { d: "M0 200 L390 180" }, { d: "M0 440 L390 460" }],
   zones: [
     {
       points: "100 20 370 20 365 175 100 190",
@@ -358,10 +354,4 @@ const rioBonito: FarmLayout = {
   ],
 };
 
-export const FARM_LAYOUTS: FarmLayout[] = [
-  aurora,
-  saoBento,
-  valeVerde,
-  santaClara,
-  rioBonito,
-];
+export const FARM_LAYOUTS: FarmLayout[] = [aurora, saoBento, valeVerde, santaClara, rioBonito];

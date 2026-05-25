@@ -5,9 +5,7 @@ import { XCircle } from "lucide-react";
 import { useCollar } from "../hooks/useCollars";
 import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 
-const getStatusTone = (
-  status: string,
-): "success" | "warning" | "danger" | "muted" => {
+const getStatusTone = (status: string): "success" | "warning" | "danger" | "muted" => {
   switch (status) {
     case COLLAR_STATUS_VALUES.ACTIVE:
       return "success";
@@ -50,10 +48,7 @@ export const CollarDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes do Colar" />
-        <EmptyState
-          icon={<XCircle size={40} />}
-          title="Coleira não encontrada"
-        />
+        <EmptyState icon={<XCircle size={40} />} title="Coleira não encontrada" />
       </div>
     );
   }
@@ -73,12 +68,8 @@ export const CollarDetailPage = () => {
               marginBottom: "var(--s-3)",
             }}
           >
-            <h3 style={{ margin: 0, fontSize: "var(--t-h2)", fontWeight: 700 }}>
-              {collar.name}
-            </h3>
-            <StatusBadge tone={getStatusTone(collar.status)}>
-              {collar.status}
-            </StatusBadge>
+            <h3 style={{ margin: 0, fontSize: "var(--t-h2)", fontWeight: 700 }}>{collar.name}</h3>
+            <StatusBadge tone={getStatusTone(collar.status)}>{collar.status}</StatusBadge>
           </div>
 
           <div

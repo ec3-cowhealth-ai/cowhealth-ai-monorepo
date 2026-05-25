@@ -15,10 +15,7 @@ export const getAllNotifications = async (userId: number) => {
   });
 };
 
-export const markNotificationAsRead = async (
-  notificationId: number,
-  userId: number,
-) => {
+export const markNotificationAsRead = async (notificationId: number, userId: number) => {
   const notification = await prisma.notification.findUnique({
     where: { id: notificationId },
   });
@@ -30,8 +27,7 @@ export const markNotificationAsRead = async (
     throw new Error("Sem permissão para esta ação.");
   }
 
-  if (notification.readAt)
-    throw new Error("Notificação já foi marcada como lida.");
+  if (notification.readAt) throw new Error("Notificação já foi marcada como lida.");
 
   return prisma.notification.update({
     where: { id: notificationId },

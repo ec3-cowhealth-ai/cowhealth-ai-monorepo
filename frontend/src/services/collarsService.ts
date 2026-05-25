@@ -1,9 +1,5 @@
 import api from "../lib/api";
-import type {
-  Collar,
-  CreateCollarInput,
-  UpdateCollarInput,
-} from "../types/collars.ts";
+import type { Collar, CreateCollarInput, UpdateCollarInput } from "../types/collars.ts";
 
 export const collarsService = {
   list: async (filters?: { status?: string }) => {

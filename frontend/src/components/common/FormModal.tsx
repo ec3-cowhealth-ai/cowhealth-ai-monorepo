@@ -50,11 +50,7 @@ export const FormModal = ({
             >
               {cancelLabel}
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn btn-primary" disabled={isLoading}>
               {isLoading ? "Salvando..." : submitLabel}
             </button>
           </div>

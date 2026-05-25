@@ -8,11 +8,7 @@ interface CowCardProps {
 
 export const CowCard = ({ cow, onClick }: CowCardProps) => {
   return (
-    <div
-      className="card card--clickable"
-      onClick={onClick}
-      style={{ cursor: "pointer" }}
-    >
+    <div className="card card--clickable" onClick={onClick} style={{ cursor: "pointer" }}>
       <div
         style={{
           display: "flex",
@@ -21,9 +17,7 @@ export const CowCard = ({ cow, onClick }: CowCardProps) => {
           marginBottom: "var(--s-2)",
         }}
       >
-        <h3 style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
-          {cow.tag}
-        </h3>
+        <h3 style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>{cow.tag}</h3>
         <CowStatusBadgeComponent status={cow.status} />
       </div>
 

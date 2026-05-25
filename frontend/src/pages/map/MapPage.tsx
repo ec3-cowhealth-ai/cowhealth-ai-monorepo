@@ -50,15 +50,12 @@ export const MapPage = () => {
   const alertCows = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT);
   const warnCows = cows.filter(
     (c: Cow) =>
-      c.status === COW_STATUS_VALUES.HEAT_STRESS ||
-      c.status === COW_STATUS_VALUES.CALVING,
+      c.status === COW_STATUS_VALUES.HEAT_STRESS || c.status === COW_STATUS_VALUES.CALVING,
   );
   const okCount = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length;
 
   const cowsWithPosition = useMemo(() => {
-    const cowsWithoutGps = cows.filter(
-      (c: Cow) => c.lastLat == null || c.lastLng == null,
-    );
+    const cowsWithoutGps = cows.filter((c: Cow) => c.lastLat == null || c.lastLng == null);
 
     const simulated = selectedFarm
       ? simulateCowPositions(
@@ -120,13 +117,13 @@ export const MapPage = () => {
               isReal,
             )}
             eventHandlers={{
-              click: () =>
-                setSelectedCow(selectedCow?.id === cow.id ? null : cow),
+              click: () => setSelectedCow(selectedCow?.id === cow.id ? null : cow),
             }}
           >
             <Popup>
-              <strong>{cow.name ?? cow.tag}</strong><br />
-              #{cow.tag} · {cow.status}<br />
+              <strong>{cow.name ?? cow.tag}</strong>
+              <br />#{cow.tag} · {cow.status}
+              <br />
               {isReal ? "📡 GPS real" : "〰 Simulado"}
             </Popup>
           </Marker>
@@ -171,7 +168,8 @@ export const MapPage = () => {
         >
           <Icon n="search" s={16} c="var(--text-muted)" />
           <span style={{ flex: 1, fontSize: 14, color: "var(--text-muted)" }}>
-            {validPins.length} vacas · {realGpsCount} GPS real · {validPins.length - realGpsCount} simuladas
+            {validPins.length} vacas · {realGpsCount} GPS real · {validPins.length - realGpsCount}{" "}
+            simuladas
           </span>
         </div>
 
@@ -199,11 +197,7 @@ export const MapPage = () => {
       </div>
 
       <div style={{ position: "relative", zIndex: 1000 }}>
-        <MapLegend
-          okCount={okCount}
-          warnCount={warnCows.length}
-          alertCount={alertCows.length}
-        />
+        <MapLegend okCount={okCount} warnCount={warnCows.length} alertCount={alertCows.length} />
       </div>
 
       {selectedCow && (

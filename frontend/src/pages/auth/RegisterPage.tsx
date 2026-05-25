@@ -36,9 +36,7 @@ export const RegisterPage = () => (
         >
           CowHealth AI
         </h1>
-        <p style={{ color: "var(--text-secondary)", marginTop: "var(--s-1)" }}>
-          Crie sua conta
-        </p>
+        <p style={{ color: "var(--text-secondary)", marginTop: "var(--s-1)" }}>Crie sua conta</p>
       </div>
 
       <RegisterForm />

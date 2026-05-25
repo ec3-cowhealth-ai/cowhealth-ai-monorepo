@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import {
-  loginService,
-  getMeService,
-  registerService,
-} from "../services/authService";
+import { loginService, getMeService, registerService } from "../services/authService";
 import type { LoginInput } from "../types/auth";
 
 const AUTH_QUERY_KEY = ["auth", "me"];
@@ -35,8 +31,7 @@ export const useRegister = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (data: { name: string; email: string; password: string }) =>
-      registerService(data),
+    mutationFn: (data: { name: string; email: string; password: string }) => registerService(data),
     onSuccess: () => {
       navigate("/login");
     },

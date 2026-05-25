@@ -44,11 +44,7 @@ export const getCollarById = async (collarId: number) => {
 };
 
 export const createCollar = async (data: CreateCollarInput) => {
-  await assertUnique(
-    prisma.collar,
-    { name: data.name },
-    "Já existe um colar com este nome.",
-  );
+  await assertUnique(prisma.collar, { name: data.name }, "Já existe um colar com este nome.");
 
   return prisma.collar.create({
     data,
@@ -62,10 +58,7 @@ export const createCollar = async (data: CreateCollarInput) => {
   });
 };
 
-export const updateCollar = async (
-  collarId: number,
-  data: UpdateCollarInput,
-) => {
+export const updateCollar = async (collarId: number, data: UpdateCollarInput) => {
   const collar = await prisma.collar.findUnique({ where: { id: collarId } });
   if (!collar) throw new Error("Colar não encontrado.");
 

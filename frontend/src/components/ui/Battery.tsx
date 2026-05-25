@@ -4,8 +4,7 @@ interface BatteryProps {
 }
 
 export const Battery = ({ pct = 78, mini }: BatteryProps) => {
-  const tone =
-    pct < 20 ? "var(--danger)" : pct < 40 ? "var(--warning)" : "var(--accent)";
+  const tone = pct < 20 ? "var(--danger)" : pct < 40 ? "var(--warning)" : "var(--accent)";
   return (
     <span
       style={{

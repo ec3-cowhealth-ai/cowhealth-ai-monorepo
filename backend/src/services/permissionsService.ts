@@ -1,8 +1,5 @@
 import { prisma } from "../lib/prisma";
-import type {
-  CreatePermissionInput,
-  UpdatePermissionInput,
-} from "../types/access";
+import type { CreatePermissionInput, UpdatePermissionInput } from "../types/access";
 
 export const getAllPermissions = async () => {
   return prisma.permission.findMany({
@@ -42,15 +39,11 @@ export const getPermissionById = async (permissionId: number) => {
   return permission;
 };
 
-export const createPermission = async ({
-  name,
-  description,
-}: CreatePermissionInput) => {
+export const createPermission = async ({ name, description }: CreatePermissionInput) => {
   const existingPermission = await prisma.permission.findUnique({
     where: { name },
   });
-  if (existingPermission)
-    throw new Error("Já existe uma permissão com este nome.");
+  if (existingPermission) throw new Error("Já existe uma permissão com este nome.");
 
   return prisma.permission.create({
     data: { name, description },
@@ -89,9 +82,7 @@ export const deletePermission = async (permissionId: number) => {
 
   // Regra: não deletar permissão vinculada a roles ou grupos
   if (permission._count.roles > 0 || permission._count.groups > 0) {
-    throw new Error(
-      "Não é possível excluir uma permissão vinculada a roles ou grupos.",
-    );
+    throw new Error("Não é possível excluir uma permissão vinculada a roles ou grupos.");
   }
 
   await prisma.permission.delete({ where: { id: permissionId } });

@@ -19,63 +19,31 @@ import type { SensorQueryOptions } from "../types/sensors";
 
 // CRUD
 
-export const listCows = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  const farmId = request.query.farmId
-    ? Number(request.query.farmId)
-    : undefined;
+export const listCows = async (request: Request, response: Response): Promise<void> => {
+  const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
   const cows = await getAllCows(farmId);
   response.json(cows);
 };
 
-export const showCow = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => getCowById(Number(request.params.id)),
-    200,
-    404,
-  );
+export const showCow = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getCowById(Number(request.params.id)), 200, 404);
 };
 
-export const storeCow = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const storeCow = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => createCow(request.body), 201);
 };
 
-export const updateCowController = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(response, () =>
-    updateCow(Number(request.params.id), request.body),
-  );
+export const updateCowController = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => updateCow(Number(request.params.id), request.body));
 };
 
-export const destroyCow = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => deleteCow(Number(request.params.id)),
-    204,
-    404,
-  );
+export const destroyCow = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => deleteCow(Number(request.params.id)), 204, 404);
 };
 
 // Fotos
 
-export const uploadPhoto = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const uploadPhoto = async (request: Request, response: Response): Promise<void> => {
   if (!request.file) {
     response.status(400).json({ error: "Nenhum arquivo enviado." });
     return;
@@ -87,10 +55,7 @@ export const uploadPhoto = async (
   );
 };
 
-export const destroyPhoto = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const destroyPhoto = async (request: Request, response: Response): Promise<void> => {
   const filename = String(request.params.filename);
   await handleRequest(
     response,
@@ -101,46 +66,43 @@ export const destroyPhoto = async (
 };
 
 export const servePhoto = (request: Request, response: Response): void => {
-    const filename = path.basename(String(request.params.filename));
-    const filePath = path.resolve(process.cwd(), "uploads", filename);
-    response.sendFile(filePath, (error) => {
-        if (error) response.status(404).json({ error: "Foto não encontrada." });
-    });
+  const filename = path.basename(String(request.params.filename));
+  const filePath = path.resolve(process.cwd(), "uploads", filename);
+  response.sendFile(filePath, (error) => {
+    if (error) response.status(404).json({ error: "Foto não encontrada." });
+  });
 };
 
 // Sensores — listagem paginada
 
-export const listHeartRate = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const listHeartRate = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () => getCowHeartRate(Number(request.params.id), request.query as unknown as SensorQueryOptions),
+    () =>
+      getCowHeartRate(Number(request.params.id), request.query as unknown as SensorQueryOptions),
     200,
     404,
   );
 };
 
-export const listTemperature = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const listTemperature = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () => getCowTemperature(Number(request.params.id), request.query as unknown as SensorQueryOptions),
+    () =>
+      getCowTemperature(Number(request.params.id), request.query as unknown as SensorQueryOptions),
     200,
     404,
   );
 };
 
-export const listAccelerometer = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const listAccelerometer = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () => getCowAccelerometer(Number(request.params.id), request.query as unknown as SensorQueryOptions),
+    () =>
+      getCowAccelerometer(
+        Number(request.params.id),
+        request.query as unknown as SensorQueryOptions,
+      ),
     200,
     404,
   );
@@ -148,26 +110,10 @@ export const listAccelerometer = async (
 
 // Sensores — média diária para gráficos
 
-export const listHeartRateDaily = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => getCowHeartRateDaily(Number(request.params.id)),
-    200,
-    404,
-  );
+export const listHeartRateDaily = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getCowHeartRateDaily(Number(request.params.id)), 200, 404);
 };
 
-export const listTemperatureDaily = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => getCowTemperatureDaily(Number(request.params.id)),
-    200,
-    404,
-  );
+export const listTemperatureDaily = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getCowTemperatureDaily(Number(request.params.id)), 200, 404);
 };

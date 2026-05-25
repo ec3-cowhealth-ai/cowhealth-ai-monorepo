@@ -29,4 +29,3 @@ Auth is implemented and should be documented as current behavior, not as a task 
 
 - If the auth contract changes, update this file and the frontend architecture doc.
 - If the token storage strategy changes, update the auth docs and the API client docs together.
-

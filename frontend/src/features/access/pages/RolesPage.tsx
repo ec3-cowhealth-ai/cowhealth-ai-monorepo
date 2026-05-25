@@ -1,10 +1,5 @@
 import { useState, useMemo } from "react";
-import {
-  FormModal,
-  ConfirmDialog,
-  EmptyState,
-  ErrorState,
-} from "@components/common";
+import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { X, Users } from "lucide-react";
 import {
   useRoles,
@@ -28,13 +23,7 @@ interface RoleFormModalProps {
   onSubmit: (data: { name: string; description: string }) => void;
 }
 
-function RoleFormModal({
-  open,
-  role,
-  onClose,
-  isLoading,
-  onSubmit,
-}: RoleFormModalProps) {
+function RoleFormModal({ open, role, onClose, isLoading, onSubmit }: RoleFormModalProps) {
   const [form, setForm] = useState({
     name: role?.name ?? "",
     description: role?.description ?? "",
@@ -85,21 +74,14 @@ interface ManagePermsModalProps {
   onClose: () => void;
 }
 
-function ManagePermissionsModal({
-  roleId,
-  roleName,
-  onClose,
-}: ManagePermsModalProps) {
+function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalProps) {
   const { data: roleDetail, isLoading } = useRole(roleId);
   const { data: allPermissions } = usePermissions();
   const { mutate: grant, isPending: granting } = useGrantPermission();
   const { mutate: revoke, isPending: revoking } = useRevokePermission();
 
   const grantedIds = useMemo(
-    () =>
-      new Set(
-        (roleDetail?.permissions ?? []).map((p) => String(p.permission.id)),
-      ),
+    () => new Set((roleDetail?.permissions ?? []).map((p) => String(p.permission.id))),
     [roleDetail],
   );
 
@@ -116,11 +98,7 @@ function ManagePermissionsModal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-card"
-        style={{ maxWidth: 540 }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="modal-card" style={{ maxWidth: 540 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-card__header">
           <div>
             <h2 className="modal-card__title">Permissoes</h2>
@@ -131,10 +109,7 @@ function ManagePermissionsModal({
                 color: "var(--text-muted)",
               }}
             >
-              Papel:{" "}
-              <strong style={{ color: "var(--text-primary)" }}>
-                {roleName}
-              </strong>
+              Papel: <strong style={{ color: "var(--text-primary)" }}>{roleName}</strong>
             </p>
           </div>
           <button className="modal-card__close" onClick={onClose}>
@@ -185,12 +160,9 @@ function ManagePermissionsModal({
                       padding: "var(--s-3)",
                       borderRadius: "var(--r-sm)",
                       cursor: isPending ? "not-allowed" : "pointer",
-                      background: active
-                        ? "var(--primary-soft)"
-                        : "var(--bg-elev-2)",
+                      background: active ? "var(--primary-soft)" : "var(--bg-elev-2)",
                       border: `1px solid ${active ? "var(--primary)" : "var(--border)"}`,
-                      transition:
-                        "background 0.15s ease, border-color 0.15s ease",
+                      transition: "background 0.15s ease, border-color 0.15s ease",
                     }}
                   >
                     <input
@@ -209,9 +181,7 @@ function ManagePermissionsModal({
                         style={{
                           fontSize: "var(--t-body)",
                           fontWeight: 600,
-                          color: active
-                            ? "var(--accent)"
-                            : "var(--text-primary)",
+                          color: active ? "var(--accent)" : "var(--text-primary)",
                         }}
                       >
                         {perm.name}
@@ -236,11 +206,7 @@ function ManagePermissionsModal({
         </div>
 
         <div className="modal-card__footer">
-          <button
-            className="btn btn-primary"
-            onClick={onClose}
-            style={{ flex: 1 }}
-          >
+          <button className="btn btn-primary" onClick={onClose} style={{ flex: 1 }}>
             Concluir
           </button>
         </div>
@@ -256,8 +222,7 @@ export const RolesPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [editingRole, setEditingRole] = useState<RoleListItem | null>(null);
   const [deletingRole, setDeletingRole] = useState<RoleListItem | null>(null);
-  const [managingPermsRole, setManagingPermsRole] =
-    useState<RoleListItem | null>(null);
+  const [managingPermsRole, setManagingPermsRole] = useState<RoleListItem | null>(null);
 
   const { data: roles, isLoading, isError } = useRoles();
   const { mutate: createRole, isPending: creating } = useCreateRole();
@@ -318,10 +283,7 @@ export const RolesPage = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={() => setShowCreate(true)}
-        >
+        <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>
           + Novo papel
         </button>
       </div>
@@ -331,17 +293,10 @@ export const RolesPage = () => {
         <EmptyState
           icon={<Users size={40} />}
           title="Nenhum papel encontrado"
-          description={
-            search
-              ? "Tente outro termo de busca."
-              : "Crie o primeiro papel de acesso."
-          }
+          description={search ? "Tente outro termo de busca." : "Crie o primeiro papel de acesso."}
           action={
             !search ? (
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowCreate(true)}
-              >
+              <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
                 Criar papel
               </button>
             ) : undefined
@@ -417,12 +372,8 @@ export const RolesPage = () => {
 
               {/* Contadores */}
               <div style={{ display: "flex", gap: "var(--s-2)" }}>
-                <span className="badge">
-                  {role._count.permissions} permissao(oes)
-                </span>
-                <span className="badge badge--muted">
-                  {role._count.users} usuario(s)
-                </span>
+                <span className="badge">{role._count.permissions} permissao(oes)</span>
+                <span className="badge badge--muted">{role._count.users} usuario(s)</span>
               </div>
 
               {/* Gerenciar permissoes */}
@@ -442,9 +393,7 @@ export const RolesPage = () => {
         open={showCreate}
         onClose={() => setShowCreate(false)}
         isLoading={creating}
-        onSubmit={(data) =>
-          createRole(data, { onSuccess: () => setShowCreate(false) })
-        }
+        onSubmit={(data) => createRole(data, { onSuccess: () => setShowCreate(false) })}
       />
 
       {editingRole && (

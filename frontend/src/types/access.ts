@@ -4,8 +4,7 @@ export const USER_PROFILE_VALUES = {
   VIEWER: "VIEWER",
 } as const;
 
-export type UserProfile =
-  (typeof USER_PROFILE_VALUES)[keyof typeof USER_PROFILE_VALUES];
+export type UserProfile = (typeof USER_PROFILE_VALUES)[keyof typeof USER_PROFILE_VALUES];
 
 export interface Permission {
   id: string;

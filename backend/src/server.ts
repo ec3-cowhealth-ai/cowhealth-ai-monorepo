@@ -8,13 +8,13 @@ import usersRoutes from "./routes/usersRoutes";
 import rolesRoutes from "./routes/rolesRoutes";
 import permissionsRoutes from "./routes/permissionsRoutes";
 import permissionGroupsRoutes from "./routes/permissionGroupsRoutes";
-import farmsRoutes            from "./routes/farmsRoutes";
-import collarsRoutes          from "./routes/collarsRoutes";
-import cowsRoutes             from "./routes/cowsRoutes";
-import dashboardRoutes        from "./routes/dashboardRoutes";
-import notificationsRoutes    from "./routes/notificationsRoutes";
-import mqttRoutes             from "./routes/mqttRoutes";
-import { errorHandler }       from "./middlewares/errorHandler";
+import farmsRoutes from "./routes/farmsRoutes";
+import collarsRoutes from "./routes/collarsRoutes";
+import cowsRoutes from "./routes/cowsRoutes";
+import dashboardRoutes from "./routes/dashboardRoutes";
+import notificationsRoutes from "./routes/notificationsRoutes";
+import mqttRoutes from "./routes/mqttRoutes";
+import { errorHandler } from "./middlewares/errorHandler";
 
 dotenv.config();
 

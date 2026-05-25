@@ -54,8 +54,7 @@ export const LineChart = ({
   const iw = w - pad.l - pad.r;
   const ih = h - pad.t - pad.b;
 
-  const xs = (i: number) =>
-    pad.l + (data.length > 1 ? (i / (data.length - 1)) * iw : iw / 2);
+  const xs = (i: number) => pad.l + (data.length > 1 ? (i / (data.length - 1)) * iw : iw / 2);
   const ys = (v: number) => pad.t + ih - ((v - computedMin) / range) * ih;
 
   const pathD = values
@@ -74,12 +73,7 @@ export const LineChart = ({
   labelIndices.add(data.length - 1);
 
   return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      width="100%"
-      height={h}
-      style={{ display: "block" }}
-    >
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} style={{ display: "block" }}>
       <defs>
         <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.3" />

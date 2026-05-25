@@ -11,89 +11,43 @@ import {
 } from "../services/usersService";
 import { handleRequest } from "../helpers/controllerHelpers";
 
-export const listUsers = async (
-  _request: Request,
-  response: Response,
-): Promise<void> => {
+export const listUsers = async (_request: Request, response: Response): Promise<void> => {
   const users = await getAllUsers();
   response.json(users);
 };
 
-export const showUser = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => getUserById(Number(request.params.id)),
-    200,
-    404,
-  );
+export const showUser = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getUserById(Number(request.params.id)), 200, 404);
 };
 
-export const storeUser = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const storeUser = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => createUser(request.body), 201);
 };
 
-export const updateUserController = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(response, () =>
-    updateUser(Number(request.params.id), request.body),
-  );
+export const updateUserController = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => updateUser(Number(request.params.id), request.body));
 };
 
-export const toggleActive = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => toggleUserActive(Number(request.params.id)),
-    200,
-    404,
-  );
+export const toggleActive = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => toggleUserActive(Number(request.params.id)), 200, 404);
 };
 
-export const destroyUser = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => deleteUser(Number(request.params.id)),
-    204,
-    404,
-  );
+export const destroyUser = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => deleteUser(Number(request.params.id)), 204, 404);
 };
 
-export const addRoleToUser = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const addRoleToUser = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () =>
-      assignRoleToUser(Number(request.params.id), Number(request.body.roleId)),
+    () => assignRoleToUser(Number(request.params.id), Number(request.body.roleId)),
     201,
   );
 };
 
-export const removeUserRole = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const removeUserRole = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () =>
-      removeRoleFromUser(
-        Number(request.params.id),
-        Number(request.params.roleId),
-      ),
+    () => removeRoleFromUser(Number(request.params.id), Number(request.params.roleId)),
     204,
   );
 };

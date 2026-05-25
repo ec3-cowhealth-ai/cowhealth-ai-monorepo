@@ -48,4 +48,3 @@ This workspace contains the browser UI for CowHealth AI.
 
 - The old Vite template instructions are no longer the right entry point for this repo.
 - If you change feature behavior, update the matching feature README under `src/features/`.
-

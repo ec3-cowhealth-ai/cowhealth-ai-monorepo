@@ -2,21 +2,11 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import {
-  AlertTriangle,
-  Warehouse,
-  Tag,
-  Thermometer,
-  Heart,
-} from "lucide-react";
+import { AlertTriangle, Warehouse, Tag, Thermometer, Heart } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
-import {
-  useCow,
-  useCowHeartRateDaily,
-  useCowTemperatureDaily,
-} from "../hooks/useCows";
+import { useCow, useCowHeartRateDaily, useCowTemperatureDaily } from "../hooks/useCows";
 import { useNotifications } from "@hooks/useNotifications";
 import { COW_STATUS_VALUES } from "../../../types/cows";
 
@@ -57,8 +47,7 @@ export const CowDetailPage = () => {
   const { data: temperature } = useCowTemperatureDaily(id || "");
   const { data: notifications } = useNotifications();
 
-  const cowNotifs =
-    notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
+  const cowNotifs = notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
 
   if (isLoading) {
     return (
@@ -98,10 +87,7 @@ export const CowDetailPage = () => {
 
       <div className="app-content">
         {/* Hero card */}
-        <div
-          className="card"
-          style={{ display: "flex", alignItems: "center", gap: 16 }}
-        >
+        <div className="card" style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div
             style={{
               width: 56,
@@ -125,10 +111,7 @@ export const CowDetailPage = () => {
                 marginBottom: 4,
               }}
             >
-              <StatusDot
-                tone={tone}
-                pulse={cow.status === COW_STATUS_VALUES.ALERT}
-              />
+              <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
               <span
                 style={{
                   fontSize: 13,
@@ -279,8 +262,7 @@ export const CowDetailPage = () => {
                   key={n.id}
                   className="alert-card"
                   style={{
-                    borderLeftColor:
-                      NOTIF_TONE[n.type] ?? "var(--border-subtle)",
+                    borderLeftColor: NOTIF_TONE[n.type] ?? "var(--border-subtle)",
                   }}
                 >
                   <div>

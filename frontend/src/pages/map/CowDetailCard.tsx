@@ -48,27 +48,16 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
         >
           <CowMark
             s={26}
-            primary={
-              cow.status === COW_STATUS_VALUES.ALERT
-                ? "var(--danger)"
-                : "var(--verdigris)"
-            }
+            primary={cow.status === COW_STATUS_VALUES.ALERT ? "var(--danger)" : "var(--verdigris)"}
           />
           <span style={{ position: "absolute", bottom: -2, right: -2 }}>
-            <StatusDot
-              tone={tone}
-              pulse={cow.status === COW_STATUS_VALUES.ALERT}
-            />
+            <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
           </span>
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              style={{ fontWeight: 700, fontFamily: "var(--font-display)" }}
-            >
-              {cow.name}
-            </span>
+            <span style={{ fontWeight: 700, fontFamily: "var(--font-display)" }}>{cow.name}</span>
             <span
               style={{
                 fontFamily: "var(--font-mono)",
@@ -79,9 +68,7 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
               #{cow.tag}
             </span>
           </div>
-          <div
-            style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}
-          >
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
             {cow.farm?.name}
             {cow.collar && ` · ${cow.collar.name}`}
           </div>

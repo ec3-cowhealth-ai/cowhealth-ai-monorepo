@@ -20,22 +20,11 @@ export const listPermissionGroups = async (
   response.json(permissionGroups);
 };
 
-export const showPermissionGroup = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
-  await handleRequest(
-    response,
-    () => getPermissionGroupById(Number(request.params.id)),
-    200,
-    404,
-  );
+export const showPermissionGroup = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getPermissionGroupById(Number(request.params.id)), 200, 404);
 };
 
-export const storePermissionGroup = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const storePermissionGroup = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => createPermissionGroup(request.body), 201);
 };
 
@@ -52,60 +41,36 @@ export const destroyPermissionGroup = async (
   request: Request,
   response: Response,
 ): Promise<void> => {
-  await handleRequest(
-    response,
-    () => deletePermissionGroup(Number(request.params.id)),
-    204,
-  );
+  await handleRequest(response, () => deletePermissionGroup(Number(request.params.id)), 204);
 };
 
 // Permissões do grupo
 
-export const addPermission = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const addPermission = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () =>
-      addPermissionToGroup(
-        Number(request.params.id),
-        Number(request.body.permissionId),
-      ),
+    () => addPermissionToGroup(Number(request.params.id), Number(request.body.permissionId)),
     201,
   );
 };
 
-export const removePermission = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const removePermission = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(
     response,
-    () =>
-      removePermissionFromGroup(
-        Number(request.params.id),
-        Number(request.params.permissionId),
-      ),
+    () => removePermissionFromGroup(Number(request.params.id), Number(request.params.permissionId)),
     204,
   );
 };
 
 // Grant / Revoke para Roles
 
-export const grantPermissions = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const grantPermissions = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () =>
     grantGroupPermissionsToRoles(Number(request.params.id), request.body),
   );
 };
 
-export const revokePermissions = async (
-  request: Request,
-  response: Response,
-): Promise<void> => {
+export const revokePermissions = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () =>
     revokeGroupPermissionsFromRoles(Number(request.params.id), request.body),
   );
