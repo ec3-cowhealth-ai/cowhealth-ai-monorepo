@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, develop]
   push:
-    branches: [jcfs/frontEndDesign]
+    branches: [main, develop, jcfs/frontEndDesign]
 
 jobs:
   frontend-lint:
