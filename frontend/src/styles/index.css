@@ -1,3 +1,61 @@
 @import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LANDING THEME — Exact tokens from HerdHealthInsight template
+   ═══════════════════════════════════════════════════════════════════════ */
+@theme {
+  /* Brand palette */
+  --color-forest:      oklch(0.32 0.055 155);
+  --color-forest-deep: oklch(0.22 0.045 158);
+  --color-signal:      oklch(0.78 0.18  155);
+  --color-cream:       oklch(0.97 0.012  90);
+  --color-graphite:    oklch(0.22 0.012 250);
+  --color-sand:        oklch(0.90 0.030  85);
+
+  /* Semantic — cream/light theme */
+  --color-background:          oklch(0.975 0.012  90);
+  --color-foreground:          oklch(0.21  0.020 160);
+  --color-card:                oklch(0.990 0.006  90);
+  --color-card-foreground:     oklch(0.21  0.020 160);
+  --color-muted:               oklch(0.940 0.014  85);
+  --color-muted-foreground:    oklch(0.45  0.020 160);
+  --color-popover:             oklch(0.990 0.006  90);
+  --color-popover-foreground:  oklch(0.21  0.020 160);
+  --color-primary:             oklch(0.32  0.055 155);
+  --color-primary-foreground:  oklch(0.975 0.012  90);
+  --color-secondary:           oklch(0.930 0.018  85);
+  --color-secondary-foreground:oklch(0.25  0.030 160);
+  --color-destructive:         oklch(0.55  0.180  28);
+  --color-destructive-foreground: oklch(0.98 0.010 90);
+  --color-border:              oklch(0.88  0.014  90);
+  --color-input:               oklch(0.90  0.014  90);
+  --color-ring:                oklch(0.45  0.070 155);
+
+  /* Fonts — template aesthetic */
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans:    "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  /* Shadows */
+  --shadow-elegant: 0 30px 80px -40px color-mix(in oklab, oklch(0.22 0.045 158) 50%, transparent);
+  --shadow-soft:    0 12px 40px -20px color-mix(in oklab, oklch(0.22 0.012 250) 25%, transparent);
+  --radius: 0.75rem;
+}
+
+/* Custom gradient utilities used by template sections */
+@layer utilities {
+  .bg-gradient-forest {
+    background: linear-gradient(160deg, #0f1e1a, #339989);
+  }
+  .bg-gradient-hero {
+    background: linear-gradient(
+      180deg,
+      rgba(15, 30, 26, 0.08) 0%,
+      rgba(15, 30, 26, 0.6) 55%,
+      rgba(10, 20, 18, 0.94) 100%
+    );
+  }
+}
+
 @import "./landing.css";
 @import "./app.css";
