@@ -1,11 +1,4 @@
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import type { ChartDataPoint } from "../types";
 
 interface CowsPerStatusChartProps {
@@ -24,25 +17,12 @@ const STATUS_COLORS: Record<string, string> = {
 
 export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => (
   <div className="card" style={{ padding: "var(--s-4)" }}>
-    <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>
-      Vacas por Status
-    </p>
+    <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>Vacas por Status</p>
     <ResponsiveContainer width="100%" height={260}>
       <PieChart>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="label"
-          cx="50%"
-          cy="50%"
-          outerRadius={90}
-          label
-        >
+        <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={90} label>
           {data.map((entry, i) => (
-            <Cell
-              key={`cell-${i}`}
-              fill={STATUS_COLORS[entry.label] ?? "#8884d8"}
-            />
+            <Cell key={`cell-${i}`} fill={STATUS_COLORS[entry.label] ?? "#8884d8"} />
           ))}
         </Pie>
         <Tooltip />

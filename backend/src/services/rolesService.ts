@@ -42,11 +42,7 @@ export const getRoleById = async (roleId: number) => {
 };
 
 export const createRole = async ({ name, description }: CreateRoleInput) => {
-  await assertUnique(
-    prisma.role,
-    { name },
-    "Já existe uma role com este nome.",
-  );
+  await assertUnique(prisma.role, { name }, "Já existe uma role com este nome.");
 
   return prisma.role.create({
     data: { name, description },
@@ -54,20 +50,12 @@ export const createRole = async ({ name, description }: CreateRoleInput) => {
   });
 };
 
-export const updateRole = async (
-  roleId: number,
-  { name, description }: UpdateRoleInput,
-) => {
+export const updateRole = async (roleId: number, { name, description }: UpdateRoleInput) => {
   const role = await prisma.role.findUnique({ where: { id: roleId } });
   if (!role) throw new Error("Role não encontrada.");
 
   if (name && name !== role.name) {
-    await assertUnique(
-      prisma.role,
-      { name },
-      "Já existe uma role com este nome.",
-      roleId,
-    );
+    await assertUnique(prisma.role, { name }, "Já existe uma role com este nome.", roleId);
   }
 
   return prisma.role.update({
@@ -93,10 +81,7 @@ export const deleteRole = async (roleId: number) => {
   await prisma.role.delete({ where: { id: roleId } });
 };
 
-export const assignPermissionToRole = async (
-  roleId: number,
-  permissionId: number,
-) => {
+export const assignPermissionToRole = async (roleId: number, permissionId: number) => {
   const role = await prisma.role.findUnique({ where: { id: roleId } });
   if (!role) throw new Error("Role não encontrada.");
 
@@ -113,10 +98,7 @@ export const assignPermissionToRole = async (
   return prisma.rolePermission.create({ data: { roleId, permissionId } });
 };
 
-export const removePermissionFromRole = async (
-  roleId: number,
-  permissionId: number,
-) => {
+export const removePermissionFromRole = async (roleId: number, permissionId: number) => {
   const rolePermission = await prisma.rolePermission.findUnique({
     where: { roleId_permissionId: { roleId, permissionId } },
   });

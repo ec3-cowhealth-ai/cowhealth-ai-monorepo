@@ -41,11 +41,7 @@ export const ConfirmDialog = ({
         </div>
 
         <div className="modal-card__body">
-          {description && (
-            <p style={{ margin: 0, fontSize: "var(--t-body)" }}>
-              {description}
-            </p>
-          )}
+          {description && <p style={{ margin: 0, fontSize: "var(--t-body)" }}>{description}</p>}
           {children}
         </div>
 

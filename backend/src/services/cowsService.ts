@@ -1,15 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { deleteFile } from "../helpers/fileStorage";
-import {
-  assertUnique,
-  querySensorData,
-  aggregateDailyAverage,
-} from "../helpers/serviceHelpers";
-import type {
-  CreateCowInput,
-  UpdateCowInput,
-  SensorQueryInput,
-} from "../types/cows";
+import { assertUnique, querySensorData, aggregateDailyAverage } from "../helpers/serviceHelpers";
+import type { CreateCowInput, UpdateCowInput, SensorQueryInput } from "../types/cows";
 
 const MAX_PHOTOS = 3;
 
@@ -25,6 +17,8 @@ export const getAllCows = async (farmId?: number) => {
       breed: true,
       weight: true,
       status: true,
+      lastLat: true,
+      lastLng: true,
       createdAt: true,
       farm: { select: { id: true, name: true } },
       collar: { select: { id: true, name: true, status: true } },
@@ -45,6 +39,8 @@ export const getCowById = async (cowId: number) => {
       weight: true,
       photos: true,
       status: true,
+      lastLat: true,
+      lastLng: true,
       createdAt: true,
       updatedAt: true,
       farm: { select: { id: true, name: true, city: true, state: true } },
@@ -59,11 +55,7 @@ export const getCowById = async (cowId: number) => {
 };
 
 export const createCow = async (data: CreateCowInput) => {
-  await assertUnique(
-    prisma.cow,
-    { tag: data.tag },
-    "Já existe uma vaca com esta tag.",
-  );
+  await assertUnique(prisma.cow, { tag: data.tag }, "Já existe uma vaca com esta tag.");
 
   const farm = await prisma.farm.findUnique({ where: { id: data.farmId } });
   if (!farm) throw new Error("Fazenda não encontrada.");
@@ -101,11 +93,7 @@ export const updateCow = async (cowId: number, data: UpdateCowInput) => {
   if (!cow) throw new Error("Vaca não encontrada.");
 
   if (data.tag && data.tag !== cow.tag) {
-    await assertUnique(
-      prisma.cow,
-      { tag: data.tag },
-      "Já existe uma vaca com esta tag.",
-    );
+    await assertUnique(prisma.cow, { tag: data.tag }, "Já existe uma vaca com esta tag.");
   }
 
   if (data.collarId) {
@@ -157,8 +145,7 @@ export const removeCowPhoto = async (cowId: number, filename: string) => {
   if (!cow) throw new Error("Vaca não encontrada.");
 
   const currentPhotos = (cow.photos as string[]) ?? [];
-  if (!currentPhotos.includes(filename))
-    throw new Error("Foto não encontrada.");
+  if (!currentPhotos.includes(filename)) throw new Error("Foto não encontrada.");
 
   deleteFile(filename);
 
@@ -171,35 +158,21 @@ export const removeCowPhoto = async (cowId: number, filename: string) => {
 
 // Sensores — listagem paginada
 
-export const getCowHeartRate = async (
-  cowId: number,
-  options: SensorQueryInput,
-) => {
+export const getCowHeartRate = async (cowId: number, options: SensorQueryInput) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");
 
   return querySensorData(prisma.heartRateData, cowId, { bpm: true }, options);
 };
 
-export const getCowTemperature = async (
-  cowId: number,
-  options: SensorQueryInput,
-) => {
+export const getCowTemperature = async (cowId: number, options: SensorQueryInput) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");
 
-  return querySensorData(
-    prisma.temperatureData,
-    cowId,
-    { celsius: true },
-    options,
-  );
+  return querySensorData(prisma.temperatureData, cowId, { celsius: true }, options);
 };
 
-export const getCowAccelerometer = async (
-  cowId: number,
-  options: SensorQueryInput,
-) => {
+export const getCowAccelerometer = async (cowId: number, options: SensorQueryInput) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");
 

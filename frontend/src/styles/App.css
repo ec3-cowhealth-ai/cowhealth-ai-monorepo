@@ -13,6 +13,38 @@
   }
 }
 
+/* ── Mapa GPS — pins de vaca ─────────────────────────────────────── */
+.cow-map-pin {
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+.cow-map-pin__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  position: absolute;
+  inset: 0;
+}
+.cow-map-pin__ring {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: absolute;
+  inset: 0;
+  animation: cowPulse 1.8s ease-out infinite;
+}
+.cow-map-pin--selected .cow-map-pin__dot {
+  border-color: #fff;
+  border-width: 2.5px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+.cow-map-pin--simulated .cow-map-pin__dot {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
 /* APP SHELL */
 .app-shell {
   display: grid;
@@ -1177,11 +1209,7 @@
   padding: var(--s-5);
   border-radius: var(--r-xl);
   background:
-    radial-gradient(
-      120% 100% at 100% 0%,
-      rgba(125, 226, 209, 0.12) 0%,
-      transparent 60%
-    ),
+    radial-gradient(120% 100% at 100% 0%, rgba(125, 226, 209, 0.12) 0%, transparent 60%),
     linear-gradient(135deg, rgba(51, 153, 137, 0.18) 0%, var(--bg-elev-1) 70%);
   border: 1px solid var(--border);
   overflow: hidden;

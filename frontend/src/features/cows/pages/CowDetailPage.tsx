@@ -2,23 +2,13 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import {
-  AlertTriangle,
-  Warehouse,
-  Tag,
-  Thermometer,
-  Heart,
-} from "lucide-react";
+import { AlertTriangle, Warehouse, Tag, Thermometer, Heart } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
-import {
-  useCow,
-  useCowHeartRateDaily,
-  useCowTemperatureDaily,
-} from "../hooks/useCows";
+import { useCow, useCowHeartRateDaily, useCowTemperatureDaily } from "../hooks/useCows";
 import { useNotifications } from "@hooks/useNotifications";
-import { CowStatusValues } from "../../../types/cows";
+import { COW_STATUS_VALUES } from "../../../types/cows";
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY: "Saudável",
@@ -28,16 +18,16 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const statusTone = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "danger" as const;
-  if (s === CowStatusValues.HEAT_STRESS) return "warn" as const;
-  if (s === CowStatusValues.CALVING) return "info" as const;
+  if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
+  if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
   return "success" as const;
 };
 
 const statusColor = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "var(--danger)";
-  if (s === CowStatusValues.HEAT_STRESS) return "var(--warning)";
-  if (s === CowStatusValues.CALVING) return "var(--info)";
+  if (s === COW_STATUS_VALUES.ALERT) return "var(--danger)";
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "var(--warning)";
+  if (s === COW_STATUS_VALUES.CALVING) return "var(--info)";
   return "var(--success)";
 };
 
@@ -57,8 +47,7 @@ export const CowDetailPage = () => {
   const { data: temperature } = useCowTemperatureDaily(id || "");
   const { data: notifications } = useNotifications();
 
-  const cowNotifs =
-    notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
+  const cowNotifs = notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
 
   if (isLoading) {
     return (
@@ -98,10 +87,7 @@ export const CowDetailPage = () => {
 
       <div className="app-content">
         {/* Hero card */}
-        <div
-          className="card"
-          style={{ display: "flex", alignItems: "center", gap: 16 }}
-        >
+        <div className="card" style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div
             style={{
               width: 56,
@@ -125,10 +111,7 @@ export const CowDetailPage = () => {
                 marginBottom: 4,
               }}
             >
-              <StatusDot
-                tone={tone}
-                pulse={cow.status === CowStatusValues.ALERT}
-              />
+              <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
               <span
                 style={{
                   fontSize: 13,
@@ -279,8 +262,7 @@ export const CowDetailPage = () => {
                   key={n.id}
                   className="alert-card"
                   style={{
-                    borderLeftColor:
-                      NOTIF_TONE[n.type] ?? "var(--border-subtle)",
+                    borderLeftColor: NOTIF_TONE[n.type] ?? "var(--border-subtle)",
                   }}
                 >
                   <div>

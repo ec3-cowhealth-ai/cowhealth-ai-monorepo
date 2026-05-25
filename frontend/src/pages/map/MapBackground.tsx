@@ -15,16 +15,8 @@ export const MapBackground = ({ layout }: MapBackgroundProps) => (
     >
       <defs>
         <pattern id="topo" width="60" height="60" patternUnits="userSpaceOnUse">
-          <path
-            d="M0 30 Q15 20 30 30 T60 30"
-            stroke="rgba(125,226,209,0.06)"
-            fill="none"
-          />
-          <path
-            d="M0 50 Q15 42 30 50 T60 50"
-            stroke="rgba(125,226,209,0.04)"
-            fill="none"
-          />
+          <path d="M0 30 Q15 20 30 30 T60 30" stroke="rgba(125,226,209,0.06)" fill="none" />
+          <path d="M0 50 Q15 42 30 50 T60 50" stroke="rgba(125,226,209,0.04)" fill="none" />
         </pattern>
         <radialGradient id="vig" cx="50%" cy="50%" r="60%">
           <stop offset="0%" stopColor="rgba(43,44,40,0)" />

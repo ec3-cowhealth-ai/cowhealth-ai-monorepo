@@ -1,21 +1,19 @@
 import { StatusBadge } from "@components/common";
-import { CowStatusValues } from "../../../types/cows.ts";
+import { COW_STATUS_VALUES } from "../../../types/cows.ts";
 
 interface CowStatusBadgeProps {
   status: string;
 }
 
-const getStatusTone = (
-  status: string,
-): "success" | "warning" | "danger" | "info" | "muted" => {
+const getStatusTone = (status: string): "success" | "warning" | "danger" | "info" | "muted" => {
   switch (status) {
-    case CowStatusValues.HEALTHY:
+    case COW_STATUS_VALUES.HEALTHY:
       return "success";
-    case CowStatusValues.HEAT_STRESS:
+    case COW_STATUS_VALUES.HEAT_STRESS:
       return "warning";
-    case CowStatusValues.ALERT:
+    case COW_STATUS_VALUES.ALERT:
       return "danger";
-    case CowStatusValues.CALVING:
+    case COW_STATUS_VALUES.CALVING:
       return "info";
     default:
       return "muted";

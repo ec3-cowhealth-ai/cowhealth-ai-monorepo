@@ -1,26 +1,16 @@
 import { Request, Response, NextFunction } from "express";
-import { userHasPermission } from "../services/authService";
 
+/**
+ * Verifica se o usuário autenticado possui a permissão necessária.
+ * As permissões são lidas diretamente do payload JWT — sem query ao banco.
+ * O token é gerado com a lista de permissões no login (authService.ts).
+ */
 export const requirePermission =
   (permissionName: string) =>
-  async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    const userId = request.user?.sub;
+  (request: Request, response: Response, next: NextFunction): void => {
+    const permissions = request.user?.permissions ?? [];
 
-    if (!userId) {
-      response.status(401).json({ error: "Não autenticado." });
-      return;
-    }
-
-    // TODO[RENATO] Query no banco em CADA request autenticada (user→roles→permissions).
-    // Solução: embutir permissions[] no payload JWT no login e ler de request.user aqui,
-    // eliminando esta query. Ver authService.ts → login() para onde adicionar as permissions.
-    const allowed = await userHasPermission(userId, permissionName);
-
-    if (!allowed) {
+    if (!permissions.includes(permissionName)) {
       response.status(403).json({ error: "Sem permissão para esta ação." });
       return;
     }

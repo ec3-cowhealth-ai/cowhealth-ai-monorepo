@@ -1,11 +1,10 @@
-export const UserProfileValues = {
+export const USER_PROFILE_VALUES = {
   ADMIN: "ADMIN",
   MANAGER: "MANAGER",
   VIEWER: "VIEWER",
 } as const;
 
-export type UserProfile =
-  (typeof UserProfileValues)[keyof typeof UserProfileValues];
+export type UserProfile = (typeof USER_PROFILE_VALUES)[keyof typeof USER_PROFILE_VALUES];
 
 export interface Permission {
   id: string;

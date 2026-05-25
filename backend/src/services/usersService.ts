@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateUserInput, UpdateUserInput } from "../types/access";
+import type { Prisma } from "@prisma/client";
 
 const SUPER_ADMIN_USER_ID = 1;
 
@@ -57,12 +58,7 @@ export const getUserById = async (userId: number) => {
   return user;
 };
 
-export const createUser = async ({
-  name,
-  email,
-  password,
-  profile,
-}: CreateUserInput) => {
+export const createUser = async ({ name, email, password, profile }: CreateUserInput) => {
   await assertUnique(prisma.user, { email }, "Email já cadastrado.");
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -91,7 +87,7 @@ export const updateUser = async (
     await assertUnique(prisma.user, { email }, "Email já cadastrado.", userId);
   }
 
-  const updatedData: any = { name, email, profile };
+  const updatedData: Prisma.UserUpdateInput = { name, email, profile };
 
   if (password) {
     updatedData.passwordHash = await bcrypt.hash(password, 12);
@@ -130,9 +126,7 @@ export const deleteUser = async (userId: number) => {
 
   if (!user) throw new Error("Usuário não encontrado.");
 
-  const isSuperAdmin = user.roles.some(
-    (userRole) => userRole.role.name === "SuperAdmin",
-  );
+  const isSuperAdmin = user.roles.some((userRole) => userRole.role.name === "SuperAdmin");
   if (isSuperAdmin) {
     throw new Error("Não é possível excluir o usuário SuperAdmin.");
   }

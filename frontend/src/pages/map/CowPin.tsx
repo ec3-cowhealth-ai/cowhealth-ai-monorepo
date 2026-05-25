@@ -19,15 +19,7 @@ interface CowPinProps {
   onClick: () => void;
 }
 
-export const CowPin = ({
-  x,
-  y,
-  tone,
-  label,
-  cow,
-  selected,
-  onClick,
-}: CowPinProps) => {
+export const CowPin = ({ x, y, tone, label, cow, selected, onClick }: CowPinProps) => {
   const color = PIN_COLORS[tone];
 
   return (

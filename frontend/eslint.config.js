@@ -19,4 +19,19 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  // Const-enum objects in types/ must be UPPER_SNAKE_CASE.
+  // Scoped to src/types/ to avoid affecting services, components, and hooks.
+  {
+    files: ["src/types/**/*.ts"],
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "variable",
+          modifiers: ["const", "exported"],
+          format: ["UPPER_CASE"],
+        },
+      ],
+    },
+  },
 ]);

@@ -42,10 +42,7 @@ export const FarmDetailPage = () => {
     return (
       <div className="app-page">
         <AppBar title="Detalhes da Fazenda" />
-        <EmptyState
-          icon={<XCircle size={40} />}
-          title="Fazenda não encontrada"
-        />
+        <EmptyState icon={<XCircle size={40} />} title="Fazenda não encontrada" />
       </div>
     );
   }
@@ -175,9 +172,7 @@ export const FarmDetailPage = () => {
             >
               Endereço
             </p>
-            <p style={{ margin: 0, fontSize: "var(--t-body)" }}>
-              {farm.address}
-            </p>
+            <p style={{ margin: 0, fontSize: "var(--t-body)" }}>{farm.address}</p>
           </div>
         </div>
 

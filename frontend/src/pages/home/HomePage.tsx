@@ -5,19 +5,11 @@ import { useUnreadNotifications } from "@hooks/useNotifications";
 import { useDashboardOverview } from "@features/dashboard/hooks/useDashboard";
 import { useCows } from "@features/cows/hooks/useCows";
 import { AppBar } from "@components/layout";
-import {
-  Bell,
-  AlertTriangle,
-  ChevronRight,
-  Check,
-  List,
-  Map,
-  Warehouse,
-} from "lucide-react";
+import { Bell, AlertTriangle, ChevronRight, Check, List, Map, Warehouse } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useFarmContext } from "../../context/FarmContext";
-import { CowStatusValues } from "../../types/cows";
+import { COW_STATUS_VALUES } from "../../types/cows";
 import type { Cow } from "../../types/cows";
 import type { Farm } from "../../types/farms";
 
@@ -29,9 +21,9 @@ const greeting = () => {
 };
 
 const statusTone = (s: string) => {
-  if (s === CowStatusValues.ALERT) return "danger" as const;
-  if (s === CowStatusValues.HEAT_STRESS) return "warn" as const;
-  if (s === CowStatusValues.CALVING) return "info" as const;
+  if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
+  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
+  if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
   return "success" as const;
 };
 
@@ -49,14 +41,11 @@ export const HomePage = () => {
   const unreadCount = unread?.length || 0;
   const total = overview?.totalCows ?? cows?.length ?? 0;
   const alertCount = overview?.cowsInAlert ?? 0;
-  const healthyCount =
-    cows?.filter((c: Cow) => c.status === CowStatusValues.HEALTHY).length ?? 0;
+  const healthyCount = cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length ?? 0;
   const healthPct = total > 0 ? Math.round((healthyCount / total) * 100) : 0;
 
   const attention =
-    cows
-      ?.filter((c: Cow) => c.status !== CowStatusValues.HEALTHY)
-      .slice(0, 6) ?? [];
+    cows?.filter((c: Cow) => c.status !== COW_STATUS_VALUES.HEALTHY).slice(0, 6) ?? [];
 
   return (
     <div className="app-page">
@@ -85,9 +74,7 @@ export const HomePage = () => {
           >
             <Bell size={22} />
             {unreadCount > 0 && (
-              <span className="app-bar__action-badge">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
+              <span className="app-bar__action-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
             )}
           </button>
         }
@@ -117,9 +104,7 @@ export const HomePage = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p style={{ margin: "0 0 16px 0", fontWeight: 700, fontSize: 15 }}>
-              Trocar fazenda
-            </p>
+            <p style={{ margin: "0 0 16px 0", fontWeight: 700, fontSize: 15 }}>Trocar fazenda</p>
             {farms.map((farm: Farm) => (
               <button
                 key={farm.id}
@@ -142,11 +127,7 @@ export const HomePage = () => {
               >
                 <CowHead
                   size={24}
-                  color={
-                    farm.id === selectedFarm?.id
-                      ? "var(--verdigris)"
-                      : "var(--text-muted)"
-                  }
+                  color={farm.id === selectedFarm?.id ? "var(--verdigris)" : "var(--text-muted)"}
                 />
                 <span
                   style={{
@@ -157,9 +138,7 @@ export const HomePage = () => {
                 >
                   {farm.name}
                 </span>
-                {farm.id === selectedFarm?.id && (
-                  <Check size={16} color="var(--verdigris)" />
-                )}
+                {farm.id === selectedFarm?.id && <Check size={16} color="var(--verdigris)" />}
               </button>
             ))}
           </div>
@@ -176,27 +155,18 @@ export const HomePage = () => {
               <span style={{ fontSize: 20, fontWeight: 400 }}>%</span>
             </p>
             <div className="home-hero__bar">
-              <div
-                className="home-hero__bar-fill"
-                style={{ width: `${healthPct}%` }}
-              />
+              <div className="home-hero__bar-fill" style={{ width: `${healthPct}%` }} />
             </div>
           </div>
           <div className="home-hero__stats">
             <div className="home-stat">
-              <span
-                className="home-stat__value"
-                style={{ color: "var(--success)" }}
-              >
+              <span className="home-stat__value" style={{ color: "var(--success)" }}>
                 {healthyCount}
               </span>
               <span className="home-stat__label">Saudáveis</span>
             </div>
             <div className="home-stat">
-              <span
-                className="home-stat__value"
-                style={{ color: "var(--danger)" }}
-              >
+              <span className="home-stat__value" style={{ color: "var(--danger)" }}>
                 {alertCount}
               </span>
               <span className="home-stat__label">Alertas</span>
@@ -218,9 +188,7 @@ export const HomePage = () => {
             <AlertTriangle size={16} color="var(--danger)" />
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>
-                {alertCount}{" "}
-                {alertCount === 1 ? "vaca requer" : "vacas requerem"} atenção
-                imediata
+                {alertCount} {alertCount === 1 ? "vaca requer" : "vacas requerem"} atenção imediata
               </p>
               <p
                 style={{
@@ -241,10 +209,7 @@ export const HomePage = () => {
           <div className="home-section">
             <div className="home-section__header">
               <span className="home-section__title">Em Atenção</span>
-              <button
-                className="home-section__link"
-                onClick={() => navigate("/cows")}
-              >
+              <button className="home-section__link" onClick={() => navigate("/cows")}>
                 Ver todas
               </button>
             </div>
@@ -276,7 +241,7 @@ export const HomePage = () => {
                 >
                   <StatusDot
                     tone={statusTone(cow.status)}
-                    pulse={cow.status === CowStatusValues.ALERT}
+                    pulse={cow.status === COW_STATUS_VALUES.ALERT}
                   />
                   {cow.tag}
                 </button>
@@ -299,10 +264,7 @@ export const HomePage = () => {
               <Map size={20} color="var(--verdigris)" />
               <span>Mapa</span>
             </button>
-            <button
-              className="quick-chip"
-              onClick={() => navigate("/notifications")}
-            >
+            <button className="quick-chip" onClick={() => navigate("/notifications")}>
               <span style={{ position: "relative", display: "flex" }}>
                 <Bell size={20} color="var(--verdigris)" />
                 {unreadCount > 0 && (

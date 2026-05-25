@@ -6,11 +6,7 @@ interface StatusBadgeProps {
   showDot?: boolean;
 }
 
-export const StatusBadge = ({
-  tone,
-  children,
-  showDot = true,
-}: StatusBadgeProps) => {
+export const StatusBadge = ({ tone, children, showDot = true }: StatusBadgeProps) => {
   return (
     <span className={`status-badge status-badge--${tone}`}>
       {showDot && <span className="status-badge__dot" />}

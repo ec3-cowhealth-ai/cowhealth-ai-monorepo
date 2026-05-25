@@ -1,12 +1,4 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import type { ChartDataPoint } from "../types";
 
 interface CowsPerFarmChartProps {
@@ -15,9 +7,7 @@ interface CowsPerFarmChartProps {
 
 export const CowsPerFarmChart = ({ data }: CowsPerFarmChartProps) => (
   <div className="card" style={{ padding: "var(--s-4)" }}>
-    <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>
-      Vacas por Fazenda
-    </p>
+    <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>Vacas por Fazenda</p>
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />

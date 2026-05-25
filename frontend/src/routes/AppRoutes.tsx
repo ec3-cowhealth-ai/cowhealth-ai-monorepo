@@ -11,12 +11,7 @@ import { FarmsPage, FarmDetailPage } from "@features/farms";
 import { CollarsPage, CollarDetailPage } from "@features/collars";
 import { NotificationsPage } from "@features/notifications";
 import { CowsPage, CowDetailPage } from "@features/cows";
-import {
-  AccessLayout,
-  UsersPage,
-  RolesPage,
-  PermissionsPage,
-} from "@features/access";
+import { AccessLayout, UsersPage, RolesPage, PermissionsPage } from "@features/access";
 
 export const AppRoutes = () => (
   <BrowserRouter>

@@ -27,9 +27,7 @@ export interface CowHealthSnapshot {
 
 // ─── Classificador puro — sem Prisma, sem I/O ─────────────────────────────────
 
-export const classifyHealth = (
-  snapshot: CowHealthSnapshot,
-): CowStatus | null => {
+export const classifyHealth = (snapshot: CowHealthSnapshot): CowStatus | null => {
   const { calving, heatStress } = HEALTH_THRESHOLDS;
 
   if (
@@ -62,20 +60,15 @@ export const buildHealthSnapshot = (
 ): CowHealthSnapshot => {
   const posturalChanges = recentAccelZ.reduce((count, r, i) => {
     if (i === 0) return count;
-    return Math.abs(r.accelZ - recentAccelZ[i - 1].accelZ) > 0.5
-      ? count + 1
-      : count;
+    return Math.abs(r.accelZ - recentAccelZ[i - 1].accelZ) > 0.5 ? count + 1 : count;
   }, 0);
 
   const avgHeartRate =
-    recentHr.length > 0
-      ? recentHr.reduce((sum, r) => sum + r.bpm, 0) / recentHr.length
-      : 0;
+    recentHr.length > 0 ? recentHr.reduce((sum, r) => sum + r.bpm, 0) / recentHr.length : 0;
 
   const tempDelta =
     recentTemps12.length >= 2
-      ? recentTemps12[recentTemps12.length - 1].celsius -
-        recentTemps12[0].celsius
+      ? recentTemps12[recentTemps12.length - 1].celsius - recentTemps12[0].celsius
       : 0;
 
   const restlessPeaks = recentAccelXY.reduce((count, r, i) => {
@@ -87,8 +80,7 @@ export const buildHealthSnapshot = (
 
   const avgTemperature =
     recentTemps30.length > 0
-      ? recentTemps30.reduce((sum, r) => sum + r.celsius, 0) /
-        recentTemps30.length
+      ? recentTemps30.reduce((sum, r) => sum + r.celsius, 0) / recentTemps30.length
       : 0;
 
   return {

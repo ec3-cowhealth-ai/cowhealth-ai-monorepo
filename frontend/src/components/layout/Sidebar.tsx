@@ -57,9 +57,7 @@ export const Sidebar = () => {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`sidebar__nav-item ${
-              isActive(item.path) ? "is-active" : ""
-            }`}
+            className={`sidebar__nav-item ${isActive(item.path) ? "is-active" : ""}`}
           >
             <span className="ic">{item.icon}</span>
             <span>{item.label}</span>
@@ -70,19 +68,13 @@ export const Sidebar = () => {
 
       <div className="sidebar__footer">
         <div className="sidebar__user" onClick={() => navigate("/profile")}>
-          <div className="sidebar__avatar">
-            {user?.name?.charAt(0).toUpperCase()}
-          </div>
+          <div className="sidebar__avatar">{user?.name?.charAt(0).toUpperCase()}</div>
           <div className="sidebar__user-info">
             <p className="sidebar__user-name">{user?.name}</p>
             <p className="sidebar__user-role">{user?.profile}</p>
           </div>
         </div>
-        <button
-          onClick={handleLogout}
-          className="sidebar__logout"
-          title="Logout"
-        >
+        <button onClick={handleLogout} className="sidebar__logout" title="Logout">
           <LogOut size={18} />
         </button>
       </div>

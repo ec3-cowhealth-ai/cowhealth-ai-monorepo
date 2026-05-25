@@ -56,11 +56,7 @@ export const getFarmById = async (farmId: number) => {
 };
 
 export const createFarm = async (data: CreateFarmInput) => {
-  await assertUnique(
-    prisma.farm,
-    { cnpj: data.cnpj },
-    "Já existe uma fazenda com este CNPJ.",
-  );
+  await assertUnique(prisma.farm, { cnpj: data.cnpj }, "Já existe uma fazenda com este CNPJ.");
 
   return prisma.farm.create({
     data,

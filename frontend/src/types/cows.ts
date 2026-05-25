@@ -1,17 +1,19 @@
-export const CowStatusValues = {
+export const COW_STATUS_VALUES = {
   HEALTHY: "HEALTHY",
   CALVING: "CALVING",
   HEAT_STRESS: "HEAT_STRESS",
   ALERT: "ALERT",
 } as const;
 
-export type CowStatus = (typeof CowStatusValues)[keyof typeof CowStatusValues];
+export type CowStatus = (typeof COW_STATUS_VALUES)[keyof typeof COW_STATUS_VALUES];
 
 export interface Cow {
   id: number;
   tag: string;
   name: string;
   status: CowStatus;
+  lastLat?: number | null;
+  lastLng?: number | null;
   breed: string;
   weight: number;
   birthDate?: string;

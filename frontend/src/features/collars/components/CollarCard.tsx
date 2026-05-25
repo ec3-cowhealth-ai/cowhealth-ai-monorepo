@@ -1,21 +1,19 @@
 import { StatusBadge } from "@components/common";
 import type { Collar } from "../../../types/collars.ts";
-import { CollarStatusValues } from "../../../types/collars.ts";
+import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 
 interface CollarCardProps {
   collar: Collar;
   onClick: () => void;
 }
 
-const getStatusTone = (
-  status: string,
-): "success" | "warning" | "danger" | "muted" => {
+const getStatusTone = (status: string): "success" | "warning" | "danger" | "muted" => {
   switch (status) {
-    case CollarStatusValues.ACTIVE:
+    case COLLAR_STATUS_VALUES.ACTIVE:
       return "success";
-    case CollarStatusValues.MAINTENANCE:
+    case COLLAR_STATUS_VALUES.MAINTENANCE:
       return "warning";
-    case CollarStatusValues.BATTERY:
+    case COLLAR_STATUS_VALUES.BATTERY:
       return "danger";
     default:
       return "muted";
@@ -33,11 +31,7 @@ const getFrequencyLabel = (freq: string): string => {
 
 export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
   return (
-    <div
-      className="card card--clickable"
-      onClick={onClick}
-      style={{ cursor: "pointer" }}
-    >
+    <div className="card card--clickable" onClick={onClick} style={{ cursor: "pointer" }}>
       <div
         style={{
           display: "flex",
@@ -46,12 +40,8 @@ export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
           marginBottom: "var(--s-2)",
         }}
       >
-        <h3 style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>
-          {collar.name}
-        </h3>
-        <StatusBadge tone={getStatusTone(collar.status)}>
-          {collar.status}
-        </StatusBadge>
+        <h3 style={{ margin: 0, fontSize: "var(--t-body)", fontWeight: 600 }}>{collar.name}</h3>
+        <StatusBadge tone={getStatusTone(collar.status)}>{collar.status}</StatusBadge>
       </div>
 
       <p
@@ -71,8 +61,7 @@ export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
           color: "var(--text-secondary)",
         }}
       >
-        <strong>Vaca:</strong>{" "}
-        {collar.cow ? collar.cow.tag : "Sem vaca vinculada"}
+        <strong>Vaca:</strong> {collar.cow ? collar.cow.tag : "Sem vaca vinculada"}
       </p>
     </div>
   );

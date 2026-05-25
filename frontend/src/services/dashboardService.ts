@@ -30,9 +30,7 @@ export const getDashboardOverview = (farmId?: string) =>
 
 export const getCowsPerStatus = (farmId?: string) =>
   api
-    .get<
-      CowStatusItem[]
-    >("/dashboard/cows-per-status", { params: farmId ? { farmId } : {} })
+    .get<CowStatusItem[]>("/dashboard/cows-per-status", { params: farmId ? { farmId } : {} })
     .then((r) => r.data);
 
 export const getCowsPerFarm = () =>

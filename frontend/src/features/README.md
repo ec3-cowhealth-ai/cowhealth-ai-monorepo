@@ -37,4 +37,3 @@ features/<name>/
 - Feature READMEs should describe the current implementation, not an old TODO list.
 - If a feature is still incomplete, say exactly what is missing and who owns it.
 - If a feature is stable, keep the README short and current.
-

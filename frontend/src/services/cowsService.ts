@@ -35,38 +35,27 @@ export const cowsService = {
 
   // Sensor data
   getHeartRateDaily: async (cowId: string, days: number = 7) => {
-    const response = await api.get<HeartRateDailyPoint[]>(
-      `/cows/${cowId}/heart-rate/daily`,
-      { params: { days } },
-    );
+    const response = await api.get<HeartRateDailyPoint[]>(`/cows/${cowId}/heart-rate/daily`, {
+      params: { days },
+    });
     return response.data;
   },
 
   getTemperatureDaily: async (cowId: string, days: number = 7) => {
-    const response = await api.get<TemperatureDailyPoint[]>(
-      `/cows/${cowId}/temperature/daily`,
-      { params: { days } },
-    );
+    const response = await api.get<TemperatureDailyPoint[]>(`/cows/${cowId}/temperature/daily`, {
+      params: { days },
+    });
     return response.data;
   },
 
-  getHeartRate: async (
-    cowId: string,
-    page: number = 1,
-    pageSize: number = 100,
-  ) => {
-    const response = await api.get<SensorPage<HeartRateDailyPoint>>(
-      `/cows/${cowId}/heart-rate`,
-      { params: { page, pageSize } },
-    );
+  getHeartRate: async (cowId: string, page: number = 1, pageSize: number = 100) => {
+    const response = await api.get<SensorPage<HeartRateDailyPoint>>(`/cows/${cowId}/heart-rate`, {
+      params: { page, pageSize },
+    });
     return response.data;
   },
 
-  getTemperature: async (
-    cowId: string,
-    page: number = 1,
-    pageSize: number = 100,
-  ) => {
+  getTemperature: async (cowId: string, page: number = 1, pageSize: number = 100) => {
     const response = await api.get<SensorPage<TemperatureDailyPoint>>(
       `/cows/${cowId}/temperature`,
       { params: { page, pageSize } },
@@ -78,11 +67,9 @@ export const cowsService = {
   uploadPhoto: async (cowId: string, file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await api.post<{ filename: string }>(
-      `/cows/${cowId}/photos`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } },
-    );
+    const response = await api.post<{ filename: string }>(`/cows/${cowId}/photos`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   },
 

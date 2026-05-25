@@ -18,5 +18,5 @@ module.exports = tseslint.config(
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
     },
-  }
+  },
 );

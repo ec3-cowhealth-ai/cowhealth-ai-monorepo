@@ -42,9 +42,7 @@ export const getDashboardOverview = async (farmId?: number, userId?: number) => 
     totalFarms,
     totalActiveCollars,
     unreadNotifications,
-    topFarm: topFarm
-      ? { id: topFarm.id, name: topFarm.name, cowCount: topFarm._count.cows }
-      : null,
+    topFarm: topFarm ? { id: topFarm.id, name: topFarm.name, cowCount: topFarm._count.cows } : null,
   };
 };
 

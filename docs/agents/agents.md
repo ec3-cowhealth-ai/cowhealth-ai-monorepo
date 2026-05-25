@@ -33,33 +33,31 @@ Before making recommendations, writing code, modifying files, or answering proje
 
 At the beginning of every new conversation or task, perform this initialization sequence:
 
-1. Read the project entry point:
-   - `START_HERE.md`, if it exists.
-   - If it does not exist, recommend adding it, but do not create it without user approval unless the user explicitly asked you to initialize project documentation.
+1. Read the project agent rules:
+   - `docs/agents/agents.md` (this file).
 
-2. Read the project agent rules:
-   - `AGENTS.md`.
+2. Read the project documentation map:
+   - `docs/README.md` — the authoritative document map for this repository.
 
-3. Read the project documentation map:
-   - `/docs/knowledge/KNOWLEDGE_BASE.md`, if it exists.
-   - `/docs/knowledge/KNOWLEDGE_GRAPH.md`, if the project uses that name instead.
-   - If neither exists, propose creating `/docs/knowledge/KNOWLEDGE_BASE.md`.
+3. Read the mandatory working documents:
+   - `docs/architecture/frontend-architecture.md` — frontend architecture source of truth.
+   - `docs/architecture/backend-architecture.md` — backend architecture source of truth.
+   - `docs/change_control/CHANGELOG.md` — recent changes and session history.
+   - `docs/reviews/20260524-handoff-team.md` — current team handoff and task status.
 
-4. Read the mandatory working files inside `/docs`:
-   - `/docs/plan.md`
-   - `/docs/tasks.md`
-   - `/docs/design.md`
-   - `/docs/memory.md`
+4. Read relevant Source of Truth documents before implementation (per `docs/README.md`):
+   - `/README.md` — root project README.
+   - `docs/policies/CONTRIBUTING.md` and `docs/policies/branching-policy.md`.
+   - `docs/references/code-style.md` and other references in `docs/references/`.
+   - `docs/prisma.md` — Prisma schema reference.
+   - Feature READMEs under `frontend/src/features/` for the relevant feature.
+   - Design system tokens and components in `docs/design_system/`.
 
-5. Read relevant Source of Truth documents before implementation:
-   - `/docs/knowledge/source-of-truth/`
-   - Architecture decision records.
-   - Approved product requirements.
-   - Approved UX/UI requirements.
-   - Approved API contracts.
-   - Approved design system documentation.
-   - Approved accessibility, security, privacy, or compliance standards.
-   - Current sprint, roadmap, or milestone files.
+5. Do NOT treat the following as current implementation guidance (they are historical):
+   - `docs/plan/TODO_EXECUTION_PLAN.md`
+   - `docs/instructions/frontend-implementation-plan.md`
+   - `docs/guidances/IMPLEMENTATION_GUIDE.md`
+   - `docs/reviews/20260523-*`
 
 6. Inspect the application structure before changing code:
    - `package.json`
@@ -103,161 +101,94 @@ Exception:
 
 Every repository assisted by this agent should maintain a `/docs` directory at the repository root.
 
-The default documentation structure is:
+The documentation structure for this repository is:
 
 ```text
 project-root/
-├── AGENTS.md
-├── START_HERE.md
+├── README.md
+├── START_HERE.md                        ← practical entry point for humans and agents
+├── MANAGER.md                           ← operational quality guide
 ├── docs/
-│   ├── plan.md
-│   ├── tasks.md
-│   ├── design.md
-│   ├── memory.md
-│   ├── knowledge/
-│   │   ├── KNOWLEDGE_BASE.md
-│   │   ├── source-of-truth/
-│   │   ├── core/
-│   │   ├── implementation/
-│   │   ├── meetings/
-│   │   ├── team/
-│   │   └── archive/
-│   ├── adr/
-│   ├── uml/
-│   └── generated/
-├── public/
-└── src/
+│   ├── README.md                        ← documentation map (start here)
+│   ├── CHANGELOG.md                     ← format guide for change_control/CHANGELOG.md
+│   ├── agents/
+│   │   ├── agents.md                    ← this file: general coding agent rules
+│   │   ├── design.md                    ← design system reference (Tier 1)
+│   │   └── UIUX_prompt.md
+│   ├── architecture/
+│   │   ├── frontend-architecture.md     ← Tier 1: Source of Truth
+│   │   └── backend-architecture.md      ← Tier 1: Source of Truth
+│   ├── change_control/
+│   │   ├── CHANGELOG.md                 ← change history (all authors)
+│   │   └── CHANGE_BUGFIX.md            ← bug fix log
+│   ├── policies/
+│   │   ├── CONTRIBUTING.md
+│   │   └── branching-policy.md
+│   ├── references/
+│   │   ├── code-style.md
+│   │   ├── setup.md
+│   │   ├── type-patterns.md
+│   │   ├── branded-types.md
+│   │   ├── template-literals.md
+│   │   ├── union-exhaustive.md
+│   │   └── type-testing.md
+│   ├── design_reference/                ← visual design references (images, PDFs)
+│   ├── design_system/                   ← design tokens, HTML prototypes
+│   ├── heuristic_models/
+│   ├── reviews/                         ← working handoffs and audits
+│   ├── reports/                         ← session and daily reports
+│   ├── tasks/                           ← task cards and hotfix lists
+│   ├── guidances/                       ← historical implementation guides
+│   ├── instructions/                    ← historical frontend plans
+│   ├── plan/                            ← historical execution plans
+│   ├── frontendDev_JCFS/               ← JCFS design artifacts
+│   └── prisma.md
+├── frontend/
+│   └── src/
+│       └── features/
+│           └── */README.md              ← per-feature source of truth (Tier 1)
+└── backend/
 ```
 
-### 4.1 Required Files
+### 4.1 Authoritative Files for This Repository
 
-#### `/docs/plan.md`
+#### `docs/README.md`
 
 Purpose:
 
-- Define the current implementation plan.
-- Capture goals, constraints, milestones, risks, dependencies, and acceptance criteria.
-- Record what will be changed before code is changed.
+- Serves as the documentation map and entry point for humans and AI agents.
+- Categorizes all documents by authority tier: Source of Truth, Working Docs, Historical Docs.
+- Must be updated whenever a new document is added or a document changes authority status.
 
-Required sections:
-
-```markdown
-# Plan
-
-## Objective
-
-## Scope
-
-## Assumptions
-
-## Questions for the User
-
-## Constraints
-
-## Architecture Impact
-
-## UI/UX Impact
-
-## Accessibility Impact
-
-## Implementation Strategy
-
-## Testing Strategy
-
-## Risks
-
-## Acceptance Criteria
-```
-
-#### `/docs/tasks.md`
+#### `docs/architecture/frontend-architecture.md` and `docs/architecture/backend-architecture.md`
 
 Purpose:
 
-- Track actionable work items.
-- Break implementation into small, verifiable tasks.
-- Prevent uncontrolled scope expansion.
+- Define the canonical architecture of the frontend and backend respectively.
+- Are the primary Tier 1 references for all architectural decisions.
+- Must be updated when architecture changes are approved and implemented.
 
-Required sections:
-
-```markdown
-# Tasks
-
-## Backlog
-
-## In Progress
-
-## Blocked
-
-## Completed
-
-## Verification Checklist
-```
-
-#### `/docs/design.md`
+#### `docs/change_control/CHANGELOG.md`
 
 Purpose:
 
-- Document architecture, domain model, major components, UI structure, API boundaries, design decisions, UML diagrams, and trade-offs.
+- Record of all changes per session and per author.
+- JCFS section is maintained at the top.
+- Format: `## YYYY-MM-DD - Title` per session.
 
-Required sections:
-
-```markdown
-# Design
-
-## System Overview
-
-## Domain Model
-
-## Frontend Architecture
-
-## Component Architecture
-
-## Route Architecture
-
-## State Management
-
-## Interfaces and Contracts
-
-## API Integration
-
-## Data Flow
-
-## Error Handling Strategy
-
-## Accessibility Considerations
-
-## Security Considerations
-
-## Performance Considerations
-
-## UML Diagrams
-
-## Design Decisions
-```
-
-#### `/docs/memory.md`
+#### `docs/reviews/20260524-handoff-team.md`
 
 Purpose:
 
-- Preserve continuity across sessions.
-- Record user preferences, approved decisions, rejected approaches, open questions, and implementation notes.
+- Current team handoff document with task assignments per teammate.
+- Should be read before making changes that affect team members' areas.
 
-Required sections:
+#### Feature READMEs (`frontend/src/features/*/README.md`)
 
-```markdown
-# Memory
+Purpose:
 
-## User Preferences
-
-## Approved Decisions
-
-## Rejected Decisions
-
-## Repository Conventions
-
-## Important Context
-
-## Open Questions
+- Per-feature source of truth for component structure, hooks, services, and API contracts.
+- Must be updated when a feature's structure or contracts change.
 
 ---
 
@@ -273,249 +204,68 @@ Mandatory rules:
 - Keep typing boundaries explicit between `services`, `hooks`, `components`, and `pages`.
 - Apply SRD strictly: single responsibility in type modeling and in modules that consume those types.
 
-## Session Log
-```
-
 ### 4.2 Documentation Update Rule
 
 Before implementation:
 
-- Update or propose updates to `/docs/plan.md`.
-- Update or propose updates to `/docs/tasks.md`.
-- Update or propose updates to `/docs/design.md` when architecture, UML, UI flows, routes, state management, APIs, persistence, interfaces, contracts, accessibility, or domain rules are affected.
-- Update or propose updates to `/docs/memory.md` when the user makes a decision, corrects an assumption, approves an approach, rejects an approach, or provides durable project context.
+- Read `docs/README.md` to identify which documents are relevant to the change.
+- Update or propose updates to `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` when architecture is affected.
+- Update or propose updates to the relevant feature README under `frontend/src/features/` when a feature's structure, hooks, services, or contracts change.
 
 After implementation:
 
-- Mark completed tasks in `/docs/tasks.md`.
-- Add relevant design notes to `/docs/design.md`.
-- Add durable learnings and decisions to `/docs/memory.md`.
-- Update `/docs/knowledge/KNOWLEDGE_BASE.md` when new documentation, architecture decisions, modules, routes, APIs, components, workflows, or design system rules are added.
+- Add an entry to `docs/change_control/CHANGELOG.md` under the JCFS section.
+- Update `docs/README.md` if a new document was added or an existing one changed authority tier.
+- Update the relevant architecture doc if the implementation diverges from the previously documented design.
 
 Do not silently change planning, tasks, design, or memory files when the user has not authorized file edits. In read-only or advisory mode, provide the proposed Markdown content instead.
 
 ---
 
-## 5. Markdown Knowledge Base Architecture
+## 5. Document Authority Hierarchy
 
-The project must use a Markdown-based knowledge system so humans and AI agents can navigate the repository using grounded, authoritative context.
-
-The knowledge system has three layers:
-
-1. Structured Knowledge Repository.
-2. Markdown Knowledge Base or Knowledge Graph.
-3. Specialized Agent Instructions and Workflows.
-
-### 5.1 Layer 1: Structured Knowledge Repository
-
-Store knowledge under `/docs/knowledge`.
-
-Recommended structure:
-
-```text
-/docs/knowledge/
-├── KNOWLEDGE_BASE.md
-├── source-of-truth/
-├── core/
-├── implementation/
-├── meetings/
-├── team/
-└── archive/
-```
-
-Use Markdown for all knowledge documents whenever possible because Markdown is version-controlled, diff-friendly, searchable, reviewable, and AI-readable.
-
-Use numbered prefixes for core files to create a natural reading order:
-
-```text
-/docs/knowledge/core/
-├── 00_project_context.md
-├── 01_domain_model.md
-├── 02_frontend_architecture.md
-├── 03_component_model.md
-├── 04_api_integration.md
-├── 05_security_model.md
-├── 06_accessibility_strategy.md
-├── 07_testing_strategy.md
-└── 08_deployment_model.md
-```
-
-Meeting notes must use date prefixes:
-
-```text
-/docs/knowledge/meetings/
-├── 2026-05-07_architecture-review.md
-└── 2026-05-08_sprint-planning.md
-```
-
-Outdated documents must not be deleted by default. Move them to:
-
-```text
-/docs/knowledge/archive/
-```
-
-Every archived document must start with a clear banner:
-
-```markdown
-> Status: Archived. This document is historical and non-authoritative.
-```
-
-### 5.2 Layer 2: Knowledge Base or Knowledge Graph
-
-The project must maintain:
-
-```text
-/docs/knowledge/KNOWLEDGE_BASE.md
-```
-
-A project may also use:
-
-```text
-/docs/knowledge/KNOWLEDGE_GRAPH.md
-```
-
-If both exist, `KNOWLEDGE_BASE.md` is the human-readable document map, and `KNOWLEDGE_GRAPH.md` is the relationship-focused graph.
-
-The knowledge base must include:
-
-- Document hierarchy.
-- Authority tiers.
-- One-line description of every active document.
-- Concept clusters.
-- Evidence trails.
-- Navigation paths.
-- Mermaid relationship diagrams.
-- Archive rules.
-- Maintenance rules.
-
-Required structure:
-
-```markdown
-# Knowledge Base
-
-## Purpose
-
-## Authority Hierarchy
-
-## Tier 1: Source of Truth
-
-## Tier 2: Core Knowledge
-
-## Tier 3: Implementation and Working Documents
-
-## Tier 4: Archive
-
-## Concept Clusters
-
-## Evidence Trails
-
-## Navigation Paths
-
-## Relationship Map
-
-## Maintenance Rules
-```
-
-### 5.3 Document Authority Hierarchy
-
-Not all documents have equal authority. Evaluate context using this hierarchy:
+Not all documents have equal authority. Use `docs/README.md` as the master authority map. The tiers below reflect the actual structure of this repository.
 
 #### Tier 1: Source of Truth
 
-Location:
+These documents define canonical behavior. Do not contradict them. Do not modify without user approval.
 
-```text
-/docs/knowledge/source-of-truth/
-```
+- `README.md` — project overview and tech stack
+- `docs/architecture/frontend-architecture.md` — frontend architecture
+- `docs/architecture/backend-architecture.md` — backend architecture, route matrix, middleware
+- `docs/prisma.md` — Prisma schema reference
+- `docs/policies/CONTRIBUTING.md` — contribution rules
+- `docs/policies/branching-policy.md` — branch strategy
+- `docs/references/code-style.md` and other files in `docs/references/` — coding standards
+- `frontend/src/features/*/README.md` — per-feature contracts and structure
+- `docs/agents/design.md` — design system reference (colors, tokens, components)
 
-Examples:
+#### Tier 2: Working Documents
 
-- Leadership-approved requirements.
-- Architecture decision records.
-- Approved product requirements.
-- Approved UX/UI specifications.
-- Approved design system rules.
-- Approved accessibility requirements.
-- Approved security requirements.
-- Approved compliance requirements.
-- Contractual API specifications.
-- Domain rules approved by the user or business owner.
+Current and active. Use as context but validate against Tier 1 when in conflict.
 
-Rules:
+- `docs/reviews/20260524-handoff-team.md` — current team handoff and task status
+- `docs/reviews/20260524-eslint-todo-report.md` — current lint and TODO backlog
+- `docs/change_control/CHANGELOG.md` — change history (follow `docs/CHANGELOG.md` format guide)
+- `docs/change_control/CHANGE_BUGFIX.md` — bug fix log
 
-- Treat Tier 1 as authoritative.
-- Do not contradict Tier 1 documents.
-- If a lower-tier document conflicts with Tier 1, Tier 1 wins.
-- Do not modify Tier 1 documents without explicit user approval.
-- Cite Tier 1 documents for authoritative claims.
+#### Tier 3: Historical
 
-#### Tier 2: Core Knowledge
+Snapshots kept for context. Do not use as implementation guidance.
 
-Location:
-
-```text
-/docs/knowledge/core/
-```
-
-Examples:
-
-- Domain model.
-- Frontend architecture.
-- Component model.
-- Route model.
-- API integration guide.
-- Coding standards.
-- Accessibility strategy.
-- Testing strategy.
-- Deployment model.
+- `docs/plan/TODO_EXECUTION_PLAN.md`
+- `docs/instructions/frontend-implementation-plan.md`
+- `docs/guidances/IMPLEMENTATION_GUIDE.md`
+- `docs/guidances/FRONTEND_ALIGNMENT_SUMMARY.md`
+- `docs/reviews/20260523-*`
+- `docs/reports/DAILY_REPORT_*`
+- `docs/frontendDev_JCFS/`
 
 Rules:
 
-- Use Tier 2 as foundational technical context.
-- If Tier 2 conflicts with Tier 1, follow Tier 1.
-- Keep Tier 2 aligned with current architecture.
-
-#### Tier 3: Implementation and Working Documents
-
-Locations:
-
-```text
-/docs/plan.md
-/docs/tasks.md
-/docs/design.md
-/docs/memory.md
-/docs/knowledge/implementation/
-/docs/knowledge/meetings/
-/docs/generated/
-```
-
-Examples:
-
-- Sprint notes.
-- Work-in-progress analysis.
-- Generated reports.
-- Implementation notes.
-- Meeting notes.
-
-Rules:
-
-- Use Tier 3 as helpful but not fully authoritative context.
-- Validate important claims against Tier 1 and Tier 2.
-- Do not let temporary notes override approved architecture.
-
-#### Tier 4: Archive
-
-Location:
-
-```text
-/docs/knowledge/archive/
-```
-
-Rules:
-
-- Treat archived documents as historical.
-- Do not cite archived documents as current truth unless the user asks for historical context.
-- Do not use archived documents to justify new implementation decisions.
+- If a Tier 3 document conflicts with Tier 1, Tier 1 wins.
+- Do not cite Tier 3 documents as current architecture truth.
+- Do not use Tier 3 documents to justify new implementation decisions.
 
 ---
 
@@ -542,45 +292,36 @@ Never present low-confidence inference as fact.
 
 ## 7. START_HERE.md Rule
 
-Every repository should have a root-level `START_HERE.md`.
+This repository has a root-level `START_HERE.md`.
 
 Purpose:
 
-- Provide a single onboarding entry point for humans and AI agents.
-- Summarize the project in less than five minutes of reading.
-- Link to the knowledge base, plans, tasks, design, memory, architecture, setup instructions, and verification commands.
+- Single onboarding entry point for humans and AI agents.
+- Summarizes the project in under five minutes of reading.
+- Links to architecture, working docs, and local run commands.
 
-Required structure:
+Current structure of `START_HERE.md`:
 
 ```markdown
 # START HERE
 
-## Project Summary
+## Read First
+1. README.md
+2. docs/README.md
+3. MANAGER.md
+4. docs/agents/agents.md
+5. docs/agents/design.md
 
-## Current Status
+## What This Repo Is
 
-## Team and Ownership
+## Local Run
 
-## Technology Stack
+## Current Working Docs
 
-## How to Run Locally
-
-## How to Test
-
-## How to Build
-
-## How to Preview Production Build
-
-## Current Sprint or Current Focus
-
-## Key Architecture Decisions
-
-## Documentation Map
-
-## Credentials and Access Policy
-
-## First Files to Read
+## Notes
 ```
+
+When updating `START_HERE.md`, keep it short and current. Do not turn it into a plan or a historical log.
 
 Credential rule:
 
@@ -592,32 +333,24 @@ Credential rule:
 
 ## 8. Agent Prompt and Workflow Architecture
 
-If the repository contains multiple agents, use a single-source-of-truth architecture for prompts.
+Agent instructions for this repository live in `docs/agents/`.
 
-Recommended structure:
+Current structure:
 
 ```text
-prompts/
-└── templates/
-    └── ai-agents/
-        ├── web-developer-agent.md
-        ├── frontend-architecture-agent.md
-        ├── react-agent.md
-        ├── code-review-agent.md
-        ├── security-review-agent.md
-        ├── accessibility-review-agent.md
-        ├── uml-modeling-agent.md
-        └── testing-agent.md
+docs/agents/
+├── agents.md       ← this file: general coding agent rules
+├── design.md       ← design system reference (colors, tokens, components, layout)
+└── UIUX_prompt.md  ← UI/UX prompting reference
 ```
-
-Wrappers, slash commands, IDE prompts, or tool-specific command files must be thin pointers to the source prompt. Do not duplicate full instructions across many files.
 
 Rules:
 
-- Edit only the source prompt unless the user explicitly asks otherwise.
-- Keep wrappers minimal.
-- Avoid prompt drift.
-- Keep agent instructions aligned with `AGENTS.md` and `/docs/knowledge/KNOWLEDGE_BASE.md`.
+- Edit only `docs/agents/agents.md` for general coding rules.
+- Edit `docs/agents/design.md` for design system and visual rules.
+- Do not duplicate agent instructions across multiple files.
+- Avoid prompt drift: if you update behavior, update the source file.
+- Keep agent instructions aligned with `docs/agents/agents.md` and `docs/README.md`.
 
 Every specialized agent prompt should include:
 
@@ -700,7 +433,7 @@ Do not ask unnecessary questions when the safest reasonable default is clear.
 
 When a task is large, ask only the minimum necessary questions first. Then proceed with a reasonable plan once the user answers or when the user explicitly asks you to continue with assumptions.
 
-Document assumptions in `/docs/plan.md` before implementing.
+Document assumptions in the relevant architecture doc before implementing.
 
 ---
 
@@ -732,7 +465,7 @@ Never introduce a new framework, library, build plugin, styling system, state li
 
 UML is a core responsibility of this agent, not an optional afterthought.
 
-For every non-trivial feature, module, UI flow, domain model, API integration, state machine, or architectural change, you must consider whether UML is needed. When useful, create or update UML diagrams in `/docs/design.md` or `/docs/uml/`.
+For every non-trivial feature, module, UI flow, domain model, API integration, state machine, or architectural change, you must consider whether UML is needed. When useful, create or update UML diagrams in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` or `docs/architecture/`.
 
 Use Mermaid by default for Markdown compatibility.
 
@@ -1059,7 +792,7 @@ Rules:
 - DTOs must not replace domain models when business rules are significant.
 - API response types must not leak across boundaries when they are unstable or infrastructure-specific.
 - Keep framework-specific code out of the domain model whenever practical.
-- Document architecture decisions and trade-offs in `/docs/design.md` or ADRs.
+- Document architecture decisions and trade-offs in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` or the relevant architecture doc.
 
 ---
 
@@ -1246,7 +979,7 @@ Rules:
 - Use accessible names for icon-only buttons.
 - Test critical flows with keyboard navigation.
 - Prefer tested accessible primitives for complex widgets.
-- Document accessibility trade-offs in `/docs/design.md`.
+- Document accessibility trade-offs in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md`.
 
 ---
 
@@ -1295,7 +1028,7 @@ Rules:
 - Avoid storing long-lived sensitive tokens in `localStorage`.
 - Use established cryptographic libraries over custom cryptography.
 - Do not implement custom authentication, authorization, encryption, or payment protocols unless explicitly required and reviewed.
-- Document security-sensitive decisions in `/docs/design.md` or ADRs.
+- Document security-sensitive decisions in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` or the relevant architecture doc.
 
 ---
 
@@ -1323,7 +1056,7 @@ Rules:
 - Respect browser caching where appropriate.
 - Measure before optimizing complex performance issues.
 
-When performance trade-offs exist, document them in `/docs/design.md`.
+When performance trade-offs exist, document them in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md`.
 
 ---
 
@@ -1425,7 +1158,7 @@ Rules:
 - Keep navigation accessible.
 - Preserve expected browser behavior for links, history, and focus.
 - Do not hide routing logic inside unrelated components.
-- Document major route decisions in `/docs/design.md`.
+- Document major route decisions in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md`.
 
 ---
 
@@ -1541,49 +1274,45 @@ Use severity labels:
 
 ---
 
-## 35. Knowledge Base Maintenance Workflows
+## 35. Documentation Maintenance Workflows
 
-The knowledge base must stay current. A stale knowledge base is worse than no knowledge base because it can make outdated information appear authoritative.
+Documentation must stay current. A stale doc is worse than no doc — it creates false authority.
 
 ### 35.1 Maintenance Triggers
 
-Update or propose updates to `/docs/knowledge/KNOWLEDGE_BASE.md` when:
+Update `docs/README.md` when:
 
-- A new documentation file is added.
-- A document is archived.
-- A major design decision changes.
-- A new module is introduced.
-- A new route is introduced.
-- A new component library pattern is introduced.
-- A new API integration is introduced.
-- A new workflow is introduced.
-- A meeting creates or changes decisions.
-- A sprint plan changes current priorities.
-- A Source of Truth document is added or updated.
-- The user corrects the agent's understanding.
+- A new documentation file is added or removed.
+- A document changes authority tier (e.g., a working doc becomes historical).
+- A major architectural decision changes which doc is authoritative.
+
+Update `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` when:
+
+- A new route, feature, module, or service boundary is introduced.
+- An existing architectural decision is superseded.
+- A convention changes (imports, aliases, naming, folder structure).
+
+Update the relevant `frontend/src/features/*/README.md` when:
+
+- A feature's component structure, hooks, services, or API contracts change.
 
 ### 35.2 Post-Decision Workflow
 
 After any significant decision:
 
-1. Record the decision in `/docs/memory.md`.
-2. Add or update an ADR in `/docs/adr/` when architectural.
-3. Update `/docs/design.md` when design is affected.
-4. Update UML diagrams when design behavior, structure, flow, or deployment changes.
-5. Update `/docs/tasks.md` when work changes.
-6. Update `/docs/knowledge/KNOWLEDGE_BASE.md` with evidence trails and affected concept clusters.
-7. Ask user approval before modifying Tier 1 documents.
+1. Add an entry to `docs/change_control/CHANGELOG.md` (follow format in `docs/CHANGELOG.md`).
+2. Update the relevant Tier 1 architecture doc if design changed.
+3. Update UML diagrams in the architecture doc when structure, flow, or contracts change.
+4. Update `docs/README.md` if the authority map changed.
+5. Ask user approval before modifying Tier 1 documents.
 
-### 35.3 Post-Meeting Workflow
+### 35.3 Post-Session Workflow
 
-After meeting notes are added:
+At the end of a working session:
 
-1. Store notes in `/docs/knowledge/meetings/`.
-2. Extract decisions into `/docs/memory.md`.
-3. Convert architectural decisions into ADRs when appropriate.
-4. Update `/docs/tasks.md` with action items.
-5. Update `/docs/design.md` and UML diagrams if design changed.
-6. Update the knowledge base map.
+1. Add a CHANGELOG entry with what changed, what was removed, and any breaking changes for teammates.
+2. Flag in the entry if a change affects Angelo (UI/permissions), Ian (mobile/PWA), or Renato (backend/schema).
+3. Update `docs/reviews/20260524-handoff-team.md` if task status changed for any team member.
 
 ---
 
@@ -1657,7 +1386,7 @@ Relevant patterns include:
 Rules:
 
 - Choose patterns to reduce complexity, not to appear sophisticated.
-- Document pattern usage in `/docs/design.md` when it affects architecture.
+- Document pattern usage in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` when it affects architecture.
 - Show pattern structure with UML when it materially helps understanding.
 - Prefer idiomatic React and TypeScript over forced object-oriented designs.
 
@@ -1674,7 +1403,7 @@ Rules:
 - Include correlation IDs when the project supports them.
 - Add metrics, tracing, or user journey diagnostics when appropriate.
 - Do not introduce analytics or monitoring SDKs without user approval.
-- Document observability decisions in `/docs/design.md`.
+- Document observability decisions in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md`.
 
 ---
 
@@ -1686,7 +1415,7 @@ At the start of a new task:
 2. Identify whether repository context is needed.
 3. Ask only essential questions.
 4. State the intended approach briefly.
-5. Check or propose updates to `/docs/plan.md`, `/docs/tasks.md`, `/docs/design.md`, and `/docs/memory.md` when relevant.
+5. Read `docs/README.md` and the relevant architecture doc before proposing changes.
 6. Explicitly mention UML impact when the task affects design, architecture, state, flow, APIs, or domain modeling.
 7. Do not start remote-impacting operations without authorization.
 
@@ -1716,17 +1445,15 @@ If the user asks for immediate code and the requirement is clear, provide code, 
 
 For non-trivial implementation:
 
-1. Ground in repository context.
-2. Identify authoritative documents.
-3. Update or propose `/docs/plan.md`.
-4. Update or propose `/docs/tasks.md`.
-5. Analyze design impact.
-6. Create or update UML in `/docs/design.md` or `/docs/uml/`.
-7. Implement the smallest coherent change.
-8. Add or update tests.
-9. Run or provide verification commands.
-10. Update or propose `/docs/memory.md` and knowledge base changes.
-11. Summarize changes, risks, and verification status.
+1. Read `docs/README.md` and the relevant architecture doc.
+2. Identify which Tier 1 documents apply to the change.
+3. Analyze design impact — update or propose updates to the relevant architecture doc.
+4. Create or update UML in the architecture doc when structure, flow, or contracts change.
+5. Implement the smallest coherent change.
+6. Add or update tests.
+7. Run or provide verification commands (`npm run lint`, `npm run build`).
+8. Add a CHANGELOG entry to `docs/change_control/CHANGELOG.md`.
+9. Summarize changes, risks, and verification status.
 
 Do not skip UML when it materially helps explain or validate the design.
 
@@ -1754,7 +1481,7 @@ Before finalizing any substantial answer, verify:
 - UML is provided or explicitly deemed unnecessary.
 - Tests are included or recommended.
 - Documentation updates are included.
-- Knowledge base maintenance is considered.
+- `docs/change_control/CHANGELOG.md` entry is included.
 - No secrets are exposed.
 - No unsupported claims are presented as facts.
 
@@ -1778,7 +1505,7 @@ You must always follow these rules:
 12. Do not store secrets in code, documentation, or client-side environment variables.
 13. Do not create high coupling when a clean boundary is feasible.
 14. Do not duplicate agent instructions across multiple prompt files.
-15. Do not let the knowledge base become stale.
+15. Do not let `docs/README.md` and the architecture docs become stale.
 16. Do not present low-confidence assumptions as facts.
 17. Do not use archived documents as current authority.
 18. Do not rely on client-side checks as the only enforcement of authorization.
@@ -1787,43 +1514,54 @@ You must always follow these rules:
 
 ---
 
-## 43. Recommended Minimal Bootstrap
+## 43. This Repository's Documentation Bootstrap
 
-For a new Web repository, propose this minimal documentation bootstrap:
+This repository already has its documentation structure in place. Do not propose creating generic template files (`plan.md`, `tasks.md`, `design.md`, `memory.md`, `START_HERE.md`, `KNOWLEDGE_BASE.md`) — they do not exist here and are not the project's convention.
+
+The actual bootstrap for this repository is:
 
 ```text
-AGENTS.md
+README.md
 START_HERE.md
+MANAGER.md
 docs/
-├── plan.md
-├── tasks.md
-├── design.md
-├── memory.md
-└── knowledge/
-    ├── KNOWLEDGE_BASE.md
-    ├── source-of-truth/
-    ├── core/
-    │   ├── 00_project_context.md
-    │   ├── 01_domain_model.md
-    │   ├── 02_frontend_architecture.md
-    │   ├── 03_component_model.md
-    │   └── 04_testing_strategy.md
-    ├── implementation/
-    ├── meetings/
-    └── archive/
+├── README.md                            ← documentation map (start here)
+├── CHANGELOG.md                         ← format guide for writing changelogs
+├── agents/
+│   ├── agents.md                        ← this file
+│   ├── design.md                        ← design system reference
+│   └── UIUX_prompt.md
+├── architecture/
+│   ├── frontend-architecture.md         ← Tier 1
+│   └── backend-architecture.md          ← Tier 1
+├── change_control/
+│   ├── CHANGELOG.md                     ← change history
+│   └── CHANGE_BUGFIX.md
+├── policies/
+│   ├── CONTRIBUTING.md
+│   └── branching-policy.md
+├── references/
+│   └── code-style.md  (+ others)
+├── reviews/
+│   └── 20260524-handoff-team.md         ← current team handoff
+├── tasks/
+│   ├── triagen-cards.yaml
+│   └── ts-hotfixes.md
+└── prisma.md
+frontend/
+└── src/
+    └── features/
+        └── */README.md                  ← per-feature source of truth
 ```
 
-Minimum viable content:
+Minimum viable additions when documenting new work:
 
-- `START_HERE.md`: project summary, stack, setup, testing, build, current focus, first files to read.
-- `/docs/knowledge/KNOWLEDGE_BASE.md`: authority hierarchy, document map, top concept clusters, navigation paths.
-- `AGENTS.md`: rules for AI agents.
-- `/docs/plan.md`: current objective and implementation strategy.
-- `/docs/tasks.md`: actionable task list.
-- `/docs/design.md`: architecture, component model, route model, data flow, and UML.
-- `/docs/memory.md`: durable decisions and user preferences.
+- Entry in `docs/change_control/CHANGELOG.md`.
+- Update to the relevant architecture doc if structure changed.
+- Update to the feature README if the feature's contracts or components changed.
+- Update to `docs/README.md` if a new document was created.
 
-This bootstrap must be grown incrementally. Do not try to document everything at once.
+Do not try to document everything at once. Grow documentation incrementally alongside code.
 
 ---
 
@@ -1933,6 +1671,6 @@ The correct behavior is:
    - `AuthApiClient`
    - `AuthSession`
 6. Add or update tests.
-7. Document UML and decisions in `/docs/design.md`.
+7. Document UML and decisions in `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md`.
 
 This example establishes the expected design-first discipline for all non-trivial Web work.

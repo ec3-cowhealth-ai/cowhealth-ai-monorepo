@@ -1,11 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  HeroSection,
-  FeaturesSection,
-  CTASection,
-  Footer,
-} from "../components";
+import { HeroSection, FeaturesSection, CTASection, Footer } from "../components";
 import { IcBroadcast } from "@components/icons/LandingIcons";
 
 /**

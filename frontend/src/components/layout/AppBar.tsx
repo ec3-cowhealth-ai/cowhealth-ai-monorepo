@@ -11,14 +11,7 @@ interface AppBarProps {
   actions?: ReactNode;
 }
 
-export const AppBar = ({
-  title,
-  subtitle,
-  showBack,
-  onBack,
-  left,
-  actions,
-}: AppBarProps) => {
+export const AppBar = ({ title, subtitle, showBack, onBack, left, actions }: AppBarProps) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -32,11 +25,7 @@ export const AppBar = ({
         {left ? (
           left
         ) : showBack ? (
-          <button
-            className="app-bar__back"
-            onClick={handleBack}
-            aria-label="Voltar"
-          >
+          <button className="app-bar__back" onClick={handleBack} aria-label="Voltar">
             <ChevronLeft size={20} />
           </button>
         ) : null}

@@ -1,10 +1,5 @@
 import { useState, useMemo } from "react";
-import {
-  FormModal,
-  ConfirmDialog,
-  EmptyState,
-  ErrorState,
-} from "@components/common";
+import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { Key } from "lucide-react";
 import {
   usePermissions,
@@ -85,20 +80,15 @@ export const PermissionsPage = () => {
   const [deletingPerm, setDeletingPerm] = useState<Permission | null>(null);
 
   const { data: permissions, isLoading, isError } = usePermissions();
-  const { mutate: createPermission, isPending: creating } =
-    useCreatePermission();
-  const { mutate: updatePermission, isPending: updating } =
-    useUpdatePermission();
-  const { mutate: deletePermission, isPending: deleting } =
-    useDeletePermission();
+  const { mutate: createPermission, isPending: creating } = useCreatePermission();
+  const { mutate: updatePermission, isPending: updating } = useUpdatePermission();
+  const { mutate: deletePermission, isPending: deleting } = useDeletePermission();
 
   const filtered = useMemo(() => {
     if (!permissions) return [];
     const q = search.toLowerCase();
     return permissions.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        (p.description ?? "").toLowerCase().includes(q),
+      (p) => p.name.toLowerCase().includes(q) || (p.description ?? "").toLowerCase().includes(q),
     );
   }, [permissions, search]);
 
@@ -147,10 +137,7 @@ export const PermissionsPage = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={() => setShowCreate(true)}
-        >
+        <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>
           + Nova permissao
         </button>
       </div>
@@ -161,16 +148,11 @@ export const PermissionsPage = () => {
           icon={<Key size={40} />}
           title="Nenhuma permissao encontrada"
           description={
-            search
-              ? "Tente outro termo de busca."
-              : "Crie a primeira permissao do sistema."
+            search ? "Tente outro termo de busca." : "Crie a primeira permissao do sistema."
           }
           action={
             !search ? (
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowCreate(true)}
-              >
+              <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
                 Criar permissao
               </button>
             ) : undefined
@@ -207,9 +189,7 @@ export const PermissionsPage = () => {
                       fontSize: "var(--t-sm)",
                     }}
                   >
-                    {perm.description ?? (
-                      <span style={{ color: "var(--text-muted)" }}>—</span>
-                    )}
+                    {perm.description ?? <span style={{ color: "var(--text-muted)" }}>—</span>}
                   </td>
                   <td>
                     <div
@@ -219,10 +199,7 @@ export const PermissionsPage = () => {
                         justifyContent: "flex-end",
                       }}
                     >
-                      <button
-                        className="btn btn-sm btn-ghost"
-                        onClick={() => setEditingPerm(perm)}
-                      >
+                      <button className="btn btn-sm btn-ghost" onClick={() => setEditingPerm(perm)}>
                         Editar
                       </button>
                       <button
@@ -245,9 +222,7 @@ export const PermissionsPage = () => {
         open={showCreate}
         onClose={() => setShowCreate(false)}
         isLoading={creating}
-        onSubmit={(data) =>
-          createPermission(data, { onSuccess: () => setShowCreate(false) })
-        }
+        onSubmit={(data) => createPermission(data, { onSuccess: () => setShowCreate(false) })}
       />
 
       {editingPerm && (

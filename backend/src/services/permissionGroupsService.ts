@@ -38,10 +38,7 @@ export const getPermissionGroupById = async (groupId: number) => {
   return permissionGroup;
 };
 
-export const createPermissionGroup = async ({
-  name,
-  description,
-}: CreatePermissionGroupInput) => {
+export const createPermissionGroup = async ({ name, description }: CreatePermissionGroupInput) => {
   const existingGroup = await prisma.permissionGroup.findUnique({
     where: { name },
   });
@@ -86,9 +83,7 @@ export const deletePermissionGroup = async (groupId: number) => {
 
   // Regra: não deletar grupo que ainda possui permissões vinculadas
   if (permissionGroup._count.permissions > 0) {
-    throw new Error(
-      "Não é possível excluir um grupo que possui permissões vinculadas.",
-    );
+    throw new Error("Não é possível excluir um grupo que possui permissões vinculadas.");
   }
 
   await prisma.permissionGroup.delete({ where: { id: groupId } });
@@ -100,10 +95,7 @@ export const deletePermissionGroup = async (groupId: number) => {
  * Adiciona uma permissão ao grupo.
  * Idempotente — ignora se já estiver vinculada.
  */
-export const addPermissionToGroup = async (
-  groupId: number,
-  permissionId: number,
-) => {
+export const addPermissionToGroup = async (groupId: number, permissionId: number) => {
   const permissionGroup = await prisma.permissionGroup.findUnique({
     where: { id: groupId },
   });
@@ -117,8 +109,7 @@ export const addPermissionToGroup = async (
   const alreadyLinked = await prisma.permissionGroupPermission.findUnique({
     where: { groupId_permissionId: { groupId, permissionId } },
   });
-  if (alreadyLinked)
-    throw new Error("Permissão já está vinculada a este grupo.");
+  if (alreadyLinked) throw new Error("Permissão já está vinculada a este grupo.");
 
   return prisma.permissionGroupPermission.create({
     data: { groupId, permissionId },
@@ -128,10 +119,7 @@ export const addPermissionToGroup = async (
 /**
  * Remove uma permissão do grupo.
  */
-export const removePermissionFromGroup = async (
-  groupId: number,
-  permissionId: number,
-) => {
+export const removePermissionFromGroup = async (groupId: number, permissionId: number) => {
   const link = await prisma.permissionGroupPermission.findUnique({
     where: { groupId_permissionId: { groupId, permissionId } },
   });
@@ -166,9 +154,7 @@ export const grantGroupPermissionsToRoles = async (
     throw new Error("O grupo não possui permissões para conceder.");
   }
 
-  const groupPermissionIds = permissionGroup.permissions.map(
-    (link) => link.permissionId,
-  );
+  const groupPermissionIds = permissionGroup.permissions.map((link) => link.permissionId);
 
   let totalGranted = 0;
 
@@ -181,9 +167,7 @@ export const grantGroupPermissionsToRoles = async (
       select: { permissionId: true },
     });
 
-    const existingPermissionIds = new Set(
-      existingLinks.map((link) => link.permissionId),
-    );
+    const existingPermissionIds = new Set(existingLinks.map((link) => link.permissionId));
 
     const newPermissionIds = groupPermissionIds.filter(
       (permissionId) => !existingPermissionIds.has(permissionId),
@@ -221,9 +205,7 @@ export const revokeGroupPermissionsFromRoles = async (
 
   if (!permissionGroup) throw new Error("Grupo de permissões não encontrado.");
 
-  const groupPermissionIds = permissionGroup.permissions.map(
-    (link) => link.permissionId,
-  );
+  const groupPermissionIds = permissionGroup.permissions.map((link) => link.permissionId);
 
   let totalRevoked = 0;
 

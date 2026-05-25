@@ -10,30 +10,36 @@ import {
 } from "../controllers/rolesController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
+import { validateSchema } from "../middlewares/validateSchema";
+import { createRoleSchema, updateRoleSchema, assignPermissionSchema } from "../schemas/roleSchemas";
 
 const router = Router();
 
+// CRUD
 router.get("/", requireAuth, requirePermission("ViewAny Role"), listRoles);
 router.get("/:id", requireAuth, requirePermission("View Role"), showRole);
-router.post("/", requireAuth, requirePermission("Create Role"), storeRole);
+router.post(
+  "/",
+  requireAuth,
+  requirePermission("Create Role"),
+  validateSchema(createRoleSchema),
+  storeRole,
+);
 router.put(
   "/:id",
   requireAuth,
   requirePermission("Update Role"),
+  validateSchema(updateRoleSchema),
   updateRoleController,
 );
-router.delete(
-  "/:id",
-  requireAuth,
-  requirePermission("Delete Role"),
-  destroyRole,
-);
+router.delete("/:id", requireAuth, requirePermission("Delete Role"), destroyRole);
 
 // Gerenciar permissões da role
 router.post(
   "/:id/permissions",
   requireAuth,
   requirePermission("Update Role"),
+  validateSchema(assignPermissionSchema),
   addPermissionToRole,
 );
 router.delete(

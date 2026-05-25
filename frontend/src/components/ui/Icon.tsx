@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ICONS: Record<string, string> = {
   bell: "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0",
   search: "M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm10 2-4.35-4.35",
@@ -41,13 +42,7 @@ interface IconProps {
   style?: CSSProperties;
 }
 
-export const Icon = ({
-  n,
-  s = 18,
-  c = "currentColor",
-  sw = 1.6,
-  style,
-}: IconProps) => {
+export const Icon = ({ n, s = 18, c = "currentColor", sw = 1.6, style }: IconProps) => {
   const d = ICONS[n] ?? "";
   return (
     <svg
