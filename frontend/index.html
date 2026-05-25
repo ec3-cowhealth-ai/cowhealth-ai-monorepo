@@ -9,6 +9,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>CowHealth AI</title>
+    <script>
+      (function () {
+        var t = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
 
     <!-- Google Fonts for Landing Page Design System -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

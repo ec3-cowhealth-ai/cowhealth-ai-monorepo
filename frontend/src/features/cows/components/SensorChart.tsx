@@ -89,9 +89,9 @@ export const SensorChart = ({
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-          <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
-          <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip formatter={(v) => [`${v} ${unit}`, title]} />
+          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={{ stroke: "var(--border)" }} tickLine={false} interval="preserveStartEnd" />
+          <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+          <Tooltip formatter={(v) => [`${v} ${unit}`, title]} contentStyle={{ background: "var(--bg-elev-2)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
           {minThreshold && (
             <ReferenceLine y={minThreshold} stroke="#E8C66B" strokeDasharray="4 4" />
           )}

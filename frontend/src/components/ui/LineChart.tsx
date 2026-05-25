@@ -1,4 +1,4 @@
-import type { SensorDailyPoint } from "../../types/cows";
+import type { SensorDailyPoint } from "@/types/cows";
 
 interface ThresholdLine {
   v: number;
@@ -81,6 +81,8 @@ export const LineChart = ({
         </linearGradient>
       </defs>
 
+      <rect width={w} height={h} fill="var(--bg-elev-1)" rx="8" />
+
       {Array.from({ length: yTicks + 1 }).map((_, i) => {
         const y = pad.t + (ih * i) / yTicks;
         const v = computedMax - (range * i) / yTicks;
@@ -91,7 +93,7 @@ export const LineChart = ({
               x2={w - pad.r}
               y1={y}
               y2={y}
-              stroke="rgba(255,250,251,0.06)"
+              stroke="var(--border)"
               strokeDasharray="2 4"
             />
             <text
@@ -99,7 +101,7 @@ export const LineChart = ({
               y={y + 3}
               textAnchor="end"
               fontSize="9"
-              fill="rgba(255,250,251,0.42)"
+              fill="var(--text-muted)"
               fontFamily="var(--font-mono)"
             >
               {v.toFixed(1)}
@@ -145,7 +147,7 @@ export const LineChart = ({
             y={h - 4}
             textAnchor="middle"
             fontSize="9"
-            fill="rgba(255,250,251,0.42)"
+            fill="var(--text-muted)"
             fontFamily="var(--font-mono)"
           >
             {d.date}

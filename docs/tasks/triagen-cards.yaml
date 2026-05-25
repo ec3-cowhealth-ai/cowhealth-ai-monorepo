@@ -304,7 +304,7 @@ checklists:
 version: 2
 id: 9
 title: "RENATO — CORS restrito por origem"
-list: "To Do"
+list: "Done"
 priority: High
 risk: Medium
 labels:
@@ -331,18 +331,19 @@ checklists:
   - name: "Tarefas"
     items:
       - title: "Substituir cors() por cors({ origin }) em server.ts"
-        done: false
+        done: true
       - title: "Adicionar ALLOWED_ORIGINS no .env"
-        done: false
+        done: true
       - title: "Documentar ALLOWED_ORIGINS no .env.example"
-        done: false
+        done: true
       - title: "Testar que o frontend ainda conecta normalmente"
-        done: false
+        done: true
+# Concluído: commit a287598 (rpgouveia) — 2026-05-24
 ---
 version: 2
 id: 10
 title: "RENATO — Uploads autenticados (remover static público)"
-list: "To Do"
+list: "Done"
 priority: High
 risk: High
 labels:
@@ -372,18 +373,19 @@ checklists:
   - name: "Tarefas"
     items:
       - title: "Remover app.use('/uploads', express.static(...))"
-        done: false
+        done: true
       - title: "Criar endpoint autenticado GET /:id/photos/:filename"
-        done: false
+        done: true
       - title: "Testar que VIEWER não acessa fotos de outras fazendas"
-        done: false
+        done: true
       - title: "Testar que URLs de foto no frontend continuam funcionando"
-        done: false
+        done: true
+# Concluído: commit ce6eef7 (rpgouveia) — 2026-05-24
 ---
 version: 2
 id: 11
 title: "RENATO — Global error handler no Express"
-list: "Backlog"
+list: "Done"
 priority: Medium
 risk: Low
 labels:
@@ -404,14 +406,15 @@ checklists:
   - name: "Tarefas"
     items:
       - title: "Adicionar middleware de error handler em server.ts"
-        done: false
+        done: true
       - title: "Testar com erro proposital (throw new Error) em algum controller"
-        done: false
+        done: true
+# Concluído: commits a287598 + f4e7a67 (rpgouveia) — 2026-05-24
 ---
 version: 2
 id: 12
 title: "RENATO — Validação de input com Zod nos controllers"
-list: "Backlog"
+list: "Done"
 priority: High
 risk: Medium
 labels:
@@ -434,32 +437,33 @@ checklists:
   - name: "Infra"
     items:
       - title: "Criar helpers/validateSchema.ts"
-        done: false
+        done: true
   - name: "Schemas"
     items:
       - title: "farmSchemas.ts (create + update)"
-        done: false
+        done: true
       - title: "cowSchemas.ts (create + update)"
-        done: false
+        done: true
       - title: "collarSchemas.ts (create + update)"
-        done: false
+        done: true
       - title: "userSchemas.ts (create + update)"
-        done: false
+        done: true
       - title: "roleSchemas.ts e permissionSchemas.ts"
-        done: false
+        done: true
       - title: "authSchemas.ts (login + register)"
-        done: false
+        done: true
   - name: "Aplicação"
     items:
       - title: "Aplicar validateSchema em todas as rotas POST/PUT"
-        done: false
+        done: true
       - title: "npm run build com zero erros"
-        done: false
+        done: true
+# Concluído: commits d12045f + de33c1d (rpgouveia) — 2026-05-24
 ---
 version: 2
 id: 13
 title: "RENATO — requirePermission sem DB query por request"
-list: "Backlog"
+list: "Done"
 priority: Medium
 risk: Medium
 labels:
@@ -489,10 +493,11 @@ checklists:
   - name: "Tarefas"
     items:
       - title: "Embutir permissions[] no JWT em authService.ts"
-        done: false
+        done: true
       - title: "Atualizar AuthPayload type para incluir permissions"
-        done: false
+        done: true
       - title: "Reescrever requirePermission para ler do token"
-        done: false
+        done: true
       - title: "Testar que permissões continuam sendo validadas corretamente"
-        done: false
+        done: true
+# Concluído: commit 975323a (rpgouveia) — 2026-05-24
