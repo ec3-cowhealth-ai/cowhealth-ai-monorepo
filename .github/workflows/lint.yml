@@ -3,6 +3,8 @@ name: Lint
 on:
   pull_request:
     branches: [main, develop]
+  push:
+    branches: [jcfs/frontEndDesign]
 
 jobs:
   frontend-lint:
