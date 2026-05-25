@@ -3,6 +3,7 @@ import {
   getDashboardOverview,
   getCowsPerStatus,
   getCowsPerFarm,
+  getHealthTimeline,
 } from "@services/dashboardService";
 
 export const useDashboardOverview = (farmId?: string) =>
@@ -21,4 +22,10 @@ export const useCowsPerFarm = () =>
   useQuery({
     queryKey: ["dashboard", "cows-per-farm"],
     queryFn: getCowsPerFarm,
+  });
+
+export const useHealthTimeline = (farmId?: string) =>
+  useQuery({
+    queryKey: ["dashboard", "health-timeline", farmId],
+    queryFn: () => getHealthTimeline(farmId),
   });
