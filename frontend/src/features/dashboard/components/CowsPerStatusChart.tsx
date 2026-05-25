@@ -16,7 +16,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => (
-  <div className="card" style={{ padding: "var(--s-4)" }}>
+  <div className="card" style={{ padding: "var(--s-4)", background: "var(--bg-elev-1)" }}>
     <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>Vacas por Status</p>
     <ResponsiveContainer width="100%" height={260}>
       <PieChart>
@@ -25,8 +25,8 @@ export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => (
             <Cell key={`cell-${i}`} fill={STATUS_COLORS[entry.label] ?? "#8884d8"} />
           ))}
         </Pie>
-        <Tooltip />
-        <Legend />
+        <Tooltip contentStyle={{ background: "var(--bg-elev-2)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
+        <Legend formatter={(value) => <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>{value}</span>} />
       </PieChart>
     </ResponsiveContainer>
   </div>
