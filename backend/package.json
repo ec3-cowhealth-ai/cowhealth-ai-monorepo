@@ -19,6 +19,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "overrides": {
+    "qs": ">=6.15.2"
+  },
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "bcrypt": "^6.0.0",
