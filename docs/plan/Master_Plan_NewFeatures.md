@@ -22,6 +22,8 @@ This document consolidates all planned features and missing screens for CowHealt
 | P2 | Home: Pré-parto section | JCFS | Low | Partial |
 | P3 | Offline banner + skeleton loading | Ian | Low | Partial |
 
+p4 - User Profile Settings and Preferences.
+
 ---
 
 ## Index
