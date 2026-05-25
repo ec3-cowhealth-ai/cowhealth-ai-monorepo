@@ -22,6 +22,7 @@ const FarmContext = createContext<FarmContextValue>({
   isLoading: true,
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useFarmContext = () => useContext(FarmContext);
 
 export const FarmProvider = ({ children }: { children: ReactNode }) => {
@@ -33,6 +34,7 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
     if (farms.length > 0 && !selectedFarm) {
       const saved = localStorage.getItem("selectedFarmId");
       const found = saved ? farms.find((f) => String(f.id) === saved) : null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedFarmState(found ?? farms[0]);
     }
   }, [farms, selectedFarm]);
