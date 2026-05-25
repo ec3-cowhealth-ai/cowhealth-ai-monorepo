@@ -5,13 +5,14 @@ import { useUnreadNotifications } from "@hooks/useNotifications";
 import { useDashboardOverview } from "@features/dashboard/hooks/useDashboard";
 import { useCows } from "@features/cows/hooks/useCows";
 import { AppBar } from "@components/layout";
-import { Bell, AlertTriangle, ChevronRight, Check, List, Map, Warehouse } from "lucide-react";
+import { Bell, AlertTriangle, ChevronRight, Check, List, Map, Warehouse, Sun, Moon } from "lucide-react";
+import { useTheme } from "@hooks/useTheme";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
-import { useFarmContext } from "../../context/FarmContext";
-import { COW_STATUS_VALUES } from "../../types/cows";
-import type { Cow } from "../../types/cows";
-import type { Farm } from "../../types/farms";
+import { useFarmContext } from "@/context/FarmContext";
+import { COW_STATUS_VALUES } from "@/types/cows";
+import type { Cow } from "@/types/cows";
+import type { Farm } from "@/types/farms";
 
 const greeting = () => {
   const h = new Date().getHours();
@@ -30,6 +31,7 @@ const statusTone = (s: string) => {
 export const HomePage = () => {
   const navigate = useNavigate();
   const { data: user } = useMe();
+  const { theme, toggle } = useTheme();
   const { selectedFarm, setSelectedFarm, farms } = useFarmContext();
   const [showFarmPicker, setShowFarmPicker] = useState(false);
 
@@ -67,15 +69,8 @@ export const HomePage = () => {
           </button>
         }
         actions={
-          <button
-            className="app-bar__action"
-            onClick={() => navigate("/notifications")}
-            style={{ position: "relative" }}
-          >
-            <Bell size={22} />
-            {unreadCount > 0 && (
-              <span className="app-bar__action-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
-            )}
+          <button className="app-bar__action" onClick={toggle} title="Alternar tema">
+            {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
           </button>
         }
       />

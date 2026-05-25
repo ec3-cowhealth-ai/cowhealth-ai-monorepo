@@ -27,7 +27,7 @@ export const Sidebar = () => {
     { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
     { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },
     {
-      label: "Notificações",
+      label: "Alertas",
       path: "/notifications",
       icon: <Bell size={18} />,
       badge: unreadCount,

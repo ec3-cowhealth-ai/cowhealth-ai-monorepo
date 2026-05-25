@@ -581,7 +581,7 @@
 }
 .btn-ghost:hover:not(:disabled) {
   border-color: var(--border-strong);
-  background: rgba(255, 250, 251, 0.03);
+  background: var(--border-subtle);
 }
 
 .btn-danger {
@@ -652,7 +652,7 @@
   background: var(--danger);
 }
 .status-badge--muted {
-  background: rgba(255, 250, 251, 0.08);
+  background: var(--bg-elev-2);
   color: var(--text-muted);
 }
 .status-badge--muted .status-badge__dot {
@@ -1049,7 +1049,7 @@
   color: var(--danger);
 }
 .badge--muted {
-  background: rgba(255, 250, 251, 0.08);
+  background: var(--bg-elev-2);
   color: var(--text-muted);
 }
 
@@ -1628,7 +1628,7 @@
 .home-hero__bar {
   height: 6px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-elev-2);
   overflow: hidden;
 }
 .home-hero__bar-fill {

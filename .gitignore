@@ -168,3 +168,8 @@ docs/tasks
 setup.ps1
 */frontendDev_JCFS/*
 cowhealth-db-dump.sql.gz
+start-claude.ps1
+/templates/*
+/templates
+templates/*
+
