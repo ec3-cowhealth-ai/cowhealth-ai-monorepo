@@ -73,11 +73,10 @@ CowHealth AI is built around two runtime surfaces:
 ├── README.md
 ├── START_HERE.md
 ├── MANAGER.md
-├── docs/agents/
 ├── backend/
 ├── docs/
 ├── frontend/
-└── .claude/
+
 ```
 
 ### Frontend
