@@ -29,7 +29,6 @@ export default defineConfig([
         {
           selector: "variable",
           modifiers: ["const", "exported"],
-          types: ["object"],
           format: ["UPPER_CASE"],
         },
       ],
