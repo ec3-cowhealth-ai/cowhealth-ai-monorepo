@@ -2,11 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import type { AuthPayload } from "../types/auth";
 
-export const requireAuth = (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): void => {
+export const requireAuth = (request: Request, response: Response, next: NextFunction): void => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -17,10 +13,7 @@ export const requireAuth = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_SECRET!,
-    ) as unknown as AuthPayload;
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as unknown as AuthPayload;
     request.user = payload;
     next();
   } catch {

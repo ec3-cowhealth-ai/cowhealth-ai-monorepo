@@ -8,21 +8,21 @@ import { z } from "zod";
  * @example
  * router.post("/", requireAuth, requirePermission("Create Farm"), validateSchema(createFarmSchema), storeFarm);
  */
-export const validateSchema = (schema: z.ZodTypeAny) => (
-    request: Request, response: Response, next: NextFunction
-): void => {
+export const validateSchema =
+  (schema: z.ZodTypeAny) =>
+  (request: Request, response: Response, next: NextFunction): void => {
     const result = schema.safeParse(request.body);
 
     if (!result.success) {
-    const errors = result.error.issues.map((issue) => ({
-        field:   issue.path.join("."),
+      const errors = result.error.issues.map((issue) => ({
+        field: issue.path.join("."),
         message: issue.message,
-    }));
+      }));
 
-    response.status(422).json({ error: "Dados inválidos.", details: errors });
-    return;
+      response.status(422).json({ error: "Dados inválidos.", details: errors });
+      return;
     }
 
     request.body = result.data;
     next();
-};
+  };

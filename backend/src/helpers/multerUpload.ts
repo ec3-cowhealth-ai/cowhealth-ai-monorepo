@@ -22,9 +22,7 @@ const fileFilter = (
   if (allowedTypes.includes(file.mimetype)) {
     callback(null, true);
   } else {
-    callback(
-      new Error("Tipo de arquivo não permitido. Use JPEG, PNG ou WebP."),
-    );
+    callback(new Error("Tipo de arquivo não permitido. Use JPEG, PNG ou WebP."));
   }
 };
 

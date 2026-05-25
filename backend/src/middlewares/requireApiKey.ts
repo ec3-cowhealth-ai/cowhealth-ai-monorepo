@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-export const requireApiKey = (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): void => {
+export const requireApiKey = (request: Request, response: Response, next: NextFunction): void => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

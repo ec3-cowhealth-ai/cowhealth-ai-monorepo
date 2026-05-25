@@ -112,10 +112,6 @@ export const aggregateDailyAverage = (
 
   return Array.from(dailyGroups.entries()).map(([date, values]) => ({
     date,
-    average: parseFloat(
-      (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(
-        2,
-      ),
-    ),
+    average: parseFloat((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)),
   }));
 };

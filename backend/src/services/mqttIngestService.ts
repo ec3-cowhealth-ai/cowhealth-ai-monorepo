@@ -80,36 +80,35 @@ const analyzeHealth = async (cowId: number) => {
   const twelveHrsAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
   const thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
-  const [recentAccelZ, recentHr, recentTemps12, recentAccelXY, recentTemps30] =
-    await Promise.all([
-      prisma.accelerometerData.findMany({
-        where: { cowId, measuredAt: { gte: oneHourAgo } },
-        select: { accelZ: true },
-        orderBy: { measuredAt: "asc" },
-      }),
-      prisma.heartRateData.findMany({
-        where: { cowId },
-        select: { bpm: true },
-        orderBy: { measuredAt: "desc" },
-        take: 30,
-      }),
-      prisma.temperatureData.findMany({
-        where: { cowId, measuredAt: { gte: twelveHrsAgo } },
-        select: { celsius: true },
-        orderBy: { measuredAt: "asc" },
-      }),
-      prisma.accelerometerData.findMany({
-        where: { cowId, measuredAt: { gte: thirtyMinAgo } },
-        select: { accelX: true, accelY: true },
-        orderBy: { measuredAt: "asc" },
-      }),
-      prisma.temperatureData.findMany({
-        where: { cowId },
-        select: { celsius: true },
-        orderBy: { measuredAt: "desc" },
-        take: 30,
-      }),
-    ]);
+  const [recentAccelZ, recentHr, recentTemps12, recentAccelXY, recentTemps30] = await Promise.all([
+    prisma.accelerometerData.findMany({
+      where: { cowId, measuredAt: { gte: oneHourAgo } },
+      select: { accelZ: true },
+      orderBy: { measuredAt: "asc" },
+    }),
+    prisma.heartRateData.findMany({
+      where: { cowId },
+      select: { bpm: true },
+      orderBy: { measuredAt: "desc" },
+      take: 30,
+    }),
+    prisma.temperatureData.findMany({
+      where: { cowId, measuredAt: { gte: twelveHrsAgo } },
+      select: { celsius: true },
+      orderBy: { measuredAt: "asc" },
+    }),
+    prisma.accelerometerData.findMany({
+      where: { cowId, measuredAt: { gte: thirtyMinAgo } },
+      select: { accelX: true, accelY: true },
+      orderBy: { measuredAt: "asc" },
+    }),
+    prisma.temperatureData.findMany({
+      where: { cowId },
+      select: { celsius: true },
+      orderBy: { measuredAt: "desc" },
+      take: 30,
+    }),
+  ]);
 
   const snapshot = buildHealthSnapshot(
     recentAccelZ,
@@ -169,8 +168,7 @@ export const ingestMqttPayload = async (body: unknown) => {
   if (!collar) throw new Error(`Colar não encontrado: ${payload.device_id}`);
 
   const cow = collar.cow;
-  if (!cow)
-    throw new Error(`Nenhuma vaca vinculada ao colar ${payload.device_id}`);
+  if (!cow) throw new Error(`Nenhuma vaca vinculada ao colar ${payload.device_id}`);
 
   await persistSensorData(cow.id, payload);
 

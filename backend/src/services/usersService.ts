@@ -58,12 +58,7 @@ export const getUserById = async (userId: number) => {
   return user;
 };
 
-export const createUser = async ({
-  name,
-  email,
-  password,
-  profile,
-}: CreateUserInput) => {
+export const createUser = async ({ name, email, password, profile }: CreateUserInput) => {
   await assertUnique(prisma.user, { email }, "Email já cadastrado.");
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -131,9 +126,7 @@ export const deleteUser = async (userId: number) => {
 
   if (!user) throw new Error("Usuário não encontrado.");
 
-  const isSuperAdmin = user.roles.some(
-    (userRole) => userRole.role.name === "SuperAdmin",
-  );
+  const isSuperAdmin = user.roles.some((userRole) => userRole.role.name === "SuperAdmin");
   if (isSuperAdmin) {
     throw new Error("Não é possível excluir o usuário SuperAdmin.");
   }
