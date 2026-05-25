@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cowUpload } from "../helpers/multerUpload";
+import path from "path";
 import {
   getAllCows,
   getCowById,
@@ -15,6 +15,7 @@ import {
   getCowTemperatureDaily,
 } from "../services/cowsService";
 import { handleRequest } from "../helpers/controllerHelpers";
+import type { SensorQueryOptions } from "../types/sensors";
 
 // CRUD
 
@@ -115,7 +116,7 @@ export const listHeartRate = async (
 ): Promise<void> => {
   await handleRequest(
     response,
-    () => getCowHeartRate(Number(request.params.id), request.query as any),
+    () => getCowHeartRate(Number(request.params.id), request.query as unknown as SensorQueryOptions),
     200,
     404,
   );
@@ -127,7 +128,7 @@ export const listTemperature = async (
 ): Promise<void> => {
   await handleRequest(
     response,
-    () => getCowTemperature(Number(request.params.id), request.query as any),
+    () => getCowTemperature(Number(request.params.id), request.query as unknown as SensorQueryOptions),
     200,
     404,
   );
@@ -139,7 +140,7 @@ export const listAccelerometer = async (
 ): Promise<void> => {
   await handleRequest(
     response,
-    () => getCowAccelerometer(Number(request.params.id), request.query as any),
+    () => getCowAccelerometer(Number(request.params.id), request.query as unknown as SensorQueryOptions),
     200,
     404,
   );

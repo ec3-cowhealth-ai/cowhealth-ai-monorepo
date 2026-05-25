@@ -23,7 +23,7 @@ import { Response } from "express";
  */
 export const handleRequest = async (
   response: Response,
-  serviceCall: () => Promise<any>,
+  serviceCall: () => Promise<unknown>,
   successStatus: number = 200,
   errorStatus: number = 400,
 ): Promise<void> => {
@@ -35,7 +35,8 @@ export const handleRequest = async (
     } else {
       response.status(successStatus).json(result);
     }
-  } catch (error: any) {
-    response.status(errorStatus).json({ error: error.message });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Erro interno.";
+    response.status(errorStatus).json({ error: message });
   }
 };

@@ -11,10 +11,10 @@ export interface AuthPayload {
 }
 
 declare global {
-    namespace Express {
-        interface Request {
-            user?: AuthPayload;
-        }
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      user?: AuthPayload;
     }
   }
 }

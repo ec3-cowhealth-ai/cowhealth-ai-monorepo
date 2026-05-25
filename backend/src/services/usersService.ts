@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateUserInput, UpdateUserInput } from "../types/access";
+import type { Prisma } from "@prisma/client";
 
 const SUPER_ADMIN_USER_ID = 1;
 
@@ -91,7 +92,7 @@ export const updateUser = async (
     await assertUnique(prisma.user, { email }, "Email já cadastrado.", userId);
   }
 
-  const updatedData: any = { name, email, profile };
+  const updatedData: Prisma.UserUpdateInput = { name, email, profile };
 
   if (password) {
     updatedData.passwordHash = await bcrypt.hash(password, 12);
