@@ -1,4 +1,4 @@
-# START_HERE
+Sim# START_HERE
 
 This is the practical entry point for the repository.
 
@@ -7,8 +7,8 @@ This is the practical entry point for the repository.
 1. [README.md](/README.md)
 2. [docs/README.md](/docs/README.md)
 3. [MANAGER.md](/MANAGER.md)
-4. [agents/agents.md](/agents/agents.md)
-5. [agents/design.md](/agents/design.md)
+4. [docs/agents/agents.md](/docs/agents/agents.md)
+5. [docs/agents/design.md](/docs/agents/design.md)
 
 ## What This Repo Is
 

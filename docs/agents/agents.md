@@ -33,33 +33,31 @@ Before making recommendations, writing code, modifying files, or answering proje
 
 At the beginning of every new conversation or task, perform this initialization sequence:
 
-1. Read the project entry point:
-   - `START_HERE.md`, if it exists.
-   - If it does not exist, recommend adding it, but do not create it without user approval unless the user explicitly asked you to initialize project documentation.
+1. Read the project agent rules:
+   - `docs/agents/agents.md` (this file).
 
-2. Read the project agent rules:
-   - `AGENTS.md`.
+2. Read the project documentation map:
+   - `docs/README.md` — the authoritative document map for this repository.
 
-3. Read the project documentation map:
-   - `/docs/knowledge/KNOWLEDGE_BASE.md`, if it exists.
-   - `/docs/knowledge/KNOWLEDGE_GRAPH.md`, if the project uses that name instead.
-   - If neither exists, propose creating `/docs/knowledge/KNOWLEDGE_BASE.md`.
+3. Read the mandatory working documents:
+   - `docs/architecture/frontend-architecture.md` — frontend architecture source of truth.
+   - `docs/architecture/backend-architecture.md` — backend architecture source of truth.
+   - `docs/change_control/CHANGELOG.md` — recent changes and session history.
+   - `docs/reviews/20260524-handoff-team.md` — current team handoff and task status.
 
-4. Read the mandatory working files inside `/docs`:
-   - `/docs/plan.md`
-   - `/docs/tasks.md`
-   - `/docs/design.md`
-   - `/docs/memory.md`
+4. Read relevant Source of Truth documents before implementation (per `docs/README.md`):
+   - `/README.md` — root project README.
+   - `docs/policies/CONTRIBUTING.md` and `docs/policies/branching-policy.md`.
+   - `docs/references/code-style.md` and other references in `docs/references/`.
+   - `docs/prisma.md` — Prisma schema reference.
+   - Feature READMEs under `frontend/src/features/` for the relevant feature.
+   - Design system tokens and components in `docs/design_system/`.
 
-5. Read relevant Source of Truth documents before implementation:
-   - `/docs/knowledge/source-of-truth/`
-   - Architecture decision records.
-   - Approved product requirements.
-   - Approved UX/UI requirements.
-   - Approved API contracts.
-   - Approved design system documentation.
-   - Approved accessibility, security, privacy, or compliance standards.
-   - Current sprint, roadmap, or milestone files.
+5. Do NOT treat the following as current implementation guidance (they are historical):
+   - `docs/plan/TODO_EXECUTION_PLAN.md`
+   - `docs/instructions/frontend-implementation-plan.md`
+   - `docs/guidances/IMPLEMENTATION_GUIDE.md`
+   - `docs/reviews/20260523-*`
 
 6. Inspect the application structure before changing code:
    - `package.json`
@@ -103,161 +101,86 @@ Exception:
 
 Every repository assisted by this agent should maintain a `/docs` directory at the repository root.
 
-The default documentation structure is:
+The documentation structure for this repository is:
 
 ```text
 project-root/
-├── AGENTS.md
-├── START_HERE.md
+├── README.md
 ├── docs/
-│   ├── plan.md
-│   ├── tasks.md
-│   ├── design.md
-│   ├── memory.md
-│   ├── knowledge/
-│   │   ├── KNOWLEDGE_BASE.md
-│   │   ├── source-of-truth/
-│   │   ├── core/
-│   │   ├── implementation/
-│   │   ├── meetings/
-│   │   ├── team/
-│   │   └── archive/
-│   ├── adr/
-│   ├── uml/
-│   └── generated/
-├── public/
-└── src/
+│   ├── agents/
+│   │   ├── agents.md
+│   │   ├── design.md
+│   │   └── UIUX_prompt.md
+│   ├── README.md                        ← documentation map (entry point)
+│   ├── architecture/
+│   │   ├── frontend-architecture.md     ← Tier 1: Source of Truth
+│   │   └── backend-architecture.md      ← Tier 1: Source of Truth
+│   ├── change_control/
+│   │   └── CHANGELOG.md
+│   ├── policies/
+│   │   ├── CONTRIBUTING.md
+│   │   └── branching-policy.md
+│   ├── references/
+│   │   ├── code-style.md
+│   │   ├── setup.md
+│   │   ├── type-patterns.md
+│   │   ├── branded-types.md
+│   │   ├── template-literals.md
+│   │   ├── union-exhaustive.md
+│   │   └── type-testing.md
+│   ├── design_reference/                ← visual design references
+│   ├── design_system/                   ← design tokens, HTML prototypes
+│   ├── heuristic_models/
+│   ├── reviews/                         ← working docs and handoffs
+│   ├── reports/                         ← session and daily reports
+│   ├── tasks/                           ← task cards and hotfix lists
+│   └── prisma.md
+├── frontend/
+│   └── src/
+│       └── features/
+│           └── */README.md              ← per-feature source of truth
+└── backend/
 ```
 
-### 4.1 Required Files
+### 4.1 Authoritative Files for This Repository
 
-#### `/docs/plan.md`
+#### `docs/README.md`
 
 Purpose:
 
-- Define the current implementation plan.
-- Capture goals, constraints, milestones, risks, dependencies, and acceptance criteria.
-- Record what will be changed before code is changed.
+- Serves as the documentation map and entry point for humans and AI agents.
+- Categorizes all documents by authority tier: Source of Truth, Working Docs, Historical Docs.
+- Must be updated whenever a new document is added or a document changes authority status.
 
-Required sections:
-
-```markdown
-# Plan
-
-## Objective
-
-## Scope
-
-## Assumptions
-
-## Questions for the User
-
-## Constraints
-
-## Architecture Impact
-
-## UI/UX Impact
-
-## Accessibility Impact
-
-## Implementation Strategy
-
-## Testing Strategy
-
-## Risks
-
-## Acceptance Criteria
-```
-
-#### `/docs/tasks.md`
+#### `docs/architecture/frontend-architecture.md` and `docs/architecture/backend-architecture.md`
 
 Purpose:
 
-- Track actionable work items.
-- Break implementation into small, verifiable tasks.
-- Prevent uncontrolled scope expansion.
+- Define the canonical architecture of the frontend and backend respectively.
+- Are the primary Tier 1 references for all architectural decisions.
+- Must be updated when architecture changes are approved and implemented.
 
-Required sections:
-
-```markdown
-# Tasks
-
-## Backlog
-
-## In Progress
-
-## Blocked
-
-## Completed
-
-## Verification Checklist
-```
-
-#### `/docs/design.md`
+#### `docs/change_control/CHANGELOG.md`
 
 Purpose:
 
-- Document architecture, domain model, major components, UI structure, API boundaries, design decisions, UML diagrams, and trade-offs.
+- Record of all changes per session and per author.
+- JCFS section is maintained at the top.
+- Format: `## YYYY-MM-DD - Title` per session.
 
-Required sections:
-
-```markdown
-# Design
-
-## System Overview
-
-## Domain Model
-
-## Frontend Architecture
-
-## Component Architecture
-
-## Route Architecture
-
-## State Management
-
-## Interfaces and Contracts
-
-## API Integration
-
-## Data Flow
-
-## Error Handling Strategy
-
-## Accessibility Considerations
-
-## Security Considerations
-
-## Performance Considerations
-
-## UML Diagrams
-
-## Design Decisions
-```
-
-#### `/docs/memory.md`
+#### `docs/reviews/20260524-handoff-team.md`
 
 Purpose:
 
-- Preserve continuity across sessions.
-- Record user preferences, approved decisions, rejected approaches, open questions, and implementation notes.
+- Current team handoff document with task assignments per teammate.
+- Should be read before making changes that affect team members' areas.
 
-Required sections:
+#### Feature READMEs (`frontend/src/features/*/README.md`)
 
-```markdown
-# Memory
+Purpose:
 
-## User Preferences
-
-## Approved Decisions
-
-## Rejected Decisions
-
-## Repository Conventions
-
-## Important Context
-
-## Open Questions
+- Per-feature source of truth for component structure, hooks, services, and API contracts.
+- Must be updated when a feature's structure or contracts change.
 
 ---
 
@@ -280,17 +203,15 @@ Mandatory rules:
 
 Before implementation:
 
-- Update or propose updates to `/docs/plan.md`.
-- Update or propose updates to `/docs/tasks.md`.
-- Update or propose updates to `/docs/design.md` when architecture, UML, UI flows, routes, state management, APIs, persistence, interfaces, contracts, accessibility, or domain rules are affected.
-- Update or propose updates to `/docs/memory.md` when the user makes a decision, corrects an assumption, approves an approach, rejects an approach, or provides durable project context.
+- Read `docs/README.md` to identify which documents are relevant to the change.
+- Update or propose updates to `docs/architecture/frontend-architecture.md` or `docs/architecture/backend-architecture.md` when architecture is affected.
+- Update or propose updates to the relevant feature README under `frontend/src/features/` when a feature's structure, hooks, services, or contracts change.
 
 After implementation:
 
-- Mark completed tasks in `/docs/tasks.md`.
-- Add relevant design notes to `/docs/design.md`.
-- Add durable learnings and decisions to `/docs/memory.md`.
-- Update `/docs/knowledge/KNOWLEDGE_BASE.md` when new documentation, architecture decisions, modules, routes, APIs, components, workflows, or design system rules are added.
+- Add an entry to `docs/change_control/CHANGELOG.md` under the JCFS section.
+- Update `docs/README.md` if a new document was added or an existing one changed authority tier.
+- Update the relevant architecture doc if the implementation diverges from the previously documented design.
 
 Do not silently change planning, tasks, design, or memory files when the user has not authorized file edits. In read-only or advisory mode, provide the proposed Markdown content instead.
 
@@ -1787,43 +1708,49 @@ You must always follow these rules:
 
 ---
 
-## 43. Recommended Minimal Bootstrap
+## 43. This Repository's Documentation Bootstrap
 
-For a new Web repository, propose this minimal documentation bootstrap:
+This repository already has its documentation structure in place. Do not propose creating generic template files (`plan.md`, `tasks.md`, `design.md`, `memory.md`, `START_HERE.md`, `KNOWLEDGE_BASE.md`) — they do not exist here and are not the project's convention.
+
+The actual bootstrap for this repository is:
 
 ```text
-AGENTS.md
-START_HERE.md
+README.md
+agents/
+└── agents.md
 docs/
-├── plan.md
-├── tasks.md
-├── design.md
-├── memory.md
-└── knowledge/
-    ├── KNOWLEDGE_BASE.md
-    ├── source-of-truth/
-    ├── core/
-    │   ├── 00_project_context.md
-    │   ├── 01_domain_model.md
-    │   ├── 02_frontend_architecture.md
-    │   ├── 03_component_model.md
-    │   └── 04_testing_strategy.md
-    ├── implementation/
-    ├── meetings/
-    └── archive/
+├── README.md                            ← start here (documentation map)
+├── architecture/
+│   ├── frontend-architecture.md         ← Tier 1
+│   └── backend-architecture.md          ← Tier 1
+├── change_control/
+│   └── CHANGELOG.md
+├── policies/
+│   ├── CONTRIBUTING.md
+│   └── branching-policy.md
+├── references/
+│   └── code-style.md  (+ others)
+├── design_system/
+│   └── tokens.css  (+ components)
+├── reviews/
+│   └── 20260524-handoff-team.md         ← current team handoff
+├── tasks/
+│   └── triagen-cards.yaml
+└── prisma.md
+frontend/
+└── src/
+    └── features/
+        └── */README.md                  ← per-feature source of truth
 ```
 
-Minimum viable content:
+Minimum viable additions when documenting new work:
 
-- `START_HERE.md`: project summary, stack, setup, testing, build, current focus, first files to read.
-- `/docs/knowledge/KNOWLEDGE_BASE.md`: authority hierarchy, document map, top concept clusters, navigation paths.
-- `AGENTS.md`: rules for AI agents.
-- `/docs/plan.md`: current objective and implementation strategy.
-- `/docs/tasks.md`: actionable task list.
-- `/docs/design.md`: architecture, component model, route model, data flow, and UML.
-- `/docs/memory.md`: durable decisions and user preferences.
+- Entry in `docs/change_control/CHANGELOG.md`.
+- Update to the relevant architecture doc if structure changed.
+- Update to the feature README if the feature's contracts or components changed.
+- Update to `docs/README.md` if a new document was created.
 
-This bootstrap must be grown incrementally. Do not try to document everything at once.
+Do not try to document everything at once. Grow documentation incrementally alongside code.
 
 ---
 

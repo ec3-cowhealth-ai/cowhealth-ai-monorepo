@@ -21,7 +21,7 @@
 ### 2. **CSS Styles**
 
 #### `frontend/src/styles/landing.css`
-- Complete design system in CSS variables (see `agents/design.md`).
+- Complete design system in CSS variables (see `docs/agents/design.md`).
 - Color palette: Onyx, Graphite, Verdigris, Pearl Aqua, Snow.
 - Typography: Space Grotesk, Manrope, JetBrains Mono.
 - Spacing: 4px base scale (--s-1 to --s-9).
@@ -151,7 +151,7 @@ Landing (/)
 
 ## 📝 Technical Notes
 
-- **Design System:** Full implementation of `agents/design.md` in CSS variables.
+- **Design System:** Full implementation of `docs/agents/design.md` in CSS variables.
 - **Components:** Reusable, no complex state (presentational).
 - **Accessibility:** aria-labels on buttons, semantic HTML (nav, footer, section).
 - **Responsiveness:** Mobile-first, no unnecessary breakpoints.
@@ -161,7 +161,7 @@ Landing (/)
 
 ## 🔗 References
 
-- **Design System:** `/agents/design.md`
+- **Design System:** `/docs/agents/design.md`
 - **Visual Palette:** `/docs/design_reference/pallette.png`
 - **HiFi Mockups:** `/docs/design_reference/CowHealth-HiFi.pdf`
 - **Original Code:** `/docs/jcfs_tests/landing.jsx`

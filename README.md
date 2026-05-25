@@ -14,8 +14,8 @@ CowHealth AI is a bovine health monitoring platform organized as a web monorepo.
 1. [START_HERE.md](/START_HERE.md)
 2. [MANAGER.md](/MANAGER.md)
 3. [docs/README.md](/docs/README.md)
-4. [agents/agents.md](/agents/agents.md)
-5. [agents/design.md](/agents/design.md)
+4. [docs/agents/agents.md](/docs/agents/agents.md)
+5. [docs/agents/design.md](/docs/agents/design.md)
 6. [docs/architecture/frontend-architecture.md](/docs/architecture/frontend-architecture.md)
 7. [docs/architecture/backend-architecture.md](/docs/architecture/backend-architecture.md)
 8. [backend/prisma/schema.prisma](/backend/prisma/schema.prisma)
@@ -73,7 +73,7 @@ CowHealth AI is built around two runtime surfaces:
 ├── README.md
 ├── START_HERE.md
 ├── MANAGER.md
-├── agents/
+├── docs/agents/
 ├── backend/
 ├── docs/
 ├── frontend/
@@ -199,8 +199,8 @@ cd backend  && npm run lint && npm run build
 |---|---|
 | `START_HERE.md` | Practical entry point |
 | `MANAGER.md` | Project management and decisions |
-| `agents/agents.md` | Agent roles and responsibilities |
-| `agents/design.md` | Design system reference |
+| `docs/agents/agents.md` | Agent roles and responsibilities |
+| `docs/agents/design.md` | Design system reference |
 | `docs/architecture/frontend-architecture.md` | Frontend structure and conventions |
 | `docs/architecture/backend-architecture.md` | Backend route matrix and conventions |
 | `docs/change_control/CHANGELOG.md` | Change history |
