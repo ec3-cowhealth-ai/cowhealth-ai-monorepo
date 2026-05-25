@@ -1,81 +1,99 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { HeroSection, FeaturesSection, CTASection, Footer } from "../components";
-import { IcBroadcast } from "@components/icons/LandingIcons";
+import dashImg from "@/assets/landing/dashboard.jpg";
+import {
+  LandingNav,
+  HeroSection,
+  ProblemSection,
+  SolutionSection,
+  CollarSection,
+  IntelligenceSection,
+  AppPreviewSection,
+  ValueSection,
+  TrustSection,
+  PilotSection,
+  Footer,
+} from "../components";
 
-/**
- * LandingPage — Public landing page for CowHealth AI
- *
- * Sections:
- * 1. Brand strip (sticky header with logo and beta badge)
- * 2. Hero (title, subtitle, visual, CTAs)
- * 3. Features (3 cards: monitor, alerts, reports)
- * 4. CTA (sign up, schedule demo, trust row)
- * 5. Footer (links, copyright)
- *
- * Notes:
- * - Does not require authentication
- * - Fully responsive (mobile-first)
- * - Dark theme with high contrast (WCAG AA)
- * - Uses design system from agents/design.md
- */
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleSignIn = () => {
-    navigate("/login");
-  };
-
-  const handleSignUp = () => {
-    navigate("/register");
-  };
-
-  const handleScheduleDemo = () => {
-    // TODO: Implement demo scheduling modal or redirect
-    console.log("Schedule demo");
-  };
-
-  const handleNavLink = (link: string) => {
-    // TODO: Implement footer link navigation
-    console.log("Navigate to:", link);
-  };
-
   return (
-    <div className="stage">
-      <div className="app">
-        {/* Brand strip */}
-        <div className="brand-strip">
-          <div className="brand">
-            <span className="brand-mark">
-              <IcBroadcast size={14} strokeWidth={2} />
-            </span>
-            CowHealth AI
+    <main className="bg-background text-foreground overflow-x-hidden">
+      <LandingNav />
+
+      <HeroSection
+        onCtaClick={() => navigate("/login")}
+        onLearnMoreClick={() => {
+          document.getElementById("solution")?.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
+
+      <ProblemSection />
+      <SolutionSection />
+      <CollarSection />
+      <IntelligenceSection />
+
+      {/* Dashboard screenshot section — id="dashboard" for nav */}
+      <section id="dashboard" className="relative overflow-hidden bg-background py-28 lg:py-36">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="mb-5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-forest">
+            <span className="h-px w-6 bg-forest/40" />
+            A plataforma
           </div>
-          <span className="status-pill">
-            <span className="pulse-dot" />
-            BETA
-          </span>
+          <h2 className="font-display text-4xl leading-[1.02] text-balance max-w-3xl sm:text-5xl lg:text-6xl text-foreground">
+            Um painel
+            <br />
+            <span className="italic text-forest">para todo o rebanho.</span>
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Projetado para produtores, veterinários e gestores de fazenda — a CowHealth AI
+            transforma dados brutos de sensores em decisões claras e priorizadas.
+          </p>
+
+          <div className="mt-14 overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-elegant sm:p-3">
+            <div className="overflow-hidden rounded-2xl">
+              <img
+                src={dashImg}
+                alt="Painel da CowHealth AI"
+                width={1920}
+                height={1200}
+                loading="lazy"
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              "Monitoramento em tempo real",
+              "Perfis individuais por vaca",
+              "Tendências históricas",
+              "Pontuações de risco",
+              "Alertas inteligentes",
+              "Relatórios e exportações",
+              "Acesso multiusuário",
+              "Autenticação segura",
+            ].map((f) => (
+              <div
+                key={f}
+                className="rounded-xl border border-border bg-card px-4 py-4 text-sm transition-colors hover:border-forest/40 text-foreground"
+              >
+                <div className="mb-2 h-1 w-6 rounded-full bg-forest/40" />
+                {f}
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Main sections */}
-        <HeroSection
-          onCtaClick={handleSignIn}
-          onLearnMoreClick={() => {
-            // TODO: Scroll to features or play video
-            console.log("Learn more");
-          }}
-        />
+      {/* Phone mockups — id="app" for nav */}
+      <AppPreviewSection />
 
-        <FeaturesSection showLiveVitals={true} />
-
-        <CTASection
-          onSignUp={handleSignUp}
-          onScheduleDemo={handleScheduleDemo}
-          showTrustRow={true}
-        />
-
-        <Footer onNavClick={handleNavLink} />
-      </div>
-    </div>
+      <ValueSection />
+      <TrustSection />
+      <PilotSection onSignUp={() => navigate("/register")} />
+      <Footer />
+    </main>
   );
 };

@@ -774,7 +774,3 @@ Substituir brand strip estático pelo `Nav` com transparência/blur on scroll:
 > A Fase 0 (token bridge) é pré-requisito para as Fases 3–5 e elimina a necessidade de reescrever classes nos componentes portados. As demais fases são independentes entre si.
 
 ---
-
-## Nota sobre a Landing Page Atual
-
-A landing existente usa **CSS puro** (`landing.css`) com classes como `.hero`, `.feature-card`, `.btn-primary` — sem Tailwind. Isso é intencional para o app autenticado, mas **na landing não há restrição**: Tailwind v4 está disponível globalmente via `index.css`. Os novos componentes portados do template podem usar classes Tailwind sem conflito com o CSS existente.
