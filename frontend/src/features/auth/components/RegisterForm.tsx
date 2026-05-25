@@ -51,9 +51,7 @@ export const RegisterForm = () => {
           placeholder="Seu nome"
           {...field("name")}
         />
-        {errors.name && (
-          <p className="form-field__error">{errors.name.message}</p>
-        )}
+        {errors.name && <p className="form-field__error">{errors.name.message}</p>}
       </div>
 
       <div className="form-field">
@@ -67,9 +65,7 @@ export const RegisterForm = () => {
           placeholder="seu@email.com"
           {...field("email")}
         />
-        {errors.email && (
-          <p className="form-field__error">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="form-field__error">{errors.email.message}</p>}
       </div>
 
       <div className="form-field">
@@ -83,9 +79,7 @@ export const RegisterForm = () => {
           placeholder="••••••••"
           {...field("password")}
         />
-        {errors.password && (
-          <p className="form-field__error">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="form-field__error">{errors.password.message}</p>}
       </div>
 
       <div className="form-field">

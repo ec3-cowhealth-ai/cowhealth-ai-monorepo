@@ -53,28 +53,21 @@ export const CollarsPage = () => {
             className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.ACTIVE ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.ACTIVE)}
           >
-            Ativas (
-            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.ACTIVE)
-              .length || 0}
-            )
+            Ativas ({collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.ACTIVE).length || 0})
           </button>
           <button
             className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.INACTIVE ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.INACTIVE)}
           >
             Inativas (
-            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.INACTIVE)
-              .length || 0}
-            )
+            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.INACTIVE).length || 0})
           </button>
           <button
             className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.MAINTENANCE ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.MAINTENANCE)}
           >
             Manutenção (
-            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.MAINTENANCE)
-              .length || 0}
-            )
+            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.MAINTENANCE).length || 0})
           </button>
         </div>
 

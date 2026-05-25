@@ -31,15 +31,12 @@ export function simulateCowPositions(
   farmLng?: number,
 ): CowPosition[] {
   const center =
-    farmLat != null && farmLng != null
-      ? { lat: farmLat, lng: farmLng }
-      : FARM_COORDS[farmId];
+    farmLat != null && farmLng != null ? { lat: farmLat, lng: farmLng } : FARM_COORDS[farmId];
 
   if (!center) return [];
 
   const latDelta = FARM_RADIUS_M / 111_000;
-  const lngDelta =
-    FARM_RADIUS_M / (111_000 * Math.cos((center.lat * Math.PI) / 180));
+  const lngDelta = FARM_RADIUS_M / (111_000 * Math.cos((center.lat * Math.PI) / 180));
 
   return cows.map((cow) => {
     const angle = seededRandom(cow.id * 2) * 2 * Math.PI;

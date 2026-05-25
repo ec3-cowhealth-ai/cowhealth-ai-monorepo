@@ -5,9 +5,7 @@ interface CowStatusBadgeProps {
   status: string;
 }
 
-const getStatusTone = (
-  status: string,
-): "success" | "warning" | "danger" | "info" | "muted" => {
+const getStatusTone = (status: string): "success" | "warning" | "danger" | "info" | "muted" => {
   switch (status) {
     case COW_STATUS_VALUES.HEALTHY:
       return "success";

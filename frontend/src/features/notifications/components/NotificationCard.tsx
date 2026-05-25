@@ -29,10 +29,7 @@ const getIcon = (type: string): ReactNode => {
   return icons[type] ?? <Megaphone size={24} />;
 };
 
-export const NotificationCard = ({
-  notification,
-  onMarkAsRead,
-}: NotificationCardProps) => {
+export const NotificationCard = ({ notification, onMarkAsRead }: NotificationCardProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -55,9 +52,7 @@ export const NotificationCard = ({
       onClick={handleClick}
     >
       <div style={{ display: "flex", gap: "var(--s-3)" }}>
-        <div
-          style={{ flexShrink: 0, display: "flex", alignItems: "flex-start" }}
-        >
+        <div style={{ flexShrink: 0, display: "flex", alignItems: "flex-start" }}>
           {getIcon(notification.type)}
         </div>
 
@@ -80,9 +75,7 @@ export const NotificationCard = ({
           >
             {notification.message}
           </p>
-          <p
-            style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)" }}
-          >
+          <p style={{ margin: 0, fontSize: "11px", color: "var(--text-muted)" }}>
             {getTimeAgo(notification.createdAt)}
             {notification.cowId && " • Clique para ver vaca"}
           </p>

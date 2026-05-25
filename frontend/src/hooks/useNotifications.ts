@@ -25,9 +25,7 @@ export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "unread"],
     queryFn: async () => {
-      const response = await api.get<Notification[]>(
-        "/notifications?read=false",
-      );
+      const response = await api.get<Notification[]>("/notifications?read=false");
       return response.data;
     },
   });
@@ -36,8 +34,7 @@ export const useUnreadNotifications = () => {
 export const useMarkNotificationAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (notificationId: string) =>
-      api.patch(`/notifications/${notificationId}/read`),
+    mutationFn: (notificationId: string) => api.patch(`/notifications/${notificationId}/read`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },

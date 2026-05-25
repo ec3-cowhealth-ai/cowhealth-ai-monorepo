@@ -5,8 +5,7 @@ export const COLLAR_STATUS_VALUES = {
   BATTERY: "BATTERY",
 } as const;
 
-export type CollarStatus =
-  (typeof COLLAR_STATUS_VALUES)[keyof typeof COLLAR_STATUS_VALUES];
+export type CollarStatus = (typeof COLLAR_STATUS_VALUES)[keyof typeof COLLAR_STATUS_VALUES];
 
 export const DATA_FREQUENCY_VALUES = {
   HIGHER: "HIGHER",
@@ -14,8 +13,7 @@ export const DATA_FREQUENCY_VALUES = {
   LOWER: "LOWER",
 } as const;
 
-export type DataFrequency =
-  (typeof DATA_FREQUENCY_VALUES)[keyof typeof DATA_FREQUENCY_VALUES];
+export type DataFrequency = (typeof DATA_FREQUENCY_VALUES)[keyof typeof DATA_FREQUENCY_VALUES];
 
 export interface Collar {
   id: number;

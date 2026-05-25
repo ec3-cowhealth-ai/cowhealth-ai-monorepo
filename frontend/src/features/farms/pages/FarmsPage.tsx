@@ -20,8 +20,7 @@ export const FarmsPage = () => {
     if (!farms) return [];
     return farms.filter(
       (farm) =>
-        farm.name.toLowerCase().includes(search.toLowerCase()) ||
-        farm.cnpj.includes(search),
+        farm.name.toLowerCase().includes(search.toLowerCase()) || farm.cnpj.includes(search),
     );
   }, [farms, search]);
 
@@ -54,10 +53,7 @@ export const FarmsPage = () => {
       <AppBar
         title="Fazendas"
         actions={
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => setShowForm(true)}
-          >
+          <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
             + Nova
           </button>
         }
@@ -80,10 +76,7 @@ export const FarmsPage = () => {
             title="Nenhuma fazenda encontrada"
             description="Crie sua primeira fazenda para começar"
             action={
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowForm(true)}
-              >
+              <button className="btn btn-primary" onClick={() => setShowForm(true)}>
                 Criar Fazenda
               </button>
             }
@@ -91,11 +84,7 @@ export const FarmsPage = () => {
         ) : (
           <div className="grid grid--2">
             {filteredFarms.map((farm) => (
-              <FarmCard
-                key={farm.id}
-                farm={farm}
-                onClick={() => navigate(`/farms/${farm.id}`)}
-              />
+              <FarmCard key={farm.id} farm={farm} onClick={() => navigate(`/farms/${farm.id}`)} />
             ))}
           </div>
         )}

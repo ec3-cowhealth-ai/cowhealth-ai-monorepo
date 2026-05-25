@@ -19,10 +19,7 @@ export const AccessLayout = () => {
           title="Acesso Negado"
           description="Apenas administradores podem acessar essa área."
           action={
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate("/home")}
-            >
+            <button className="btn btn-primary" onClick={() => navigate("/home")}>
               Voltar ao Home
             </button>
           }

@@ -10,8 +10,7 @@ export const usePermissions = () =>
 export const useCreatePermission = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: { name: string; description: string }) =>
-      permissionsService.create(input),
+    mutationFn: (input: { name: string; description: string }) => permissionsService.create(input),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["permissions"] }),
   });
 };
@@ -19,13 +18,8 @@ export const useCreatePermission = () => {
 export const useUpdatePermission = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      input,
-    }: {
-      id: string;
-      input: { name?: string; description?: string };
-    }) => permissionsService.update(id, input),
+    mutationFn: ({ id, input }: { id: string; input: { name?: string; description?: string } }) =>
+      permissionsService.update(id, input),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["permissions"] }),
   });
 };

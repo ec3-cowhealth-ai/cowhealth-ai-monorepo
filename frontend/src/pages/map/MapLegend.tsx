@@ -6,11 +6,7 @@ interface MapLegendProps {
   alertCount: number;
 }
 
-export const MapLegend = ({
-  okCount,
-  warnCount,
-  alertCount,
-}: MapLegendProps) => (
+export const MapLegend = ({ okCount, warnCount, alertCount }: MapLegendProps) => (
   <div
     style={{
       position: "absolute",

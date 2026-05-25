@@ -36,14 +36,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="eyebrow">PLATAFORMA DE PECUÁRIA INTELIGENTE</div>
 
       <h1 className="hero-title">
-        Monitore a saúde do <span className="accent">seu rebanho</span> em tempo
-        real
+        Monitore a saúde do <span className="accent">seu rebanho</span> em tempo real
       </h1>
 
       <p className="hero-sub">
-        Sensores de coleira inteligente entregam dados precisos — batimento,
-        temperatura e atividade — a cada segundo. Para que você decida com
-        confiança no campo.
+        Sensores de coleira inteligente entregam dados precisos — batimento, temperatura e atividade
+        — a cada segundo. Para que você decida com confiança no campo.
       </p>
 
       {/* Hero Visual — Multiple variants */}
@@ -58,11 +56,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </span>
         </button>
 
-        <button
-          className="btn btn-ghost"
-          type="button"
-          onClick={onLearnMoreClick}
-        >
+        <button className="btn btn-ghost" type="button" onClick={onLearnMoreClick}>
           <span className="ic">
             <IcPlay size={14} />
           </span>
@@ -243,14 +237,7 @@ const HeroVisualCow: React.FC = () => {
             strokeWidth="3.5"
             strokeLinecap="round"
           />
-          <circle
-            cx="68"
-            cy="98"
-            r="6"
-            fill="#339989"
-            stroke="#7DE2D1"
-            strokeWidth="1.4"
-          />
+          <circle cx="68" cy="98" r="6" fill="#339989" stroke="#7DE2D1" strokeWidth="1.4" />
           <circle cx="68" cy="98" r="2.2" fill="#7DE2D1" />
         </svg>
 

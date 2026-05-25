@@ -73,8 +73,7 @@
   /* Shadows */
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-subtle);
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border-subtle);
-  --shadow-glow:
-    0 0 0 1px var(--primary-soft), 0 8px 32px rgba(51, 153, 137, 0.18);
+  --shadow-glow: 0 0 0 1px var(--primary-soft), 0 8px 32px rgba(51, 153, 137, 0.18);
 
   /* Fonts */
   --font-display: "Space Grotesk", system-ui, sans-serif;
@@ -149,17 +148,8 @@ body[data-view="phone"] .stage {
   place-items: center;
   padding: 32px 16px;
   background:
-    radial-gradient(
-      1200px 800px at 20% -10%,
-      rgba(51, 153, 137, 0.1),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 700px at 110% 110%,
-      rgba(125, 226, 209, 0.06),
-      transparent 60%
-    ),
-    #07090a;
+    radial-gradient(1200px 800px at 20% -10%, rgba(51, 153, 137, 0.1), transparent 60%),
+    radial-gradient(900px 700px at 110% 110%, rgba(125, 226, 209, 0.06), transparent 60%), #07090a;
 }
 body[data-view="phone"] .app {
   width: auto;
@@ -299,16 +289,8 @@ body[data-view="phone"] .app::-webkit-scrollbar {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(
-      420px 180px at 50% 40%,
-      rgba(51, 153, 137, 0.22),
-      transparent 70%
-    ),
-    radial-gradient(
-      220px 160px at 80% 80%,
-      rgba(125, 226, 209, 0.12),
-      transparent 70%
-    );
+    radial-gradient(420px 180px at 50% 40%, rgba(51, 153, 137, 0.22), transparent 70%),
+    radial-gradient(220px 160px at 80% 80%, rgba(125, 226, 209, 0.12), transparent 70%);
   border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -377,12 +359,7 @@ body[data-view="phone"] .app::-webkit-scrollbar {
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    #3eb19f 0%,
-    var(--verdigris) 45%,
-    #1f5e54 100%
-  );
+  background: radial-gradient(circle at 30% 30%, #3eb19f 0%, var(--verdigris) 45%, #1f5e54 100%);
   box-shadow:
     0 0 0 1px rgba(255, 250, 251, 0.18),
     0 14px 30px rgba(51, 153, 137, 0.35),
@@ -568,12 +545,7 @@ body[data-view="phone"] .app::-webkit-scrollbar {
 }
 .feature-card.is-primary {
   background:
-    linear-gradient(
-      180deg,
-      rgba(51, 153, 137, 0.1),
-      rgba(51, 153, 137, 0.02) 80%
-    ),
-    var(--bg-elev-1);
+    linear-gradient(180deg, rgba(51, 153, 137, 0.1), rgba(51, 153, 137, 0.02) 80%), var(--bg-elev-1);
   border-color: rgba(51, 153, 137, 0.28);
 }
 .feature-icon {

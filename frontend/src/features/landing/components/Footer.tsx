@@ -49,9 +49,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavClick }) => {
       <div className="footer-copy">
         © 2026 CowHealth AI
         <br />
-        <span className="footer-version">
-          Desenvolvido para produtores rurais.
-        </span>
+        <span className="footer-version">Desenvolvido para produtores rurais.</span>
       </div>
     </footer>
   );

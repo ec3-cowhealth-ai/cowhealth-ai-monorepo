@@ -46,18 +46,10 @@ export const CowsPage = () => {
   const counts = useMemo(
     () => ({
       all: cows?.length || 0,
-      healthy:
-        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length ||
-        0,
-      alert:
-        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT).length ||
-        0,
-      heat:
-        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEAT_STRESS)
-          .length || 0,
-      calving:
-        cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.CALVING).length ||
-        0,
+      healthy: cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length || 0,
+      alert: cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT).length || 0,
+      heat: cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEAT_STRESS).length || 0,
+      calving: cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.CALVING).length || 0,
     }),
     [cows],
   );
@@ -80,10 +72,7 @@ export const CowsPage = () => {
         title="Rebanho"
         subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
         actions={
-          <button
-            className="app-bar__action"
-            onClick={() => setShowSearch((v) => !v)}
-          >
+          <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
             <Search size={20} />
           </button>
         }
@@ -142,11 +131,7 @@ export const CowsPage = () => {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {filtered.map((cow: Cow) => (
-              <button
-                key={cow.id}
-                className="cow-row"
-                onClick={() => navigate(`/cows/${cow.id}`)}
-              >
+              <button key={cow.id} className="cow-row" onClick={() => navigate(`/cows/${cow.id}`)}>
                 <div className="cow-row__avatar">
                   <CowHead size={28} color={statusColor(cow.status)} />
                 </div>
@@ -161,9 +146,7 @@ export const CowsPage = () => {
                     tone={statusTone(cow.status)}
                     pulse={cow.status === COW_STATUS_VALUES.ALERT}
                   />
-                  <span className="cow-row__status">
-                    {STATUS_LABEL[cow.status] ?? cow.status}
-                  </span>
+                  <span className="cow-row__status">{STATUS_LABEL[cow.status] ?? cow.status}</span>
                   <ChevronRight size={14} color="var(--text-muted)" />
                 </div>
               </button>

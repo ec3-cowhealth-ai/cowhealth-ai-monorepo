@@ -1,9 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  getDashboardOverview,
-  getCowsPerStatus,
-  getCowsPerFarm,
-} from "@services/dashboardService";
+import { getDashboardOverview, getCowsPerStatus, getCowsPerFarm } from "@services/dashboardService";
 
 export const useDashboardOverview = (farmId?: string) =>
   useQuery({

@@ -42,13 +42,7 @@ interface IconProps {
   style?: CSSProperties;
 }
 
-export const Icon = ({
-  n,
-  s = 18,
-  c = "currentColor",
-  sw = 1.6,
-  style,
-}: IconProps) => {
+export const Icon = ({ n, s = 18, c = "currentColor", sw = 1.6, style }: IconProps) => {
   const d = ICONS[n] ?? "";
   return (
     <svg

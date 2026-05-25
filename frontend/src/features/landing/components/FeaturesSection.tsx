@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  IcHeartPulse,
-  IcAlertTriangle,
-  IcBarChart,
-} from "@components/icons/LandingIcons";
+import { IcHeartPulse, IcAlertTriangle, IcBarChart } from "@components/icons/LandingIcons";
 
 interface Feature {
   id: string;
@@ -28,8 +24,7 @@ const FEATURES: Feature[] = [
     id: "monitor",
     icon: IcHeartPulse,
     title: "Monitoramento contínuo",
-    description:
-      "Frequência cardíaca, temperatura e atividade a cada batida — direto da coleira.",
+    description: "Frequência cardíaca, temperatura e atividade a cada batida — direto da coleira.",
     metadata: "24/7",
     primary: true,
     showVitals: true,
@@ -38,16 +33,14 @@ const FEATURES: Feature[] = [
     id: "alerts",
     icon: IcAlertTriangle,
     title: "Alertas inteligentes",
-    description:
-      "Notificação imediata de anomalias, cio e períodos críticos com causa provável.",
+    description: "Notificação imediata de anomalias, cio e períodos críticos com causa provável.",
     metadata: "< 30s",
   },
   {
     id: "reports",
     icon: IcBarChart,
     title: "Histórico e relatórios",
-    description:
-      "Tendências do rebanho e relatórios em PDF para decisões fundamentadas.",
+    description: "Tendências do rebanho e relatórios em PDF para decisões fundamentadas.",
     metadata: "PDF",
   },
 ];
@@ -61,9 +54,7 @@ const FEATURES: Feature[] = [
  * - Icons, titles, descriptions, and metadata
  * - Hover effects with elevation
  */
-export const FeaturesSection: React.FC<FeaturesSectionProps> = ({
-  showLiveVitals = true,
-}) => {
+export const FeaturesSection: React.FC<FeaturesSectionProps> = ({ showLiveVitals = true }) => {
   return (
     <section className="section features">
       <div className="eyebrow">RECURSOS</div>

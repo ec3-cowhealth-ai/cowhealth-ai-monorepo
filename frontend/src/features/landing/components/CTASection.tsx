@@ -33,8 +33,8 @@ export const CTASection: React.FC<CTASectionProps> = ({
         </h2>
 
         <p>
-          Crie sua conta gratuitamente, conecte uma coleira e veja os dados
-          chegarem. Sem cartão, sem fidelidade.
+          Crie sua conta gratuitamente, conecte uma coleira e veja os dados chegarem. Sem cartão,
+          sem fidelidade.
         </p>
 
         <div className="cta-stack">
@@ -45,11 +45,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
             </span>
           </button>
 
-          <button
-            className="btn btn-secondary"
-            type="button"
-            onClick={onScheduleDemo}
-          >
+          <button className="btn btn-secondary" type="button" onClick={onScheduleDemo}>
             Agendar demonstração
           </button>
         </div>

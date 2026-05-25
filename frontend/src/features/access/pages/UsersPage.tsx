@@ -1,10 +1,5 @@
 import { useState, useMemo } from "react";
-import {
-  FormModal,
-  ConfirmDialog,
-  EmptyState,
-  ErrorState,
-} from "@components/common";
+import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { X, User } from "lucide-react";
 import {
   useUsers,
@@ -48,20 +43,10 @@ interface CreateModalProps {
   open: boolean;
   onClose: () => void;
   isLoading: boolean;
-  onSubmit: (data: {
-    name: string;
-    email: string;
-    password: string;
-    profile: UserProfile;
-  }) => void;
+  onSubmit: (data: { name: string; email: string; password: string; profile: UserProfile }) => void;
 }
 
-function CreateUserModal({
-  open,
-  onClose,
-  isLoading,
-  onSubmit,
-}: CreateModalProps) {
+function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProps) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -117,9 +102,7 @@ function CreateUserModal({
         <select
           className="form-field__select"
           value={form.profile}
-          onChange={(e) =>
-            setForm({ ...form, profile: e.target.value as UserProfile })
-          }
+          onChange={(e) => setForm({ ...form, profile: e.target.value as UserProfile })}
         >
           <option value="VIEWER">Observador</option>
           <option value="MANAGER">Gestor</option>
@@ -136,11 +119,7 @@ interface EditModalProps {
   user: UserListItem | null;
   onClose: () => void;
   isLoading: boolean;
-  onSubmit: (data: {
-    name: string;
-    email: string;
-    profile: UserProfile;
-  }) => void;
+  onSubmit: (data: { name: string; email: string; profile: UserProfile }) => void;
 }
 
 function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
@@ -189,9 +168,7 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
         <select
           className="form-field__select"
           value={form.profile}
-          onChange={(e) =>
-            setForm({ ...form, profile: e.target.value as UserProfile })
-          }
+          onChange={(e) => setForm({ ...form, profile: e.target.value as UserProfile })}
         >
           <option value="VIEWER">Observador</option>
           <option value="MANAGER">Gestor</option>
@@ -216,10 +193,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
   const { mutate: remove, isPending: removing } = useRemoveRole();
   const [selectedRole, setSelectedRole] = useState("");
 
-  const userRoleIds = useMemo(
-    () => new Set((user?.roles ?? []).map((r) => String(r.id))),
-    [user],
-  );
+  const userRoleIds = useMemo(() => new Set((user?.roles ?? []).map((r) => String(r.id))), [user]);
 
   const availableRoles = useMemo(
     () => (allRoles ?? []).filter((r) => !userRoleIds.has(String(r.id))),
@@ -228,11 +202,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-card"
-        style={{ maxWidth: 480 }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="modal-card" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-card__header">
           <h2 className="modal-card__title">Papéis do usuário</h2>
           <button className="modal-card__close" onClick={onClose}>
@@ -242,9 +212,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
 
         <div className="modal-card__body">
           {isLoading ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "var(--t-sm)" }}>
-              Carregando...
-            </p>
+            <p style={{ color: "var(--text-muted)", fontSize: "var(--t-sm)" }}>Carregando...</p>
           ) : (
             <>
               {/* Papéis atuais */}
@@ -293,9 +261,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
                       >
                         {role.name}
                         <button
-                          onClick={() =>
-                            remove({ userId, roleId: String(role.id) })
-                          }
+                          onClick={() => remove({ userId, roleId: String(role.id) })}
                           disabled={removing}
                           style={{
                             background: "none",
@@ -363,11 +329,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
         </div>
 
         <div className="modal-card__footer">
-          <button
-            className="btn btn-secondary"
-            onClick={onClose}
-            style={{ flex: 1 }}
-          >
+          <button className="btn btn-secondary" onClick={onClose} style={{ flex: 1 }}>
             Fechar
           </button>
         </div>
@@ -382,9 +344,7 @@ export const UsersPage = () => {
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [editingUser, setEditingUser] = useState<UserListItem | null>(null);
-  const [managingRolesUserId, setManagingRolesUserId] = useState<string | null>(
-    null,
-  );
+  const [managingRolesUserId, setManagingRolesUserId] = useState<string | null>(null);
   const [togglingUser, setTogglingUser] = useState<UserListItem | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserListItem | null>(null);
 
@@ -398,8 +358,7 @@ export const UsersPage = () => {
     if (!users) return [];
     const q = search.toLowerCase();
     return users.filter(
-      (u) =>
-        u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
+      (u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
     );
   }, [users, search]);
 
@@ -448,10 +407,7 @@ export const UsersPage = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={() => setShowCreate(true)}
-        >
+        <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>
           + Novo usuário
         </button>
       </div>
@@ -462,16 +418,11 @@ export const UsersPage = () => {
           icon={<User size={40} />}
           title="Nenhum usuário encontrado"
           description={
-            search
-              ? "Tente outro termo de busca."
-              : "Crie o primeiro usuário do sistema."
+            search ? "Tente outro termo de busca." : "Crie o primeiro usuário do sistema."
           }
           action={
             !search ? (
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowCreate(true)}
-              >
+              <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
                 Criar usuário
               </button>
             ) : undefined
@@ -519,9 +470,7 @@ export const UsersPage = () => {
                         {avatarInitials(user.name)}
                       </div>
                       <div>
-                        <div
-                          style={{ fontWeight: 600, fontSize: "var(--t-body)" }}
-                        >
+                        <div style={{ fontWeight: 600, fontSize: "var(--t-body)" }}>
                           {user.name}
                         </div>
                         <div
@@ -569,10 +518,7 @@ export const UsersPage = () => {
                       >
                         Papéis
                       </button>
-                      <button
-                        className="btn btn-sm btn-ghost"
-                        onClick={() => setEditingUser(user)}
-                      >
+                      <button className="btn btn-sm btn-ghost" onClick={() => setEditingUser(user)}>
                         Editar
                       </button>
                       <button
@@ -601,9 +547,7 @@ export const UsersPage = () => {
         open={showCreate}
         onClose={() => setShowCreate(false)}
         isLoading={creating}
-        onSubmit={(data) =>
-          createUser(data, { onSuccess: () => setShowCreate(false) })
-        }
+        onSubmit={(data) => createUser(data, { onSuccess: () => setShowCreate(false) })}
       />
 
       <EditUserModal

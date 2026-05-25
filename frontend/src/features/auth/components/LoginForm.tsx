@@ -41,9 +41,7 @@ export const LoginForm = () => {
           autoComplete="one-time-code"
           {...register("email")}
         />
-        {errors.email && (
-          <p className="form-field__error">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="form-field__error">{errors.email.message}</p>}
       </div>
 
       <div className="form-field">
@@ -57,9 +55,7 @@ export const LoginForm = () => {
           placeholder="••••••••"
           {...register("password")}
         />
-        {errors.password && (
-          <p className="form-field__error">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="form-field__error">{errors.password.message}</p>}
       </div>
 
       {isError && (

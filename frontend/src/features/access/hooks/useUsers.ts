@@ -1,12 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersService } from "@services/usersService";
-import type {
-  CreateUserInput,
-  UpdateUserInput,
-} from "../../../types/access.ts";
+import type { CreateUserInput, UpdateUserInput } from "../../../types/access.ts";
 
-export const useUsers = () =>
-  useQuery({ queryKey: ["users"], queryFn: () => usersService.list() });
+export const useUsers = () => useQuery({ queryKey: ["users"], queryFn: () => usersService.list() });
 
 export const useUser = (id: string) =>
   useQuery({

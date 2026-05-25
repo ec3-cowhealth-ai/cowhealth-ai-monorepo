@@ -44,9 +44,7 @@ export const BottomNav = () => {
             <span style={{ position: "relative" }}>
               {item.icon}
               {badgeCount > 0 && (
-                <span className="bottom-nav__badge">
-                  {badgeCount > 9 ? "9+" : badgeCount}
-                </span>
+                <span className="bottom-nav__badge">{badgeCount > 9 ? "9+" : badgeCount}</span>
               )}
             </span>
             <span>{item.label}</span>

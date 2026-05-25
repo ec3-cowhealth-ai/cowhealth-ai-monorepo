@@ -7,11 +7,7 @@ interface FarmCardProps {
 
 export const FarmCard = ({ farm, onClick }: FarmCardProps) => {
   return (
-    <div
-      className="card card--clickable"
-      onClick={onClick}
-      style={{ cursor: "pointer" }}
-    >
+    <div className="card card--clickable" onClick={onClick} style={{ cursor: "pointer" }}>
       <h3
         style={{
           margin: "0 0 var(--s-2) 0",

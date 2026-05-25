@@ -39,10 +39,7 @@ export const ProfilePage = () => {
 
       <div className="app-content">
         {/* Avatar card */}
-        <div
-          className="card"
-          style={{ display: "flex", alignItems: "center", gap: 14 }}
-        >
+        <div className="card" style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div
             style={{
               width: 52,
@@ -57,9 +54,7 @@ export const ProfilePage = () => {
             <CowHead size={30} />
           </div>
           <div>
-            <p style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>
-              {user?.name ?? "—"}
-            </p>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>{user?.name ?? "—"}</p>
             <p
               style={{
                 margin: "2px 0 0 0",

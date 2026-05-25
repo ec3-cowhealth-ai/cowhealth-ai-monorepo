@@ -29,4 +29,3 @@ Dashboard is implemented and should be documented as current behavior, not as a 
 
 - If the backend dashboard contract changes, update this file and the architecture docs.
 - If the chart set changes, keep this file and the frontend feature index in sync.
-

@@ -17,10 +17,7 @@ export const permissionsService = {
     return response.data;
   },
 
-  update: async (
-    id: string,
-    input: { name?: string; description?: string },
-  ) => {
+  update: async (id: string, input: { name?: string; description?: string }) => {
     const response = await api.put<Permission>(`/permissions/${id}`, input);
     return response.data;
   },

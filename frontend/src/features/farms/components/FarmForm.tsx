@@ -21,12 +21,7 @@ interface FarmFormProps {
   isLoading?: boolean;
 }
 
-export const FarmForm = ({
-  open,
-  onClose,
-  onSubmit,
-  isLoading,
-}: FarmFormProps) => {
+export const FarmForm = ({ open, onClose, onSubmit, isLoading }: FarmFormProps) => {
   const {
     register,
     handleSubmit,
@@ -49,11 +44,7 @@ export const FarmForm = ({
     >
       <div className="form-field">
         <label className="form-field__label is-required">Nome</label>
-        <input
-          type="text"
-          className="form-field__input"
-          {...register("name")}
-        />
+        <input type="text" className="form-field__input" {...register("name")} />
         {errors.name && (
           <span style={{ color: "var(--danger)", fontSize: "var(--t-sm)" }}>
             {errors.name.message}
@@ -78,11 +69,7 @@ export const FarmForm = ({
 
       <div className="form-field">
         <label className="form-field__label is-required">Endereço</label>
-        <input
-          type="text"
-          className="form-field__input"
-          {...register("address")}
-        />
+        <input type="text" className="form-field__input" {...register("address")} />
         {errors.address && (
           <span style={{ color: "var(--danger)", fontSize: "var(--t-sm)" }}>
             {errors.address.message}
@@ -99,11 +86,7 @@ export const FarmForm = ({
       >
         <div className="form-field">
           <label className="form-field__label is-required">Cidade</label>
-          <input
-            type="text"
-            className="form-field__input"
-            {...register("city")}
-          />
+          <input type="text" className="form-field__input" {...register("city")} />
           {errors.city && (
             <span style={{ color: "var(--danger)", fontSize: "var(--t-sm)" }}>
               {errors.city.message}
@@ -130,11 +113,7 @@ export const FarmForm = ({
 
       <div className="form-field">
         <label className="form-field__label is-required">Telefone</label>
-        <input
-          type="tel"
-          className="form-field__input"
-          {...register("phone")}
-        />
+        <input type="tel" className="form-field__input" {...register("phone")} />
         {errors.phone && (
           <span style={{ color: "var(--danger)", fontSize: "var(--t-sm)" }}>
             {errors.phone.message}
@@ -144,11 +123,7 @@ export const FarmForm = ({
 
       <div className="form-field">
         <label className="form-field__label is-required">Email</label>
-        <input
-          type="email"
-          className="form-field__input"
-          {...register("email")}
-        />
+        <input type="email" className="form-field__input" {...register("email")} />
         {errors.email && (
           <span style={{ color: "var(--danger)", fontSize: "var(--t-sm)" }}>
             {errors.email.message}
