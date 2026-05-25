@@ -5,46 +5,46 @@ export const CowStatusValues = {
   ALERT: "ALERT",
 } as const;
 
-export type CowStatus = typeof CowStatusValues[keyof typeof CowStatusValues];
+export type CowStatus = (typeof CowStatusValues)[keyof typeof CowStatusValues];
 
 export interface Cow {
-  id: string;
+  id: number;
   tag: string;
   name: string;
   status: CowStatus;
   breed: string;
   weight: number;
-  dateOfBirth: string;
-  farmId: string;
-  collarId?: string;
-  avatar?: string;
+  birthDate?: string;
+  photos?: string[];
+  farm: { id: number; name: string; city?: string; state?: string };
+  collar?: { id: number; name: string; status: string; dataFrequency?: string };
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
-export type CowListItem = Omit<Cow, "breed" | "weight" | "dateOfBirth">;
+// Lista nao retorna birthDate nem photos
+export type CowListItem = Omit<Cow, "birthDate" | "photos" | "updatedAt">;
 
 export interface CreateCowInput {
   tag: string;
   name: string;
   breed: string;
   weight: number;
-  dateOfBirth: string;
-  farmId: string;
-  collarId?: string;
+  birthDate: string;
+  farmId: number;
+  collarId?: number;
 }
 
 export type UpdateCowInput = Partial<CreateCowInput>;
 
-export interface HeartRateDailyPoint {
-  timestamp: string;
-  value: number;
+export interface SensorDailyPoint {
+  date: string; // formato "dd/MM" ex: "17/05" — ja vem pronto do backend
+  average: number;
 }
 
-export interface TemperatureDailyPoint {
-  timestamp: string;
-  value: number;
-}
+// Aliases para retrocompatibilidade
+export type HeartRateDailyPoint = SensorDailyPoint;
+export type TemperatureDailyPoint = SensorDailyPoint;
 
 export interface SensorPage<T> {
   data: T[];

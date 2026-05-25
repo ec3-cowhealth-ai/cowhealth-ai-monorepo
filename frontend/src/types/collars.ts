@@ -5,7 +5,8 @@ export const CollarStatusValues = {
   BATTERY: "BATTERY",
 } as const;
 
-export type CollarStatus = typeof CollarStatusValues[keyof typeof CollarStatusValues];
+export type CollarStatus =
+  (typeof CollarStatusValues)[keyof typeof CollarStatusValues];
 
 export const DataFrequencyValues = {
   HIGHER: "HIGHER",
@@ -13,26 +14,32 @@ export const DataFrequencyValues = {
   LOWER: "LOWER",
 } as const;
 
-export type DataFrequency = typeof DataFrequencyValues[keyof typeof DataFrequencyValues];
+export type DataFrequency =
+  (typeof DataFrequencyValues)[keyof typeof DataFrequencyValues];
 
 export interface Collar {
-  id: string;
-  identifier: string;
+  id: number;
+  name: string;
   status: CollarStatus;
   dataFrequency: DataFrequency;
-  cowId?: string;
-  batteryPercentage: number;
-  lastSync: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
+  cow?: {
+    id: number;
+    tag: string;
+    name: string;
+    breed?: string;
+    status: string;
+    farm?: { id: number; name: string };
+  };
 }
 
 export type CollarListItem = Collar;
 
 export interface CreateCollarInput {
-  identifier: string;
+  name: string;
   status?: CollarStatus;
   dataFrequency?: DataFrequency;
 }
 
-export type UpdateCollarInput = Partial<Omit<CreateCollarInput, "identifier">>;
+export type UpdateCollarInput = Partial<Omit<CreateCollarInput, "name">>;

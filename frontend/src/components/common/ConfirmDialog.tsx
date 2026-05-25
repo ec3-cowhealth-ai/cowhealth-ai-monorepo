@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { X } from "lucide-react";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -35,7 +36,7 @@ export const ConfirmDialog = ({
         <div className="modal-card__header">
           <h2 className="modal-card__title">{title}</h2>
           <button className="modal-card__close" onClick={onCancel}>
-            ✕
+            <X size={16} />
           </button>
         </div>
 

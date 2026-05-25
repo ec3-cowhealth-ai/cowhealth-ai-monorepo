@@ -2,6 +2,7 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
 import { AppBar } from "@components/layout";
 import { EmptyState } from "@components/common";
+import { Lock } from "lucide-react";
 
 export const AccessLayout = () => {
   const navigate = useNavigate();
@@ -14,11 +15,14 @@ export const AccessLayout = () => {
       <div className="app-page">
         <AppBar title="Acesso" />
         <EmptyState
-          icon="🔒"
+          icon={<Lock size={40} />}
           title="Acesso Negado"
           description="Apenas administradores podem acessar essa área."
           action={
-            <button className="btn btn-primary" onClick={() => navigate("/home")}>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate("/home")}
+            >
               Voltar ao Home
             </button>
           }

@@ -1,14 +1,14 @@
 # Feature: Access
 
-Componentes e lógica para gerenciamento de controle de acesso (usuários, roles, permissões).
+Components and logic for access control management (users, roles, permissions).
 
-## Estrutura
+## Structure
 
-- Componentes de gerenciamento de usuários
-- Componentes de gerenciamento de roles
-- Componentes de gerenciamento de permissões
-- Formulários de atribuição de acesso
+- User management components
+- Role management components
+- Permission management components
+- Access assignment forms
 
-## Responsável
+## Responsible
 
-Jafte (conforme matriz de responsabilidades)
+Jafte (according to the responsibility matrix)

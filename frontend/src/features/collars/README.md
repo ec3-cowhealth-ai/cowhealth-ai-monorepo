@@ -1,14 +1,14 @@
 # Feature: Collars
 
-Componentes e lógica para gerenciamento de coleiras (wearables).
+Components and logic for collar management (wearables).
 
-## Estrutura
+## Structure
 
-- Componentes de listagem de coleiras
-- Formulários de criação/edição
-- Componentes de status e sincronização
-- Configurações de coleira
+- Collar listing components
+- Creation/edition forms
+- Status and synchronization components
+- Collar settings
 
-## Responsável
+## Responsible
 
-Jafte (conforme matriz de responsabilidades)
+Jafte (according to the responsibility matrix)

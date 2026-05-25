@@ -1,6 +1,16 @@
+import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
 import { useUnreadNotifications } from "@hooks/useNotifications";
+import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
+
+interface NavItem {
+  label: string;
+  path: string;
+  icon: ReactNode;
+  badge?: number;
+}
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -11,25 +21,31 @@ export const Sidebar = () => {
   const unreadCount = notifications?.length || 0;
   const isAdmin = user?.profile === "ADMIN";
 
-  const navItems = [
-    { label: "Home", path: "/home", icon: "🏠" },
-    { label: "Fazendas", path: "/farms", icon: "🏡" },
-    { label: "Coleiras", path: "/collars", icon: "⌚" },
-    { label: "Vacas", path: "/cows", icon: "🐄" },
+  const navItems: NavItem[] = [
+    { label: "Home", path: "/home", icon: <Home size={18} /> },
+    { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
+    { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
+    { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },
     {
       label: "Notificações",
       path: "/notifications",
-      icon: "🔔",
+      icon: <Bell size={18} />,
       badge: unreadCount,
     },
     ...(isAdmin
-      ? [{ label: "Acesso", path: "/access/users", icon: "🔐" }]
+      ? [
+          {
+            label: "Acesso",
+            path: "/access/users",
+            icon: <ShieldCheck size={18} />,
+          },
+        ]
       : []),
   ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   const isActive = (path: string) => location.pathname.startsWith(path);
@@ -47,9 +63,7 @@ export const Sidebar = () => {
           >
             <span className="ic">{item.icon}</span>
             <span>{item.label}</span>
-            {item.badge ? (
-              <span className="badge">{item.badge}</span>
-            ) : null}
+            {item.badge ? <span className="badge">{item.badge}</span> : null}
           </button>
         ))}
       </div>
@@ -69,7 +83,7 @@ export const Sidebar = () => {
           className="sidebar__logout"
           title="Logout"
         >
-          🚪
+          <LogOut size={18} />
         </button>
       </div>
     </nav>

@@ -46,11 +46,18 @@ export const LoginPage = () => {
               color: "var(--text-primary)",
             }}
           >
-            🐄 CowHealth AI
+            CowHealth AI
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--s-4)" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--s-4)",
+          }}
+        >
           <div className="form-field">
             <label className="form-field__label" htmlFor="email">
               Email

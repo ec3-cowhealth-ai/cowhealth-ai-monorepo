@@ -1,97 +1,97 @@
-# Prompt — Geração de Layout Mobile (High-Fidelity Mockups)
+# Prompt — Mobile Layout Generation (High-Fidelity Mockups)
 
-> **Uso:** Cole este prompt no Claude (com artifacts/visualizer habilitados), anexando os arquivos do projeto conforme indicado.
+> **Usage:** Paste this prompt into Claude (with artifacts/visualizer enabled), attaching the project files as indicated.
 
 ---
 
 ## Prompt
 
 ```
-Você é um UI/UX Designer sênior especializado em aplicações mobile (iOS e Android). Sua tarefa é gerar um conjunto completo de telas high-fidelity para uma aplicação mobile, com base nos arquivos que estou anexando.
+You are a senior UI/UX Designer specialized in mobile applications (iOS and Android). Your task is to generate a complete set of high-fidelity screens for a mobile application, based on the files I am attaching.
 
 ---
 
-### ARQUIVOS ANEXADOS (interprete cada um conforme sua categoria):
+### ATTACHED FILES (interpret each according to its category):
 
-1. **Blueprints / Technical Design** — Diagramas de fluxo, wireframes, arquitetura de telas, user flows, ou especificações técnicas do projeto. Extraia deles:
-   - Hierarquia de navegação e estrutura de telas
-   - Fluxos do usuário (onboarding, autenticação, funcionalidades core)
-   - Componentes e elementos de interface mencionados
-   - Regras de negócio que impactam a UI
+1. **Blueprints / Technical Design** — Flow diagrams, wireframes, screen architecture, user flows, or technical specifications of the project. Extract from them:
+   - Navigation hierarchy and screen structure
+   - User flows (onboarding, authentication, core features)
+   - Mentioned UI components and elements
+   - Business rules that impact the UI
 
-2. **Documentação do Projeto** — PRDs, requisitos funcionais, user stories, ou qualquer doc descritivo. Extraia deles:
-   - Funcionalidades e features a representar
-   - Público-alvo e personas (adapte o tom visual)
-   - Restrições e requisitos não-funcionais relevantes à UI
-   - Nomenclatura e taxonomia do domínio (use os termos corretos nas telas)
+2. **Project Documentation** — PRDs, functional requirements, user stories, or any descriptive doc. Extract from them:
+   - Functionalities and features to represent
+   - Target audience and personas (adapt the visual tone)
+   - Constraints and non-functional requirements relevant to the UI
+   - Domain nomenclature and taxonomy (use the correct terms on the screens)
 
-3. **Paleta de Cores** — Arquivo de design tokens, imagem de paleta, ou definição de cores. Extraia deles:
-   - Cores primárias, secundárias e de destaque (accent)
-   - Cores de superfície, fundo e texto
-   - Cores semânticas (sucesso, erro, alerta, info)
-   - Gradientes, se houver
+3. **Color Palette** — Design tokens file, palette image, or color definition. Extract from them:
+   - Primary, secondary, and accent colors
+   - Surface, background, and text colors
+   - Semantic colors (success, error, alert, info)
+   - Gradients, if any
 
 ---
 
-### INSTRUÇÕES DE GERAÇÃO:
+### GENERATION INSTRUCTIONS:
 
-**Design System Base:**
-- Derive um mini design system a partir dos inputs: tipografia (display + body), escala de espaçamento (4px base), raios de borda, sombras e elevação
-- Tipografia: escolha fontes do Google Fonts que combinem com o tom do projeto — NUNCA use Inter, Roboto ou Arial. Busque personalidade. Justifique a escolha
-- Ícones: use Lucide ou equivalente. Estilo consistente (outline ou filled, não misture)
+**Base Design System:**
+- Derive a mini design system from the inputs: typography (display + body), spacing scale (4px base), border radii, shadows, and elevation
+- Typography: choose Google Fonts that match the project's tone — NEVER use Inter, Roboto, or Arial. Seek personality. Justify the choice
+- Icons: use Lucide or equivalent. Consistent style (outline or filled, do not mix)
 
-**Telas obrigatórias (gere TODAS, a menos que não se apliquem):**
+**Mandatory screens (generate ALL, unless they do not apply):**
 1. Splash Screen
-2. Onboarding (carrossel ou stepper)
-3. Login / Cadastro
-4. Home / Dashboard principal
-5. Listagem (feed, catálogo, busca)
-6. Detalhe de item
-7. Formulário de criação/edição
-8. Perfil do usuário
-9. Configurações
-10. Estados vazios, loading e erro
+2. Onboarding (carousel or stepper)
+3. Login / Sign Up
+4. Home / Main Dashboard
+5. Listing (feed, catalog, search)
+6. Item Detail
+7. Creation/Edition Form
+8. User Profile
+9. Settings
+10. Empty, loading, and error states
 
-**Para CADA tela, renderize um mockup React (JSX) que:**
-- Simule viewport mobile (390×844px — iPhone 14 Pro)
-- Use a paleta de cores extraída via CSS variables
-- Implemente microinterações com CSS (hover, focus, transitions)
-- Mostre dados mockados realistas (nomes brasileiros, textos em PT-BR)
-- Inclua status bar (hora, bateria, sinal) para realismo
-- Respeite safe areas (notch top, home indicator bottom)
+**For EACH screen, render a React (JSX) mockup that:**
+- Simulates mobile viewport (390×844px — iPhone 14 Pro)
+- Uses the color palette extracted via CSS variables
+- Implements microinteractions with CSS (hover, focus, transitions)
+- Shows realistic mocked data (Brazilian names, English texts)
+- Includes status bar (time, battery, signal) for realism
+- Respects safe areas (notch top, home indicator bottom)
 
-**Qualidade visual — NÃO NEGOCIÁVEL:**
-- Sem estética genérica de "AI slop" — cada tela deve ter intenção e personalidade
-- Hierarquia visual clara: um elemento dominante por tela
-- Espaçamento generoso e consistente
-- Contraste WCAG AA mínimo entre texto e fundo
-- Cantos, sombras e elevações coerentes entre componentes
+**Visual quality — NON-NEGOTIABLE:**
+- No generic "AI slop" aesthetic — each screen must have intent and personality
+- Clear visual hierarchy: one dominant element per screen
+- Generous and consistent spacing
+- Minimum WCAG AA contrast between text and background
+- Consistent corners, shadows, and elevations across components
 
-**Entregáveis por tela:**
-- Mockup visual renderizado (artifact React)
-- Breve anotação (2-3 linhas) justificando decisões de design
+**Deliverables per screen:**
+- Rendered visual mockup (React artifact)
+- Brief note (2-3 lines) justifying design decisions
 
-**Ao final, entregue também:**
-- Mapa de navegação (diagrama mostrando a relação entre telas)
-- Resumo do design system derivado (tokens de cor, tipografia, espaçamento)
+**At the end, also deliver:**
+- Navigation map (diagram showing the relationship between screens)
+- Summary of the derived design system (color tokens, typography, spacing)
 
 ---
 
-### PROCESSO:
+### PROCESS:
 
-1. **Análise** — Leia todos os arquivos. Liste o que extraiu de cada um (telas identificadas, paleta parseada, features mapeadas). Peça confirmação antes de prosseguir.
-2. **Design System** — Apresente o mini design system proposto (cores, fontes, espaçamento). Peça aprovação.
-3. **Geração** — Produza as telas uma a uma ou em grupos de 2-3, começando pelo fluxo mais crítico.
-4. **Revisão** — Após todas as telas, apresente o mapa de navegação e pergunte sobre ajustes.
+1. **Analysis** — Read all files. List what you extracted from each (identified screens, parsed palette, mapped features). Ask for confirmation before proceeding.
+2. **Design System** — Present the proposed mini design system (colors, fonts, spacing). Ask for approval.
+3. **Generation** — Produce the screens one by one or in groups of 2-3, starting with the most critical flow.
+4. **Review** — After all screens, present the navigation map and ask about adjustments.
 
-Comece pela etapa 1. Aguardo sua análise dos arquivos.
+Start with step 1. I await your analysis of the files.
 ```
 
 ---
 
-## Notas de uso
+## Usage notes
 
-- **Formatos aceitos nos anexos:** PDF, PNG, MD, TXT, JSON (design tokens), Figma exports
-- **Se a paleta vier como imagem:** o Claude extrairá as cores dominantes via análise visual
-- **Se faltar algum arquivo:** o prompt instrui o Claude a pedir confirmação antes de assumir defaults
-- **Customização rápida:** ajuste a lista de "telas obrigatórias" conforme o escopo do seu app
+- **Accepted formats in attachments:** PDF, PNG, MD, TXT, JSON (design tokens), Figma exports
+- **If the palette comes as an image:** Claude will extract the dominant colors via visual analysis
+- **If any file is missing:** the prompt instructs Claude to ask for confirmation before assuming defaults
+- **Quick customization:** adjust the list of "mandatory screens" according to your app's scope

@@ -1,8 +1,5 @@
-import React from 'react';
-import {
-  IcArrowRight,
-  IcCheck,
-} from '@components/icons/LandingIcons';
+import React from "react";
+import { IcArrowRight, IcCheck } from "@components/icons/LandingIcons";
 
 interface CTASectionProps {
   onSignUp?: () => void;
@@ -41,11 +38,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
         </p>
 
         <div className="cta-stack">
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={onSignUp}
-          >
+          <button className="btn btn-primary" type="button" onClick={onSignUp}>
             Criar conta grátis
             <span className="ic">
               <IcArrowRight size={18} strokeWidth={2} />
@@ -71,7 +64,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
  * TrustRow — Credibility indicators
  */
 const TrustRow: React.FC = () => {
-  const items = ['SEM CARTÃO', 'LGPD', 'OFFLINE'];
+  const items = ["SEM CARTÃO", "LGPD", "OFFLINE"];
 
   return (
     <div className="trust-row">
