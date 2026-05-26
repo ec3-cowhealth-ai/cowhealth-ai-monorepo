@@ -35,3 +35,18 @@ export const getCowsPerStatus = (farmId?: string) =>
 
 export const getCowsPerFarm = () =>
   api.get<CowFarmItem[]>("/dashboard/cows-per-farm").then((r) => r.data);
+
+export interface HealthTimelineItem {
+  date: string;
+  healthy: number;
+  alert: number;
+  heatStress: number;
+  calving: number;
+}
+
+export const getHealthTimeline = (farmId?: string) =>
+  api
+    .get<HealthTimelineItem[]>("/dashboard/health-timeline", {
+      params: farmId ? { farmId } : {},
+    })
+    .then((r) => r.data);

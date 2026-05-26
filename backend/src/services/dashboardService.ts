@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 
-export const getDashboardOverview = async (farmId?: number) => {
+export const getDashboardOverview = async (farmId?: number, userId?: number) => {
   const cowWhere = farmId ? { farmId } : {};
 
   const [
@@ -21,10 +21,7 @@ export const getDashboardOverview = async (farmId?: number) => {
     }),
     prisma.farm.count(),
     prisma.collar.count({ where: { status: "ACTIVE" } }),
-    // TODO[RENATO] Bug de segurança: conta notificações de TODOS os usuários do sistema.
-    // Corrigir para: prisma.notification.count({ where: { readAt: null, userId } })
-    // onde userId vem do token JWT (request.user.id) repassado até aqui via parâmetro.
-    prisma.notification.count({ where: { readAt: null } }),
+    prisma.notification.count({ where: { readAt: null, userId } }),
   ]);
 
   // Se filtrou por fazenda, retorna ela; senão, a com mais vacas
@@ -57,7 +54,7 @@ export const getCowsPerStatus = async (farmId?: number) => {
     _count: { status: true },
   });
 
-  return statusGroups.map((group) => ({
+  return statusGroups.map((group: typeof statusGroups[number]) => ({
     label: group.status,
     value: group._count.status,
   }));
@@ -74,8 +71,51 @@ export const getCowsPerFarm = async () => {
     take: 5,
   });
 
-  return farms.map((farm) => ({
+  return farms.map((farm: typeof farms[number]) => ({
     label: farm.name,
     value: farm._count.cows,
   }));
+};
+
+export const getHealthTimeline = async (farmId?: number) => {
+  const where = farmId ? { farmId } : {};
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
+
+  const results = await Promise.all(
+    days.map(async (day) => {
+      const nextDay = new Date(day);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      const [healthy, alert, heatStress, calving] = await Promise.all([
+        prisma.cow.count({
+          where: { ...where, status: "HEALTHY", createdAt: { lte: nextDay } },
+        }),
+        prisma.cow.count({
+          where: { ...where, status: "ALERT", createdAt: { lte: nextDay } },
+        }),
+        prisma.cow.count({
+          where: { ...where, status: "HEAT_STRESS", createdAt: { lte: nextDay } },
+        }),
+        prisma.cow.count({
+          where: { ...where, status: "CALVING", createdAt: { lte: nextDay } },
+        }),
+      ]);
+
+      return {
+        date: day.toISOString().split("T")[0],
+        healthy,
+        alert,
+        heatStress,
+        calving,
+      };
+    }),
+  );
+
+  return results;
 };
