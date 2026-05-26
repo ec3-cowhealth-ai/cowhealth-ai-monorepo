@@ -22,6 +22,7 @@ enum CowStatus {
   CALVING
   HEAT_STRESS
   ALERT
+  RETIRED
 }
 
 enum CollarStatus {
@@ -35,6 +36,12 @@ enum DataFrequency {
   HIGHER // 2 minutos
   DEFAULT // 10 minutos
   LOWER // 60 minutos
+}
+
+enum MedicalRecordType {
+  CHECKUP
+  PROCEDURE
+  MEDICATION
 }
 
 // Auth / RBAC
@@ -51,6 +58,7 @@ model User {
 
   roles         UserRole[]
   notifications Notification[]
+  medicalRecords MedicalRecord[]
 
   @@map("users")
 }
@@ -159,18 +167,18 @@ model Collar {
 }
 
 model Cow {
-  id        Int       @id @default(autoincrement())
-  tag       String    @unique // identificador visual da vaca
+  id        Int                       @id @default(autoincrement())
+  tag       String                    @unique // identificador visual da vaca
   name      String?
-  breed     String? // raça (breed adotado no lugar de race)
-  birthDate DateTime? @map("birth_date")
-  weight    Float? // peso em kg
-  photos    Json? // array de nomes de arquivo para galeria de identificacao
-  status    CowStatus @default(HEALTHY)
-  lastLat   Float?    @map("last_lat")
-  lastLng   Float?    @map("last_lng")
-  farmId    Int       @map("farm_id")
-  collarId  Int?      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
+  breed     String?                   // raça (breed adotado no lugar de race)
+  birthDate DateTime?                 @map("birth_date")
+  weight    Float?                    // peso em kg
+  photos    Json?                     // array de nomes de arquivo para galeria de identificacao
+  status    CowStatus                 @default(HEALTHY)
+  lastLat   Float?                    @map("last_lat")
+  lastLng   Float?                    @map("last_lng")
+  farmId    Int                       @map("farm_id")
+  collarId  Int?                      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
 
   farm   Farm    @relation(fields: [farmId], references: [id])
   collar Collar? @relation(fields: [collarId], references: [id])
@@ -180,8 +188,12 @@ model Cow {
   accelerometerData AccelerometerData[]
   notifications     Notification[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  retiredAt     DateTime?             @map("retired_at")
+  retiredReason String?               @map("retired_reason")
+  medicalRecords MedicalRecord[]
+
+  createdAt DateTime @default(now())  @map("created_at")
+  updatedAt DateTime @updatedAt       @map("updated_at")
 
   @@map("cows")
 }
@@ -248,4 +260,24 @@ model Notification {
 
   @@index([userId, readAt])
   @@map("notifications")
+}
+
+// Medical Records
+
+model MedicalRecord {
+  id         Int               @id @default(autoincrement())
+  cowId      Int               @map("cow_id")
+  userId     Int               @map("user_id")
+  type       MedicalRecordType
+  title      String
+  notes      String?           @db.Text
+  recordedAt DateTime          @map("recorded_at")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  cow  Cow  @relation(fields: [cowId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([cowId, recordedAt])
+  @@map("medical_records")
 }
