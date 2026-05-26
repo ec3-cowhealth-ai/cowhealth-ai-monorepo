@@ -13,6 +13,8 @@ import {
   getCowAccelerometer,
   getCowHeartRateDaily,
   getCowTemperatureDaily,
+  retireCow,
+  getCowSensorHistory
 } from "../services/cowsService";
 import { handleRequest } from "../helpers/controllerHelpers";
 import type { SensorQueryOptions } from "../types/sensors";
@@ -39,6 +41,12 @@ export const updateCowController = async (request: Request, response: Response):
 
 export const destroyCow = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => deleteCow(Number(request.params.id)), 204, 404);
+};
+
+// Aposentadoria
+
+export const retireCowController = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => retireCow(Number(request.params.id), request.body.reason));
 };
 
 // Fotos
@@ -116,4 +124,16 @@ export const listHeartRateDaily = async (request: Request, response: Response): 
 
 export const listTemperatureDaily = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => getCowTemperatureDaily(Number(request.params.id)), 200, 404);
+};
+
+// Histórico completo dos sensores
+
+export const listSensorHistory = async (request: Request, response: Response): Promise<void> => {
+  const { from, to } = request.query as { from?: string; to?: string };
+  await handleRequest(
+    response,
+    () => getCowSensorHistory(Number(request.params.id), from, to),
+    200,
+    404
+  );
 };

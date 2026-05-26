@@ -13,12 +13,25 @@ import {
   listAccelerometer,
   listHeartRateDaily,
   listTemperatureDaily,
+  retireCowController,
+  listSensorHistory,
 } from "../controllers/cowsController";
+import {
+  listMedicalRecords,
+  showMedicalRecord,
+  storeMedicalRecord,
+  updateMedicalRecordController,
+  destroyMedicalRecord,
+} from "../controllers/medicalRecordsController";
 import { cowUpload } from "../helpers/multerUpload";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
 import { validateSchema } from "../middlewares/validateSchema";
 import { createCowSchema, updateCowSchema } from "../schemas/cowSchemas";
+import {
+  createMedicalRecordSchema,
+  updateMedicalRecordSchema,
+} from "../schemas/medicalRecordSchemas";
 
 const router = Router();
 
@@ -41,7 +54,10 @@ router.put(
 );
 router.delete("/:id", requireAuth, requirePermission("Delete Cow"), destroyCow);
 
-// Fotos — upload, remoção e servir arquivo autenticado
+// Aposentadoria
+router.post("/:id/retire", requireAuth, requirePermission("Retire Cow"), retireCowController);
+
+// Fotos
 router.post(
   "/:id/photos",
   requireAuth,
@@ -51,6 +67,40 @@ router.post(
 );
 router.delete("/:id/photos/:filename", requireAuth, requirePermission("Update Cow"), destroyPhoto);
 router.get("/:id/photos/:filename", requireAuth, requirePermission("View Cow"), servePhoto);
+
+// Prontuário veterinário
+router.get(
+  "/:id/medical-records",
+  requireAuth,
+  requirePermission("ViewAny MedicalRecord"),
+  listMedicalRecords,
+);
+router.get(
+  "/:id/medical-records/:recordId",
+  requireAuth,
+  requirePermission("View MedicalRecord"),
+  showMedicalRecord,
+);
+router.post(
+  "/:id/medical-records",
+  requireAuth,
+  requirePermission("Create MedicalRecord"),
+  validateSchema(createMedicalRecordSchema),
+  storeMedicalRecord,
+);
+router.put(
+  "/:id/medical-records/:recordId",
+  requireAuth,
+  requirePermission("Update MedicalRecord"),
+  validateSchema(updateMedicalRecordSchema),
+  updateMedicalRecordController,
+);
+router.delete(
+  "/:id/medical-records/:recordId",
+  requireAuth,
+  requirePermission("Delete MedicalRecord"),
+  destroyMedicalRecord,
+);
 
 // Sensores — listagem paginada
 router.get("/:id/heart-rate", requireAuth, requirePermission("View Cow"), listHeartRate);
@@ -65,5 +115,8 @@ router.get(
   requirePermission("View Cow"),
   listTemperatureDaily,
 );
+
+// Histórico — tabela unificada com filtro por período
+router.get("/:id/sensor-history", requireAuth, requirePermission("View Cow"), listSensorHistory);
 
 export default router;
