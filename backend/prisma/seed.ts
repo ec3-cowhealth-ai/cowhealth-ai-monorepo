@@ -812,7 +812,7 @@ async function main() {
   console.log("  operador@cowhealth.com       Operador de Campo");
   console.log("  financeiro@cowhealth.com     Financeiro");
   console.log("  obs@cowhealth.com            Observador");
-  console.log("  Novas permissões: MedicalRecord (5) + Retire Cow (1)");
+  console.log("\nNovas permissões: MedicalRecord (5) + Retire Cow (1)");
 }
 
 main()
