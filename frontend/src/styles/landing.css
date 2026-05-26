@@ -76,8 +76,8 @@
   --shadow-glow: 0 0 0 1px var(--primary-soft), 0 8px 32px rgba(51, 153, 137, 0.18);
 
   /* Fonts */
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "Manrope", system-ui, sans-serif;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
