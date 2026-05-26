@@ -18,13 +18,10 @@ export const showFarm = async (request: Request, response: Response): Promise<vo
 };
 
 export const storeFarm = async (request: Request, response: Response): Promise<void> => {
-  // TODO[RENATO] request.body chega sem validação — payload malformado vai direto ao Prisma.
-  // Criar farmsSchemas.ts com Zod e aplicar validateSchema(createFarmSchema) como middleware na rota.
   await handleRequest(response, () => createFarm(request.body), 201);
 };
 
 export const updateFarmController = async (request: Request, response: Response): Promise<void> => {
-  // TODO[RENATO] Mesma ausência de validação do storeFarm.
   await handleRequest(response, () => updateFarm(Number(request.params.id), request.body));
 };
 
