@@ -52,15 +52,23 @@ export const LandingPage: React.FC = () => {
           </p>
 
           <div className="mt-14 overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-elegant sm:p-3">
-            <div className="overflow-hidden rounded-2xl">
+            <div className="overflow-hidden rounded-2xl relative group cursor-pointer" onClick={() => navigate("/preview")}>
               <img
                 src={dashImg}
                 alt="Painel da CowHealth AI"
                 width={1920}
                 height={1200}
                 loading="lazy"
-                className="w-full"
+                className="w-full transition-transform duration-500 group-hover:scale-[1.01]"
               />
+              <div className="absolute inset-0 bg-forest/0 group-hover:bg-forest/10 transition-colors duration-300 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-forest text-primary-foreground rounded-full px-6 py-3 text-sm font-medium flex items-center gap-2 shadow-elegant">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 3h6v6M10 14L21 3M21 13v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7"/>
+                  </svg>
+                  Ver painel interativo
+                </div>
+              </div>
             </div>
           </div>
 

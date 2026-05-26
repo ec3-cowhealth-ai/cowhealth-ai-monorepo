@@ -3,6 +3,7 @@ import { ProtectedRoute } from "@components/ProtectedRoute";
 import { LoginPage } from "@pages/auth/LoginPage";
 import { RegisterPage } from "@pages/auth/RegisterPage";
 import { LandingPage } from "@features/landing";
+import { DashboardPreviewPage } from "@features/landing/pages/DashboardPreviewPage";
 import { HomePage } from "@pages/home/HomePage";
 import { MapPage } from "@pages/map/MapPage";
 import { ProfilePage } from "@pages/profile/ProfilePage";
@@ -18,6 +19,7 @@ export const AppRoutes = () => (
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/preview" element={<DashboardPreviewPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
