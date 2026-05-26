@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logoFull from "@/assets/landing/chai_logo_full.png";
 
 const links = [
   { href: "#product",    label: "Produto" },
@@ -23,30 +24,19 @@ export const LandingNav: React.FC = () => {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-xl ${
         scrolled
-          ? "bg-background/85 backdrop-blur-xl border-b border-border/60"
-          : "bg-transparent"
+          ? "bg-background/85 border-b border-border/60"
+          : "bg-background/50"
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <a href="#top" className="flex items-center gap-2.5 group">
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-gradient-forest text-primary-foreground">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M4 12c0-4 3-7 8-7s8 3 8 7-3 7-8 7c-1.5 0-2.5-.3-3.5-.8L4 20l1.2-4.2C4.4 14.8 4 13.5 4 12z" />
-              <circle cx="10" cy="12" r="1" fill="currentColor" />
-              <circle cx="14" cy="12" r="1" fill="currentColor" />
-            </svg>
-          </span>
-          <span className="text-[15px] font-medium tracking-tight">
-            CowHealth<span className="text-muted-foreground"> AI</span>
-          </span>
+        <a href="#top" className="flex items-center">
+          <img
+            src={logoFull}
+            alt="CowHealth AI"
+            className="h-14 w-auto"
+          />
         </a>
 
         <ul className="hidden items-center gap-9 md:flex">
@@ -57,7 +47,7 @@ export const LandingNav: React.FC = () => {
                 className={`text-sm transition-colors ${
                   scrolled
                     ? "text-foreground/75 hover:text-foreground"
-                    : "text-cream/85 hover:text-cream"
+                    : "text-foreground/75 hover:text-foreground"
                 }`}
               >
                 {l.label}

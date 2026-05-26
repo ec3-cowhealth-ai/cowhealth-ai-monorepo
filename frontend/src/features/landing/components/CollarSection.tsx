@@ -1,5 +1,5 @@
 import React from "react";
-import collarImg from "@/assets/landing/collar.jpg";
+import collarImg from "@/assets/landing/collar.png";
 
 const features = [
   "Monitoramento de temperatura por infravermelho",
