@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useMe } from "../../hooks/useAuth";
 import { useHasPermission } from "../../hooks/usePermissions";
 
@@ -19,7 +19,7 @@ export const ProtectedRoute = ({ permission }: ProtectedRouteProps) => {
         </div>
     );
 
-    if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
 
     if (permission && !hasPermission) {
         return <Navigate to="/" replace />; // Or a Forbidden page

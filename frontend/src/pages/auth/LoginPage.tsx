@@ -4,7 +4,7 @@ import { useLogin } from "../../hooks/useAuth";
 export const LoginPage = () => {
   const { mutate: login, isPending, error } = useLogin();
 
-  const [email,    setEmail]    = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (event: React.FormEvent) => {

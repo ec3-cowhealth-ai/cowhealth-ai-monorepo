@@ -1,8 +1,7 @@
 # Cow Photos
 backend/uploads/
 
-# Prisma
-/src/generated/prisma
+# Prisma (generated files go to node_modules by default, already covered above)
 
 # Logs
 logs
@@ -99,7 +98,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Sveltekit cache directory
 .svelte-kit/
