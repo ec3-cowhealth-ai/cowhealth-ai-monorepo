@@ -35,11 +35,22 @@ const getUserPermissions = async (userId: number): Promise<string[]> => {
 
 /**
  * Retorna os farmIds do usuário autenticado.
- * SuperAdmin e Administrador retornam null — acesso irrestrito a todas as fazendas.
- * Demais perfis retornam apenas as fazendas vinculadas via UserFarm.
+ *
+ * Apenas o SuperAdmin tem acesso irrestrito (retorna null).
+ * Todos os demais perfis — incluindo Administrador — são limitados
+ * às fazendas vinculadas via UserFarm.
+ *
+ * @returns null para SuperAdmin (irrestrito) | number[] para os demais
  */
-const getUserFarmIds = async (userId: number, profile: string): Promise<number[] | null> => {
-  if (profile === "ADMIN") return null;
+const getUserFarmIds = async (userId: number): Promise<number[] | null> => {
+  const isSuperAdmin = await prisma.userRole.findFirst({
+    where: {
+      userId,
+      role: { name: "SuperAdmin" },
+    },
+  });
+
+  if (isSuperAdmin) return null;
 
   const userFarms = await prisma.userFarm.findMany({
     where: { userId },
@@ -66,7 +77,7 @@ export const login = async ({ email, password }: LoginInput) => {
 
   const [permissions, farmIds] = await Promise.all([
     getUserPermissions(user.id),
-    getUserFarmIds(user.id, user.profile),
+    getUserFarmIds(user.id),
   ]);
 
   const payload: AuthPayload = {

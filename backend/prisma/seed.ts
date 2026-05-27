@@ -540,8 +540,32 @@ async function main() {
       roleModel: superAdminRole,
     },
     {
-      name: "Administrador",
-      email: "administrador@cowhealth.com",
+      name: "Administrador Aurora",
+      email: "administrador@aurora.com",
+      profile: "ADMIN" as const,
+      roleModel: adminRole,
+    },
+    {
+      name: "Administrador Sao Bento",
+      email: "administrador@saobento.com",
+      profile: "ADMIN" as const,
+      roleModel: adminRole,
+    },
+    {
+      name: "Administrador Boa Esperanca",
+      email: "administrador@boaesperanca.com",
+      profile: "ADMIN" as const,
+      roleModel: adminRole,
+    },
+    {
+      name: "Administrador Santa Clara",
+      email: "administrador@santaclara.com",
+      profile: "ADMIN" as const,
+      roleModel: adminRole,
+    },
+    {
+      name: "Administrador Vale Verde",
+      email: "administrador@valeverde.com",
       profile: "ADMIN" as const,
       roleModel: adminRole,
     },
@@ -951,25 +975,35 @@ async function main() {
   console.log(`${medicalRecordsData.length} prontuários médicos criados`);
 
   // Vínculos usuário-fazenda
-  // SuperAdmin e Administrador não recebem vínculo — têm acesso irrestrito (farmIds: null no JWT)
-  // Demais perfis recebem apenas as fazendas às quais estão associados
+  // Apenas SuperAdmin tem acesso irrestrito (farmIds: null no JWT — sem registro em UserFarm)
+  // Administrador e todos os demais perfis são limitados às fazendas vinculadas
   console.log("Criando vínculos usuário-fazenda...");
 
   const [
-    _superAdminUser, // admin@cowhealth.com        — irrestrito (ADMIN)
-    _adminUser,      // administrador@cowhealth.com — irrestrito (ADMIN)
-    vetUserFarm,     // vet@cowhealth.com
-    zootUserFarm,    // zoot@cowhealth.com
-    gerenteUser,     // gerente@cowhealth.com
-    operadorUser,    // operador@cowhealth.com
-    financeiroUser,  // financeiro@cowhealth.com
-    observadorUser,  // obs@cowhealth.com
+    _superAdminUser,   // admin@cowhealth.com          — irrestrito (SuperAdmin)
+    adminAurora,       // administrador@aurora.com
+    adminSaoBento,     // administrador@saobento.com
+    adminBoaEsperanca, // administrador@boaesperanca.com
+    adminSantaClara,   // administrador@santaclara.com
+    adminValeVerde,    // administrador@valeverde.com
+    vetUserFarm,       // vet@cowhealth.com
+    zootUserFarm,      // zoot@cowhealth.com
+    gerenteUser,       // gerente@cowhealth.com
+    operadorUser,      // operador@cowhealth.com
+    financeiroUser,    // financeiro@cowhealth.com
+    observadorUser,    // obs@cowhealth.com
   ] = createdUsers;
 
   const [aurora, saoBento, boaEsperanca, santaClara, valeVerde] = createdFarms;
 
   const userFarmData = [
-    // Veterinário atende 2 fazendas — comum no agronegócio regional
+    // Cada administrador gerencia apenas a sua fazenda
+    { userId: adminAurora.id,  farmId: aurora.id },
+    { userId: adminSaoBento.id,  farmId: saoBento.id },
+    { userId: adminBoaEsperanca.id,  farmId: boaEsperanca.id },
+    { userId: adminSantaClara.id,  farmId: santaClara.id },
+    { userId: adminValeVerde.id,  farmId: valeVerde.id },
+    // Veterinário atende 2 fazendas em uma região
     { userId: vetUserFarm.id,    farmId: aurora.id },
     { userId: vetUserFarm.id,    farmId: saoBento.id },
     // Zootecnista em 1 fazenda
@@ -991,26 +1025,34 @@ async function main() {
   await prisma.userFarm.createMany({ data: userFarmData });
   console.log(`\n${userFarmData.length} vínculos usuário-fazenda criados`);
   console.log("  Vínculos:");
-  console.log("  vet@cowhealth.com        → Fazenda Aurora, Fazenda Sao Bento");
-  console.log("  zoot@cowhealth.com       → Fazenda Boa Esperanca");
-  console.log("  gerente@cowhealth.com    → Fazenda Aurora");
-  console.log("  operador@cowhealth.com   → Fazenda Aurora");
-  console.log("  financeiro@cowhealth.com → Todas as fazendas");
-  console.log("  obs@cowhealth.com        → Fazenda Santa Clara");
-  console.log("  admin@cowhealth.com      → irrestrito (ADMIN)");
-  console.log("  administrador@cowhealth.com → irrestrito (ADMIN)");
+  console.log("  admin@cowhealth.com              → irrestrito (SuperAdmin)");
+  console.log("  administrador@aurora.com         → Fazenda Aurora");
+  console.log("  administrador@saobento.com       → Fazenda Sao Bento");
+  console.log("  administrador@boaesperanca.com   → Fazenda Boa Esperanca");
+  console.log("  administrador@santaclara.com     → Fazenda Santa Clara");
+  console.log("  administrador@valeverde.com      → Fazenda Vale Verde");
+  console.log("  vet@cowhealth.com                → Fazenda Aurora, Fazenda Sao Bento");
+  console.log("  zoot@cowhealth.com               → Fazenda Boa Esperanca");
+  console.log("  gerente@cowhealth.com            → Fazenda Aurora");
+  console.log("  operador@cowhealth.com           → Fazenda Aurora");
+  console.log("  financeiro@cowhealth.com         → Todas as fazendas");
+  console.log("  obs@cowhealth.com                → Fazenda Santa Clara");
 
   console.log("\nSeed concluído com sucesso.");
   console.log("---");
   console.log("Credenciais (senha: 12345678):");
-  console.log("  admin@cowhealth.com          SuperAdmin");
-  console.log("  administrador@cowhealth.com  Administrador");
-  console.log("  vet@cowhealth.com            Veterinario");
-  console.log("  zoot@cowhealth.com           Zootecnista");
-  console.log("  gerente@cowhealth.com        Gerente de Fazenda");
-  console.log("  operador@cowhealth.com       Operador de Campo");
-  console.log("  financeiro@cowhealth.com     Financeiro");
-  console.log("  obs@cowhealth.com            Observador");
+  console.log("  admin@cowhealth.com            SuperAdmin");
+  console.log("  administrador@aurora.com       Administrador");
+  console.log("  administrador@saobento.com     Administrador");
+  console.log("  administrador@boaesperanca.com Administrador");
+  console.log("  administrador@santaclara.com   Administrador");
+  console.log("  administrador@valeverde.com    Administrador");
+  console.log("  vet@cowhealth.com              Veterinario");
+  console.log("  zoot@cowhealth.com             Zootecnista");
+  console.log("  gerente@cowhealth.com          Gerente de Fazenda");
+  console.log("  operador@cowhealth.com         Operador de Campo");
+  console.log("  financeiro@cowhealth.com       Financeiro");
+  console.log("  obs@cowhealth.com              Observador");
   console.log("\nNovas permissões: MedicalRecord (5) + Retire Cow (1)");
 }
 
