@@ -2,8 +2,12 @@ import { prisma } from "../lib/prisma";
 import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
 
-export const getAllFarms = async () => {
+export const getAllFarms = async (farmIds: number[] | null) => {
+  // farmIds null = irrestrito (ADMIN) — retorna todas
+  const where = farmIds ? { id: { in: farmIds } } : {};
+
   return prisma.farm.findMany({
+    where,
     select: {
       id: true,
       name: true,
@@ -22,7 +26,12 @@ export const getAllFarms = async () => {
   });
 };
 
-export const getFarmById = async (farmId: number) => {
+export const getFarmById = async (farmId: number, farmIds: number[] | null) => {
+  // Verifica acesso antes de buscar
+  if (farmIds !== null && !farmIds.includes(farmId)) {
+    throw new Error("Sem acesso a esta fazenda.");
+  }
+
   const farm = await prisma.farm.findUnique({
     where: { id: farmId },
     select: {
@@ -73,7 +82,15 @@ export const createFarm = async (data: CreateFarmInput) => {
   });
 };
 
-export const updateFarm = async (farmId: number, data: UpdateFarmInput) => {
+export const updateFarm = async (
+  farmId: number,
+  data: UpdateFarmInput,
+  farmIds: number[] | null,
+) => {
+  if (farmIds !== null && !farmIds.includes(farmId)) {
+    throw new Error("Sem acesso a esta fazenda.");
+  }
+
   const farm = await prisma.farm.findUnique({ where: { id: farmId } });
   if (!farm) throw new Error("Fazenda não encontrada.");
 
