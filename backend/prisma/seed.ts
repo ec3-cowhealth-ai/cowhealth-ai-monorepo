@@ -950,7 +950,57 @@ async function main() {
   await prisma.medicalRecord.createMany({ data: medicalRecordsData });
   console.log(`${medicalRecordsData.length} prontuários médicos criados`);
 
-  console.log("Seed concluído com sucesso.");
+  // Vínculos usuário-fazenda
+  // SuperAdmin e Administrador não recebem vínculo — têm acesso irrestrito (farmIds: null no JWT)
+  // Demais perfis recebem apenas as fazendas às quais estão associados
+  console.log("Criando vínculos usuário-fazenda...");
+
+  const [
+    _superAdminUser, // admin@cowhealth.com        — irrestrito (ADMIN)
+    _adminUser,      // administrador@cowhealth.com — irrestrito (ADMIN)
+    vetUserFarm,     // vet@cowhealth.com
+    zootUserFarm,    // zoot@cowhealth.com
+    gerenteUser,     // gerente@cowhealth.com
+    operadorUser,    // operador@cowhealth.com
+    financeiroUser,  // financeiro@cowhealth.com
+    observadorUser,  // obs@cowhealth.com
+  ] = createdUsers;
+
+  const [aurora, saoBento, boaEsperanca, santaClara, valeVerde] = createdFarms;
+
+  const userFarmData = [
+    // Veterinário atende 2 fazendas — comum no agronegócio regional
+    { userId: vetUserFarm.id,    farmId: aurora.id },
+    { userId: vetUserFarm.id,    farmId: saoBento.id },
+    // Zootecnista em 1 fazenda
+    { userId: zootUserFarm.id,   farmId: boaEsperanca.id },
+    // Gerente responsável pela sua fazenda
+    { userId: gerenteUser.id,    farmId: aurora.id },
+    // Operador de campo em 1 fazenda
+    { userId: operadorUser.id,   farmId: aurora.id },
+    // Financeiro vê todas as fazendas para controle de custos
+    { userId: financeiroUser.id, farmId: aurora.id },
+    { userId: financeiroUser.id, farmId: saoBento.id },
+    { userId: financeiroUser.id, farmId: boaEsperanca.id },
+    { userId: financeiroUser.id, farmId: santaClara.id },
+    { userId: financeiroUser.id, farmId: valeVerde.id },
+    // Observador em 1 fazenda
+    { userId: observadorUser.id, farmId: santaClara.id },
+  ];
+
+  await prisma.userFarm.createMany({ data: userFarmData });
+  console.log(`\n${userFarmData.length} vínculos usuário-fazenda criados`);
+  console.log("  Vínculos:");
+  console.log("  vet@cowhealth.com        → Fazenda Aurora, Fazenda Sao Bento");
+  console.log("  zoot@cowhealth.com       → Fazenda Boa Esperanca");
+  console.log("  gerente@cowhealth.com    → Fazenda Aurora");
+  console.log("  operador@cowhealth.com   → Fazenda Aurora");
+  console.log("  financeiro@cowhealth.com → Todas as fazendas");
+  console.log("  obs@cowhealth.com        → Fazenda Santa Clara");
+  console.log("  admin@cowhealth.com      → irrestrito (ADMIN)");
+  console.log("  administrador@cowhealth.com → irrestrito (ADMIN)");
+
+  console.log("\nSeed concluído com sucesso.");
   console.log("---");
   console.log("Credenciais (senha: 12345678):");
   console.log("  admin@cowhealth.com          SuperAdmin");
