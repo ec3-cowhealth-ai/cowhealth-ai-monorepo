@@ -1,7 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
-import type { LoginInput, AuthPayload } from "../types/auth";
+import type { AuthPayload, LoginInput } from "../types/auth";
+
+// Helpers internos
 
 const getUserPermissions = async (userId: number): Promise<string[]> => {
   const user = await prisma.user.findUnique({
@@ -31,38 +33,51 @@ const getUserPermissions = async (userId: number): Promise<string[]> => {
   return Array.from(permissionSet);
 };
 
+/**
+ * Retorna os farmIds do usuário autenticado.
+ * SuperAdmin e Administrador retornam null — acesso irrestrito a todas as fazendas.
+ * Demais perfis retornam apenas as fazendas vinculadas via UserFarm.
+ */
+const getUserFarmIds = async (userId: number, profile: string): Promise<number[] | null> => {
+  if (profile === "ADMIN") return null;
+
+  const userFarms = await prisma.userFarm.findMany({
+    where: { userId },
+    select: { farmId: true },
+  });
+
+  return userFarms.map((userFarm) => userFarm.farmId);
+};
+
 const signToken = (payload: AuthPayload): string =>
   jwt.sign(payload, process.env.JWT_SECRET!, {
     expiresIn: (process.env.JWT_EXPIRES_IN ?? "7d") as `${number}${"s" | "m" | "h" | "d"}` | number,
   });
 
+// Auth
+
 export const login = async ({ email, password }: LoginInput) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || !user.active) throw new Error("Credenciais inválidas.");
+  if (!user || !user.active) throw new Error("Credenciais invalidas.");
 
   const passwordMatches = await bcrypt.compare(password, user.passwordHash);
-  if (!passwordMatches) throw new Error("Credenciais inválidas.");
+  if (!passwordMatches) throw new Error("Credenciais invalidas.");
 
-  const permissions = await getUserPermissions(user.id);
+  const [permissions, farmIds] = await Promise.all([
+    getUserPermissions(user.id),
+    getUserFarmIds(user.id, user.profile),
+  ]);
 
   const payload: AuthPayload = {
     sub: user.id,
     email: user.email,
     profile: user.profile,
     permissions,
+    farmIds,
   };
 
   return { token: signToken(payload) };
-};
-
-// user → user_roles → role → role_permissions → permission
-export const userHasPermission = async (
-  userId: number,
-  permissionName: string,
-): Promise<boolean> => {
-  const permissions = await getUserPermissions(userId);
-  return permissions.includes(permissionName);
 };
 
 export const getMe = async (userId: number) => {
@@ -82,18 +97,19 @@ export const getMe = async (userId: number) => {
               id: true,
               name: true,
               permissions: {
-                select: {
-                  permission: { select: { id: true, name: true } },
-                },
+                select: { permission: { select: { id: true, name: true } } },
               },
             },
           },
         },
       },
+      userFarms: {
+        select: { farm: { select: { id: true, name: true } } },
+      },
     },
   });
 
-  if (!user) throw new Error("Usuario não encontrado.");
+  if (!user) throw new Error("Usuario nao encontrado.");
 
   const permissionSet = new Map<number, string>();
   for (const userRole of user.roles) {
@@ -110,13 +126,16 @@ export const getMe = async (userId: number) => {
     profile: user.profile,
     active: user.active,
     createdAt: user.createdAt,
-    roles: user.roles.map((userRole) => ({
-      id: userRole.role.id,
-      name: userRole.role.name,
-    })),
-    permissions: Array.from(permissionSet.entries()).map(([id, name]) => ({
-      id,
-      name,
-    })),
+    roles: user.roles.map((userRole) => ({ id: userRole.role.id, name: userRole.role.name })),
+    permissions: Array.from(permissionSet.entries()).map(([id, name]) => ({ id, name })),
+    farms: user.userFarms.map((userFarm) => userFarm.farm),
   };
+};
+
+export const userHasPermission = async (
+  userId: number,
+  permissionName: string,
+): Promise<boolean> => {
+  const permissions = await getUserPermissions(userId);
+  return permissions.includes(permissionName);
 };
