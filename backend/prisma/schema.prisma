@@ -58,6 +58,7 @@ model User {
 
   roles         UserRole[]
   notifications Notification[]
+  userFarms UserFarm[]
   medicalRecords MedicalRecord[]
 
   @@map("users")
@@ -97,6 +98,15 @@ model UserRole {
 
   @@id([userId, roleId])
   @@map("user_roles")
+}
+
+model UserFarm {
+  userId Int @map("user_id")
+  farmId Int @map("farm_id")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farm Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  @@id([userId, farmId])
+  @@map("user_farms")
 }
 
 model RolePermission {
@@ -149,6 +159,7 @@ model Farm {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   cows Cow[]
+  userFarms UserFarm[]
 
   @@map("farms")
 }
