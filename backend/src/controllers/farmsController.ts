@@ -8,13 +8,14 @@ import {
 } from "../services/farmsService";
 import { handleRequest } from "../helpers/controllerHelpers";
 
-export const listFarms = async (_request: Request, response: Response): Promise<void> => {
-  const farms = await getAllFarms();
-  response.json(farms);
+export const listFarms = async (request: Request, response: Response): Promise<void> => {
+  const farmIds = request.user!.farmIds;
+  await handleRequest(response, () => getAllFarms(farmIds));
 };
 
 export const showFarm = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => getFarmById(Number(request.params.id)), 200, 404);
+  const farmIds = request.user!.farmIds;
+  await handleRequest(response, () => getFarmById(Number(request.params.id), farmIds), 200, 404);
 };
 
 export const storeFarm = async (request: Request, response: Response): Promise<void> => {
@@ -22,7 +23,8 @@ export const storeFarm = async (request: Request, response: Response): Promise<v
 };
 
 export const updateFarmController = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => updateFarm(Number(request.params.id), request.body));
+  const farmIds = request.user!.farmIds;
+  await handleRequest(response, () => updateFarm(Number(request.params.id), request.body, farmIds));
 };
 
 export const destroyFarm = async (request: Request, response: Response): Promise<void> => {
