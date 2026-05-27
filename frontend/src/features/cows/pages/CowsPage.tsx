@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import { Search } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { useCows } from "../hooks/useCows";
@@ -129,75 +129,26 @@ export const CowsPage = () => {
             <p>Nenhuma vaca encontrada</p>
           </div>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "var(--s-3)",
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {filtered.map((cow: Cow) => (
-              <button
-                key={cow.id}
-                className="card"
-                onClick={() => navigate(`/cows/${cow.id}`)}
-                style={{
-                  textAlign: "left",
-                  cursor: "pointer",
-                  padding: "var(--s-4)",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "var(--s-2)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <CowHead size={32} color={statusColor(cow.status)} />
+              <button key={cow.id} className="cow-row" onClick={() => navigate(`/cows/${cow.id}`)}>
+                <div className="cow-row__avatar">
+                  <CowHead size={28} color={statusColor(cow.status)} />
+                </div>
+                <div className="cow-row__info">
+                  <span className="cow-row__tag">{cow.tag}</span>
+                  <span className="cow-row__meta">
+                    {cow.name} · {cow.farm?.name}
+                  </span>
+                </div>
+                <div className="cow-row__right">
                   <StatusDot
                     tone={statusTone(cow.status)}
                     pulse={cow.status === COW_STATUS_VALUES.ALERT}
                   />
+                  <span className="cow-row__status">{STATUS_LABEL[cow.status] ?? cow.status}</span>
+                  <ChevronRight size={14} color="var(--text-muted)" />
                 </div>
-                <div>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontWeight: 700,
-                      fontSize: "var(--t-sm)",
-                      fontFamily: "var(--font-display)",
-                    }}
-                  >
-                    {cow.name}
-                  </p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "var(--t-xs)",
-                      color: "var(--text-muted)",
-                      fontFamily: "var(--font-mono)",
-                    }}
-                  >
-                    #{cow.tag}
-                  </p>
-                </div>
-                <span
-                  style={{
-                    fontSize: "var(--t-xs)",
-                    fontWeight: 600,
-                    color: statusColor(cow.status),
-                    background: `color-mix(in srgb, ${statusColor(cow.status)} 12%, transparent)`,
-                    borderRadius: 999,
-                    padding: "2px 8px",
-                    alignSelf: "flex-start",
-                  }}
-                >
-                  {STATUS_LABEL[cow.status] ?? cow.status}
-                </span>
               </button>
             ))}
           </div>

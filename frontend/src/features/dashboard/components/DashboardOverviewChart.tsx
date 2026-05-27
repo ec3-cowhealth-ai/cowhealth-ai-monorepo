@@ -1,62 +1,31 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { useHealthTimeline } from "../hooks/useDashboard";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import type { ChartDataPoint } from "../types";
 
 interface DashboardOverviewChartProps {
-  farmId?: number;
+  data: ChartDataPoint[];
+  title: string;
+  period?: "today" | "week" | "month";
 }
 
-export const DashboardOverviewChart = ({ farmId }: DashboardOverviewChartProps) => {
-  const { data, isLoading } = useHealthTimeline(farmId ? String(farmId) : undefined);
-
-  if (isLoading || !data) return null;
-
-  return (
-    <div className="card">
-      <p
-        style={{
-          margin: "0 0 var(--s-3) 0",
-          fontWeight: 700,
-          fontSize: "var(--t-sm)",
-          color: "var(--text-secondary)",
-        }}
-      >
-        Evolução do Rebanho — últimos 7 dias
-      </p>
-      <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={data}>
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 10, fill: "var(--text-muted)" }}
-            tickFormatter={(v) => v.slice(5)}
-          />
-          <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
-          <Tooltip
-            contentStyle={{
-              background: "var(--bg-elev-2)",
-              border: "1px solid var(--border)",
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-          />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Line
-            type="monotone"
-            dataKey="healthy"
-            stroke="var(--success)"
-            dot={false}
-            name="Saudável"
-          />
-          <Line type="monotone" dataKey="alert" stroke="var(--danger)" dot={false} name="Alerta" />
-          <Line
-            type="monotone"
-            dataKey="heatStress"
-            stroke="var(--warning)"
-            dot={false}
-            name="Est. Térmico"
-          />
-          <Line type="monotone" dataKey="calving" stroke="var(--info)" dot={false} name="Parto" />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
-};
+export const DashboardOverviewChart = ({ data, title }: DashboardOverviewChartProps) => (
+  <div className="card" style={{ padding: "var(--s-4)", background: "var(--bg-elev-1)" }}>
+    <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>{title}</p>
+    <ResponsiveContainer width="100%" height={260}>
+      <LineChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+        <XAxis dataKey="label" tick={{ fontSize: 12, fill: "var(--text-muted)" }} axisLine={{ stroke: "var(--border)" }} tickLine={false} />
+        <YAxis tick={{ fontSize: 12, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+        <Tooltip contentStyle={{ background: "var(--bg-elev-2)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
+        <Line type="monotone" dataKey="value" stroke="#339989" strokeWidth={2} dot={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+);

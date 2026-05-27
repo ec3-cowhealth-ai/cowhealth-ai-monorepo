@@ -3,13 +3,6 @@ export interface LoginInput {
   password: string;
 }
 
-export interface RegisterInput {
-    name: string;
-    email: string;
-    password: string;
-    profile: "ADMIN" | "MANAGER" | "VIEWER";
-}
-
 export interface Permission {
   id: number;
   name: string;

@@ -1,11 +1,6 @@
 import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import {
-  DashboardKPICard,
-  CowsPerStatusChart,
-  CowsPerFarmChart,
-  DashboardOverviewChart,
-} from "../index";
+import { DashboardKPICard, CowsPerStatusChart, CowsPerFarmChart } from "../index";
 import { useDashboardOverview, useCowsPerStatus, useCowsPerFarm } from "../hooks/useDashboard";
 
 export const DashboardPage = () => {
@@ -74,8 +69,6 @@ export const DashboardPage = () => {
           <CowsPerStatusChart data={statusData} />
           <CowsPerFarmChart data={farmData} />
         </div>
-
-        <DashboardOverviewChart />
       </section>
     </div>
   );
