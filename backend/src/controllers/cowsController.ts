@@ -14,7 +14,7 @@ import {
   getCowHeartRateDaily,
   getCowTemperatureDaily,
   retireCow,
-  getCowSensorHistory
+  getCowSensorHistory,
 } from "../services/cowsService";
 import { handleRequest } from "../helpers/controllerHelpers";
 import type { SensorQueryOptions } from "../types/sensors";
@@ -22,9 +22,21 @@ import type { SensorQueryOptions } from "../types/sensors";
 // CRUD
 
 export const listCows = async (request: Request, response: Response): Promise<void> => {
+  const farmIds = request.user!.farmIds;
   const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
-  const cows = await getAllCows(farmId);
-  response.json(cows);
+
+  // Se o usuário tem restrição de fazenda e passou um farmId via query,
+  // valida que esse farmId está na lista permitida
+  if (farmIds !== null && farmId && !farmIds.includes(farmId)) {
+    response.status(403).json({ error: "Sem acesso a esta fazenda." });
+    return;
+  }
+
+  // Para usuários restritos sem farmId na query, usa o primeiro da lista
+  // Para admins, retorna tudo (farmId undefined = sem filtro)
+  const effectiveFarmId = farmId ?? (farmIds !== null ? undefined : undefined);
+
+  await handleRequest(response, () => getAllCows(effectiveFarmId, farmIds));
 };
 
 export const showCow = async (request: Request, response: Response): Promise<void> => {
@@ -134,6 +146,6 @@ export const listSensorHistory = async (request: Request, response: Response): P
     response,
     () => getCowSensorHistory(Number(request.params.id), from, to),
     200,
-    404
+    404,
   );
 };
