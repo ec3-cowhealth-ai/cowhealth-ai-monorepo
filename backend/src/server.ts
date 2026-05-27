@@ -24,10 +24,6 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }));
 app.use(express.json());
 
-// TODO[RENATO] Fotos servidas publicamente sem autenticação — qualquer URL /uploads/<filename> é acessível.
-// Substituir por um endpoint autenticado: GET /cows/:id/photos/:filename protegido por requireAuth.
-app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
-
 // Rotas
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);

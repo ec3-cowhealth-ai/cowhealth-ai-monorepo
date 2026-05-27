@@ -44,6 +44,12 @@ const permissionNames = [
   "Delete PermissionGroup",
   "ViewAny Notification",
   "View Notification",
+  "ViewAny MedicalRecord",
+  "View MedicalRecord",
+  "Create MedicalRecord",
+  "Update MedicalRecord",
+  "Delete MedicalRecord",
+  "Retire Cow",
 ];
 
 // Nomes dos colares ACTIVE
@@ -361,6 +367,10 @@ async function main() {
   const viewOnlyCollar = collarPermissions.filter(
     (p) => p.name.startsWith("ViewAny") || p.name.startsWith("View"),
   );
+  const medicalRecordPermissions    = createdPermissions.filter((p) => p.name.includes("MedicalRecord"));
+  const viewOnlyMedicalRecord       = medicalRecordPermissions.filter((p) => p.name.startsWith("ViewAny") || p.name.startsWith("View"));
+  const writeMedicalRecordPermissions = medicalRecordPermissions.filter((p) => !p.name.startsWith("ViewAny") && !p.name.startsWith("View"));
+  const retireCowPermission         = createdPermissions.filter((p) => p.name === "Retire Cow");
 
   // Grupos de permissões
   console.log("Criando grupos de permissões...");
@@ -368,6 +378,7 @@ async function main() {
     ["Fazendas", farmPermissions],
     ["Colares", collarPermissions],
     ["Vacas", cowPermissions],
+    ["Prontuario", medicalRecordPermissions],
   ] as const) {
     await prisma.permissionGroup.upsert({
       where: { name: groupName },
@@ -418,6 +429,7 @@ async function main() {
           ...viewOnlyCollar,
           ...cowPermissions,
           ...notificationPermissions,
+          ...medicalRecordPermissions,
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -435,6 +447,7 @@ async function main() {
           ...viewOnlyCollar,
           ...cowPermissions,
           ...notificationPermissions,
+          ...viewOnlyMedicalRecord,
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -452,6 +465,8 @@ async function main() {
           ...viewOnlyCollar,
           ...viewOnlyCow,
           ...notificationPermissions,
+          ...viewOnlyMedicalRecord,
+          ...retireCowPermission,
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -797,6 +812,7 @@ async function main() {
   console.log("  operador@cowhealth.com       Operador de Campo");
   console.log("  financeiro@cowhealth.com     Financeiro");
   console.log("  obs@cowhealth.com            Observador");
+  console.log("\nNovas permissões: MedicalRecord (5) + Retire Cow (1)");
 }
 
 main()

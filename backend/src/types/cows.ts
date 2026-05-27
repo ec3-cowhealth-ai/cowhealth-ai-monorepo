@@ -24,3 +24,17 @@ export interface SensorQueryInput {
   endDate?: string;
   limit?: number;
 }
+
+export interface CreateMedicalRecordInput {
+  type:       "CHECKUP" | "PROCEDURE" | "MEDICATION";
+  title:      string;
+  notes?:     string;
+  recordedAt: string;
+}
+
+export interface UpdateMedicalRecordInput {
+  type?:       "CHECKUP" | "PROCEDURE" | "MEDICATION";
+  title?:      string;
+  notes?:      string;
+  recordedAt?: string;
+}
