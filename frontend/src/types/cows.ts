@@ -1,9 +1,22 @@
 export const COW_STATUS_VALUES = {
-  HEALTHY: "HEALTHY",
-  CALVING: "CALVING",
+  HEALTHY:     "HEALTHY",
+  CALVING:     "CALVING",
   HEAT_STRESS: "HEAT_STRESS",
-  ALERT: "ALERT",
+  ALERT:       "ALERT",
+  RETIRED:     "RETIRED",
 } as const;
+
+export type MedicalRecordType = "CHECKUP" | "PROCEDURE" | "MEDICATION";
+
+export interface MedicalRecord {
+  id:         number;
+  type:       MedicalRecordType;
+  title:      string;
+  notes?:     string | null;
+  recordedAt: string;
+  createdAt:  string;
+  user:       { id: number; name: string };
+}
 
 export type CowStatus = (typeof COW_STATUS_VALUES)[keyof typeof COW_STATUS_VALUES];
 

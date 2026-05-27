@@ -2,8 +2,8 @@ import api from "@lib/api";
 
 export interface DashboardOverviewResponse {
   totalCows: number;
-  cowsWithCollar: number;
-  cowsInAlert: number;
+  healthyCows: number;
+  unhealthyCows: number;
   totalFarms: number;
   totalActiveCollars: number;
   unreadNotifications: number;
@@ -11,14 +11,13 @@ export interface DashboardOverviewResponse {
 }
 
 export interface CowStatusItem {
-  status: string;
-  count: number;
+  label: string;
+  value: number;
 }
 
 export interface CowFarmItem {
-  id: number;
-  name: string;
-  cowCount: number;
+  label: string;
+  value: number;
 }
 
 export const getDashboardOverview = (farmId?: string) =>

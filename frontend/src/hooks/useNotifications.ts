@@ -3,7 +3,7 @@ import api from "@lib/api";
 
 export interface Notification {
   id: string;
-  type: string;
+  type?: string;
   title: string;
   message: string;
   read: boolean;

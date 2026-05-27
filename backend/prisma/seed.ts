@@ -801,6 +801,155 @@ async function main() {
 
   await prisma.notification.createMany({ data: notificationsData });
 
+  // ── Prontuários médicos ────────────────────────────────────────────────────
+  console.log("Criando prontuários médicos...");
+
+  const vetUser  = createdUsers[2]; // vet@cowhealth.com
+  const zootUser = createdUsers[3]; // zoot@cowhealth.com
+
+  const CHECKUP_TITLES = [
+    "Check-up geral",
+    "Exame clínico rotineiro",
+    "Avaliação de saúde semestral",
+    "Monitoramento de peso e condição corporal",
+    "Check-up pré-reprodutivo",
+  ];
+
+  const PROCEDURE_TITLES = [
+    "Vacinação contra febre aftosa",
+    "Casqueamento preventivo",
+    "Coleta de sangue para exames laboratoriais",
+    "Tratamento de mastite subclínica",
+    "Aplicação de vitaminas ADE",
+  ];
+
+  const MEDICATION_TITLES = [
+    "Aplicação de antibiótico (Oxitetraciclina)",
+    "Anti-inflamatório (Flunixina Meglumina)",
+    "Suplementação com BoviMin",
+    "Antiparasitário (Ivermectina)",
+    "Reposição hídrica e eletrolítica",
+  ];
+
+  // PRNG determinístico por vaca para dados reproduzíveis entre execuções
+  const makeRand = (seed: number) => {
+    let s = seed;
+    return () => {
+      s = Math.imul(s, 1664525) + 1013904223;
+      return (s >>> 0) / 0xffffffff;
+    };
+  };
+
+  const daysAgo = (days: number) =>
+    new Date(Date.now() - Math.round(days) * 24 * 60 * 60 * 1000);
+
+  const pick = <T>(arr: T[], r: number): T => arr[Math.floor(r * arr.length) % arr.length];
+
+  type MedicalRecordRow = {
+    cowId:      number;
+    userId:     number;
+    type:       "CHECKUP" | "PROCEDURE" | "MEDICATION";
+    title:      string;
+    notes:      string | null;
+    recordedAt: Date;
+  };
+
+  const medicalRecordsData: MedicalRecordRow[] = [];
+
+  for (const { cow, scenario } of createdCows) {
+    const rand = makeRand(cow.id * 31 + 7);
+
+    // ── Todos os animais recebem 1-2 check-ups nos últimos 90 dias ──
+    const checkupCount = rand() > 0.45 ? 2 : 1;
+    for (let i = 0; i < checkupCount; i++) {
+      medicalRecordsData.push({
+        cowId:      cow.id,
+        userId:     rand() > 0.4 ? vetUser.id : zootUser.id,
+        type:       "CHECKUP",
+        title:      pick(CHECKUP_TITLES, rand()),
+        notes:      scenario === CowStatus.HEALTHY
+          ? "Animal em bom estado geral. Sem alterações clínicas relevantes. Escore de condição corporal dentro do esperado."
+          : "Exame de rotina realizado. Aguardando resultados para definir conduta.",
+        recordedAt: daysAgo(rand() * 80 + 8),
+      });
+    }
+
+    // ── Vacas em estresse térmico: medicação recente + procedimento de suporte ──
+    if (scenario === CowStatus.HEAT_STRESS) {
+      medicalRecordsData.push({
+        cowId:      cow.id,
+        userId:     vetUser.id,
+        type:       "MEDICATION",
+        title:      "Anti-inflamatório (Flunixina Meglumina)",
+        notes:      "Animal apresentou temperatura retal acima de 39,5 °C e FC elevada nas últimas 6 h. Prescrito anti-inflamatório IV. Recomendado acesso irrestrito a sombra e água fresca.",
+        recordedAt: daysAgo(rand() * 8 + 1),
+      });
+      if (rand() > 0.35) {
+        medicalRecordsData.push({
+          cowId:      cow.id,
+          userId:     vetUser.id,
+          type:       "PROCEDURE",
+          title:      "Aplicação de vitaminas ADE",
+          notes:      "Suplementação vitamínica para reforçar imunidade durante período de estresse térmico.",
+          recordedAt: daysAgo(rand() * 20 + 9),
+        });
+      }
+    }
+
+    // ── Vacas em alerta: coleta + antibiótico ──
+    if (scenario === CowStatus.ALERT) {
+      medicalRecordsData.push({
+        cowId:      cow.id,
+        userId:     vetUser.id,
+        type:       "PROCEDURE",
+        title:      pick(PROCEDURE_TITLES, rand()),
+        notes:      "Procedimento realizado após alertas do sistema indicarem parâmetros fisiológicos fora do intervalo normal. Monitoramento contínuo ativado.",
+        recordedAt: daysAgo(rand() * 6 + 1),
+      });
+      medicalRecordsData.push({
+        cowId:      cow.id,
+        userId:     vetUser.id,
+        type:       "MEDICATION",
+        title:      pick(MEDICATION_TITLES, rand()),
+        notes:      "Tratamento iniciado após exame físico. Reavaliação agendada em 72 h.",
+        recordedAt: daysAgo(rand() * 4 + 1),
+      });
+    }
+
+    // ── Vacas em parição: acompanhamento pré e pós-parto ──
+    if (scenario === CowStatus.CALVING) {
+      medicalRecordsData.push({
+        cowId:      cow.id,
+        userId:     vetUser.id,
+        type:       "CHECKUP",
+        title:      "Monitoramento pós-parto",
+        notes:      "Avaliação pós-parto. Animal estável. Colostro produzido normalmente. Involução uterina em curso. Bezerro com bom reflexo de sucção.",
+        recordedAt: daysAgo(rand() * 4 + 1),
+      });
+      medicalRecordsData.push({
+        cowId:      cow.id,
+        userId:     vetUser.id,
+        type:       "PROCEDURE",
+        title:      "Vacinação contra febre aftosa",
+        notes:      "Vacinação de rotina realizada no período periparto. Bezerro também imunizado.",
+        recordedAt: daysAgo(rand() * 12 + 5),
+      });
+      if (rand() > 0.5) {
+        medicalRecordsData.push({
+          cowId:      cow.id,
+          userId:     vetUser.id,
+          type:       "MEDICATION",
+          title:      "Ocitocina pós-parto",
+          notes:      "Aplicação para estimular contração uterina e auxiliar na expulsão da placenta.",
+          recordedAt: daysAgo(rand() * 3 + 1),
+        });
+      }
+    }
+  }
+
+  await prisma.medicalRecord.createMany({ data: medicalRecordsData });
+  console.log(`${medicalRecordsData.length} prontuários médicos criados`);
+
   console.log("Seed concluído com sucesso.");
   console.log("---");
   console.log("Credenciais (senha: 12345678):");

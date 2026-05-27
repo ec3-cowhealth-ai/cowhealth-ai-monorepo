@@ -6,6 +6,7 @@ import type {
   HeartRateDailyPoint,
   TemperatureDailyPoint,
   SensorPage,
+  MedicalRecord,
 } from "../types/cows.ts";
 
 export const cowsService = {
@@ -60,6 +61,11 @@ export const cowsService = {
       `/cows/${cowId}/temperature`,
       { params: { page, pageSize } },
     );
+    return response.data;
+  },
+
+  getMedicalRecords: async (cowId: string) => {
+    const response = await api.get<MedicalRecord[]>(`/cows/${cowId}/medical-records`);
     return response.data;
   },
 
