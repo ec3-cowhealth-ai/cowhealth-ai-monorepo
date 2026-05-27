@@ -60,12 +60,14 @@ export function CowProfilePanel({ cowId }: Props) {
   const photoUrl   = firstPhoto ? `/uploads/${firstPhoto}` : null;
 
   const rows = [
-    ["Fazenda",    cow.farm?.name ?? "--"],
-    ["Raça",       cow.breed     ?? "--"],
-    ["Peso",       cow.weight    ? `${cow.weight} kg` : "--"],
-    ["Idade",      age(cow.birthDate)],
-    ["Colar",      cow.collar?.name ?? "Sem colar"],
-    ["Status",     statusLabel],
+    ["Fazenda",           cow.farm?.name         ?? "--"],
+    ["Raça",              cow.breed              ?? "--"],
+    ["Peso",              cow.weight             ? `${cow.weight} kg` : "--"],
+    ["Idade",             age(cow.birthDate)],
+    ["Colar",             cow.collar?.name       ?? "Sem colar"],
+    ["Status",            statusLabel],
+    ["Dias em lactação",  "--"],
+    ["Status reprodutivo","--"],
   ];
 
   return (

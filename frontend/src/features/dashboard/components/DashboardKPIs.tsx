@@ -17,14 +17,13 @@ interface KpiItem {
   icon:  string;
 }
 
-function countByStatus(list: CowStatusItem[] | undefined, status: string): number | undefined {
-  return list?.find((s) => s.status === status)?.count;
+function countByLabel(list: CowStatusItem[] | undefined, label: string): number | undefined {
+  return list?.find((s) => s.label === label)?.value;
 }
 
-function healthScore(list: CowStatusItem[] | undefined, total: number | undefined): string {
-  if (!list || !total || total === 0) return "--";
-  const healthy = list.find((s) => s.status === "HEALTHY")?.count ?? 0;
-  return String(Math.round((healthy / total) * 100));
+function healthScore(overview: DashboardOverviewResponse | undefined): string {
+  if (!overview || !overview.totalCows) return "--";
+  return String(Math.round((overview.healthyCows / overview.totalCows) * 100));
 }
 
 function fmt(n: number | undefined): string {
@@ -38,10 +37,9 @@ function pct(value: string, total: number | undefined): string {
 
 export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
   const total   = overview?.totalCows;
-  const score   = healthScore(cowsPerStatus, total);
-  const atRisk  = fmt(overview?.cowsInAlert);
-  const calving = fmt(countByStatus(cowsPerStatus, "CALVING"));
-  const stress  = fmt(countByStatus(cowsPerStatus, "HEAT_STRESS"));
+  const score   = healthScore(overview);
+  const atRisk  = fmt(overview?.unhealthyCows);
+  const calving = fmt(countByLabel(cowsPerStatus, "CALVING"));
 
   const kpis: KpiItem[] = [
     {
@@ -49,7 +47,7 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
       value: score,
       unit:  score !== "--" ? "/100" : "",
       sub:   "",
-      delta: score !== "--" ? `${score}% saudáveis` : "Aguardando dados",
+      delta: score !== "--" ? `${overview?.healthyCows} saudáveis` : "Aguardando dados",
       tone:  "good",
       icon:  "shield",
     },
@@ -58,7 +56,7 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
       value: atRisk,
       unit:  "",
       sub:   pct(atRisk, total),
-      delta: "Status ALERT",
+      delta: atRisk !== "--" && Number(atRisk) > 0 ? "↑ vs. últimos 7 dias" : "Dentro do normal",
       tone:  "warn",
       icon:  "heart",
     },
@@ -72,22 +70,22 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
       icon:  "cow",
     },
     {
-      label: "Estresse térmico",
-      value: stress,
+      label: "Em aberto",
+      value: "--",
       unit:  "",
-      sub:   pct(stress, total),
-      delta: "Status HEAT_STRESS",
-      tone:  "warn",
-      icon:  "temp",
-    },
-    {
-      label: "Total do rebanho",
-      value: fmt(total),
-      unit:  "",
-      sub:   overview?.totalFarms ? `${overview.totalFarms} fazenda(s)` : "",
-      delta: overview?.cowsWithCollar ? `${overview.cowsWithCollar} com colar` : "Aguardando dados",
+      sub:   "",
+      delta: "Dados em breve",
       tone:  "good",
       icon:  "circle",
+    },
+    {
+      label: "Temp. média",
+      value: "--",
+      unit:  "°C",
+      sub:   "",
+      delta: "Dados em breve",
+      tone:  "warn",
+      icon:  "temp",
     },
   ];
 

@@ -6,9 +6,9 @@ import {
   ReferenceLine, ResponsiveContainer,
 } from "recharts";
 import { cowsService } from "@services/cowsService";
-import type { SensorDailyPoint } from "@/types/cows";
+import type { SensorDailyPoint, MedicalRecordType } from "@/types/cows";
 import { C, cardStyle } from "../constants/colors";
-import { TempIcon, HeartIcon, ShieldIcon, CheckDot } from "./DashboardIcons";
+import { TempIcon, HeartIcon, ShieldIcon, CheckDot, ClockIcon } from "./DashboardIcons";
 
 interface Props {
   cowId: string | null;
@@ -42,11 +42,11 @@ export function DashboardCenterPanel({ cowId }: Props) {
         </div>
 
         <div style={{ paddingTop: 20 }}>
-          {activeTab === "Saúde" && <HealthTab cowId={cowId} />}
-          {activeTab === "Atividade" && <ComingSoon label="Dados de atividade" />}
-          {activeTab === "Reprodução" && <ComingSoon label="Dados de reprodução" />}
-          {activeTab === "Tratamentos" && <ComingSoon label="Histórico de tratamentos" />}
-          {activeTab === "Notas" && <ComingSoon label="Notas clínicas" />}
+          {activeTab === "Saúde"       && <HealthTab cowId={cowId} />}
+          {activeTab === "Atividade"   && <ComingSoon label="Dados de atividade" />}
+          {activeTab === "Reprodução"  && <ComingSoon label="Dados de reprodução" />}
+          {activeTab === "Tratamentos" && <TratamentosTab cowId={cowId} />}
+          {activeTab === "Notas"       && <ComingSoon label="Notas clínicas" />}
         </div>
       </div>
     </section>
@@ -275,6 +275,80 @@ function RiskGauge({ value }: { value: number }) {
         </div>
       </div>
       <div style={{ fontSize: 10, color, fontWeight: 500, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+}
+
+/* ── Tratamentos Tab ─────────────────────────────────────────────────────── */
+
+const TYPE_LABEL: Record<MedicalRecordType, string> = {
+  CHECKUP:   "Check-up",
+  PROCEDURE: "Procedimento",
+  MEDICATION:"Medicação",
+};
+
+const TYPE_COLOR: Record<MedicalRecordType, { bg: string; color: string }> = {
+  CHECKUP:   { bg: "#e6f1ea", color: C.green  },
+  PROCEDURE: { bg: "#fbe9d8", color: C.orange },
+  MEDICATION:{ bg: "#fde7df", color: C.red    },
+};
+
+function TratamentosTab({ cowId }: { cowId: string | null }) {
+  const { data: records, isLoading } = useQuery({
+    queryKey: ["cows", cowId, "medical-records"],
+    queryFn:  () => cowsService.getMedicalRecords(cowId!),
+    enabled:  !!cowId,
+  });
+
+  if (!cowId) return <ComingSoon label="Selecione uma vaca para ver os tratamentos" />;
+  if (isLoading) return <ChartSkeleton height={200} />;
+
+  if (!records || records.length === 0) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 200, gap: 8 }}>
+        <div style={{ width: 40, height: 40, borderRadius: 999, background: "#e6f1ea", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <ClockIcon style={{ width: 18, height: 18, color: C.green }} />
+        </div>
+        <span style={{ fontSize: 13, color: C.muted }}>Nenhum registro clínico encontrado</span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 340, overflowY: "auto", paddingRight: 4 }}>
+      {records.map((r) => {
+        const tc = TYPE_COLOR[r.type] ?? { bg: "#e6f1ea", color: C.green };
+        return (
+          <div key={r.id} style={{
+            display: "flex", alignItems: "flex-start", gap: 12,
+            padding: "12px 14px", borderRadius: 10,
+            border: `1px solid ${C.border}`, background: "#fafaf8",
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+              background: tc.bg, display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <ClockIcon style={{ width: 15, height: 15, color: tc.color }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{r.title}</span>
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 999,
+                  background: tc.bg, color: tc.color,
+                }}>{TYPE_LABEL[r.type]}</span>
+              </div>
+              {r.notes && (
+                <p style={{ fontSize: 12, color: C.muted, margin: "4px 0 0", lineHeight: 1.4 }}>{r.notes}</p>
+              )}
+              <div style={{ fontSize: 11, color: "#8a948c", marginTop: 4, display: "flex", gap: 12 }}>
+                <span>{new Date(r.recordedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                <span>por {r.user.name}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

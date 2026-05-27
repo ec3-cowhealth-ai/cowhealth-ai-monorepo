@@ -54,6 +54,14 @@ export const useUpdateCow = () => {
   });
 };
 
+export const useCowMedicalRecords = (cowId: string) => {
+  return useQuery({
+    queryKey: ["cows", cowId, "medical-records"],
+    queryFn:  () => cowsService.getMedicalRecords(cowId),
+    enabled:  !!cowId,
+  });
+};
+
 export const useDeleteCow = () => {
   const queryClient = useQueryClient();
   return useMutation({
