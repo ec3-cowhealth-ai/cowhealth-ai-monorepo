@@ -108,7 +108,7 @@ export const DashboardPreviewPage = () => {
       </div>
 
       <div style={{ display: "flex" }}>
-        <Sidebar onNavigate={() => navigate("/login")} />
+        <Sidebar />
         <main style={{ flex: 1, minWidth: 0, padding: "32px", display: "flex", flexDirection: "column", gap: 24 }}>
           <TopBar />
           <KpiRow />
@@ -126,7 +126,7 @@ export const DashboardPreviewPage = () => {
 
 /* ─── Sidebar ─────────────────────────────────────────────────────────────── */
 
-function Sidebar({ onNavigate }: { onNavigate: () => void }) {
+function Sidebar() {
   return (
     <aside style={{
       width: 256, flexShrink: 0, minHeight: "calc(100vh - 41px)",
