@@ -22,6 +22,30 @@ export const findOrThrow = async <T>(
 };
 
 /**
+ * Lança um erro com um status HTTP específico embutido.
+ * Usado em conjunto com handleRequest, que lê error.statusCode
+ * para retornar o status correto ao cliente.
+ *
+ * Garante que erros de negócio distintos retornem códigos HTTP distintos
+ * sem depender do errorStatus padrão do controller.
+ *
+ * @param message    - Mensagem de erro retornada ao cliente
+ * @param statusCode - Código HTTP a ser retornado (ex: 403, 404, 422)
+ *
+ * @example
+ * // Acesso negado — retorna 403 independente do errorStatus do controller
+ * throwWithStatus("Sem acesso a esta fazenda.", 403);
+ *
+ * // Recurso não encontrado — retorna 404
+ * throwWithStatus("Fazenda não encontrada.", 404);
+ */
+export const throwWithStatus = (message: string, statusCode: number): never => {
+  const error = new Error(message);
+  (error as any).statusCode = statusCode;
+  throw error;
+};
+
+/**
  * Verifica se um valor já existe em um campo único antes de criar ou atualizar.
  * Lança erro se já estiver em uso.
  *

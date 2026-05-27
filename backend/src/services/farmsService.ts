@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { assertUnique } from "../helpers/serviceHelpers";
+import { assertUnique, throwWithStatus } from "../helpers/serviceHelpers";
 import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
 
 export const getAllFarms = async (farmIds: number[] | null) => {
@@ -29,7 +29,7 @@ export const getAllFarms = async (farmIds: number[] | null) => {
 export const getFarmById = async (farmId: number, farmIds: number[] | null) => {
   // Verifica acesso antes de buscar
   if (farmIds !== null && !farmIds.includes(farmId)) {
-    throw new Error("Sem acesso a esta fazenda.");
+    throwWithStatus("Sem acesso a esta fazenda.", 403);
   }
 
   const farm = await prisma.farm.findUnique({
@@ -88,7 +88,7 @@ export const updateFarm = async (
   farmIds: number[] | null,
 ) => {
   if (farmIds !== null && !farmIds.includes(farmId)) {
-    throw new Error("Sem acesso a esta fazenda.");
+    throwWithStatus("Sem acesso a esta fazenda.", 403);
   }
 
   const farm = await prisma.farm.findUnique({ where: { id: farmId } });
