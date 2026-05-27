@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { AppBar } from "@components/layout";
 import { useFarmContext } from "@/context/FarmContext";
 import { useDashboardOverview, useCowsPerStatus } from "../hooks/useDashboard";
@@ -12,6 +12,7 @@ import { DashboardCenterPanel } from "../components/DashboardCenterPanel";
 import { DashboardAlertFeed } from "../components/DashboardAlertFeed";
 import { DashboardActivityTimeline } from "../components/DashboardActivityTimeline";
 import { CalIcon, FilterIcon, ChevronDown } from "../components/DashboardIcons";
+import { CowHead } from "@components/ui/CowHeadIcon";
 
 export const DashboardPage = () => {
   const { selectedFarm, farms } = useFarmContext();
@@ -24,6 +25,7 @@ export const DashboardPage = () => {
   const [selectedCowId, setSelectedCowId] = useState<string | null>(null);
 
   // KPI data — scoped to selected farm when in "farm" mode
+
   const kpiFarmId = selectionMode === "farm" && selectedFarmId ? selectedFarmId : undefined;
   const { data: overview }      = useDashboardOverview(kpiFarmId);
   const { data: cowsPerStatus } = useCowsPerStatus(kpiFarmId);
@@ -43,12 +45,7 @@ export const DashboardPage = () => {
   // Alerts
   const { data: alerts = [], isLoading: loadingAlerts } = useUnreadNotifications();
 
-  // Auto-select first cow when list loads and nothing is selected yet
-  useEffect(() => {
-    if (!selectedCowId && cowList.length > 0) {
-      setSelectedCowId(String(cowList[0].id));
-    }
-  }, [cowList, selectedCowId]);
+  const effectiveCowId = selectedCowId ?? (cowList[0] ? String(cowList[0].id) : null);
 
   const handleCowSelect = useCallback((id: string) => setSelectedCowId(id), []);
 
@@ -68,7 +65,9 @@ export const DashboardPage = () => {
             <h1 style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
               fontSize: 42, lineHeight: 1, margin: 0, color: C.text, fontWeight: 400,
+              display: "flex", alignItems: "center", gap: 12,
             }}>
+              <CowHead size={38} color={C.green} />
               Visão geral do rebanho
             </h1>
             <div style={{ marginTop: 4, fontSize: 13, color: C.muted }}>
@@ -93,7 +92,7 @@ export const DashboardPage = () => {
         <CowSelectorBar
           mode={selectionMode}
           onModeChange={setSelectionMode}
-          selectedCowId={selectedCowId}
+          selectedCowId={effectiveCowId}
           onCowSelect={handleCowSelect}
           cowList={cowList}
           farms={farms}
@@ -108,8 +107,8 @@ export const DashboardPage = () => {
 
         {/* Main 3-column grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
-          <CowProfilePanel cowId={selectedCowId} />
-          <DashboardCenterPanel cowId={selectedCowId} />
+          <CowProfilePanel cowId={effectiveCowId} />
+          <DashboardCenterPanel cowId={effectiveCowId} />
           <DashboardAlertFeed
             alerts={alerts}
             isLoading={loadingAlerts}
@@ -118,7 +117,7 @@ export const DashboardPage = () => {
         </div>
 
         {/* Activity timeline */}
-        <DashboardActivityTimeline cowId={selectedCowId} />
+        <DashboardActivityTimeline cowId={effectiveCowId} />
 
       </div>
     </div>
