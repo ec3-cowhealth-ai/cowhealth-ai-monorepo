@@ -2640,6 +2640,372 @@ collection:
             send: true
             store: true
           rebuildPath: true
+  - name: Medical Records
+    meta:
+      id: fld_medical_records_main
+      created: 1779000000000
+      modified: 1779000000000
+      sortKey: -1777904165550
+      description: "Prontuario veterinario vinculado a vacas"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/medical-records"
+        name: List Medical Records
+        meta:
+          id: req_mr_list
+          created: 1779000000001
+          modified: 1779000000001
+          isPrivate: false
+          description: "Lista prontuarios da vaca id:2"
+          sortKey: -1779000000001
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records/1"
+        name: Show Medical Record
+        meta:
+          id: req_mr_show
+          created: 1779000000002
+          modified: 1779000000002
+          isPrivate: false
+          description: ""
+          sortKey: -1779000000002
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records"
+        name: Create Medical Record
+        meta:
+          id: req_mr_create
+          created: 1779000000003
+          modified: 1779000000003
+          isPrivate: false
+          description: "Requer permissao Create MedicalRecord (Veterinario ou Admin)"
+          sortKey: -1779000000003
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "type": "CHECKUP",
+              "title": "Exame de rotina",
+              "notes": "Animal em bom estado geral. Vacinacao em dia.",
+              "recordedAt": "2026-05-25T10:00:00Z"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records/1"
+        name: Update Medical Record
+        meta:
+          id: req_mr_update
+          created: 1779000000004
+          modified: 1779000000004
+          isPrivate: false
+          description: ""
+          sortKey: -1779000000004
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "notes": "Animal recuperado. Retorno em 30 dias."
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records/1"
+        name: Delete Medical Record
+        meta:
+          id: req_mr_delete
+          created: 1779000000005
+          modified: 1779000000005
+          isPrivate: false
+          description: ""
+          sortKey: -1779000000005
+        method: DELETE
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_mr_error_cases
+          created: 1779000000099
+          modified: 1779000000099
+          sortKey: -1779000000099
+          description: ""
+        children:
+          - url: "{{ _.api.base_url }}cows/2/medical-records"
+            name: Create Medical Record - Gerente (403)
+            meta:
+              id: req_mr_403
+              created: 1779000000006
+              modified: 1779000000006
+              isPrivate: false
+              description: "Gerente de Fazenda so pode visualizar — nao pode criar. Usar token de gerente@cowhealth.com"
+              sortKey: -1779000000006
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "type": "CHECKUP",
+                  "title": "Teste sem permissao",
+                  "recordedAt": "2026-05-25T10:00:00Z"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer TOKEN_DE_GERENTE
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}cows/2/medical-records"
+            name: Create Medical Record - Body Invalido (422)
+            meta:
+              id: req_mr_422
+              created: 1779000000007
+              modified: 1779000000007
+              isPrivate: false
+              description: "Sem campo obrigatorio type — espera 422"
+              sortKey: -1779000000007
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "title": "Sem tipo",
+                  "recordedAt": "2026-05-25T10:00:00Z"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer {{ _.api.token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Cow Retirement
+    meta:
+      id: fld_cow_retirement_main
+      created: 1779001000000
+      modified: 1779001000000
+      sortKey: -1777904165540
+      description: "Aposentadoria de animais — Feature D"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/retire"
+        name: Retire Cow
+        meta:
+          id: req_retire_cow
+          created: 1779001000001
+          modified: 1779001000001
+          isPrivate: false
+          description: "Aposenta a vaca, desvincula colar e marca colar como INACTIVE"
+          sortKey: -1779001000001
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "reason": "SLAUGHTER"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_retire_error_cases
+          created: 1779001000099
+          modified: 1779001000099
+          sortKey: -1779001000099
+          description: ""
+        children:
+          - url: "{{ _.api.base_url }}cows/2/retire"
+            name: Retire Cow - Already Retired (400)
+            meta:
+              id: req_retire_already
+              created: 1779001000002
+              modified: 1779001000002
+              isPrivate: false
+              description: "Tentar aposentar vaca ja aposentada — espera 400"
+              sortKey: -1779001000002
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "reason": "SALE"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer {{ _.api.token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}cows/2/retire"
+            name: Retire Cow - Operador (403)
+            meta:
+              id: req_retire_403
+              created: 1779001000003
+              modified: 1779001000003
+              isPrivate: false
+              description: "Operador de Campo nao tem permissao Retire Cow — usar token de operador@cowhealth.com"
+              sortKey: -1779001000003
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "reason": "SALE"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer TOKEN_DE_OPERADOR
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Sensor History
+    meta:
+      id: fld_sensor_history_main
+      created: 1779002000000
+      modified: 1779002000000
+      sortKey: -1777904165530
+      description: "Historico unificado de sensores com filtro por periodo — Feature G"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/sensor-history"
+        name: Sensor History - Sem Filtro
+        meta:
+          id: req_sensor_history_all
+          created: 1779002000001
+          modified: 1779002000001
+          isPrivate: false
+          description: "Retorna todos os registros sem filtro de data"
+          sortKey: -1779002000001
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/sensor-history?from=2026-05-20T00:00:00Z&to=2026-05-25T23:59:59Z"
+        name: Sensor History - Com Filtro de Datas
+        meta:
+          id: req_sensor_history_filtered
+          created: 1779002000002
+          modified: 1779002000002
+          isPrivate: false
+          description: "Filtra por intervalo de datas via query params from e to (ISO 8601)"
+          sortKey: -1779002000002
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:

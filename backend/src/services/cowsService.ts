@@ -9,7 +9,7 @@ const MAX_PHOTOS = 3;
 
 export const getAllCows = async (farmId?: number) => {
   return prisma.cow.findMany({
-    where: farmId ? { farmId } : undefined,
+    where: farmId ? { farmId, status: { not: "RETIRED" } } : { status: { not: "RETIRED" } },
     select: {
       id: true,
       tag: true,
@@ -122,6 +122,42 @@ export const deleteCow = async (cowId: number) => {
   await prisma.cow.delete({ where: { id: cowId } });
 };
 
+export const retireCow = async (cowId: number, reason: "SALE" | "SLAUGHTER") => {
+  const cow = await prisma.cow.findUnique({
+    where: { id: cowId },
+    include: { collar: true },
+  });
+
+  if (!cow) throw new Error("Vaca não encontrada.");
+  if (cow.status === "RETIRED") throw new Error("Esta vaca já está aposentada.");
+
+  // Desvincula o colar e marca como INACTIVE se existia
+  if (cow.collarId && cow.collar) {
+    await prisma.collar.update({
+      where: { id: cow.collarId },
+      data: { status: "INACTIVE" },
+    });
+  }
+
+  return prisma.cow.update({
+    where: { id: cowId },
+    data: {
+      status: "RETIRED",
+      retiredAt: new Date(),
+      retiredReason: reason,
+      collarId: null,
+    },
+    select: {
+      id: true,
+      tag: true,
+      name: true,
+      status: true,
+      retiredAt: true,
+      retiredReason: true,
+    },
+  });
+};
+
 // Fotos
 
 export const addCowPhoto = async (cowId: number, filename: string) => {
@@ -224,4 +260,47 @@ export const getCowTemperatureDaily = async (cowId: number) => {
   });
 
   return aggregateDailyAverage(records, "celsius");
+};
+
+export const getCowSensorHistory = async (cowId: number, from?: string, to?: string) => {
+  const cow = await prisma.cow.findUnique({ where: { id: cowId } });
+  if (!cow) throw new Error("Vaca não encontrada.");
+
+  const dateFilter = {
+    gte: from ? new Date(from) : undefined,
+    lte: to ? new Date(to) : undefined,
+  };
+
+  const [heartRates, temperatures, accelerometers] = await Promise.all([
+    prisma.heartRateData.findMany({
+      where: { cowId, measuredAt: dateFilter },
+      select: { bpm: true, measuredAt: true },
+      orderBy: { measuredAt: "asc" },
+    }),
+    prisma.temperatureData.findMany({
+      where: { cowId, measuredAt: dateFilter },
+      select: { celsius: true, measuredAt: true },
+      orderBy: { measuredAt: "asc" },
+    }),
+    prisma.accelerometerData.findMany({
+      where: { cowId, measuredAt: dateFilter },
+      select: { accelX: true, accelY: true, accelZ: true, measuredAt: true },
+      orderBy: { measuredAt: "asc" },
+    }),
+  ]);
+
+  const heartRateMap = new Map(heartRates.map((r) => [r.measuredAt.toISOString(), r.bpm]));
+  const temperatureMap = new Map(temperatures.map((r) => [r.measuredAt.toISOString(), r.celsius]));
+
+  return accelerometers.map((record) => {
+    const key = record.measuredAt.toISOString();
+    const activity = Math.sqrt(record.accelX ** 2 + record.accelY ** 2 + record.accelZ ** 2);
+
+    return {
+      measuredAt: key,
+      heartRate: heartRateMap.get(key) ?? null,
+      temperature: temperatureMap.get(key) ?? null,
+      activity: parseFloat(activity.toFixed(3)),
+    };
+  });
 };

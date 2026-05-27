@@ -1,7 +1,9 @@
 import { prisma } from "../lib/prisma";
 
-export const getDashboardOverview = async (farmId?: number) => {
-  const cowWhere = farmId ? { farmId } : {};
+export const getDashboardOverview = async (farmId?: number, userId?: number) => {
+  const cowWhere = farmId
+    ? { farmId, status: { not: "RETIRED" as const } }
+    : { status: { not: "RETIRED" as const } };
 
   const [
     totalCows,
@@ -21,10 +23,7 @@ export const getDashboardOverview = async (farmId?: number) => {
     }),
     prisma.farm.count(),
     prisma.collar.count({ where: { status: "ACTIVE" } }),
-    // TODO[RENATO] Bug de segurança: conta notificações de TODOS os usuários do sistema.
-    // Corrigir para: prisma.notification.count({ where: { readAt: null, userId } })
-    // onde userId vem do token JWT (request.user.id) repassado até aqui via parâmetro.
-    prisma.notification.count({ where: { readAt: null } }),
+    prisma.notification.count({ where: { readAt: null, userId } }),
   ]);
 
   // Se filtrou por fazenda, retorna ela; senão, a com mais vacas
@@ -50,14 +49,17 @@ export const getDashboardOverview = async (farmId?: number) => {
 };
 
 export const getCowsPerStatus = async (farmId?: number) => {
-  const where = farmId ? { farmId } : {};
+  const where = farmId
+    ? { farmId, status: { not: "RETIRED" as const } }
+    : { status: { not: "RETIRED" as const } };
+
   const statusGroups = await prisma.cow.groupBy({
     by: ["status"],
     where,
     _count: { status: true },
   });
 
-  return statusGroups.map((group) => ({
+  return statusGroups.map((group: (typeof statusGroups)[number]) => ({
     label: group.status,
     value: group._count.status,
   }));
@@ -74,8 +76,53 @@ export const getCowsPerFarm = async () => {
     take: 5,
   });
 
-  return farms.map((farm) => ({
+  return farms.map((farm: (typeof farms)[number]) => ({
     label: farm.name,
     value: farm._count.cows,
   }));
+};
+
+export const getHealthTimeline = async (farmId?: number) => {
+  const baseWhere = farmId
+    ? { farmId, status: { not: "RETIRED" as const } }
+    : { status: { not: "RETIRED" as const } };
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
+
+  const results = await Promise.all(
+    days.map(async (day) => {
+      const nextDay = new Date(day);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      const [healthy, alert, heatStress, calving] = await Promise.all([
+        prisma.cow.count({
+          where: { ...baseWhere, status: "HEALTHY", createdAt: { lte: nextDay } },
+        }),
+        prisma.cow.count({
+          where: { ...baseWhere, status: "ALERT", createdAt: { lte: nextDay } },
+        }),
+        prisma.cow.count({
+          where: { ...baseWhere, status: "HEAT_STRESS", createdAt: { lte: nextDay } },
+        }),
+        prisma.cow.count({
+          where: { ...baseWhere, status: "CALVING", createdAt: { lte: nextDay } },
+        }),
+      ]);
+
+      return {
+        date: day.toISOString().split("T")[0],
+        healthy,
+        alert,
+        heatStress,
+        calving,
+      };
+    }),
+  );
+
+  return results;
 };

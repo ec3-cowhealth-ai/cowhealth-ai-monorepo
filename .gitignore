@@ -160,16 +160,6 @@ vite.config.ts.timestamp-*
 
 # User JCFS Specific
 .env.local
-docs/jcfs_tests/*
-docs/tasks
-.claude/*
-.claude/skills/SKILL.md
-.claude/skill/*
-setup.ps1
-*/frontendDev_JCFS/*
-cowhealth-db-dump.sql.gz
-start-claude.ps1
-/templates/*
-/templates
-templates/*
+docs/*
 
+temp_design.pdf
