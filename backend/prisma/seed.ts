@@ -1,4 +1,12 @@
-import { PrismaClient, CowStatus, CollarStatus, DataFrequency } from "@prisma/client";
+import {
+  PrismaClient,
+  CowStatus,
+  CollarStatus,
+  DataFrequency,
+  ReproductiveStatus,
+  ClinicalStatus,
+  ActivityType,
+} from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -1008,9 +1016,9 @@ async function main() {
   // ─── Campos reprodutivos + ClinicalRecords + ActivityEvents ───────────────
   console.log("Criando dados clínicos e de atividade...");
 
-  const REPRO_STATUSES = ["OPEN", "INSEMINATED", "PREGNANT", "DRY", "POSTPARTUM"] as const;
-  const CLINICAL_STATUSES_LIST = ["STABLE", "MONITORING", "CRITICAL", "RECOVERED"] as const;
-  const ACTIVITY_TYPES = ["RUMINATION", "FEEDING", "RESTING", "LOW_ACTIVITY", "HIGH_ACTIVITY", "WALKING"] as const;
+  const REPRO_STATUSES: ReproductiveStatus[] = ["OPEN", "INSEMINATED", "PREGNANT", "DRY", "POSTPARTUM"];
+  const CLINICAL_STATUSES_LIST: ClinicalStatus[] = ["STABLE", "MONITORING", "CRITICAL", "RECOVERED"];
+  const ACTIVITY_TYPES: ActivityType[] = ["RUMINATION", "FEEDING", "RESTING", "LOW_ACTIVITY", "HIGH_ACTIVITY", "WALKING"];
 
   const DIAGNOSES = [
     "Mamite subclínica — tratamento local iniciado.",
@@ -1048,8 +1056,8 @@ async function main() {
     const isAlert      = scenario === CowStatus.ALERT;
 
     const reproStatus = isCalving    ? "POSTPARTUM"
-                      : isHeatStress ? pick(["OPEN", "INSEMINATED", "DRY"] as const, rand())
-                      : isAlert      ? pick(["OPEN", "INSEMINATED"] as const, rand())
+                      : isHeatStress ? pick(["OPEN", "INSEMINATED", "DRY"] as ReproductiveStatus[], rand())
+                      : isAlert      ? pick(["OPEN", "INSEMINATED"] as ReproductiveStatus[], rand())
                       :                pick(REPRO_STATUSES, rand());
 
     const lastCalvingDate = (reproStatus === "POSTPARTUM" || reproStatus === "DRY")
@@ -1099,7 +1107,7 @@ async function main() {
           spo2:                 parseFloat((95 + rand() * 4).toFixed(1)),
           bodyTemperature:      parseFloat((38.2 + rand() * 1.8).toFixed(1)),
           ambientTemperature:   parseFloat((22 + rand() * 12).toFixed(1)),
-          activityLevel:        pick(["Normal", "Baixa", "Alta"] as const, rand()),
+          activityLevel:        pick(["Normal", "Baixa", "Alta"], rand()),
           weight:               parseFloat((450 + rand() * 200).toFixed(1)),
           bodyConditionScore:   parseFloat((2.5 + rand() * 2).toFixed(1)),
           currentSymptoms:      isAlert      ? "Hipertermia, redução de apetite, isolamento do rebanho."
