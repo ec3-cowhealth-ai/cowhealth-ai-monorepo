@@ -5,7 +5,17 @@ import { useUnreadNotifications } from "@hooks/useNotifications";
 import { useDashboardOverview } from "@features/dashboard/hooks/useDashboard";
 import { useCows } from "@features/cows/hooks/useCows";
 import { AppBar } from "@components/layout";
-import { Bell, AlertTriangle, ChevronRight, Check, List, Map, Warehouse, Sun, Moon } from "lucide-react";
+import {
+  Bell,
+  AlertTriangle,
+  ChevronRight,
+  Check,
+  List,
+  Map,
+  Warehouse,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { useTheme } from "@hooks/useTheme";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
@@ -50,7 +60,10 @@ export const HomePage = () => {
 
   const attention =
     cows
-      ?.filter((c: Cow) => c.status !== COW_STATUS_VALUES.HEALTHY && c.status !== COW_STATUS_VALUES.RETIRED)
+      ?.filter(
+        (c: Cow) =>
+          c.status !== COW_STATUS_VALUES.HEALTHY && c.status !== COW_STATUS_VALUES.RETIRED,
+      )
       .slice(0, 6) ?? [];
 
   const prepartumCows = cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.CALVING) ?? [];
@@ -217,7 +230,9 @@ export const HomePage = () => {
             <div className="home-section__header">
               <span className="home-section__title">Pré-parto ({prepartumCows.length})</span>
             </div>
-            <div style={{ display: "flex", gap: "var(--s-3)", overflowX: "auto", paddingBottom: 4 }}>
+            <div
+              style={{ display: "flex", gap: "var(--s-3)", overflowX: "auto", paddingBottom: 4 }}
+            >
               {prepartumCows.map((cow: Cow) => (
                 <button
                   key={cow.id}
@@ -310,7 +325,7 @@ export const HomePage = () => {
                       top: -4,
                       right: -4,
                       background: "var(--danger)",
-                      color: "#fff",
+                      color: "var(--primary-on)",
                       borderRadius: 99,
                       fontSize: 9,
                       width: 14,

@@ -28,10 +28,10 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const STATUS_BG: Record<string, string> = {
-  HEALTHY: "#e6f1ea",
-  ALERT: "#fde8e4",
-  HEAT_STRESS: "#fbe9d8",
-  CALVING: "#e4f0fb",
+  HEALTHY: "var(--status-success-bg)",
+  ALERT: "var(--status-danger-bg)",
+  HEAT_STRESS: "var(--status-warning-bg)",
+  CALVING: "var(--status-info-bg)",
 };
 
 // ─── Modal de Criação ─────────────────────────────────────────────────────────
@@ -215,108 +215,141 @@ export const CowsPage = () => {
         }
       />
 
-        {/* Search */}
-        {showSearch && (
-          <input
-            autoFocus
-            type="text"
-            placeholder="Buscar por tag ou nome…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              width: "100%", padding: "10px 14px",
-              borderRadius: 12, border: `1px solid ${C.border}`,
-              background: "#fff", fontSize: 14, color: C.text,
-              outline: "none", boxSizing: "border-box",
-            }}
-          />
-        )}
+      {/* Search */}
+      {showSearch && (
+        <input
+          autoFocus
+          type="text"
+          placeholder="Buscar por tag ou nome…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            borderRadius: 12,
+            border: `1px solid ${C.border}`,
+            background: C.card,
+            fontSize: 14,
+            color: C.text,
+            outline: "none",
+            boxSizing: "border-box",
+          }}
+        />
+      )}
 
-        {/* Filter pills */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {filterItems.map(([val, label, count]) => {
-            const active = statusFilter === val;
+      {/* Filter pills */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {filterItems.map(([val, label, count]) => {
+          const active = statusFilter === val;
+          return (
+            <button
+              key={val}
+              onClick={() => setStatusFilter(val)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "7px 16px",
+                borderRadius: 999,
+                fontSize: 13,
+                fontWeight: active ? 600 : 400,
+                border: `1px solid ${active ? C.green : C.border}`,
+                background: active ? C.green : C.card,
+                color: active ? "var(--primary-on)" : C.muted,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {label}
+              <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Grid */}
+      {isLoading ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
+          <LoadingSpinner />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
+            padding: 48,
+            color: C.muted,
+          }}
+        >
+          <CowHead size={40} color={C.muted} />
+          <p style={{ margin: 0, fontSize: 14 }}>Nenhuma vaca encontrada</p>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+          {filtered.map((cow: Cow) => {
+            const sColor = STATUS_COLOR[cow.status] ?? C.green;
+            const sBg = STATUS_BG[cow.status] ?? "var(--status-success-bg)";
             return (
               <button
-                key={val}
-                onClick={() => setStatusFilter(val)}
+                key={cow.id}
+                onClick={() => navigate(`/cows/${cow.id}`)}
                 style={{
-                  display: "flex", alignItems: "center", gap: 6,
-                  padding: "7px 16px", borderRadius: 999, fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  border: `1px solid ${active ? C.green : C.border}`,
-                  background: active ? C.green : "#fff",
-                  color: active ? "#fff" : C.muted,
-                  cursor: "pointer", transition: "all 0.15s",
+                  ...cardStyle,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: 20,
+                  cursor: "pointer",
+                  textAlign: "center",
                 }}
               >
-                {label}
-                <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+                <div
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: "50%",
+                    background: sBg,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <CowHead size={30} color={sColor} />
+                </div>
+
+                <div>
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
+                    {cow.name || cow.tag}
+                  </p>
+                  <p style={{ margin: "2px 0 0 0", fontSize: 11, color: C.muted }}>
+                    Brinco {cow.tag}
+                  </p>
+                </div>
+
+                {cow.farm && (
+                  <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{cow.farm.name}</p>
+                )}
+
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: "3px 12px",
+                    borderRadius: 999,
+                    background: sBg,
+                    color: sColor,
+                  }}
+                >
+                  {STATUS_LABEL[cow.status] ?? cow.status}
+                </span>
               </button>
             );
           })}
         </div>
-
-        {/* Grid */}
-        {isLoading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
-            <LoadingSpinner />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 48, color: C.muted }}>
-            <CowHead size={40} color={C.muted} />
-            <p style={{ margin: 0, fontSize: 14 }}>Nenhuma vaca encontrada</p>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            {filtered.map((cow: Cow) => {
-              const sColor = STATUS_COLOR[cow.status] ?? C.green;
-              const sBg   = STATUS_BG[cow.status]    ?? "#e6f1ea";
-              return (
-                <button
-                  key={cow.id}
-                  onClick={() => navigate(`/cows/${cow.id}`)}
-                  style={{
-                    ...cardStyle,
-                    display: "flex", flexDirection: "column",
-                    alignItems: "center", gap: 10,
-                    padding: 20, cursor: "pointer",
-                    textAlign: "center",
-                  }}
-                >
-                  <div style={{
-                    width: 56, height: 56, borderRadius: "50%",
-                    background: sBg,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                    <CowHead size={30} color={sColor} />
-                  </div>
-
-                  <div>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
-                      {cow.name || cow.tag}
-                    </p>
-                    <p style={{ margin: "2px 0 0 0", fontSize: 11, color: C.muted }}>
-                      Brinco {cow.tag}
-                    </p>
-                  </div>
-
-                  {cow.farm && (
-                    <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{cow.farm.name}</p>
-                  )}
-
-                  <span style={{
-                    fontSize: 11, fontWeight: 600,
-                    padding: "3px 12px", borderRadius: 999,
-                    background: sBg, color: sColor,
-                  }}>
-                    {STATUS_LABEL[cow.status] ?? cow.status}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
+      )}
 
       {selectedFarm && (
         <CreateCowModal
@@ -327,6 +360,6 @@ export const CowsPage = () => {
           onSubmit={(data) => createCow(data, { onSuccess: () => setShowCreate(false) })}
         />
       )}
-      </div>
+    </div>
   );
 };

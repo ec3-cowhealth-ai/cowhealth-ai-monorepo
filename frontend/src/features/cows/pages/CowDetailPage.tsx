@@ -2,11 +2,28 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, FormModal, ConfirmDialog } from "@components/common";
-import { AlertTriangle, Warehouse, Tag, Thermometer, Heart, Edit2, Trash2, Link, Unlink } from "lucide-react";
+import {
+  AlertTriangle,
+  Warehouse,
+  Tag,
+  Thermometer,
+  Heart,
+  Edit2,
+  Trash2,
+  Link,
+  Unlink,
+} from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
-import { useCow, useCowHeartRateDaily, useCowTemperatureDaily, useCowAccelerometerDaily, useUpdateCow, useDeleteCow } from "../hooks/useCows";
+import {
+  useCow,
+  useCowHeartRateDaily,
+  useCowTemperatureDaily,
+  useCowAccelerometerDaily,
+  useUpdateCow,
+  useDeleteCow,
+} from "../hooks/useCows";
 import { RetireAnimalModal } from "../components/RetireAnimalModal";
 import { useHasPermission } from "@hooks/usePermission";
 import { useCollars } from "../../collars/hooks/useCollars";
@@ -16,9 +33,9 @@ import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const NOTIF_TONE: Record<string, string> = {
-  ALERT:   C.red,
+  ALERT: C.red,
   WARNING: C.orange,
-  INFO:    "#6bb4e8",
+  INFO: "#6bb4e8",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -36,10 +53,10 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const STATUS_BG: Record<string, string> = {
-  HEALTHY: "#e6f1ea",
-  ALERT: "#fde8e4",
-  HEAT_STRESS: "#fbe9d8",
-  CALVING: "#e4f0fb",
+  HEALTHY: "var(--status-success-bg)",
+  ALERT: "var(--status-danger-bg)",
+  HEAT_STRESS: "var(--status-warning-bg)",
+  CALVING: "var(--status-info-bg)",
 };
 
 const statusTone = (s: string) => {
@@ -48,7 +65,6 @@ const statusTone = (s: string) => {
   if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
   return "success" as const;
 };
-
 
 // ─── Modal de Edição ──────────────────────────────────────────────────────────
 
@@ -203,7 +219,15 @@ export const CowDetailPage = () => {
     return (
       <div style={{ background: C.bg, minHeight: "100%" }}>
         <AppBar title="Detalhes" showBack />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, padding: 48 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+            padding: 48,
+          }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -214,7 +238,16 @@ export const CowDetailPage = () => {
     return (
       <div style={{ background: C.bg, minHeight: "100%" }}>
         <AppBar title="Detalhes" showBack />
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 48, color: C.muted }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
+            padding: 48,
+            color: C.muted,
+          }}
+        >
           <AlertTriangle size={36} color={C.muted} />
           <p style={{ margin: 0 }}>Vaca não encontrada</p>
         </div>
@@ -222,10 +255,10 @@ export const CowDetailPage = () => {
     );
   }
 
-  const tone     = statusTone(cow.status);
-  const sColor   = STATUS_COLOR[cow.status] ?? C.green;
-  const sBg      = STATUS_BG[cow.status]    ?? "#e6f1ea";
-  const sLabel   = STATUS_LABEL[cow.status] ?? cow.status;
+  const tone = statusTone(cow.status);
+  const sColor = STATUS_COLOR[cow.status] ?? C.green;
+  const sBg = STATUS_BG[cow.status] ?? "var(--status-success-bg)";
+  const sLabel = STATUS_LABEL[cow.status] ?? cow.status;
 
   return (
     <div className="app-page">
@@ -248,14 +281,20 @@ export const CowDetailPage = () => {
       />
 
       <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 16 }}>
-
         {/* Hero card */}
         <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{
-            width: 60, height: 60, borderRadius: "50%",
-            background: sBg,
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-          }}>
+          <div
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: "50%",
+              background: sBg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
             <CowHead size={32} color={sColor} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -268,10 +307,16 @@ export const CowDetailPage = () => {
                 <button
                   onClick={() => navigate(`/farms/${cow.farm.id}`)}
                   style={{
-                    padding: "3px 10px", background: sBg,
-                    border: `1px solid ${C.border}`, borderRadius: 12,
-                    fontSize: 11, color: sColor, cursor: "pointer",
-                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "3px 10px",
+                    background: sBg,
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 12,
+                    fontSize: 11,
+                    color: sColor,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
                   }}
                 >
                   <Warehouse size={11} /> {cow.farm.name}
@@ -336,21 +381,52 @@ export const CowDetailPage = () => {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
           {cow.breed && (
             <div style={{ ...cardStyle, padding: 16, textAlign: "center" }}>
-              <p style={{ margin: "0 0 4px 0", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Raça</p>
+              <p
+                style={{
+                  margin: "0 0 4px 0",
+                  fontSize: 11,
+                  color: C.muted,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                Raça
+              </p>
               <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>{cow.breed}</p>
             </div>
           )}
           {cow.weight && (
             <div style={{ ...cardStyle, padding: 16, textAlign: "center" }}>
-              <p style={{ margin: "0 0 4px 0", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Peso</p>
+              <p
+                style={{
+                  margin: "0 0 4px 0",
+                  fontSize: 11,
+                  color: C.muted,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                Peso
+              </p>
               <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
-                {cow.weight}<span style={{ fontSize: 11, color: C.muted }}> kg</span>
+                {cow.weight}
+                <span style={{ fontSize: 11, color: C.muted }}> kg</span>
               </p>
             </div>
           )}
           {cow.birthDate && (
             <div style={{ ...cardStyle, padding: 16, textAlign: "center" }}>
-              <p style={{ margin: "0 0 4px 0", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Nascimento</p>
+              <p
+                style={{
+                  margin: "0 0 4px 0",
+                  fontSize: 11,
+                  color: C.muted,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                Nascimento
+              </p>
               <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: C.text }}>
                 {new Date(cow.birthDate).toLocaleDateString("pt-BR")}
               </p>
@@ -359,44 +435,82 @@ export const CowDetailPage = () => {
         </div>
 
         {/* Sensor charts — grade 3 colunas desktop / 1 coluna mobile */}
-        {(temperature?.length || heartRate?.length || accelerometer?.length) ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+        {temperature?.length || heartRate?.length || accelerometer?.length ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: 12,
+            }}
+          >
             {temperature && temperature.length > 0 && (
               <div style={{ ...cardStyle }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, fontSize: 12, fontWeight: 600, color: C.muted }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    marginBottom: 12,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: C.muted,
+                  }}
+                >
                   <Thermometer size={13} color={C.orange} /> Temperatura
                 </div>
                 <LineChart
                   data={temperature}
                   color={C.orange}
                   unit="°C"
-                  thresholds={[{ v: 39.5, c: C.red }, { v: 38.0, c: "#6bb4e8" }]}
+                  thresholds={[
+                    { v: 39.5, c: C.red },
+                    { v: 38.0, c: "#6bb4e8" },
+                  ]}
                 />
               </div>
             )}
             {heartRate && heartRate.length > 0 && (
               <div style={{ ...cardStyle }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, fontSize: 12, fontWeight: 600, color: C.muted }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    marginBottom: 12,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: C.muted,
+                  }}
+                >
                   <Heart size={13} color={C.red} /> Freq. Cardíaca
                 </div>
                 <LineChart
                   data={heartRate}
                   color={C.red}
                   unit=" bpm"
-                  thresholds={[{ v: 120, c: C.red }, { v: 40, c: "#6bb4e8" }]}
+                  thresholds={[
+                    { v: 120, c: C.red },
+                    { v: 40, c: "#6bb4e8" },
+                  ]}
                 />
               </div>
             )}
             {accelerometer && accelerometer.length > 0 && (
               <div style={{ ...cardStyle }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, fontSize: 12, fontWeight: 600, color: C.muted }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    marginBottom: 12,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: C.muted,
+                  }}
+                >
                   <span style={{ fontSize: 13 }}>↯</span> Atividade
                 </div>
-                <LineChart
-                  data={accelerometer}
-                  color={C.green}
-                  unit=" m/s²"
-                />
+                <LineChart data={accelerometer} color={C.green} unit=" m/s²" />
               </div>
             )}
           </div>
@@ -414,7 +528,16 @@ export const CowDetailPage = () => {
         {/* Recent notifications */}
         {cowNotifs.length > 0 && (
           <div>
-            <p style={{ margin: "0 0 10px 0", fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <p
+              style={{
+                margin: "0 0 10px 0",
+                fontSize: 12,
+                fontWeight: 600,
+                color: C.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
               Notificações recentes
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -454,8 +577,16 @@ export const CowDetailPage = () => {
         {/* Zona de perigo */}
         {canRetire && cow.status !== "RETIRED" && (
           <div className="card" style={{ borderColor: "var(--danger)", marginTop: "var(--s-4)" }}>
-            <p style={{ fontWeight: 700, color: "var(--danger)", margin: "0 0 4px 0" }}>Zona de perigo</p>
-            <p style={{ fontSize: "var(--t-sm)", color: "var(--text-secondary)", margin: "0 0 12px 0" }}>
+            <p style={{ fontWeight: 700, color: "var(--danger)", margin: "0 0 4px 0" }}>
+              Zona de perigo
+            </p>
+            <p
+              style={{
+                fontSize: "var(--t-sm)",
+                color: "var(--text-secondary)",
+                margin: "0 0 12px 0",
+              }}
+            >
               Aposentar o animal remove-o do rebanho ativo permanentemente.
             </p>
             <button className="btn btn-danger btn-sm" onClick={() => setShowRetireModal(true)}>
@@ -477,7 +608,10 @@ export const CowDetailPage = () => {
         onClose={() => setShowEdit(false)}
         isLoading={updating}
         onSubmit={(data) =>
-          updateCow({ id: String(cow.id), input: { ...data, status: data.status as CowStatus } }, { onSuccess: () => setShowEdit(false) })
+          updateCow(
+            { id: String(cow.id), input: { ...data, status: data.status as CowStatus } },
+            { onSuccess: () => setShowEdit(false) },
+          )
         }
       />
 
@@ -486,7 +620,10 @@ export const CowDetailPage = () => {
         onClose={() => setShowLink(false)}
         isLoading={updating}
         onSubmit={(collarId) =>
-          updateCow({ id: String(cow.id), input: { collarId } }, { onSuccess: () => setShowLink(false) })
+          updateCow(
+            { id: String(cow.id), input: { collarId } },
+            { onSuccess: () => setShowLink(false) },
+          )
         }
       />
 

@@ -173,3 +173,5 @@ start-claude.ps1
 docs/tasks/ian-todo.md
 MEMORY.md
 docs/reports/relatorio-entrega-2026-05-28.tex
+docs/reports/gen_conformidade_pdf.py
+docs/reports/conformidade-jcfs-2026-05-28.pdf

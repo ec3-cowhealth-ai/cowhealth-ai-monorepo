@@ -9,21 +9,21 @@ interface CollarCardProps {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  [COLLAR_STATUS_VALUES.ACTIVE]:      C.green,
+  [COLLAR_STATUS_VALUES.ACTIVE]: C.green,
   [COLLAR_STATUS_VALUES.MAINTENANCE]: C.orange,
-  [COLLAR_STATUS_VALUES.INACTIVE]:    C.muted,
+  [COLLAR_STATUS_VALUES.INACTIVE]: C.muted,
 };
 
 const STATUS_BG: Record<string, string> = {
-  [COLLAR_STATUS_VALUES.ACTIVE]:      "#e6f1ea",
-  [COLLAR_STATUS_VALUES.MAINTENANCE]: "#fbe9d8",
-  [COLLAR_STATUS_VALUES.INACTIVE]:    "#f0f0ee",
+  [COLLAR_STATUS_VALUES.ACTIVE]: "var(--status-success-bg)",
+  [COLLAR_STATUS_VALUES.MAINTENANCE]: "var(--status-warning-bg)",
+  [COLLAR_STATUS_VALUES.INACTIVE]: "var(--bg-elev-2)",
 };
 
 const STATUS_LABEL: Record<string, string> = {
-  [COLLAR_STATUS_VALUES.ACTIVE]:      "Ativa",
+  [COLLAR_STATUS_VALUES.ACTIVE]: "Ativa",
   [COLLAR_STATUS_VALUES.MAINTENANCE]: "Manutenção",
-  [COLLAR_STATUS_VALUES.INACTIVE]:    "Inativa",
+  [COLLAR_STATUS_VALUES.INACTIVE]: "Inativa",
 };
 
 const FREQ_LABEL: Record<string, string> = {
@@ -34,26 +34,41 @@ const FREQ_LABEL: Record<string, string> = {
 
 export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
   const sColor = STATUS_COLOR[collar.status] ?? C.muted;
-  const sBg    = STATUS_BG[collar.status]    ?? "#f0f0ee";
+  const sBg = STATUS_BG[collar.status] ?? "var(--bg-elev-2)";
   const sLabel = STATUS_LABEL[collar.status] ?? collar.status;
 
   return (
-    <div onClick={onClick} style={{ ...cardStyle, cursor: "pointer", display: "flex", flexDirection: "column", gap: 10 }}>
+    <div
+      onClick={onClick}
+      style={{ ...cardStyle, cursor: "pointer", display: "flex", flexDirection: "column", gap: 10 }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10,
-          background: sBg,
-          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-        }}>
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: sBg,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
           <Tag size={18} color={sColor} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>{collar.name}</p>
-          <span style={{
-            fontSize: 10, fontWeight: 600,
-            padding: "2px 8px", borderRadius: 999,
-            background: sBg, color: sColor,
-          }}>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              padding: "2px 8px",
+              borderRadius: 999,
+              background: sBg,
+              color: sColor,
+            }}
+          >
             {sLabel}
           </span>
         </div>

@@ -3,18 +3,18 @@ import { C, cardStyle } from "../constants/colors";
 import { KpiIcon } from "./DashboardIcons";
 
 interface Props {
-  overview:      DashboardOverviewResponse | undefined;
-  cowsPerStatus: CowStatusItem[]           | undefined;
+  overview: DashboardOverviewResponse | undefined;
+  cowsPerStatus: CowStatusItem[] | undefined;
 }
 
 interface KpiItem {
   label: string;
   value: string;
-  unit:  string;
-  sub:   string;
+  unit: string;
+  sub: string;
   delta: string;
-  tone:  "good" | "warn";
-  icon:  string;
+  tone: "good" | "warn";
+  icon: string;
 }
 
 function countByLabel(list: CowStatusItem[] | undefined, label: string): number | undefined {
@@ -36,62 +36,64 @@ function pct(value: string, total: number | undefined): string {
 }
 
 export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
-  const total   = overview?.totalCows;
-  const score   = healthScore(overview);
-  const atRisk  = fmt(overview?.unhealthyCows);
+  const total = overview?.totalCows;
+  const score = healthScore(overview);
+  const atRisk = fmt(overview?.unhealthyCows);
   const calving = fmt(countByLabel(cowsPerStatus, "CALVING"));
 
   const kpis: KpiItem[] = [
     {
       label: "Saúde do rebanho",
       value: score,
-      unit:  score !== "--" ? "/100" : "",
-      sub:   "",
+      unit: score !== "--" ? "/100" : "",
+      sub: "",
       delta: score !== "--" ? `${overview?.healthyCows} saudáveis` : "Aguardando dados",
-      tone:  "good",
-      icon:  "shield",
+      tone: "good",
+      icon: "shield",
     },
     {
       label: "Vacas em risco",
       value: atRisk,
-      unit:  "",
-      sub:   pct(atRisk, total),
+      unit: "",
+      sub: pct(atRisk, total),
       delta: atRisk !== "--" && Number(atRisk) > 0 ? "↑ vs. últimos 7 dias" : "Dentro do normal",
-      tone:  "warn",
-      icon:  "heart",
+      tone: "warn",
+      icon: "heart",
     },
     {
       label: "Recém-paridas",
       value: calving,
-      unit:  "",
-      sub:   pct(calving, total),
+      unit: "",
+      sub: pct(calving, total),
       delta: "Status CALVING",
-      tone:  "good",
-      icon:  "cow",
+      tone: "good",
+      icon: "cow",
     },
     {
       label: "Em aberto",
       value: "--",
-      unit:  "",
-      sub:   "",
+      unit: "",
+      sub: "",
       delta: "Dados em breve",
-      tone:  "good",
-      icon:  "circle",
+      tone: "good",
+      icon: "circle",
     },
     {
       label: "Temp. média",
       value: "--",
-      unit:  "°C",
-      sub:   "",
+      unit: "°C",
+      sub: "",
       delta: "Dados em breve",
-      tone:  "warn",
-      icon:  "temp",
+      tone: "warn",
+      icon: "temp",
     },
   ];
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16 }}>
-      {kpis.map((k, i) => <KpiCard key={i} {...k} />)}
+      {kpis.map((k, i) => (
+        <KpiCard key={i} {...k} />
+      ))}
     </div>
   );
 }
@@ -101,17 +103,28 @@ function KpiCard({ label, value, unit, sub, delta, tone, icon }: KpiItem) {
   return (
     <article style={{ ...cardStyle }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-          background: tone === "good" ? "#e6f1ea" : "#fbe9d8",
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            flexShrink: 0,
+            background: tone === "good" ? "var(--status-success-bg)" : "var(--status-warning-bg)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <KpiIcon name={icon} color={accent} />
         </div>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 11, color: C.muted }}>{label}</div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 2 }}>
-            <span style={{ fontSize: 22, fontWeight: 600, color: value === "--" ? C.muted : C.text }}>{value}</span>
+            <span
+              style={{ fontSize: 22, fontWeight: 600, color: value === "--" ? C.muted : C.text }}
+            >
+              {value}
+            </span>
             {unit && value !== "--" && <span style={{ fontSize: 11, color: C.muted }}>{unit}</span>}
           </div>
           {sub && <div style={{ fontSize: 11, color: C.muted, marginTop: -2 }}>{sub}</div>}

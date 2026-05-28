@@ -36,7 +36,7 @@
   animation: cowPulse 1.8s ease-out infinite;
 }
 .cow-map-pin--selected .cow-map-pin__dot {
-  border-color: #fff;
+  border-color: var(--primary-on);
   border-width: 2.5px;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
