@@ -87,7 +87,6 @@ export const login = async ({ email, password }: LoginInput) => {
     sub: user.id,
     id: user.id,
     email: user.email,
-    profile: user.profile,
     permissions,
     farmIds,
   };
@@ -102,7 +101,6 @@ export const getMe = async (userId: number) => {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       farmId: true,
       farm: {
@@ -149,7 +147,6 @@ export const getMe = async (userId: number) => {
     id: user.id,
     name: user.name,
     email: user.email,
-    profile: user.profile,
     active: user.active,
     farmId: user.farmId,
     createdAt: user.createdAt,

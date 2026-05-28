@@ -467,6 +467,7 @@ async function main() {
           ...notificationPermissions,
           ...viewOnlyMedicalRecord,
           ...retireCowPermission,
+          ...cowPermissions.filter((p) => p.name === "Create Cow" || p.name === "Update Cow"),
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -479,7 +480,7 @@ async function main() {
       name: "Operador de Campo",
       description: "Visualização de vacas e fazendas para operações em campo",
       permissions: {
-        create: [...viewOnlyFarm, ...viewOnlyCow].map((p) => ({ permissionId: p.id })),
+        create: [...viewOnlyFarm, ...viewOnlyCow, ...notificationPermissions].map((p) => ({ permissionId: p.id })),
       },
     },
   });
@@ -491,7 +492,7 @@ async function main() {
       name: "Financeiro",
       description: "Visualização de dados de fazendas para fins financeiros",
       permissions: {
-        create: [...viewOnlyFarm, ...viewOnlyCow].map((p) => ({ permissionId: p.id })),
+        create: [...viewOnlyFarm, ...viewOnlyCow, ...viewOnlyCollar].map((p) => ({ permissionId: p.id })),
       },
     },
   });
@@ -517,9 +518,13 @@ async function main() {
       name: "Produtor",
       description: "Acesso de leitura ao rebanho e fazendas próprias",
       permissions: {
-        create: [...viewOnlyFarm, ...viewOnlyCow, ...notificationPermissions].map((p) => ({
-          permissionId: p.id,
-        })),
+        create: [
+          ...viewOnlyFarm,
+          ...viewOnlyCow,
+          ...notificationPermissions,
+          ...viewOnlyCollar,
+          ...viewOnlyMedicalRecord,
+        ].map((p) => ({ permissionId: p.id })),
       },
     },
   });
@@ -550,84 +555,72 @@ async function main() {
     {
       name: "Super Admin",
       email: "admin@cowhealth.com",
-      profile: "ADMIN" as const,
       roleModel: superAdminRole,
       farmId: null,
     },
     {
       name: "Administrador Aurora",
       email: "administrador@aurora.com",
-      profile: "ADMIN" as const,
       roleModel: adminRole,
       farmId: aurora.id,
     },
     {
       name: "Administrador Sao Bento",
       email: "administrador@saobento.com",
-      profile: "ADMIN" as const,
       roleModel: adminRole,
       farmId: saoBento.id,
     },
     {
       name: "Administrador Boa Esperanca",
       email: "administrador@boaesperanca.com",
-      profile: "ADMIN" as const,
       roleModel: adminRole,
       farmId: boaEsperanca.id,
     },
     {
       name: "Administrador Santa Clara",
       email: "administrador@santaclara.com",
-      profile: "ADMIN" as const,
       roleModel: adminRole,
       farmId: santaClara.id,
     },
     {
       name: "Administrador Vale Verde",
       email: "administrador@valeverde.com",
-      profile: "ADMIN" as const,
       roleModel: adminRole,
       farmId: valeVerde.id,
     },
     {
       name: "Veterinario",
       email: "vet@cowhealth.com",
-      profile: "MANAGER" as const,
       roleModel: veterinarianRole,
-      farmId: aurora.id, // Vinculado a uma fazenda principal
+      farmId: aurora.id,
     },
     {
       name: "Zootecnista",
       email: "zoot@cowhealth.com",
-      profile: "MANAGER" as const,
       roleModel: zootecnistaRole,
       farmId: boaEsperanca.id,
     },
     {
       name: "Gerente de Fazenda",
       email: "gerente@cowhealth.com",
-      profile: "MANAGER" as const,
       roleModel: gerenteFazendaRole,
       farmId: aurora.id,
     },
     {
       name: "Operador de Campo",
       email: "operador@cowhealth.com",
-      profile: "VIEWER" as const,
       roleModel: operadorRole,
       farmId: aurora.id,
     },
     {
       name: "Financeiro",
       email: "financeiro@cowhealth.com",
-      profile: "VIEWER" as const,
       roleModel: financeiroRole,
       farmId: aurora.id,
     },
     {
       name: "Observador",
       email: "obs@cowhealth.com",
-      profile: "VIEWER" as const,
       roleModel: observadorRole,
       farmId: santaClara.id,
     },
@@ -636,7 +629,7 @@ async function main() {
   const passwordHash = await bcrypt.hash(PASSWORD, 12);
 
   const createdUsers = await Promise.all(
-    userData.map(({ name, email, profile, roleModel, farmId }) =>
+    userData.map(({ name, email, roleModel, farmId }) =>
       prisma.user.upsert({
         where: { email },
         update: {},
@@ -644,7 +637,6 @@ async function main() {
           name,
           email,
           passwordHash,
-          profile,
           active: true,
           farmId,
           roles: { create: [{ roleId: roleModel.id }] },
@@ -1049,7 +1041,7 @@ async function main() {
     { userId: observadorUser.id, farmId: santaClara.id },
   ];
 
-  await prisma.userFarm.createMany({ data: userFarmData });
+  await prisma.userFarm.createMany({ data: userFarmData, skipDuplicates: true });
   console.log(`\n${userFarmData.length} vínculos usuário-fazenda criados`);
   console.log("  Vínculos:");
   console.log("  admin@cowhealth.com              → irrestrito (SuperAdmin)");

@@ -6,7 +6,8 @@ import { Search, Plus } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { useCows, useCreateCow } from "../hooks/useCows";
 import { useFarmContext } from "@/context/FarmContext";
-import { useMe } from "@hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import { COW_STATUS_VALUES } from "@/types/cows";
 import type { Cow } from "@/types/cows";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
@@ -18,6 +19,7 @@ const STATUS_LABEL: Record<string, string> = {
   ALERT: "Alerta",
   HEAT_STRESS: "Est. Térmico",
   CALVING: "Parto",
+  RETIRED: "Aposentada",
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -25,6 +27,7 @@ const STATUS_COLOR: Record<string, string> = {
   ALERT: C.red,
   HEAT_STRESS: C.orange,
   CALVING: "#6bb4e8",
+  RETIRED: C.muted,
 };
 
 const STATUS_BG: Record<string, string> = {
@@ -32,6 +35,7 @@ const STATUS_BG: Record<string, string> = {
   ALERT: "var(--status-danger-bg)",
   HEAT_STRESS: "var(--status-warning-bg)",
   CALVING: "var(--status-info-bg)",
+  RETIRED: "var(--bg-card)",
 };
 
 // ─── Modal de Criação ─────────────────────────────────────────────────────────
@@ -157,8 +161,7 @@ export const CowsPage = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
 
-  const { data: me } = useMe();
-  const canCRUD = me?.profile === "ADMIN" || me?.profile === "MANAGER";
+  const canCRUD = useHasPermission(PERMISSIONS.CREATE_COW);
 
   const { selectedFarm } = useFarmContext();
   const farmId = selectedFarm ? String(selectedFarm.id) : undefined;

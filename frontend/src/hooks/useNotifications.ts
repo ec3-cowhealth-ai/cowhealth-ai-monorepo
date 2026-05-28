@@ -6,17 +6,25 @@ export interface Notification {
   type?: string;
   title: string;
   message: string;
+  readAt: string | null;
   read: boolean;
-  cowId?: string;
+  cowId: number | null;
+  severity?: "HIGH" | "MEDIUM" | "LOW";
+  cow?: { id: number; tag: string; name?: string | null; status: string };
   createdAt: string;
 }
+
+const mapRead = (n: Omit<Notification, "read">): Notification => ({
+  ...n,
+  read: n.readAt !== null,
+});
 
 export const useNotifications = () => {
   return useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const response = await api.get<Notification[]>("/notifications");
-      return response.data;
+      const response = await api.get<Omit<Notification, "read">[]>("/notifications");
+      return response.data.map(mapRead);
     },
   });
 };
@@ -25,8 +33,8 @@ export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "unread"],
     queryFn: async () => {
-      const response = await api.get<Notification[]>("/notifications?read=false");
-      return response.data;
+      const response = await api.get<Omit<Notification, "read">[]>("/notifications");
+      return response.data.map(mapRead).filter((n) => !n.read);
     },
   });
 };

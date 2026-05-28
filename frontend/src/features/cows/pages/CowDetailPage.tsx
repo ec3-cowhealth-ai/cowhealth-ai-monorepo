@@ -16,6 +16,7 @@ import {
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
+import { PeriodPicker } from "@components/ui/PeriodPicker";
 import {
   useCow,
   useCowHeartRateDaily,
@@ -25,11 +26,15 @@ import {
   useDeleteCow,
 } from "../hooks/useCows";
 import { RetireAnimalModal } from "../components/RetireAnimalModal";
+import { MedicalRecordCard } from "../components/MedicalRecordCard";
+import { MedicalRecordModal } from "../components/MedicalRecordModal";
+import { useMedicalRecords } from "../hooks/useMedicalRecords";
 import { useHasPermission } from "@hooks/usePermission";
 import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
-import { useMe } from "@hooks/useAuth";
+import { PERMISSIONS } from "@config/permissions";
 import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
+import type { Period } from "@/types/period";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const NOTIF_TONE: Record<string, string> = {
@@ -200,20 +205,25 @@ export const CowDetailPage = () => {
   const [showLink, setShowLink] = useState(false);
   const [showRetireModal, setShowRetireModal] = useState(false);
 
-  const { data: me } = useMe();
-  const canCRUD = me?.profile === "ADMIN" || me?.profile === "MANAGER";
-  const canRetire = useHasPermission("Retire Cow");
+  const canCRUD = useHasPermission(PERMISSIONS.UPDATE_COW);
+  const canRetire = useHasPermission(PERMISSIONS.RETIRE_COW);
+  const canCreateRecord = useHasPermission(PERMISSIONS.CREATE_MEDICAL_RECORD);
+  const [showRecordModal, setShowRecordModal] = useState(false);
+  const [sensorPeriod, setSensorPeriod] = useState<Period>("daily");
+  const [sensorFrom, setSensorFrom] = useState("");
+  const [sensorTo, setSensorTo] = useState("");
 
   const { data: cow, isLoading } = useCow(id || "");
   const { mutate: updateCow, isPending: updating } = useUpdateCow();
   const { mutate: deleteCow, isPending: deleting } = useDeleteCow();
 
-  const { data: heartRate } = useCowHeartRateDaily(id || "");
-  const { data: temperature } = useCowTemperatureDaily(id || "");
-  const { data: accelerometer } = useCowAccelerometerDaily(id || "");
+  const { data: heartRate } = useCowHeartRateDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
+  const { data: temperature } = useCowTemperatureDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
+  const { data: accelerometer } = useCowAccelerometerDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
   const { data: notifications } = useNotifications();
+  const { data: medicalRecords } = useMedicalRecords(Number(id));
 
-  const cowNotifs = notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
+  const cowNotifs = notifications?.filter((n) => n.cowId === Number(id)).slice(0, 5) || [];
 
   if (isLoading) {
     return (
@@ -436,6 +446,20 @@ export const CowDetailPage = () => {
 
         {/* Sensor charts — grade 3 colunas desktop / 1 coluna mobile */}
         {temperature?.length || heartRate?.length || accelerometer?.length ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ ...cardStyle, padding: "12px 14px" }}>
+            <p style={{ margin: "0 0 10px 0", fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Período dos sensores
+            </p>
+            <PeriodPicker
+              value={sensorPeriod}
+              onChange={setSensorPeriod}
+              customFrom={sensorFrom}
+              customTo={sensorTo}
+              onCustomFromChange={setSensorFrom}
+              onCustomToChange={setSensorTo}
+            />
+          </div>
           <div
             style={{
               display: "grid",
@@ -514,6 +538,7 @@ export const CowDetailPage = () => {
               </div>
             )}
           </div>
+          </div>
         ) : null}
 
         {/* Botão histórico */}
@@ -574,6 +599,31 @@ export const CowDetailPage = () => {
             </div>
           </div>
         )}
+        {/* Prontuário */}
+        <div className="card" style={{ marginTop: "var(--s-4)" }}>
+          <div style={{ marginBottom: 12 }}>
+            {canCreateRecord && (
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => setShowRecordModal(true)}
+                style={{ width: "100%", marginBottom: 8 }}
+              >
+                + Novo Registro
+              </button>
+            )}
+            <p style={{ margin: 0, fontWeight: 700, color: C.text }}>Prontuário</p>
+          </div>
+          {!medicalRecords || medicalRecords.length === 0 ? (
+            <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro clínico.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {medicalRecords.map((r) => (
+                <MedicalRecordCard key={r.id} record={r} cowId={cow.id} />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Zona de perigo */}
         {canRetire && cow.status !== "RETIRED" && (
           <div className="card" style={{ borderColor: "var(--danger)", marginTop: "var(--s-4)" }}>
@@ -595,6 +645,12 @@ export const CowDetailPage = () => {
           </div>
         )}
       </div>
+
+      <MedicalRecordModal
+        open={showRecordModal}
+        cowId={cow.id}
+        onClose={() => setShowRecordModal(false)}
+      />
 
       <RetireAnimalModal
         open={showRetireModal}

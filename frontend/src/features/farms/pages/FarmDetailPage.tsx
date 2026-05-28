@@ -7,20 +7,17 @@ import { XCircle, Edit2 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { cowsService } from "@services/cowsService";
 import { useFarm, useUpdateFarm } from "../hooks/useFarms";
-import { useMe } from "../../../hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import { FarmForm } from "../components/FarmForm";
 
 export const FarmDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [showEdit, setShowEdit] = useState(false);
 
-  const { data: me } = useMe();
+  const canEdit = useHasPermission(PERMISSIONS.UPDATE_FARM);
   const { data: farm, isLoading } = useFarm(id || "");
   const { mutate: updateFarm, isPending: updating } = useUpdateFarm();
-
-  const isSuperAdmin = me?.roles.some((r) => r.name === "SuperAdmin");
-  const isFarmAdmin = me?.profile === "ADMIN" && String(me?.farmId) === id;
-  const canEdit = isSuperAdmin || isFarmAdmin;
 
   const { data: cows } = useQuery({
     queryKey: ["cows", { farmId: id }],

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@components/common";
 import { Check, AlertTriangle, Bell, Activity, CheckCheck } from "lucide-react";
 import {
@@ -7,6 +8,7 @@ import {
   useUnreadNotifications,
   useMarkNotificationAsRead,
   useMarkAllAsRead,
+  type Notification,
 } from "@hooks/useNotifications";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
@@ -33,8 +35,25 @@ const timeAgo = (dateStr: string) => {
   return `${Math.floor(h / 24)}d`;
 };
 
+type SeverityFilter = "all" | "HIGH" | "MEDIUM" | "LOW";
+
+const SEVERITY_LABEL: Record<SeverityFilter, string> = {
+  all: "Todos",
+  HIGH: "Críticos",
+  MEDIUM: "Avisos",
+  LOW: "Resolvidos",
+};
+
+const SEVERITY_COLOR: Record<string, string> = {
+  HIGH: C.red,
+  MEDIUM: C.orange,
+  LOW: "#6bb4e8",
+};
+
 export const NotificationsPage = () => {
   const [tab, setTab] = useState<"all" | "unread">("all");
+  const [severity, setSeverity] = useState<SeverityFilter>("all");
+  const navigate = useNavigate();
 
   const { data: all, isLoading } = useNotifications();
   const { data: unread } = useUnreadNotifications();
@@ -43,10 +62,16 @@ export const NotificationsPage = () => {
 
   const unreadCount = unread?.length || 0;
 
+  const handleNotificationClick = (n: Notification) => {
+    if (!n.read) markAsRead(n.id);
+    if (n.cowId) navigate(`/cows/${n.cowId}`);
+  };
+
   const notifications = useMemo(() => {
-    if (tab === "unread") return unread || [];
-    return all || [];
-  }, [tab, all, unread]);
+    const base = tab === "unread" ? unread || [] : all || [];
+    if (severity === "all") return base;
+    return base.filter((n) => n.severity === severity);
+  }, [tab, severity, all, unread]);
 
   return (
     <div style={{ background: C.bg, minHeight: "100%" }}>
@@ -106,8 +131,8 @@ export const NotificationsPage = () => {
           )}
         </header>
 
-        {/* Filter pills */}
-        <div style={{ display: "flex", gap: 8 }}>
+        {/* Filter pills — read status */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {(
             [
               ["all", "Todos", all?.length || 0],
@@ -136,6 +161,47 @@ export const NotificationsPage = () => {
               >
                 {label}
                 <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filter pills — severity */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {(["all", "HIGH", "MEDIUM", "LOW"] as SeverityFilter[]).map((sev) => {
+            const active = severity === sev;
+            const accentColor = sev === "all" ? C.muted : SEVERITY_COLOR[sev];
+            return (
+              <button
+                key={sev}
+                onClick={() => setSeverity(sev)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  padding: "5px 14px",
+                  borderRadius: 999,
+                  fontSize: 12,
+                  fontWeight: active ? 600 : 400,
+                  border: `1px solid ${active ? accentColor : C.border}`,
+                  background: active ? `${accentColor}22` : C.card,
+                  color: active ? accentColor : C.muted,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >
+                {sev !== "all" && (
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: accentColor,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+                {SEVERITY_LABEL[sev]}
               </button>
             );
           })}
@@ -170,13 +236,11 @@ export const NotificationsPage = () => {
               return (
                 <button
                   key={n.id}
-                  onClick={() => {
-                    if (!n.read) markAsRead(n.id);
-                  }}
+                  onClick={() => handleNotificationClick(n)}
                   style={{
                     ...cardStyle,
                     display: "flex", alignItems: "flex-start", gap: 12,
-                    padding: 16, cursor: "pointer", textAlign: "left",
+                    padding: 16, cursor: n.cowId ? "pointer" : "default", textAlign: "left",
                     borderLeft: `4px solid ${color}`,
                     opacity: n.read ? 0.65 : 1,
                     borderRadius: 12,

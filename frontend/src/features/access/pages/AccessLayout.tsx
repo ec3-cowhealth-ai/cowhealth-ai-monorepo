@@ -1,16 +1,15 @@
 import { useNavigate, Outlet } from "react-router-dom";
-import { useMe } from "@hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import { AppBar } from "@components/layout";
 import { EmptyState } from "@components/common";
 import { Lock } from "lucide-react";
 
 export const AccessLayout = () => {
   const navigate = useNavigate();
-  const { data: user } = useMe();
+  const canViewUsers = useHasPermission(PERMISSIONS.VIEW_ANY_USER);
 
-  const isAdmin = user?.profile === "ADMIN";
-
-  if (!isAdmin) {
+  if (!canViewUsers) {
     return (
       <div className="app-page">
         <AppBar title="Acesso" />

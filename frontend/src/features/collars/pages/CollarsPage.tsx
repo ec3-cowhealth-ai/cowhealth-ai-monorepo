@@ -6,7 +6,8 @@ import { Plus, Tag } from "lucide-react";
 import { CollarCard } from "../components/CollarCard";
 import { useCollars, useCreateCollar } from "../hooks/useCollars";
 import { useFarms } from "@features/farms/hooks/useFarms";
-import { useMe } from "@hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import { COLLAR_STATUS_VALUES, DATA_FREQUENCY_VALUES } from "@/types/collars";
 import type { CollarStatus, DataFrequency } from "@/types/collars";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
@@ -120,8 +121,7 @@ export const CollarsPage = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
 
-  const { data: user } = useMe();
-  const isSuperAdmin = user?.roles.some((r) => r.name === "SuperAdmin");
+  const canCreate = useHasPermission(PERMISSIONS.CREATE_COLLAR);
 
   const { data: collars, isLoading } = useCollars();
   const { mutate: createCollar, isPending: creating } = useCreateCollar();
@@ -163,7 +163,7 @@ export const CollarsPage = () => {
       <AppBar
         title="Coleiras"
         actions={
-          isSuperAdmin && (
+          canCreate && (
             <button className="app-bar__action" onClick={() => setShowCreate(true)}>
               <Plus size={20} />
             </button>
@@ -252,7 +252,7 @@ export const CollarsPage = () => {
         </div>
       )}
 
-      {isSuperAdmin && (
+      {canCreate && (
         <CreateCollarModal
           open={showCreate}
           onClose={() => setShowCreate(false)}

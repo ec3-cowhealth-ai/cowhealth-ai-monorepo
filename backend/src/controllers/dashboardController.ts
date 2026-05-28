@@ -31,8 +31,12 @@ export const cowsPerFarm = async (_request: Request, response: Response): Promis
 };
 
 export const healthTimeline = async (request: Request, response: Response): Promise<void> => {
-  const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
-  const data = await getHealthTimeline(farmId);
+  const farmId  = request.query.farmId  ? Number(request.query.farmId) : undefined;
+  const farmIds = request.user!.farmIds;
+  const period  = (request.query.period  as string | undefined) ?? "daily";
+  const from    = request.query.from   as string | undefined;
+  const to      = request.query.to     as string | undefined;
+  const data = await getHealthTimeline(farmId, farmIds, period, from, to);
   response.json(data);
 };
 

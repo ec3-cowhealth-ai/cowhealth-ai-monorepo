@@ -17,7 +17,7 @@ export const requireFarmAccess = (farmIdParam: string = "farmId") =>
   (request: Request, response: Response, next: NextFunction): void => {
     const farmIds = request.user?.farmIds ?? [];
 
-    // null = irrestrito (ADMIN profile)
+    // null = irrestrito (SuperAdmin role)
     if (request.user?.farmIds === null) {
       next();
       return;

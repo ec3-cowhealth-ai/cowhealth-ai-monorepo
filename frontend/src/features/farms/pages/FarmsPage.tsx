@@ -6,7 +6,8 @@ import { Warehouse, Plus } from "lucide-react";
 import { FarmCard } from "../components/FarmCard";
 import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
-import { useMe } from "@hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import type { CreateFarmInput } from "@/types/farms";
 import { C } from "@features/dashboard/constants/colors";
 
@@ -15,8 +16,7 @@ export const FarmsPage = () => {
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
 
-  const { data: me } = useMe();
-  const isSuperAdmin = me?.roles.some((r) => r.name === "SuperAdmin");
+  const canCreate = useHasPermission(PERMISSIONS.CREATE_FARM);
 
   const { data: farms, isLoading } = useFarms();
   const { mutate: createFarm, isPending } = useCreateFarm();
@@ -48,7 +48,7 @@ export const FarmsPage = () => {
       <AppBar
         title="Fazendas"
         actions={
-          isSuperAdmin && (
+          canCreate && (
             <button className="app-bar__action" onClick={() => setShowForm(true)}>
               <Plus size={20} />
             </button>
@@ -72,9 +72,9 @@ export const FarmsPage = () => {
           <EmptyState
             icon={<Warehouse size={40} />}
             title="Nenhuma fazenda encontrada"
-            description={isSuperAdmin ? "Crie sua primeira fazenda para começar" : "Você não tem acesso a nenhuma fazenda."}
+            description={canCreate ? "Crie sua primeira fazenda para começar" : "Você não tem acesso a nenhuma fazenda."}
             action={
-              isSuperAdmin ? (
+              canCreate ? (
                 <button className="btn btn-primary" onClick={() => setShowForm(true)}>
                   Criar Fazenda
                 </button>
@@ -90,7 +90,7 @@ export const FarmsPage = () => {
         )}
       </div>
 
-      {isSuperAdmin && (
+      {canCreate && (
         <FarmForm
           open={showForm}
           onClose={() => setShowForm(false)}

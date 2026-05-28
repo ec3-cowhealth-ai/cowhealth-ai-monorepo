@@ -242,42 +242,119 @@ export const getCowActivityTimeline = async (_cowId: number, _date?: string) => 
   return [];
 };
 
-export const getHealthTimeline = async (farmId?: number, farmIds?: number[] | null) => {
+type Bucket = { start: Date; end: Date; label: string };
+
+const buildBuckets = (period: string, from?: string, to?: string): Bucket[] => {
+  const now = new Date();
+
+  if (period === "hourly") {
+    return Array.from({ length: 24 }, (_, i) => {
+      const start = new Date(now);
+      start.setMinutes(0, 0, 0);
+      start.setHours(start.getHours() - (23 - i));
+      const end = new Date(start);
+      end.setHours(end.getHours() + 1);
+      const label = `${String(start.getHours()).padStart(2, "0")}h`;
+      return { start, end, label };
+    });
+  }
+
+  if (period === "weekly") {
+    return Array.from({ length: 8 }, (_, i) => {
+      const end = new Date(now);
+      end.setDate(end.getDate() - (7 - i) * 7);
+      end.setHours(23, 59, 59, 999);
+      const start = new Date(end);
+      start.setDate(start.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
+      const label = `Sem ${i + 1}`;
+      return { start, end, label };
+    });
+  }
+
+  if (period === "biweekly") {
+    return Array.from({ length: 6 }, (_, i) => {
+      const end = new Date(now);
+      end.setDate(end.getDate() - (5 - i) * 15);
+      end.setHours(23, 59, 59, 999);
+      const start = new Date(end);
+      start.setDate(start.getDate() - 14);
+      start.setHours(0, 0, 0, 0);
+      const label = `Quin ${i + 1}`;
+      return { start, end, label };
+    });
+  }
+
+  if (period === "monthly") {
+    const MONTHS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+      const start = new Date(d.getFullYear(), d.getMonth(), 1);
+      const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+      const label = MONTHS[d.getMonth()];
+      return { start, end, label };
+    });
+  }
+
+  if (period === "yearly") {
+    const year = now.getFullYear();
+    return Array.from({ length: 5 }, (_, i) => {
+      const y = year - (4 - i);
+      const start = new Date(y, 0, 1);
+      const end = new Date(y, 11, 31, 23, 59, 59, 999);
+      return { start, end, label: String(y) };
+    });
+  }
+
+  if (period === "custom" && from && to) {
+    const buckets: Bucket[] = [];
+    const cur = new Date(from);
+    cur.setHours(0, 0, 0, 0);
+    const toDate = new Date(to);
+    toDate.setHours(23, 59, 59, 999);
+    while (cur <= toDate) {
+      const start = new Date(cur);
+      const end = new Date(cur);
+      end.setHours(23, 59, 59, 999);
+      const label = `${String(cur.getDate()).padStart(2, "0")}/${String(cur.getMonth() + 1).padStart(2, "0")}`;
+      buckets.push({ start, end, label });
+      cur.setDate(cur.getDate() + 1);
+    }
+    return buckets;
+  }
+
+  // default: daily — últimos 7 dias
+  return Array.from({ length: 7 }, (_, i) => {
+    const start = new Date(now);
+    start.setDate(start.getDate() - (6 - i));
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setHours(23, 59, 59, 999);
+    const label = start.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    return { start, end, label };
+  });
+};
+
+export const getHealthTimeline = async (
+  farmId?: number,
+  farmIds?: number[] | null,
+  period: string = "daily",
+  from?: string,
+  to?: string,
+) => {
   const farmFilter = buildFarmFilter(farmId, farmIds);
   const baseWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
-
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-    date.setHours(0, 0, 0, 0);
-    return date;
-  });
+  const buckets = buildBuckets(period, from, to);
 
   const results = await Promise.all(
-    days.map(async (day) => {
-      const nextDay = new Date(day);
-      nextDay.setDate(nextDay.getDate() + 1);
-
+    buckets.map(async ({ end, label }) => {
       const [healthy, alert, heatStress, calving] = await Promise.all([
-        prisma.cow.count({
-          where: { ...baseWhere, status: "HEALTHY", createdAt: { lte: nextDay } },
-        }),
-        prisma.cow.count({ where: { ...baseWhere, status: "ALERT", createdAt: { lte: nextDay } } }),
-        prisma.cow.count({
-          where: { ...baseWhere, status: "HEAT_STRESS", createdAt: { lte: nextDay } },
-        }),
-        prisma.cow.count({
-          where: { ...baseWhere, status: "CALVING", createdAt: { lte: nextDay } },
-        }),
+        prisma.cow.count({ where: { ...baseWhere, status: "HEALTHY",    createdAt: { lte: end } } }),
+        prisma.cow.count({ where: { ...baseWhere, status: "ALERT",      createdAt: { lte: end } } }),
+        prisma.cow.count({ where: { ...baseWhere, status: "HEAT_STRESS",createdAt: { lte: end } } }),
+        prisma.cow.count({ where: { ...baseWhere, status: "CALVING",    createdAt: { lte: end } } }),
       ]);
-
-      return {
-        date: day.toISOString().split("T")[0],
-        healthy,
-        alert,
-        heatStress,
-        calving,
-      };
+      return { label, healthy, alert, heatStress, calving };
     }),
   );
 

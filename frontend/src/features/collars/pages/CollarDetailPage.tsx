@@ -5,7 +5,8 @@ import { LoadingSpinner, EmptyState, StatusBadge, FormModal, ConfirmDialog } fro
 import { XCircle, Edit2, Trash2, Warehouse } from "lucide-react";
 import { useCollar, useUpdateCollar, useDeleteCollar } from "../hooks/useCollars";
 import { useFarms } from "../../farms/hooks/useFarms";
-import { useMe } from "../../../hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 import type { CollarStatus, DataFrequency } from "../../../types/collars.ts";
 
@@ -121,8 +122,8 @@ export const CollarDetailPage = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const { data: user } = useMe();
-  const isSuperAdmin = user?.roles.some((r) => r.name === "SuperAdmin");
+  const canEdit = useHasPermission(PERMISSIONS.UPDATE_COLLAR);
+  const canDelete = useHasPermission(PERMISSIONS.DELETE_COLLAR);
 
   const { data: collar, isLoading } = useCollar(id || "");
   const { mutate: updateCollar, isPending: updating } = useUpdateCollar();
@@ -163,14 +164,18 @@ export const CollarDetailPage = () => {
         title={collar.name}
         showBack
         actions={
-          isSuperAdmin && (
+          (canEdit || canDelete) && (
             <div style={{ display: "flex", gap: 12 }}>
-              <button className="app-bar__action" onClick={() => setShowEdit(true)}>
-                <Edit2 size={18} />
-              </button>
-              <button className="app-bar__action" onClick={() => setShowDelete(true)}>
-                <Trash2 size={18} />
-              </button>
+              {canEdit && (
+                <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+                  <Edit2 size={18} />
+                </button>
+              )}
+              {canDelete && (
+                <button className="app-bar__action" onClick={() => setShowDelete(true)}>
+                  <Trash2 size={18} />
+                </button>
+              )}
             </div>
           )
         }
@@ -323,28 +328,28 @@ export const CollarDetailPage = () => {
         </div>
       </div>
 
-      {isSuperAdmin && (
-        <>
-          <EditCollarModal
-            collar={collar}
-            open={showEdit}
-            onClose={() => setShowEdit(false)}
-            isLoading={updating}
-            onSubmit={(data) =>
-              updateCollar({ id: collar.id.toString(), input: data }, { onSuccess: () => setShowEdit(false) })
-            }
-          />
+      {canEdit && (
+        <EditCollarModal
+          collar={collar}
+          open={showEdit}
+          onClose={() => setShowEdit(false)}
+          isLoading={updating}
+          onSubmit={(data) =>
+            updateCollar({ id: collar.id.toString(), input: data }, { onSuccess: () => setShowEdit(false) })
+          }
+        />
+      )}
 
-          <ConfirmDialog
-            open={showDelete}
-            title="Excluir Coleira"
-            description={`Tem certeza que deseja excluir a coleira "${collar.name}"? Esta ação não pode ser desfeita.`}
-            confirmLabel={deleting ? "Excluindo..." : "Excluir"}
-            isDangerous
-            onConfirm={() => deleteCollar(collar.id.toString(), { onSuccess: () => navigate("/collars") })}
-            onCancel={() => setShowDelete(false)}
-          />
-        </>
+      {canDelete && (
+        <ConfirmDialog
+          open={showDelete}
+          title="Excluir Coleira"
+          description={`Tem certeza que deseja excluir a coleira "${collar.name}"? Esta ação não pode ser desfeita.`}
+          confirmLabel={deleting ? "Excluindo..." : "Excluir"}
+          isDangerous
+          onConfirm={() => deleteCollar(collar.id.toString(), { onSuccess: () => navigate("/collars") })}
+          onCancel={() => setShowDelete(false)}
+        />
       )}
     </div>
   );

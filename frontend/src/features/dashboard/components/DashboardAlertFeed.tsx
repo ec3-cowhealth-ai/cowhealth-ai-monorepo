@@ -144,7 +144,7 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
               return (
                 <li
                   key={a.id}
-                  onClick={() => a.cowId && onSelectCow?.(a.cowId)}
+                  onClick={() => a.cowId && onSelectCow?.(String(a.cowId))}
                   style={{
                     display: "flex",
                     alignItems: "flex-start",

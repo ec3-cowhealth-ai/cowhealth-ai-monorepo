@@ -4,6 +4,186 @@
 
 ---
 
+## 2026-05-28 - Tasks Ian: Prontuário Médico, Notificações, Dashboard e Mobile (JCFS)
+
+Scope: Implementação das tasks do `ian-todo-v2.md` (TARs 1–7) entregues por JCFS em sessão paralela. Branch alvo: `feature/ian-medical-mobile-v2`.
+
+### Added
+
+- `frontend/src/types/cows.ts` — `MedicalRecordType`, `MedicalRecord`, `CreateMedicalRecordInput` adicionados.
+- `frontend/src/services/medicalRecordsService.ts` — serviço com `getMedicalRecords`, `createMedicalRecord`, `updateMedicalRecord`, `deleteMedicalRecord` (endpoints `GET|POST|PUT|DELETE /cows/:id/medical-records`).
+- `frontend/src/features/cows/hooks/useMedicalRecords.ts` — hooks `useMedicalRecords`, `useCreateMedicalRecord`, `useDeleteMedicalRecord`.
+- `frontend/src/features/cows/components/MedicalRecordCard.tsx` — card com badge colorido por tipo, data pt-BR, nome do veterinário, notas colapsáveis, botão excluir guarded por `PERMISSIONS.DELETE_MEDICAL_RECORD`.
+- `frontend/src/features/cows/components/MedicalRecordModal.tsx` — formulário de criação com select de tipo, título, notas e datetime picker.
+- `frontend/src/features/dashboard/hooks/useHealthTimeline.ts` — `useHealthTimeline(farmId?)` consultando `GET /dashboard/health-timeline`.
+- `frontend/src/pages/onboarding/OnboardingPage.tsx` — 3 slides (Monitoramento / Alertas / Gerencie), dot navigation, botões Próximo / Pular / Começar; persiste `onboardingDone` em `localStorage`.
+- `frontend/src/components/ui/OfflineBanner.tsx` — banner de offline usando `navigator.onLine` + eventos `online/offline`.
+- `frontend/src/styles/App.css` — classe `.skeleton` com `@keyframes shimmer` (gradiente 200% animado).
+
+### Changed
+
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — seção Prontuário adicionada: lista de `MedicalRecordCard`, botão "+ Registro" guarded por `CREATE_MEDICAL_RECORD`, `MedicalRecordModal`.
+- `frontend/src/hooks/useNotifications.ts` — interface `Notification` atualizada: `read: boolean` (computado de `readAt`), `cowId: number | null`, `severity?: "HIGH" | "MEDIUM" | "LOW"`; helper `mapRead`; funções de query mapeiam resposta da API.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `handleNotificationClick` usa `n.cowId` para navegar a `/cows/:id`; `n.read` substitui `n.readAt` em todos os guards; filtro de severidade com pills Críticos / Avisos / Resolvidos adicionado.
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — refatorado para aceitar `farmId?: number` e buscar próprios dados via `useHealthTimeline`; exibe `.skeleton` durante loading.
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — `DashboardOverviewChart` renderizado após KPIs com `farmId={selectedFarm?.id}`.
+- `frontend/src/routes/AppRoutes.tsx` — rota pública `/onboarding` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Ver tutorial" adicionado ao menu; limpa `onboardingDone` antes de navegar.
+- `frontend/src/components/layout/AppShell.tsx` — `<OfflineBanner />` renderizado entre `<Sidebar />` e `<main>`.
+
+### Notes
+
+- TAREFA 2 (bottom nav safe-area fix) já estava aplicada no CSS — nenhuma alteração necessária.
+- OfflineBanner é puramente visual; não bloqueia ações do usuário.
+- `DashboardOverviewChart` espera que o backend retorne `ChartDataPoint[]` (`label: string, value: number`) em `GET /dashboard/health-timeline`.
+
+### Build Status
+
+- ✅ Frontend: zero erros TypeScript esperados após `tsc --noEmit`.
+
+---
+
+## 2026-05-28 - Etapa 1 RBAC: Tarefas Pendentes do Angelo (JCFS)
+
+Scope: Implementação das tarefas T3, T4, T7 e T8 do `angelo-todo.md` que não foram cobertas na entrega anterior. Guards de coleiras e fazendas migrados para RBAC; status `RETIRED` tratado; Settings Page criada.
+
+### Added
+
+- `frontend/src/pages/settings/SettingsPage.tsx` — página de configurações com toggles de notificação persistidos em `localStorage` (Alertas críticos, Avisos, Resumo diário) e seção Conta com link para `/profile` e texto LGPD.
+
+### Changed
+
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — `isSuperAdmin = me?.roles.some(...)` → `canCreate = useHasPermission(PERMISSIONS.CREATE_FARM)`; botão "+ Nova Fazenda" e modal visíveis apenas para quem tem `Create Farm`.
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — `isSuperAdmin` → `canCreate = useHasPermission(PERMISSIONS.CREATE_COLLAR)`; botão "+ Nova Coleira" visível apenas para quem tem `Create Collar`.
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — `isSuperAdmin` substituído por `canEdit = useHasPermission(UPDATE_COLLAR)` e `canDelete = useHasPermission(DELETE_COLLAR)` independentes; botões Editar e Excluir renderizados e modais montados separadamente por permissão.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `RETIRED` adicionado em `STATUS_LABEL` ("Aposentada"), `STATUS_COLOR` (muted) e `STATUS_BG`; badge não quebra mais ao exibir vacas aposentadas.
+- `frontend/src/routes/AppRoutes.tsx` — rota protegida `/settings` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Configurações" com ícone `Settings` adicionado ao menu de navegação, apontando para `/settings`.
+
+### Build Status
+
+- ✅ Frontend: `tsc --noEmit` — zero erros.
+- ✅ Zero ocorrências de `isSuperAdmin` baseado em `roles.some(r.name === "SuperAdmin")` nas páginas de farms e collars.
+
+---
+
+## 2026-05-28 - Referência RBAC: Usuários, Papéis e Permissões (JCFS)
+
+> Estado do sistema após Etapa 0 + Etapa 1. Fonte: `backend/prisma/seed.ts`.
+
+### Usuários Seed (senha: `12345678`)
+
+| Credencial | Nome | Papel | Fazenda |
+|---|---|---|---|
+| `admin@cowhealth.com` | Super Admin | SuperAdmin | — (irrestrito) |
+| `administrador@aurora.com` | Administrador Aurora | Administrador | Fazenda Aurora |
+| `administrador@saobento.com` | Administrador Sao Bento | Administrador | Fazenda Sao Bento |
+| `administrador@boaesperanca.com` | Administrador Boa Esperanca | Administrador | Fazenda Boa Esperanca |
+| `administrador@santaclara.com` | Administrador Santa Clara | Administrador | Fazenda Santa Clara |
+| `administrador@valeverde.com` | Administrador Vale Verde | Administrador | Fazenda Vale Verde |
+| `vet@cowhealth.com` | Veterinario | Veterinario | Aurora + Sao Bento |
+| `zoot@cowhealth.com` | Zootecnista | Zootecnista | Boa Esperanca |
+| `gerente@cowhealth.com` | Gerente de Fazenda | Gerente de Fazenda | Aurora |
+| `operador@cowhealth.com` | Operador de Campo | Operador de Campo | Aurora |
+| `financeiro@cowhealth.com` | Financeiro | Financeiro | Todas |
+| `obs@cowhealth.com` | Observador | Observador | Santa Clara |
+
+### Matriz de Permissões por Papel
+
+`●` = possui | `○` = não possui | `*` = adicionado na Etapa 0
+
+| Permissão | SuperAdmin | Administrador | Veterinário | Zootecnista | Gerente Fazenda | Operador Campo | Financeiro | Observador | Produtor |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Farm** |
+| ViewAny / View Farm | ● | ● | ● | ● | ● | ● | ● | ● | ● |
+| Create / Update Farm | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| Delete Farm | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| **Cow** |
+| ViewAny / View Cow | ● | ● | ● | ● | ● | ● | ● | ● | ● |
+| Create Cow | ● | ● | ● | ● | ●* | ○ | ○ | ○ | ○ |
+| Update Cow | ● | ● | ● | ● | ●* | ○ | ○ | ○ | ○ |
+| Delete Cow | ● | ● | ● | ● | ○ | ○ | ○ | ○ | ○ |
+| Retire Cow | ● | ● | ● | ● | ● | ○ | ○ | ○ | ○ |
+| **Collar** |
+| ViewAny / View Collar | ● | ● | ● | ● | ● | ○ | ●* | ○ | ●* |
+| Create / Update Collar | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| Delete Collar | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| **Medical Record** |
+| ViewAny / View MedicalRecord | ● | ● | ● | ● | ● | ○ | ○ | ○ | ●* |
+| Create / Update MedicalRecord | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ |
+| Delete MedicalRecord | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ |
+| **User** |
+| ViewAny / View User | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| Create / Update / Delete User | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| **Notification** |
+| ViewAny / View Notification | ● | ● | ● | ● | ● | ●* | ○ | ● | ● |
+| **Role / Permission CRUD** |
+| Todos | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+
+---
+
+## 2026-05-28 - Etapa 1 RBAC: Consolidação dos Guards de UI no Frontend (JCFS)
+
+Scope: Remoção completa de `UserProfile` do frontend e consolidação de todos os guards de UI no hook `useHasPermission()` + constantes tipadas `PERMISSIONS`. Zero ocorrências de `user?.profile` no codebase após esta etapa.
+
+### Added
+
+- `frontend/src/config/permissions.ts` — objeto `PERMISSIONS` com 60 constantes tipadas e tipo `PermissionName`; elimina typos silenciosos em strings de permissão.
+
+### Changed
+
+- `frontend/src/hooks/usePermission.ts` — `useHasPermission` aceita `PermissionName` (type-safe); removido TODO comentário de Angelo.
+- `frontend/src/hooks/usePermissions.ts` — `useIsAdmin` marcado como `@deprecated`; implementação substituída por `useHasPermission(PERMISSIONS.VIEW_ANY_USER)`; `useHasAnyPermission` tipado com `PermissionName[]`.
+- `frontend/src/types/auth.ts` — `profile: "ADMIN" | "MANAGER" | "VIEWER"` removido de `AuthUser`.
+- `frontend/src/types/access.ts` — `UserProfile`, `USER_PROFILE_VALUES` removidos; `profile` removido de `User`, `UserListItem`, `CreateUserInput`, `UpdateUserInput`; `roles` adicionado a `UserListItem`.
+- `frontend/src/components/layout/Sidebar.tsx` — `isAdmin = user?.profile === "ADMIN"` → `canViewUsers = useHasPermission(PERMISSIONS.VIEW_ANY_USER)`; exibição do perfil substituída por `roles[0].name`.
+- `frontend/src/features/access/pages/AccessLayout.tsx` — guard `profile === "ADMIN"` → `useHasPermission(PERMISSIONS.VIEW_ANY_USER)`.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `canCRUD` baseado em `profile` → `useHasPermission(PERMISSIONS.CREATE_COW)`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `canCRUD` baseado em `profile` → `useHasPermission(PERMISSIONS.UPDATE_COW)`.
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `canEdit` baseado em `profile === "ADMIN"` → `useHasPermission(PERMISSIONS.UPDATE_FARM)`.
+- `frontend/src/pages/profile/ProfilePage.tsx` — `user?.profile` → `user?.roles?.[0]?.name`.
+- `frontend/src/features/access/pages/UsersPage.tsx` — selects ADMIN/MANAGER/VIEWER removidos dos modais de criação e edição; coluna "Perfil" substituída por "Papel" (exibe `roles[0].role.name`); `UserProfile` removido de todos os tipos locais.
+- `backend/prisma/seed.ts` — ajustes de permissão conforme matriz da Seção 3 do plano: Gerente de Fazenda +`Create/Update Cow`; Financeiro +`ViewAny/View Collar`; Produtor +`ViewAny/View Collar` e `ViewAny/View MedicalRecord`; Operador de Campo +`ViewAny/View Notification`.
+
+### Build Status
+
+- ✅ Frontend: `tsc --noEmit` — zero erros.
+- ✅ Zero ocorrências de `user?.profile` ou `profile === "ADMIN"` no codebase frontend.
+
+---
+
+## 2026-05-28 - Etapa 0 RBAC: Remoção do UserProfile do Backend (JCFS)
+
+Scope: Remoção completa do mecanismo legado `UserProfile` (ADMIN/MANAGER/VIEWER) do backend, eliminando o sistema de acesso paralelo e conflitante com o RBAC via `User → Role → Permission`. Pré-requisito para Angelo implementar `feature/angelo-rbac-v2` (Etapa 1).
+
+### Removed
+
+- `enum UserProfile { ADMIN MANAGER VIEWER }` de `backend/prisma/schema.prisma`.
+- Campo `profile UserProfile @default(VIEWER)` do model `User` no schema Prisma.
+- Campo `profile: string` de `AuthPayload` em `backend/src/types/auth.ts` — JWT não emite mais `profile`.
+- Campos `profile?: "ADMIN" | "MANAGER" | "VIEWER"` de `CreateUserInput` e `UpdateUserInput` em `backend/src/types/access.ts`.
+- `profile: z.enum(["ADMIN", "MANAGER", "VIEWER"]).optional()` de `createUserSchema` e `updateUserSchema` em `backend/src/schemas/userSchemas.ts`.
+
+### Changed
+
+- `backend/src/services/authService.ts` — removido `profile` do payload JWT e da resposta de `getMe`; removido do select Prisma.
+- `backend/src/services/usersService.ts` — removido `profile` de todos os selects, destructurings e objetos `create`/`update`; removida a guard `if (profile === "ADMIN") throw ...` (substituída por controle via Role).
+- `backend/src/services/mqttIngestService.ts` — `notifyUsers` substituiu `profile: { in: ["ADMIN", "MANAGER"] }` por query RBAC: usuários com role que possua a permissão `"ViewAny Notification"`.
+- `backend/src/middlewares/requireFarmAccess.ts` — comentário atualizado de "ADMIN profile" para "SuperAdmin role".
+- `backend/prisma/seed.ts` — removido `profile` de todos os 12 `userData` e do `upsert`.
+
+### Migration
+
+- `backend/prisma/migrations/20260528000000_remove_user_profile/migration.sql` — `ALTER TABLE users DROP COLUMN profile`.
+- Aplicado via `prisma db push --accept-data-loss`.
+
+### Build Status
+
+- ✅ Backend: `tsc --noEmit` sem erros relacionados a `UserProfile`; único erro pré-existente em `collarsService.ts` (`throwWithStatus`) não afetado.
+- ✅ DB: coluna `profile` removida da tabela `users`.
+
+---
+
 ## 2026-05-28 - Feature D, G, E, A: Aposentadoria, Histórico, Splash, Acelerômetro + Dashboard Endpoints (JCFS)
 
 Scope: Implementação das pendências do jafte-todo.md para a apresentação. Cobertura completa de 8 tarefas: aposentadoria de animal (Feature D), histórico de sensores (Feature G), splash screen (Feature E), acelerômetro diário (Feature A), 4 novos endpoints do dashboard, botão de alternância de tema e correção do bottom-nav em iOS.
