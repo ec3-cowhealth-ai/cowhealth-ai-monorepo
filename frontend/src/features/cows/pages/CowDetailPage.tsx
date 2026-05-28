@@ -13,6 +13,7 @@ import {
   Unlink,
   ChevronLeft,
   ClipboardList,
+  Plus,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
@@ -74,9 +75,24 @@ const statusTone = (s: string) => {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ ...cardStyle, padding: 14, textAlign: "center" }}>
-      <p style={{ margin: "0 0 4px 0", fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
-      <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: C.text }}>{value}</p>
+    <div
+      style={{
+        ...cardStyle,
+        padding: "18px 12px",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 80,
+      }}
+    >
+      <p style={{ margin: "0 0 6px 0", fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+        {label}
+      </p>
+      <p style={{ margin: 0, fontSize: 17, fontWeight: 600, color: C.text, lineHeight: 1 }}>
+        {value}
+      </p>
     </div>
   );
 }
@@ -321,6 +337,45 @@ export const CowDetailPage = () => {
               )
             )}
           </div>
+
+          {/* Divisor + linha de prontuário */}
+          <div
+            style={{
+              borderTop: `1px solid ${C.border}`,
+              paddingTop: 12,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <button
+              onClick={() => setActiveTab("records")}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                background: "none", border: "none", cursor: "pointer", padding: 0,
+              }}
+            >
+              <ClipboardList size={13} color={C.muted} />
+              <span style={{ fontSize: 12, color: C.muted }}>
+                {medicalRecords?.length ?? 0}{" "}
+                {(medicalRecords?.length ?? 0) !== 1 ? "registros clínicos" : "registro clínico"}
+              </span>
+            </button>
+            {canCreateRecord && (
+              <button
+                onClick={() => setShowRecordModal(true)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  padding: "5px 14px", borderRadius: 999,
+                  background: C.green, border: "none",
+                  fontSize: 11, fontWeight: 600, color: "#fff",
+                  cursor: "pointer", flexShrink: 0,
+                }}
+              >
+                <Plus size={11} /> Registro
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ── Tabs ── */}
@@ -407,28 +462,30 @@ export const CowDetailPage = () => {
 
         {/* ── Tab: Prontuário ── */}
         {activeTab === "records" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                {medicalRecords?.length ?? 0} registro{(medicalRecords?.length ?? 0) !== 1 ? "s" : ""}
-              </p>
-              {canCreateRecord && (
-                <button className="btn btn-primary btn-sm" onClick={() => setShowRecordModal(true)}>
-                  + Registro
-                </button>
-              )}
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {!medicalRecords || medicalRecords.length === 0 ? (
               <div style={{ ...cardStyle, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 40, textAlign: "center" }}>
                 <ClipboardList size={36} color={C.muted} />
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro clínico.</p>
+                {canCreateRecord && (
+                  <button
+                    onClick={() => setShowRecordModal(true)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5,
+                      padding: "8px 18px", borderRadius: 999,
+                      background: C.green, border: "none",
+                      fontSize: 12, fontWeight: 600, color: "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Plus size={12} /> Novo registro
+                  </button>
+                )}
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {medicalRecords.map((r) => (
-                  <MedicalRecordCard key={r.id} record={r} cowId={cow.id} />
-                ))}
-              </div>
+              medicalRecords.map((r) => (
+                <MedicalRecordCard key={r.id} record={r} cowId={cow.id} />
+              ))
             )}
           </div>
         )}
