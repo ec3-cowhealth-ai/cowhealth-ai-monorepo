@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar } from "@components/layout";
-import { LoadingSpinner, EmptyState } from "@components/common";
+import { LoadingSpinner } from "@components/common";
+import { Tag } from "lucide-react";
 import { CollarCard } from "../components/CollarCard";
 import { useCollars } from "../hooks/useCollars";
 import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
+import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 export const CollarsPage = () => {
   const navigate = useNavigate();
@@ -18,18 +19,24 @@ export const CollarsPage = () => {
     return collars.filter((c) => c.status === statusFilter);
   }, [collars, statusFilter]);
 
+  const counts = {
+    all:         collars?.length || 0,
+    active:      collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.ACTIVE).length      || 0,
+    inactive:    collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.INACTIVE).length    || 0,
+    maintenance: collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.MAINTENANCE).length || 0,
+  };
+
+  const filterItems: [string, string, number][] = [
+    ["", "Todas", counts.all],
+    [COLLAR_STATUS_VALUES.ACTIVE,      "Ativas",      counts.active],
+    [COLLAR_STATUS_VALUES.INACTIVE,    "Inativas",    counts.inactive],
+    [COLLAR_STATUS_VALUES.MAINTENANCE, "Manutenção",  counts.maintenance],
+  ];
+
   if (isLoading) {
     return (
-      <div className="app-page">
-        <AppBar title="Coleiras" />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
+      <div style={{ background: C.bg, minHeight: "100%" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48 }}>
           <LoadingSpinner />
         </div>
       </div>
@@ -37,49 +44,58 @@ export const CollarsPage = () => {
   }
 
   return (
-    <div className="app-page">
-      <AppBar title="Coleiras" />
+    <div style={{ background: C.bg, minHeight: "100%" }}>
+      <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-      <div className="app-page__section">
-        {/* Status Filter */}
-        <div style={{ display: "flex", gap: "var(--s-2)", flexWrap: "wrap" }}>
-          <button
-            className={`btn btn-sm ${!statusFilter ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter("")}
-          >
-            Todas ({collars?.length || 0})
-          </button>
-          <button
-            className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.ACTIVE ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.ACTIVE)}
-          >
-            Ativas ({collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.ACTIVE).length || 0})
-          </button>
-          <button
-            className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.INACTIVE ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.INACTIVE)}
-          >
-            Inativas (
-            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.INACTIVE).length || 0})
-          </button>
-          <button
-            className={`btn btn-sm ${statusFilter === COLLAR_STATUS_VALUES.MAINTENANCE ? "btn-primary" : "btn-secondary"}`}
-            onClick={() => setStatusFilter(COLLAR_STATUS_VALUES.MAINTENANCE)}
-          >
-            Manutenção (
-            {collars?.filter((c) => c.status === COLLAR_STATUS_VALUES.MAINTENANCE).length || 0})
-          </button>
+        {/* Header */}
+        <header style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Tag size={34} color={C.green} />
+          <div>
+            <h1 style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: 34, lineHeight: 1, margin: 0, color: C.text, fontWeight: 400,
+            }}>
+              Coleiras
+            </h1>
+            <p style={{ margin: "4px 0 0 0", fontSize: 13, color: C.muted }}>
+              {counts.all} dispositivo{counts.all !== 1 ? "s" : ""} · {counts.active} ativo{counts.active !== 1 ? "s" : ""}
+            </p>
+          </div>
+        </header>
+
+        {/* Filter pills */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {filterItems.map(([val, label, count]) => {
+            const active = statusFilter === val;
+            return (
+              <button
+                key={val}
+                onClick={() => setStatusFilter(val)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "7px 16px", borderRadius: 999, fontSize: 13,
+                  fontWeight: active ? 600 : 400,
+                  border: `1px solid ${active ? C.green : C.border}`,
+                  background: active ? C.green : "#fff",
+                  color: active ? "#fff" : C.muted,
+                  cursor: "pointer", transition: "all 0.15s",
+                }}
+              >
+                {label}
+                <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Collars Grid */}
+        {/* Grid */}
         {filteredCollars.length === 0 ? (
-          <EmptyState
-            icon="⌚"
-            title="Nenhuma coleira encontrada"
-            description="Nenhuma coleira com esse status."
-          />
+          <div style={{ ...cardStyle, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 48, textAlign: "center" }}>
+            <Tag size={40} color={C.muted} />
+            <p style={{ margin: 0, fontSize: 14, color: C.muted }}>Nenhuma coleira encontrada</p>
+          </div>
         ) : (
-          <div className="grid grid--2">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             {filteredCollars.map((collar) => (
               <CollarCard
                 key={collar.id}

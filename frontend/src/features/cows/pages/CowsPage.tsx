@@ -1,14 +1,13 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar } from "@components/layout";
 import { LoadingSpinner } from "@components/common";
-import { Search, ChevronRight } from "lucide-react";
+import { Search } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
-import { StatusDot } from "@components/ui/StatusDot";
 import { useCows } from "../hooks/useCows";
 import { useFarmContext } from "../../../context/FarmContext";
 import { COW_STATUS_VALUES } from "../../../types/cows";
 import type { Cow } from "../../../types/cows";
+import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 type StatusFilter = "" | "HEALTHY" | "ALERT" | "HEAT_STRESS" | "CALVING";
 
@@ -19,18 +18,18 @@ const STATUS_LABEL: Record<string, string> = {
   CALVING: "Parto",
 };
 
-const statusTone = (s: string) => {
-  if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
-  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
-  if (s === COW_STATUS_VALUES.CALVING) return "info" as const;
-  return "success" as const;
+const STATUS_COLOR: Record<string, string> = {
+  HEALTHY: C.green,
+  ALERT: C.red,
+  HEAT_STRESS: C.orange,
+  CALVING: "#6bb4e8",
 };
 
-const statusColor = (s: string) => {
-  if (s === COW_STATUS_VALUES.ALERT) return "var(--danger)";
-  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "var(--warning)";
-  if (s === COW_STATUS_VALUES.CALVING) return "var(--info)";
-  return "var(--success)";
+const STATUS_BG: Record<string, string> = {
+  HEALTHY: "#e6f1ea",
+  ALERT: "#fde8e4",
+  HEAT_STRESS: "#fbe9d8",
+  CALVING: "#e4f0fb",
 };
 
 export const CowsPage = () => {
@@ -66,91 +65,148 @@ export const CowsPage = () => {
     });
   }, [cows, search, statusFilter]);
 
+  const filterItems: [StatusFilter, string, number][] = [
+    ["", "Todas", counts.all],
+    [COW_STATUS_VALUES.HEALTHY as StatusFilter, "Saudáveis", counts.healthy],
+    [COW_STATUS_VALUES.ALERT as StatusFilter, "Alertas", counts.alert],
+    [COW_STATUS_VALUES.HEAT_STRESS as StatusFilter, "Estresse", counts.heat],
+    [COW_STATUS_VALUES.CALVING as StatusFilter, "Parto", counts.calving],
+  ];
+
   return (
-    <div className="app-page">
-      <AppBar
-        title="Rebanho"
-        subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
-        actions={
-          <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
-            <Search size={20} />
-          </button>
-        }
-      />
+    <div style={{ background: C.bg, minHeight: "100%" }}>
+      <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-      <div className="app-content">
-        {showSearch && (
-          <div className="form-field" style={{ marginBottom: 0 }}>
-            <input
-              autoFocus
-              type="text"
-              className="form-field__input"
-              placeholder="Buscar por tag ou nome…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        {/* Header */}
+        <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <CowHead size={34} color={C.green} />
+            <div>
+              <h1 style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: 34, lineHeight: 1, margin: 0, color: C.text, fontWeight: 400,
+              }}>
+                Rebanho
+              </h1>
+              <p style={{ margin: "4px 0 0 0", fontSize: 13, color: C.muted }}>
+                {selectedFarm?.name ?? "Todas as fazendas"} · {counts.all} animais
+              </p>
+            </div>
           </div>
-        )}
-
-        {/* Filter chips */}
-        <div className="filter-chips">
-          {(
-            [
-              ["", "Todas", counts.all],
-              [COW_STATUS_VALUES.HEALTHY, "Saudáveis", counts.healthy],
-              [COW_STATUS_VALUES.ALERT, "Alertas", counts.alert],
-              [COW_STATUS_VALUES.HEAT_STRESS, "Estresse", counts.heat],
-              [COW_STATUS_VALUES.CALVING, "Parto", counts.calving],
-            ] as [StatusFilter, string, number][]
-          ).map(([val, label, count]) => (
-            <button
-              key={val}
-              className={`filter-chip${statusFilter === val ? " is-active" : ""}`}
-              onClick={() => setStatusFilter(val)}
-            >
-              {label} <span style={{ opacity: 0.6 }}>{count}</span>
-            </button>
-          ))}
-        </div>
-
-        {isLoading ? (
-          <div
+          <button
+            onClick={() => setShowSearch((v) => !v)}
             style={{
-              display: "flex",
-              justifyContent: "center",
-              padding: "var(--s-8)",
+              width: 36, height: 36, borderRadius: 999,
+              background: showSearch ? C.green : "#fff",
+              border: `1px solid ${showSearch ? C.green : C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer",
             }}
           >
+            <Search size={16} color={showSearch ? "#fff" : C.muted} />
+          </button>
+        </header>
+
+        {/* Search */}
+        {showSearch && (
+          <input
+            autoFocus
+            type="text"
+            placeholder="Buscar por tag ou nome…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: "100%", padding: "10px 14px",
+              borderRadius: 12, border: `1px solid ${C.border}`,
+              background: "#fff", fontSize: 14, color: C.text,
+              outline: "none", boxSizing: "border-box",
+            }}
+          />
+        )}
+
+        {/* Filter pills */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {filterItems.map(([val, label, count]) => {
+            const active = statusFilter === val;
+            return (
+              <button
+                key={val}
+                onClick={() => setStatusFilter(val)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "7px 16px", borderRadius: 999, fontSize: 13,
+                  fontWeight: active ? 600 : 400,
+                  border: `1px solid ${active ? C.green : C.border}`,
+                  background: active ? C.green : "#fff",
+                  color: active ? "#fff" : C.muted,
+                  cursor: "pointer", transition: "all 0.15s",
+                }}
+              >
+                {label}
+                <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Grid */}
+        {isLoading ? (
+          <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
             <LoadingSpinner />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="home-empty">
-            <CowHead size={40} />
-            <p>Nenhuma vaca encontrada</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 48, color: C.muted }}>
+            <CowHead size={40} color={C.muted} />
+            <p style={{ margin: 0, fontSize: 14 }}>Nenhuma vaca encontrada</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            {filtered.map((cow: Cow) => (
-              <button key={cow.id} className="cow-row" onClick={() => navigate(`/cows/${cow.id}`)}>
-                <div className="cow-row__avatar">
-                  <CowHead size={28} color={statusColor(cow.status)} />
-                </div>
-                <div className="cow-row__info">
-                  <span className="cow-row__tag">{cow.tag}</span>
-                  <span className="cow-row__meta">
-                    {cow.name} · {cow.farm?.name}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+            {filtered.map((cow: Cow) => {
+              const sColor = STATUS_COLOR[cow.status] ?? C.green;
+              const sBg   = STATUS_BG[cow.status]    ?? "#e6f1ea";
+              return (
+                <button
+                  key={cow.id}
+                  onClick={() => navigate(`/cows/${cow.id}`)}
+                  style={{
+                    ...cardStyle,
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 10,
+                    padding: 20, cursor: "pointer",
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{
+                    width: 56, height: 56, borderRadius: "50%",
+                    background: sBg,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <CowHead size={30} color={sColor} />
+                  </div>
+
+                  <div>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
+                      {cow.name || cow.tag}
+                    </p>
+                    <p style={{ margin: "2px 0 0 0", fontSize: 11, color: C.muted }}>
+                      Brinco {cow.tag}
+                    </p>
+                  </div>
+
+                  {cow.farm && (
+                    <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{cow.farm.name}</p>
+                  )}
+
+                  <span style={{
+                    fontSize: 11, fontWeight: 600,
+                    padding: "3px 12px", borderRadius: 999,
+                    background: sBg, color: sColor,
+                  }}>
+                    {STATUS_LABEL[cow.status] ?? cow.status}
                   </span>
-                </div>
-                <div className="cow-row__right">
-                  <StatusDot
-                    tone={statusTone(cow.status)}
-                    pulse={cow.status === COW_STATUS_VALUES.ALERT}
-                  />
-                  <span className="cow-row__status">{STATUS_LABEL[cow.status] ?? cow.status}</span>
-                  <ChevronRight size={14} color="var(--text-muted)" />
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
