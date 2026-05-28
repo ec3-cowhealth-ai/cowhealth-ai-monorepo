@@ -13,7 +13,6 @@ import { DashboardActivityTimeline } from "../components/DashboardActivityTimeli
 import { DashboardOverviewChart } from "../components/DashboardOverviewChart";
 import { CalIcon, FilterIcon, ChevronDown } from "../components/DashboardIcons";
 import { CowHead } from "@components/ui/CowHeadIcon";
-import "../styles/dashboard.css";
 
 type DateRangeOption = "7days" | "14days" | "30days" | "90days";
 
@@ -187,18 +186,16 @@ export const DashboardPage = () => {
         {/* Health timeline chart */}
         <DashboardOverviewChart farmId={selectedFarm?.id} />
 
-        {/* Main 3-column layout — responsive with flexbox */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="dashboard-main-grid">
-          <div style={{ display: "flex", flexDirection: "row", gap: 24 }} className="dashboard-top-row">
-            <CowProfilePanel
-              cowId={effectiveCowId}
-              onPrev={handlePrev}
-              onNext={handleNext}
-              hasPrev={hasPrev}
-              hasNext={hasNext}
-            />
-            <DashboardCenterPanel cowId={effectiveCowId} />
-          </div>
+        {/* Main 3-column grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
+          <CowProfilePanel
+            cowId={effectiveCowId}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            hasPrev={hasPrev}
+            hasNext={hasNext}
+          />
+          <DashboardCenterPanel cowId={effectiveCowId} />
           <DashboardAlertFeed
             alerts={alerts}
             isLoading={loadingAlerts}

@@ -28,7 +28,7 @@ export function DashboardCenterPanel({ cowId }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("Saúde");
 
   return (
-    <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <section style={{ gridColumn: "span 6", display: "flex", flexDirection: "column", gap: 16 }}>
       {/* Temp card */}
       <div style={{ ...cardStyle }}>
         {/* Tab bar */}

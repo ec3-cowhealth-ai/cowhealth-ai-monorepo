@@ -40,7 +40,8 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
       <section
         style={{
           ...cardStyle,
-                    display: "flex",
+          gridColumn: "span 3",
+          display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
