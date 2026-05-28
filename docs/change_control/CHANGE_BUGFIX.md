@@ -2,6 +2,53 @@
 
 ---
 
+## 2026-05-28 — Style Overhaul: CSS Theme System & Responsive Icons
+
+**Branch:** `feature/cow-lifecycle-sensors`
+**Commit:** `d050a73`
+**Author:** JCFS
+
+---
+
+### Alteração 1 — Novo arquivo `theme.css` com tokens de design
+
+**File:** `frontend/src/styles/theme.css`
+
+**Descrição:**
+Criado arquivo dedicado de tokens CSS com variáveis para modo escuro e claro (cores, backgrounds, borders, shadows, tipografia). Centraliza a identidade visual do sistema, evitando valores hardcoded espalhados pelos componentes.
+
+---
+
+### Alteração 2 — Refatoração de `DashboardIcons.tsx` para SVGs responsivos
+
+**File:** `frontend/src/features/dashboard/components/DashboardIcons.tsx`
+
+**Descrição:**
+Reestruturado com formato SVG responsivo (`viewBox` + `width`/`height` via props), melhorando legibilidade e escalabilidade dos ícones em diferentes tamanhos de tela.
+
+---
+
+### Alteração 3 — `CowDetailPage.tsx` e `CowsPage.tsx` usando variáveis CSS
+
+**Files:**
+- `frontend/src/features/cows/pages/CowDetailPage.tsx`
+- `frontend/src/features/cows/pages/CowsPage.tsx`
+
+**Descrição:**
+Substituídos valores de cor hardcoded por variáveis CSS do design system (`var(--bg-status-*)`, `var(--text-*)` etc.) nas badges de status e backgrounds de cards, garantindo consistência com o tema e suporte automático a futuras mudanças de paleta.
+
+---
+
+### Alteração 4 — Ajustes de layout e estilo em múltiplos componentes
+
+**Files afetados (23 no total):**
+`AppShell.tsx`, `CollarCard.tsx`, `CollarsPage.tsx`, `CowProfilePanel.tsx`, `CowSelectorBar.tsx`, `DashboardActivityTimeline.tsx`, `DashboardAlertFeed.tsx`, `DashboardCenterPanel.tsx`, `DashboardKPIs.tsx`, `colors.ts`, `FarmCard.tsx`, `NotificationsPage.tsx`, `useTheme.ts`, `HomePage.tsx`, `CowPin.tsx`, `ProfilePage.tsx`, `App.css`, `index.css`
+
+**Descrição:**
+Aplicação consistente das variáveis do novo `theme.css` em toda a camada autenticada: cores de background, bordas, textos e estados visuais (hover, active, disabled) alinhados ao token system. Total de **+1847 / -727 linhas** alteradas.
+
+---
+
 ## 2026-05-28 — Fix Lint + TypeScript Build Errors (codebase-wide)
 
 **Branch:** `develop`
