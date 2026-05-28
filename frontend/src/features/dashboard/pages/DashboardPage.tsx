@@ -10,6 +10,8 @@ import { CowProfilePanel } from "../components/CowProfilePanel";
 import { DashboardCenterPanel } from "../components/DashboardCenterPanel";
 import { DashboardAlertFeed } from "../components/DashboardAlertFeed";
 import { DashboardActivityTimeline } from "../components/DashboardActivityTimeline";
+import { DashboardOverviewChart } from "../components/DashboardOverviewChart";
+import { useHealthTimeline } from "../hooks/useHealthTimeline";
 import { CalIcon, FilterIcon, ChevronDown } from "../components/DashboardIcons";
 import { CowHead } from "@components/ui/CowHeadIcon";
 
@@ -24,6 +26,8 @@ export const DashboardPage = () => {
   const [selectedCowId, setSelectedCowId] = useState<string | null>(null);
 
   // KPI data — scoped to selected farm when in "farm" mode
+
+  const { data: healthTimeline } = useHealthTimeline(selectedFarm?.id);
 
   const kpiFarmId = selectionMode === "farm" && selectedFarmId ? selectedFarmId : undefined;
   const { data: overview }      = useDashboardOverview(kpiFarmId);
@@ -114,6 +118,14 @@ export const DashboardPage = () => {
 
         {/* KPIs */}
         <DashboardKPIs overview={overview} cowsPerStatus={cowsPerStatus} />
+
+        {/* Health timeline chart */}
+        {healthTimeline && healthTimeline.length > 0 && (
+          <DashboardOverviewChart
+            data={healthTimeline}
+            title="Saúde do rebanho — últimos 7 dias"
+          />
+        )}
 
         {/* Main 3-column grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>

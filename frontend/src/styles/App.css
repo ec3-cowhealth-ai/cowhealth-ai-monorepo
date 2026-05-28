@@ -992,6 +992,19 @@
   flex-direction: column;
 }
 
+/* Shorthand skeleton class for inline use */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elev-1) 25%,
+    var(--bg-elev-2) 50%,
+    var(--bg-elev-1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
 /* RESPONSIVE GRID */
 .grid {
   display: grid;

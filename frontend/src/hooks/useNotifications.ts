@@ -2,12 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@lib/api";
 
 export interface Notification {
-  id: string;
+  id: number;
   type?: string;
   title: string;
   message: string;
   read: boolean;
-  cowId?: string;
+  cowId?: number | null;
+  severity?: string;
   createdAt: string;
 }
 
@@ -34,7 +35,7 @@ export const useUnreadNotifications = () => {
 export const useMarkNotificationAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (notificationId: string) => api.patch(`/notifications/${notificationId}/read`),
+    mutationFn: (notificationId: number) => api.patch(`/notifications/${notificationId}/read`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },

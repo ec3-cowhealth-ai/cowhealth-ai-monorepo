@@ -5,11 +5,12 @@ import { CowHead } from "@components/ui/CowHeadIcon";
 import { useMe, useLogout } from "@hooks/useAuth";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
-const menuItems: { icon: ReactNode; label: string; path: string }[] = [
+const menuItems: { icon: ReactNode; label: string; path: string; reset?: boolean }[] = [
   { icon: <CowHead size={18} color={C.green} />, label: "Rebanho", path: "/cows" },
   { icon: <Warehouse size={18} color={C.green} />, label: "Fazendas", path: "/farms" },
   { icon: <Tag size={18} color={C.green} />, label: "Coleiras", path: "/collars" },
   { icon: <User size={18} color={C.green} />, label: "Usuários", path: "/access/users" },
+  { icon: <span style={{ fontSize: 18 }}>📖</span>, label: "Ver tutorial", path: "/onboarding", reset: true },
 ];
 
 export const ProfilePage = () => {
@@ -73,7 +74,10 @@ export const ProfilePage = () => {
           {menuItems.map((item, idx) => (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+              if (item.reset) localStorage.removeItem("onboardingDone");
+              navigate(item.path);
+            }}
               style={{
                 display: "flex",
                 alignItems: "center",

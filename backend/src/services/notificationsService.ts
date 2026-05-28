@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 
 export const getAllNotifications = async (userId: number) => {
-  return prisma.notification.findMany({
+  const records = await prisma.notification.findMany({
     where: { userId },
     select: {
       id: true,
@@ -9,10 +9,12 @@ export const getAllNotifications = async (userId: number) => {
       message: true,
       readAt: true,
       createdAt: true,
+      cowId: true,
       cow: { select: { id: true, tag: true, name: true, status: true } },
     },
     orderBy: { createdAt: "desc" },
   });
+  return records.map((n) => ({ ...n, read: n.readAt !== null }));
 };
 
 export const markNotificationAsRead = async (notificationId: number, userId: number) => {

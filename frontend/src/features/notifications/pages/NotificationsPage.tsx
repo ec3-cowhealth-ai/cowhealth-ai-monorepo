@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@components/common";
 import { Check, AlertTriangle, Bell, Activity, CheckCheck } from "lucide-react";
 import {
@@ -8,19 +9,19 @@ import {
   useMarkNotificationAsRead,
   useMarkAllAsRead,
 } from "@hooks/useNotifications";
+import type { Notification } from "@hooks/useNotifications";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const TYPE_COLOR: Record<string, string> = {
-  ALERT: C.red,
+  ALERT:   C.red,
   WARNING: C.orange,
   INFO:    "#6bb4e8",
 };
 
-
 const TYPE_ICON: Record<string, ReactNode> = {
-  ALERT: <AlertTriangle size={14} />,
+  ALERT:   <AlertTriangle size={14} />,
   WARNING: <Bell size={14} />,
-  INFO: <Activity size={14} />,
+  INFO:    <Activity size={14} />,
 };
 
 const timeAgo = (dateStr: string) => {
@@ -33,20 +34,41 @@ const timeAgo = (dateStr: string) => {
   return `${Math.floor(h / 24)}d`;
 };
 
+type ReadFilter     = "all" | "unread";
+type SeverityFilter = "all" | "high" | "medium" | "low" | "read";
+
 export const NotificationsPage = () => {
-  const [tab, setTab] = useState<"all" | "unread">("all");
+  const navigate = useNavigate();
+  const [tab, setTab]           = useState<ReadFilter>("all");
+  const [severity, setSeverity] = useState<SeverityFilter>("all");
 
   const { data: all, isLoading } = useNotifications();
-  const { data: unread } = useUnreadNotifications();
-  const { mutate: markAsRead } = useMarkNotificationAsRead();
+  const { data: unread }         = useUnreadNotifications();
+  const { mutate: markAsRead }   = useMarkNotificationAsRead();
   const { mutate: markAllAsRead } = useMarkAllAsRead();
 
   const unreadCount = unread?.length || 0;
 
-  const notifications = useMemo(() => {
+  const byTab = useMemo<Notification[]>(() => {
     if (tab === "unread") return unread || [];
     return all || [];
   }, [tab, all, unread]);
+
+  const notifications = useMemo<Notification[]>(() => {
+    if (severity === "read")   return byTab.filter((n) => n.read);
+    if (severity === "high")   return byTab.filter((n) => n.severity === "HIGH");
+    if (severity === "medium") return byTab.filter((n) => n.severity === "MEDIUM");
+    if (severity === "low")    return byTab.filter((n) => n.severity === "LOW");
+    return byTab;
+  }, [severity, byTab]);
+
+  const highCount   = (all || []).filter((n) => n.severity === "HIGH").length;
+  const mediumCount = (all || []).filter((n) => n.severity === "MEDIUM").length;
+
+  const handleNotificationClick = (n: Notification) => {
+    if (!n.read) markAsRead(n.id);
+    if (n.cowId) navigate(`/cows/${n.cowId}`);
+  };
 
   return (
     <div style={{ background: C.bg, minHeight: "100%" }}>
@@ -106,19 +128,19 @@ export const NotificationsPage = () => {
           )}
         </header>
 
-        {/* Filter pills */}
+        {/* Read filter pills */}
         <div style={{ display: "flex", gap: 8 }}>
           {(
             [
-              ["all", "Todos", all?.length || 0],
+              ["all",    "Todos",     all?.length || 0],
               ["unread", "Não lidos", unreadCount],
-            ] as [string, string, number][]
+            ] as [ReadFilter, string, number][]
           ).map(([val, label, count]) => {
             const active = tab === val;
             return (
               <button
                 key={val}
-                onClick={() => setTab(val as "all" | "unread")}
+                onClick={() => setTab(val)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -136,6 +158,47 @@ export const NotificationsPage = () => {
               >
                 {label}
                 <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Severity filter pills */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {(
+            [
+              ["all",    "Todos",      null],
+              ["high",   "Críticos",   highCount],
+              ["medium", "Avisos",     mediumCount],
+              ["read",   "Resolvidos", null],
+            ] as [SeverityFilter, string, number | null][]
+          ).map(([val, label, count]) => {
+            const active = severity === val;
+            const accentColor =
+              val === "high" ? C.red : val === "medium" ? C.orange : C.green;
+            return (
+              <button
+                key={val}
+                onClick={() => setSeverity(val)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "5px 12px",
+                  borderRadius: 999,
+                  fontSize: 12,
+                  fontWeight: active ? 600 : 400,
+                  border: `1px solid ${active ? accentColor : C.border}`,
+                  background: active ? `${accentColor}18` : C.card,
+                  color: active ? accentColor : C.muted,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >
+                {label}
+                {count !== null && (
+                  <span style={{ opacity: 0.7, fontSize: 10 }}>{count}</span>
+                )}
               </button>
             );
           })}
@@ -170,9 +233,7 @@ export const NotificationsPage = () => {
               return (
                 <button
                   key={n.id}
-                  onClick={() => {
-                    if (!n.read) markAsRead(n.id);
-                  }}
+                  onClick={() => handleNotificationClick(n)}
                   style={{
                     ...cardStyle,
                     display: "flex", alignItems: "flex-start", gap: 12,
@@ -219,6 +280,11 @@ export const NotificationsPage = () => {
                       <span
                         style={{ width: 7, height: 7, borderRadius: "50%", background: C.green }}
                       />
+                    )}
+                    {n.cowId && (
+                      <span style={{ fontSize: 9, color: C.green, fontWeight: 600 }}>
+                        Ver vaca →
+                      </span>
                     )}
                   </div>
                 </button>

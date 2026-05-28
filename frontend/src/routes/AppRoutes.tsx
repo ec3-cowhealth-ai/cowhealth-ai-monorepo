@@ -4,6 +4,7 @@ import { LoginPage } from "@pages/auth/LoginPage";
 import { RegisterPage } from "@pages/auth/RegisterPage";
 import { LandingPage } from "@features/landing";
 import { DashboardPreviewPage } from "@features/landing/pages/DashboardPreviewPage";
+import { OnboardingPage } from "@pages/onboarding/OnboardingPage";
 import { MapPage } from "@pages/map/MapPage";
 import { ProfilePage } from "@pages/profile/ProfilePage";
 import { DashboardPage } from "@features/dashboard/pages/DashboardPage";
@@ -24,6 +25,7 @@ const AppRoutesInner = () => {
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/preview" element={<DashboardPreviewPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 

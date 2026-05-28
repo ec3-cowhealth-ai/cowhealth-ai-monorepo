@@ -25,6 +25,9 @@ import {
   useDeleteCow,
 } from "../hooks/useCows";
 import { RetireAnimalModal } from "../components/RetireAnimalModal";
+import { MedicalRecordCard } from "../components/MedicalRecordCard";
+import { MedicalRecordModal } from "../components/MedicalRecordModal";
+import { useMedicalRecords } from "../hooks/useMedicalRecords";
 import { useHasPermission } from "@hooks/usePermission";
 import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
@@ -199,12 +202,15 @@ export const CowDetailPage = () => {
   const [showDelete, setShowDelete] = useState(false);
   const [showLink, setShowLink] = useState(false);
   const [showRetireModal, setShowRetireModal] = useState(false);
+  const [showRecordModal, setShowRecordModal] = useState(false);
 
   const { data: me } = useMe();
   const canCRUD = me?.profile === "ADMIN" || me?.profile === "MANAGER";
   const canRetire = useHasPermission("Retire Cow");
+  const canCreateRecord = useHasPermission("Create MedicalRecord");
 
   const { data: cow, isLoading } = useCow(id || "");
+  const { data: medicalRecords } = useMedicalRecords(Number(id) || 0);
   const { mutate: updateCow, isPending: updating } = useUpdateCow();
   const { mutate: deleteCow, isPending: deleting } = useDeleteCow();
 
@@ -213,7 +219,7 @@ export const CowDetailPage = () => {
   const { data: accelerometer } = useCowAccelerometerDaily(id || "");
   const { data: notifications } = useNotifications();
 
-  const cowNotifs = notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
+  const cowNotifs = notifications?.filter((n) => n.cowId != null && String(n.cowId) === id).slice(0, 5) || [];
 
   if (isLoading) {
     return (
@@ -525,6 +531,51 @@ export const CowDetailPage = () => {
           Histórico de sensores
         </button>
 
+        {/* Prontuário médico */}
+        <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 10,
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 600,
+                color: C.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              Prontuário
+            </p>
+            {canCreateRecord && (
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => setShowRecordModal(true)}
+              >
+                + Registro
+              </button>
+            )}
+          </div>
+
+          {!medicalRecords || medicalRecords.length === 0 ? (
+            <p style={{ fontSize: 13, color: C.muted, margin: 0 }}>
+              Nenhum registro clínico.
+            </p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {medicalRecords.map((r) => (
+                <MedicalRecordCard key={r.id} record={r} cowId={cow.id} />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Recent notifications */}
         {cowNotifs.length > 0 && (
           <div>
@@ -595,6 +646,12 @@ export const CowDetailPage = () => {
           </div>
         )}
       </div>
+
+      <MedicalRecordModal
+        open={showRecordModal}
+        cowId={cow.id}
+        onClose={() => setShowRecordModal(false)}
+      />
 
       <RetireAnimalModal
         open={showRetireModal}
