@@ -3,6 +3,7 @@ import {
   getAllNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  markNotificationAsUnread,
 } from "../services/notificationsService";
 import { handleRequest } from "../helpers/controllerHelpers";
 
@@ -20,4 +21,10 @@ export const markAsRead = async (request: Request, response: Response): Promise<
 export const markAllAsRead = async (request: Request, response: Response): Promise<void> => {
   const result = await markAllNotificationsAsRead(request.user!.sub);
   response.json(result);
+};
+
+export const markAsUnread = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () =>
+    markNotificationAsUnread(Number(request.params.id), request.user!.sub),
+  );
 };

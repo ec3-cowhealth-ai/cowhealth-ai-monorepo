@@ -29,11 +29,24 @@ export const markNotificationAsRead = async (notificationId: number, userId: num
     throw new Error("Sem permissão para esta ação.");
   }
 
-  if (notification.readAt) throw new Error("Notificação já foi marcada como lida.");
-
   return prisma.notification.update({
     where: { id: notificationId },
     data: { readAt: new Date() },
+    select: { id: true, readAt: true },
+  });
+};
+
+export const markNotificationAsUnread = async (notificationId: number, userId: number) => {
+  const notification = await prisma.notification.findUnique({
+    where: { id: notificationId },
+  });
+
+  if (!notification) throw new Error("Notificação não encontrada.");
+  if (notification.userId !== userId) throw new Error("Sem permissão para esta ação.");
+
+  return prisma.notification.update({
+    where: { id: notificationId },
+    data: { readAt: null },
     select: { id: true, readAt: true },
   });
 };

@@ -5,6 +5,7 @@ import { Check, Bell, CheckCheck, CheckCircle2, ChevronRight } from "lucide-reac
 import {
   useNotifications,
   useMarkNotificationAsRead,
+  useMarkNotificationAsUnread,
   useMarkAllAsRead,
 } from "@hooks/useNotifications";
 import type { Notification } from "@hooks/useNotifications";
@@ -42,10 +43,12 @@ type FilterKey = "all" | "ALERT" | "WARNING" | "INFO";
 function NotifCard({
   n,
   onMark,
+  onUnmark,
   onNavigate,
 }: {
   n: Notification;
   onMark: () => void;
+  onUnmark: () => void;
   onNavigate: () => void;
 }) {
   const s = (n.type && SCHEME[n.type]) ?? FALLBACK;
@@ -58,20 +61,53 @@ function NotifCard({
         borderLeft: `4px solid ${n.read ? C.border : s.color}`,
         background: n.read ? C.card : s.bg,
         overflow: "hidden",
-        opacity: n.read ? 0.55 : 1,
+        opacity: n.read ? 0.6 : 1,
         transition: "opacity 0.2s",
+        display: "flex",
+        alignItems: "stretch",
       }}
     >
+      {/* Checkbox lateral */}
+      <button
+        onClick={(e) => { e.stopPropagation(); n.read ? onUnmark() : onMark(); }}
+        title={n.read ? "Mover para caixa de entrada" : "Marcar como resolvido"}
+        style={{
+          flexShrink: 0,
+          width: 48,
+          background: "none",
+          border: "none",
+          borderRight: `1px solid ${n.read ? C.border : s.border}`,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            width: 20, height: 20, borderRadius: 6,
+            border: `2px solid ${n.read ? C.green : C.muted + "80"}`,
+            background: n.read ? C.green : "transparent",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, transition: "all 0.15s",
+          }}
+        >
+          {n.read && <Check size={11} color="#fff" strokeWidth={3} />}
+        </span>
+      </button>
+
       {/* Corpo clicável (navega para a vaca se houver cowId) */}
       <div
         onClick={n.cowId ? onNavigate : undefined}
         style={{
-          padding: "14px 16px",
+          flex: 1,
+          padding: "14px 14px 14px 14px",
           cursor: n.cowId ? "pointer" : "default",
+          minWidth: 0,
         }}
       >
-        {/* Linha topo: badge + tempo + dot não lido */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        {/* Linha topo: badge + tempo */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span
               style={{
@@ -87,14 +123,14 @@ function NotifCard({
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.color, display: "inline-block" }} />
             )}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
-            {n.cowId && <ChevronRight size={13} color={C.muted} />}
+            {n.cowId && !n.read && <ChevronRight size={12} color={C.muted} />}
           </div>
         </div>
 
         {/* Título */}
-        <p style={{ margin: "0 0 4px 0", fontSize: 14, fontWeight: n.read ? 400 : 700, color: C.text, lineHeight: 1.25 }}>
+        <p style={{ margin: "0 0 4px 0", fontSize: 13, fontWeight: n.read ? 400 : 700, color: C.text, lineHeight: 1.3 }}>
           {n.title}
         </p>
 
@@ -103,38 +139,12 @@ function NotifCard({
           {n.message}
         </p>
 
-        {/* Link para vaca */}
         {n.cowId && !n.read && (
-          <p style={{ margin: "6px 0 0 0", fontSize: 11, color: s.color, fontWeight: 600 }}>
+          <p style={{ margin: "5px 0 0 0", fontSize: 11, color: s.color, fontWeight: 600 }}>
             Ver animal →
           </p>
         )}
       </div>
-
-      {/* Botão Marcar como resolvido — apenas não lidos */}
-      {!n.read && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onMark(); }}
-          style={{
-            width: "100%",
-            padding: "10px 16px",
-            borderTop: `1px solid ${s.border}`,
-            background: "rgba(255,255,255,0.55)",
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            fontSize: 12,
-            fontWeight: 600,
-            color: s.color,
-          }}
-        >
-          <Check size={13} />
-          Marcar como resolvido
-        </button>
-      )}
     </div>
   );
 }
@@ -147,7 +157,8 @@ export const NotificationsPage = () => {
   const [showResolved, setShowResolved] = useState(false);
 
   const { data: all, isLoading } = useNotifications();
-  const { mutate: markAsRead }   = useMarkNotificationAsRead();
+  const { mutate: markAsRead }    = useMarkNotificationAsRead();
+  const { mutate: markAsUnread }  = useMarkNotificationAsUnread();
   const { mutate: markAllAsRead } = useMarkAllAsRead();
 
   const pending = useMemo<Notification[]>(() => {
@@ -264,6 +275,7 @@ export const NotificationsPage = () => {
               key={n.id}
               n={n}
               onMark={() => markAsRead(n.id)}
+              onUnmark={() => markAsUnread(n.id)}
               onNavigate={() => { markAsRead(n.id); navigate(`/cows/${n.cowId}`); }}
             />
           ))}
@@ -305,8 +317,9 @@ export const NotificationsPage = () => {
               <NotifCard
                 key={n.id}
                 n={n}
-                onMark={() => {}}
-                onNavigate={() => n.cowId && navigate(`/cows/${n.cowId}`)}
+                onMark={() => markAsRead(n.id)}
+                onUnmark={() => markAsUnread(n.id)}
+                onNavigate={() => { if (n.cowId) navigate(`/cows/${n.cowId}`); }}
               />
             ))}
           </div>

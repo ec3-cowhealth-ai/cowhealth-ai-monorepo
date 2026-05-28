@@ -42,6 +42,16 @@ export const useMarkNotificationAsRead = () => {
   });
 };
 
+export const useMarkNotificationAsUnread = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (notificationId: number) => api.patch(`/notifications/${notificationId}/unread`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+};
+
 export const useMarkAllAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation({
