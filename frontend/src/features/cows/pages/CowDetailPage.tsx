@@ -515,39 +515,31 @@ export const CowDetailPage = () => {
         {activeTab === "alerts" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
-            {/* Estado vazio total */}
-            {cowNotifs.length === 0 && (
-              <div style={{ ...cardStyle, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 40, textAlign: "center" }}>
-                <AlertTriangle size={36} color={C.muted} />
-                <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Sem alertas recentes para este animal.</p>
-              </div>
-            )}
-
-            {/* Pendentes */}
-            {cowNotifs.length > 0 && pending.length === 0 && (
+            {/* ── Pendentes ── */}
+            {pending.length === 0 ? (
               <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 10, padding: 16 }}>
                 <CheckCircle2 size={20} color={C.green} />
-                <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum alerta pendente.</p>
+                <p style={{ margin: 0, fontSize: 13, color: C.muted }}>
+                  {cowNotifs.length === 0 ? "Sem alertas para este animal." : "Nenhum alerta pendente."}
+                </p>
               </div>
-            )}
-
-            {pending.map((n) => {
-              const s = ALERT_SCHEME[n.type ?? ""] ?? ALERT_FALLBACK;
-              return (
-                <div
-                  key={n.id}
-                  style={{
-                    borderRadius: 14,
-                    border: `1px solid ${s.border}`,
-                    borderLeft: `4px solid ${s.color}`,
-                    background: s.bg,
-                    overflow: "hidden",
-                  }}
-                >
-                  <div style={{ padding: "14px 16px" }}>
-                    {/* Topo: badge + tempo + botão marcar */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            ) : (
+              pending.map((n) => {
+                const s = ALERT_SCHEME[n.type ?? ""] ?? ALERT_FALLBACK;
+                return (
+                  <div
+                    key={n.id}
+                    style={{
+                      borderRadius: 14,
+                      border: `1px solid ${s.border}`,
+                      borderLeft: `4px solid ${s.color}`,
+                      background: s.bg,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {/* Corpo */}
+                    <div style={{ padding: "14px 16px 10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                         <span
                           style={{
                             fontSize: 10, fontWeight: 700,
@@ -562,96 +554,120 @@ export const CowDetailPage = () => {
                           <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
                         )}
                       </div>
-                      <button
-                        onClick={() => markAsRead(n.id)}
-                        title="Marcar como visto"
-                        style={{
-                          width: 30, height: 30, borderRadius: "50%",
-                          background: "rgba(255,255,255,0.85)",
-                          border: `1px solid ${s.color}50`,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          cursor: "pointer", color: s.color, flexShrink: 0,
-                          transition: "background 0.15s",
-                        }}
-                      >
-                        <Check size={13} />
-                      </button>
+                      <p style={{ margin: "0 0 4px 0", fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.25 }}>
+                        {n.title}
+                      </p>
+                      <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+                        {n.message}
+                      </p>
                     </div>
 
-                    {/* Título */}
-                    <p style={{ margin: "0 0 5px 0", fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.25 }}>
-                      {n.title}
-                    </p>
-
-                    {/* Mensagem */}
-                    <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
-                      {n.message}
-                    </p>
+                    {/* Botão Marcar como resolvido */}
+                    <button
+                      onClick={() => markAsRead(n.id)}
+                      style={{
+                        width: "100%",
+                        padding: "10px 16px",
+                        borderTop: `1px solid ${s.border}`,
+                        background: "rgba(255,255,255,0.5)",
+                        border: "none",
+                        borderTop: `1px solid ${s.border}`,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: s.color,
+                      }}
+                    >
+                      <Check size={13} />
+                      Marcar como resolvido
+                    </button>
                   </div>
-                </div>
-              );
-            })}
-
-            {/* Seção Vistos (colapsável) */}
-            {seen.length > 0 && (
-              <div style={{ marginTop: 4 }}>
-                <button
-                  onClick={() => setShowSeen((v) => !v)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    background: "none", border: "none", cursor: "pointer",
-                    color: C.muted, fontSize: 12, padding: "4px 2px",
-                    width: "100%",
-                  }}
-                >
-                  <ChevronDown
-                    size={14}
-                    style={{
-                      transform: showSeen ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 0.15s",
-                    }}
-                  />
-                  Vistos ({seen.length})
-                </button>
-
-                {showSeen && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
-                    {seen.map((n) => {
-                      const s = ALERT_SCHEME[n.type ?? ""] ?? ALERT_FALLBACK;
-                      return (
-                        <div
-                          key={n.id}
-                          style={{
-                            ...cardStyle,
-                            padding: "12px 14px",
-                            borderLeft: `3px solid ${C.border}`,
-                            opacity: 0.55,
-                          }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                            <span
-                              style={{
-                                fontSize: 10, fontWeight: 700,
-                                padding: "1px 8px", borderRadius: 999,
-                                background: s.color + "18", color: s.color,
-                                textTransform: "uppercase", letterSpacing: "0.04em",
-                              }}
-                            >
-                              {s.label}
-                            </span>
-                            {n.createdAt && (
-                              <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
-                            )}
-                          </div>
-                          <p style={{ margin: "0 0 3px 0", fontSize: 13, fontWeight: 600, color: C.text }}>{n.title}</p>
-                          <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                );
+              })
             )}
+
+            {/* ── Divisor Resolvidos ── */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+              <div style={{ flex: 1, height: 1, background: C.border }} />
+              <button
+                onClick={() => setShowSeen((v) => !v)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  background: "none", border: "none", cursor: "pointer",
+                  color: C.muted, fontSize: 12, padding: "2px 4px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Resolvidos
+                {seen.length > 0 && (
+                  <span
+                    style={{
+                      fontSize: 10, fontWeight: 700,
+                      padding: "1px 6px", borderRadius: 999,
+                      background: "#e8f5ee", color: C.green,
+                    }}
+                  >
+                    {seen.length}
+                  </span>
+                )}
+                <ChevronDown
+                  size={13}
+                  style={{
+                    transform: showSeen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.15s",
+                  }}
+                />
+              </button>
+              <div style={{ flex: 1, height: 1, background: C.border }} />
+            </div>
+
+            {/* ── Lista Resolvidos ── */}
+            {showSeen ? (
+              seen.length === 0 ? (
+                <p style={{ margin: 0, fontSize: 12, color: C.muted, textAlign: "center", padding: "4px 0 8px" }}>
+                  Nenhum aviso resolvido ainda.
+                </p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {seen.map((n) => {
+                    const s = ALERT_SCHEME[n.type ?? ""] ?? ALERT_FALLBACK;
+                    return (
+                      <div
+                        key={n.id}
+                        style={{
+                          ...cardStyle,
+                          padding: "12px 14px",
+                          borderLeft: `3px solid ${C.border}`,
+                          opacity: 0.5,
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                          <span
+                            style={{
+                              fontSize: 10, fontWeight: 700,
+                              padding: "1px 8px", borderRadius: 999,
+                              background: s.color + "15", color: s.color,
+                              textTransform: "uppercase", letterSpacing: "0.04em",
+                            }}
+                          >
+                            {s.label}
+                          </span>
+                          {n.createdAt && (
+                            <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
+                          )}
+                        </div>
+                        <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: 600, color: C.text }}>{n.title}</p>
+                        <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )
+            ) : null}
           </div>
         )}
 
