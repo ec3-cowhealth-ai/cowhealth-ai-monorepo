@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { X, User } from "lucide-react";
 import {
@@ -13,8 +13,8 @@ import {
 } from "../hooks/useUsers";
 import { useRoles } from "../hooks/useRoles";
 import { useFarms } from "../../farms/hooks/useFarms";
-import { useMe } from "../../../hooks/useAuth";
-import type { UserListItem, UserProfile } from "../../../types/access.ts";
+import { useMe } from "@hooks/useAuth";
+import type { UserListItem, UserProfile } from "@/types/access";
 import "../../../styles/access.css";
 
 // ─── Helpers visuais ──────────────────────────────────────────────────────────
@@ -84,17 +84,6 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
     roleId: "" as string | number,
   });
 
-  // Autopreenchimento de e-mail ao mudar a fazenda
-  useEffect(() => {
-    if (form.farmId && farms) {
-      const selectedFarm = farms.find((f) => String(f.id) === String(form.farmId));
-      if (selectedFarm) {
-        const domain = normalizeEmailPattern(selectedFarm.name);
-        const prefix = form.email.split("@")[0] || "";
-        setForm((prev) => ({ ...prev, email: `${prefix}@${domain}.com` }));
-      }
-    }
-  }, [form.farmId, farms]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +127,13 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
             className="form-field__select"
             value={form.farmId}
             required
-            onChange={(e) => setForm({ ...form, farmId: e.target.value })}
+            onChange={(e) => {
+              const newFarmId = e.target.value;
+              const farm = farms?.find((f) => String(f.id) === newFarmId);
+              const domain = farm ? normalizeEmailPattern(farm.name) : "";
+              const prefix = form.email.split("@")[0] || "";
+              setForm({ ...form, farmId: newFarmId, email: domain ? `${prefix}@${domain}.com` : form.email });
+            }}
           >
             <option value="">Selecionar fazenda...</option>
             {farms?.map((f) => (

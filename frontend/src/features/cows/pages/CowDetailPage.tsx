@@ -9,8 +9,8 @@ import { LineChart } from "@components/ui/LineChart";
 import { useCow, useCowHeartRateDaily, useCowTemperatureDaily, useUpdateCow, useDeleteCow } from "../hooks/useCows";
 import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
-import { useMe } from "../../../hooks/useAuth";
-import { COW_STATUS_VALUES } from "../../../types/cows";
+import { useMe } from "@hooks/useAuth";
+import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY: "Saudável",
@@ -482,7 +482,7 @@ export const CowDetailPage = () => {
         onClose={() => setShowEdit(false)}
         isLoading={updating}
         onSubmit={(data) =>
-          updateCow({ id: String(cow.id), input: { ...data, status: data.status as any } }, { onSuccess: () => setShowEdit(false) })
+          updateCow({ id: String(cow.id), input: { ...data, status: data.status as CowStatus } }, { onSuccess: () => setShowEdit(false) })
         }
       />
 

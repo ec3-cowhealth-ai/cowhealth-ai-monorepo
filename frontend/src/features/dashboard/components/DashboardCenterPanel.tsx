@@ -134,7 +134,7 @@ function TempChart({ data, loading }: { data: SensorDailyPoint[]; loading: boole
           <YAxis domain={[37, 40.5]} tick={{ fontSize: 10, fill: C.muted }} axisLine={false} tickLine={false} />
           <Tooltip
             contentStyle={{ background: "#fff", border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 12 }}
-            formatter={(v: any) => [`${v}°C`, "Média"]}
+            formatter={(v) => [`${v}°C`, "Média"]}
           />
           <ReferenceLine y={39.5} stroke={C.red} strokeDasharray="4 4" label={{ value: "Febre 39.5°", position: "right", fontSize: 9, fill: C.red }} />
           <ReferenceLine y={37.5} stroke="#3b6fa0" strokeDasharray="4 4" label={{ value: "Mín 37.5°", position: "right", fontSize: 9, fill: "#3b6fa0" }} />
@@ -186,7 +186,7 @@ function HeartRateCard({ cowId }: { cowId: string | null }) {
             <LineChart data={data.map((p) => ({ date: p.date, bpm: Number(p.average.toFixed(0)) }))} margin={{ top: 4, right: 4, bottom: 0, left: -28 }}>
               <XAxis dataKey="date" tick={{ fontSize: 9, fill: C.muted }} axisLine={false} tickLine={false} />
               <YAxis domain={["auto", "auto"]} tick={{ fontSize: 9, fill: C.muted }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: "#fff", border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`${v} bpm`, "Média"]} />
+              <Tooltip contentStyle={{ background: "#fff", border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 12 }} formatter={(v) => [`${v} bpm`, "Média"]} />
               <Line type="monotone" dataKey="bpm" stroke={C.green} strokeWidth={1.2} dot={false} activeDot={{ r: 3, fill: C.green }} />
             </LineChart>
           </ResponsiveContainer>
