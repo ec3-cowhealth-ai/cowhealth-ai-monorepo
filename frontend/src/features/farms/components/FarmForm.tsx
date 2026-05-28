@@ -30,7 +30,7 @@ export const FarmForm = ({ open, onClose, onSubmit, isLoading, initialData }: Fa
     formState: { errors },
   } = useForm<CreateFarmInput>({
     resolver: zodResolver(farmSchema),
-    values: initialData,
+    defaultValues: initialData,
   });
 
   const onValid = (data: CreateFarmInput) => {

@@ -233,13 +233,14 @@
   background: var(--bg-elev-1);
   border-top: 1px solid var(--border);
   padding: 0 var(--s-2);
-  height: 64px;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
   position: sticky;
   bottom: 0;
   left: 0;
   right: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 20;
+  -webkit-transform: translateZ(0);
 }
 
 @media (min-width: 768px) {
@@ -255,6 +256,8 @@
   justify-content: center;
   gap: 2px;
   padding: 6px 4px 0;
+  height: 64px;
+  align-self: start;
   background: transparent;
   border: 0;
   color: var(--text-muted);

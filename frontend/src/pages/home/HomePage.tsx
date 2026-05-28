@@ -49,7 +49,11 @@ export const HomePage = () => {
   const healthPct = total > 0 ? Math.round((healthyCount / total) * 100) : 0;
 
   const attention =
-    cows?.filter((c: Cow) => c.status !== COW_STATUS_VALUES.HEALTHY).slice(0, 6) ?? [];
+    cows
+      ?.filter((c: Cow) => c.status !== COW_STATUS_VALUES.HEALTHY && c.status !== COW_STATUS_VALUES.RETIRED)
+      .slice(0, 6) ?? [];
+
+  const prepartumCows = cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.CALVING) ?? [];
 
   return (
     <div className="app-page">
@@ -205,6 +209,35 @@ export const HomePage = () => {
             </div>
             <ChevronRight size={14} color="var(--text-muted)" />
           </button>
+        )}
+
+        {/* Pré-parto */}
+        {prepartumCows.length > 0 && (
+          <div className="home-section">
+            <div className="home-section__header">
+              <span className="home-section__title">Pré-parto ({prepartumCows.length})</span>
+            </div>
+            <div style={{ display: "flex", gap: "var(--s-3)", overflowX: "auto", paddingBottom: 4 }}>
+              {prepartumCows.map((cow: Cow) => (
+                <button
+                  key={cow.id}
+                  className="card"
+                  onClick={() => navigate(`/cows/${cow.id}`)}
+                  style={{
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "8px 12px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <CowHead size={20} color="var(--info)" />
+                  <span style={{ fontSize: 13 }}>{cow.name ?? cow.tag}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Vacas em atenção */}

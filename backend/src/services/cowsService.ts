@@ -272,6 +272,25 @@ export const getCowTemperatureDaily = async (cowId: number) => {
   return aggregateDailyAverage(records, "celsius");
 };
 
+export const getCowAccelerometerDaily = async (cowId: number) => {
+  const cow = await prisma.cow.findUnique({ where: { id: cowId } });
+  if (!cow) throw new Error("Vaca não encontrada.");
+
+  const records = await prisma.accelerometerData.findMany({
+    where: { cowId, measuredAt: { gte: sevenDaysAgo() } },
+    select: { accelX: true, accelY: true, accelZ: true, measuredAt: true },
+    orderBy: { measuredAt: "asc" },
+  });
+
+  // Converte cada leitura em magnitude antes de agregar por dia
+  const magnitudeRecords = records.map((r) => ({
+    measuredAt: r.measuredAt,
+    magnitude: Math.sqrt(r.accelX ** 2 + r.accelY ** 2 + r.accelZ ** 2),
+  }));
+
+  return aggregateDailyAverage(magnitudeRecords, "magnitude");
+};
+
 export const getCowSensorHistory = async (cowId: number, from?: string, to?: string) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");

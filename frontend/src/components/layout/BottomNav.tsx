@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Home, List, Bell, Map, User } from "lucide-react";
+import { useTheme } from "@hooks/useTheme";
+import { Home, List, Bell, Map, Sun, Moon } from "lucide-react";
 import type { ReactNode } from "react";
 
 const NAV_ITEMS: {
@@ -18,13 +19,13 @@ const NAV_ITEMS: {
     badge: true,
   },
   { label: "Mapa", path: "/map", icon: <Map size={20} /> },
-  { label: "Perfil", path: "/profile", icon: <User size={20} /> },
 ];
 
 export const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: notifications } = useUnreadNotifications();
+  const { theme, toggle } = useTheme();
   const unreadCount = notifications?.length || 0;
 
   const isActive = (path: string) => location.pathname.startsWith(path);
@@ -51,6 +52,11 @@ export const BottomNav = () => {
           </button>
         );
       })}
+      <button className="bottom-nav__item" onClick={toggle}>
+        <span className="bottom-nav__indicator" />
+        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        <span>Tema</span>
+      </button>
     </nav>
   );
 };

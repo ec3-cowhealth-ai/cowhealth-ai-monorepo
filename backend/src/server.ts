@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { prisma } from "./lib/prisma";
-import path from "path";
 import authRoutes from "./routes/authRoutes";
 import usersRoutes from "./routes/usersRoutes";
 import rolesRoutes from "./routes/rolesRoutes";

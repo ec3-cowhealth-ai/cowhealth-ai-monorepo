@@ -16,11 +16,6 @@ const TYPE_COLOR: Record<string, string> = {
   INFO:    "#6bb4e8",
 };
 
-const TYPE_BG: Record<string, string> = {
-  ALERT:   "#fde8e4",
-  WARNING: "#fbe9d8",
-  INFO:    "#e4f0fb",
-};
 
 const TYPE_ICON: Record<string, ReactNode> = {
   ALERT:   <AlertTriangle size={14} />,
@@ -138,7 +133,7 @@ export const NotificationsPage = () => {
                     ...cardStyle,
                     display: "flex", alignItems: "flex-start", gap: 12,
                     padding: 16, cursor: "pointer", textAlign: "left",
-                    borderLeft: `4px solid ${nColor}`,
+                    borderLeft: `4px solid ${color}`,
                     opacity: n.read ? 0.65 : 1,
                     borderRadius: 12,
                   }}

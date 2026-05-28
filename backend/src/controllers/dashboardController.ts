@@ -4,6 +4,10 @@ import {
   getCowsPerStatus,
   getCowsPerFarm,
   getHealthTimeline,
+  getFeaturedCow,
+  getRecentAlerts,
+  getCowVitals,
+  getCowActivityTimeline,
 } from "../services/dashboardService";
 import { handleRequest } from "../helpers/controllerHelpers";
 
@@ -30,4 +34,25 @@ export const healthTimeline = async (request: Request, response: Response): Prom
   const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
   const data = await getHealthTimeline(farmId);
   response.json(data);
+};
+
+export const featuredCow = async (request: Request, response: Response): Promise<void> => {
+  const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
+  const farmIds = request.user!.farmIds;
+  await handleRequest(response, () => getFeaturedCow(farmId, farmIds));
+};
+
+export const recentAlerts = async (request: Request, response: Response): Promise<void> => {
+  const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
+  const limit = request.query.limit ? Number(request.query.limit) : 6;
+  await handleRequest(response, () => getRecentAlerts(farmId, limit));
+};
+
+export const cowVitals = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getCowVitals(Number(request.params.id)), 200, 404);
+};
+
+export const cowActivityTimeline = async (request: Request, response: Response): Promise<void> => {
+  const date = request.query.date as string | undefined;
+  await handleRequest(response, () => getCowActivityTimeline(Number(request.params.id), date));
 };

@@ -45,7 +45,8 @@ export const MapPage = () => {
   const [selectedCow, setSelectedCow] = useState<Cow | null>(null);
 
   const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
-  const { data: cows = [] } = useCows({ farmId });
+  const { data: rawCows = [] } = useCows({ farmId });
+  const cows = rawCows.filter((c: Cow) => c.status !== COW_STATUS_VALUES.RETIRED);
 
   const alertCows = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT);
   const warnCows = cows.filter(

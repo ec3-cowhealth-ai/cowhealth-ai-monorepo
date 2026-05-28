@@ -5,6 +5,7 @@ import type {
   UpdateCowInput,
   HeartRateDailyPoint,
   TemperatureDailyPoint,
+  SensorDailyPoint,
   SensorPage,
   MedicalRecord,
 } from "../types/cows.ts";
@@ -81,5 +82,20 @@ export const cowsService = {
 
   deletePhoto: async (cowId: string, filename: string) => {
     await api.delete(`/cows/${cowId}/photos/${filename}`);
+  },
+
+  retireCow: (id: number, reason: "SALE" | "SLAUGHTER") =>
+    api.post<Cow>(`/cows/${id}/retire`, { reason }).then((r) => r.data),
+
+  getAccelerometerDaily: async (cowId: string, days: number = 7) => {
+    const response = await api.get<SensorDailyPoint[]>(`/cows/${cowId}/accelerometer/daily`, {
+      params: { days },
+    });
+    return response.data;
+  },
+
+  getSensorHistory: async (cowId: string, from?: string, to?: string) => {
+    const response = await api.get(`/cows/${cowId}/sensor-history`, { params: { from, to } });
+    return response.data;
   },
 };

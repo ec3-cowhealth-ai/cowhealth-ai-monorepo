@@ -18,7 +18,7 @@ import { Response } from "express";
  */
 export const handleRequest = async (
   response: Response,
-  serviceCall: () => Promise<any>,
+  serviceCall: () => Promise<unknown>,
   successStatus: number = 200,
   errorStatus: number = 400,
 ): Promise<void> => {
@@ -30,8 +30,9 @@ export const handleRequest = async (
     } else {
       response.status(successStatus).json(result);
     }
-  } catch (error: any) {
-    const status = error.statusCode ?? errorStatus;
-    response.status(status).json({ error: error.message });
+  } catch (error: unknown) {
+    const err = error as { statusCode?: number; message?: string };
+    const status = err.statusCode ?? errorStatus;
+    response.status(status).json({ error: err.message ?? String(error) });
   }
 };

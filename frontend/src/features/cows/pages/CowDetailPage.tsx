@@ -6,12 +6,20 @@ import { AlertTriangle, Warehouse, Tag, Thermometer, Heart, Edit2, Trash2, Link,
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
-import { useCow, useCowHeartRateDaily, useCowTemperatureDaily, useUpdateCow, useDeleteCow } from "../hooks/useCows";
+import { useCow, useCowHeartRateDaily, useCowTemperatureDaily, useCowAccelerometerDaily, useUpdateCow, useDeleteCow } from "../hooks/useCows";
+import { RetireAnimalModal } from "../components/RetireAnimalModal";
+import { useHasPermission } from "@hooks/usePermission";
 import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
 import { useMe } from "@hooks/useAuth";
 import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
-import { C } from "@features/dashboard/constants/colors";
+import { C, cardStyle } from "@features/dashboard/constants/colors";
+
+const NOTIF_TONE: Record<string, string> = {
+  ALERT:   C.red,
+  WARNING: C.orange,
+  INFO:    "#6bb4e8",
+};
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY: "Saudável",
@@ -170,13 +178,15 @@ function LinkCollarModal({ open, onClose, isLoading, onSubmit }: LinkCollarModal
 export const CowDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [sensorTab, setSensorTab] = useState<"temp" | "hr">("temp");
+  // sensorTab removido: agora exibimos os 3 gráficos em grade
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showLink, setShowLink] = useState(false);
+  const [showRetireModal, setShowRetireModal] = useState(false);
 
   const { data: me } = useMe();
   const canCRUD = me?.profile === "ADMIN" || me?.profile === "MANAGER";
+  const canRetire = useHasPermission("Retire Cow");
 
   const { data: cow, isLoading } = useCow(id || "");
   const { mutate: updateCow, isPending: updating } = useUpdateCow();
@@ -184,6 +194,7 @@ export const CowDetailPage = () => {
 
   const { data: heartRate } = useCowHeartRateDaily(id || "");
   const { data: temperature } = useCowTemperatureDaily(id || "");
+  const { data: accelerometer } = useCowAccelerometerDaily(id || "");
   const { data: notifications } = useNotifications();
 
   const cowNotifs = notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
@@ -347,51 +358,58 @@ export const CowDetailPage = () => {
           )}
         </div>
 
-        {/* Sensor charts */}
-        {(temperature?.length || heartRate?.length) ? (
-          <div style={{ ...cardStyle }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-              {(["temp", "hr"] as const).map((tab) => {
-                const active = sensorTab === tab;
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => setSensorTab(tab)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 6,
-                      padding: "6px 14px", borderRadius: 999, fontSize: 12,
-                      fontWeight: active ? 600 : 400,
-                      border: `1px solid ${active ? C.green : C.border}`,
-                      background: active ? C.green : "#fff",
-                      color: active ? "#fff" : C.muted,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {tab === "temp" ? <Thermometer size={12} /> : <Heart size={12} />}
-                    {tab === "temp" ? "Temperatura" : "Freq. Cardíaca"}
-                  </button>
-                );
-              })}
-            </div>
-
-            {sensorTab === "temp" && temperature && (
-              <LineChart
-                data={temperature}
-                color={C.orange}
-                unit="°C"
-                thresholds={[{ v: 39.5, c: C.red }, { v: 38.0, c: "#6bb4e8" }]}
-              />
+        {/* Sensor charts — grade 3 colunas desktop / 1 coluna mobile */}
+        {(temperature?.length || heartRate?.length || accelerometer?.length) ? (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+            {temperature && temperature.length > 0 && (
+              <div style={{ ...cardStyle }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, fontSize: 12, fontWeight: 600, color: C.muted }}>
+                  <Thermometer size={13} color={C.orange} /> Temperatura
+                </div>
+                <LineChart
+                  data={temperature}
+                  color={C.orange}
+                  unit="°C"
+                  thresholds={[{ v: 39.5, c: C.red }, { v: 38.0, c: "#6bb4e8" }]}
+                />
+              </div>
             )}
-            {sensorTab === "hr" && heartRate && (
-              <LineChart
-                data={heartRate}
-                color={C.red}
-                unit=" bpm"
-                thresholds={[{ v: 120, c: C.red }, { v: 40, c: "#6bb4e8" }]}
-              />
+            {heartRate && heartRate.length > 0 && (
+              <div style={{ ...cardStyle }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, fontSize: 12, fontWeight: 600, color: C.muted }}>
+                  <Heart size={13} color={C.red} /> Freq. Cardíaca
+                </div>
+                <LineChart
+                  data={heartRate}
+                  color={C.red}
+                  unit=" bpm"
+                  thresholds={[{ v: 120, c: C.red }, { v: 40, c: "#6bb4e8" }]}
+                />
+              </div>
+            )}
+            {accelerometer && accelerometer.length > 0 && (
+              <div style={{ ...cardStyle }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, fontSize: 12, fontWeight: 600, color: C.muted }}>
+                  <span style={{ fontSize: 13 }}>↯</span> Atividade
+                </div>
+                <LineChart
+                  data={accelerometer}
+                  color={C.green}
+                  unit=" m/s²"
+                />
+              </div>
             )}
           </div>
         ) : null}
+
+        {/* Botão histórico */}
+        <button
+          className="btn btn-ghost btn-sm"
+          style={{ alignSelf: "flex-start" }}
+          onClick={() => navigate(`/cows/${cow.id}/history`)}
+        >
+          Histórico de sensores
+        </button>
 
         {/* Recent notifications */}
         {cowNotifs.length > 0 && (
@@ -433,7 +451,25 @@ export const CowDetailPage = () => {
             </div>
           </div>
         )}
+        {/* Zona de perigo */}
+        {canRetire && cow.status !== "RETIRED" && (
+          <div className="card" style={{ borderColor: "var(--danger)", marginTop: "var(--s-4)" }}>
+            <p style={{ fontWeight: 700, color: "var(--danger)", margin: "0 0 4px 0" }}>Zona de perigo</p>
+            <p style={{ fontSize: "var(--t-sm)", color: "var(--text-secondary)", margin: "0 0 12px 0" }}>
+              Aposentar o animal remove-o do rebanho ativo permanentemente.
+            </p>
+            <button className="btn btn-danger btn-sm" onClick={() => setShowRetireModal(true)}>
+              Aposentar animal
+            </button>
+          </div>
+        )}
       </div>
+
+      <RetireAnimalModal
+        open={showRetireModal}
+        cowId={cow.id}
+        onClose={() => setShowRetireModal(false)}
+      />
 
       <EditCowModal
         cow={cow}

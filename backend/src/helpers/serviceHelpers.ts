@@ -39,9 +39,11 @@ export const findOrThrow = async <T>(
  * // Recurso não encontrado — retorna 404
  * throwWithStatus("Fazenda não encontrada.", 404);
  */
+interface HttpError extends Error { statusCode: number; }
+
 export const throwWithStatus = (message: string, statusCode: number): never => {
   const error = new Error(message);
-  (error as any).statusCode = statusCode;
+  (error as HttpError).statusCode = statusCode;
   throw error;
 };
 

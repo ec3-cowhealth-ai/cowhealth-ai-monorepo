@@ -2,6 +2,117 @@
 
 ---
 
+## 2026-05-28 — Fix Lint + TypeScript Build Errors (codebase-wide)
+
+**Branch:** `develop`
+**Author:** JCFS
+
+---
+
+### Bug 1 — `cardStyle` e `NOTIF_TONE` ausentes em `CowDetailPage.tsx`
+
+**File:** `frontend/src/features/cows/pages/CowDetailPage.tsx`
+
+**Problem:**
+O componente usava `cardStyle` (espalhado em 5 divs de gráficos) e `NOTIF_TONE` (mapa de cor por tipo de notificação) sem importar nem definir essas referências, causando 6 erros `TS2304: Cannot find name`.
+
+**Fix:**
+Adicionado `cardStyle` ao import de `@features/dashboard/constants/colors`. Definida constante local `NOTIF_TONE` (mesmo esquema de `TYPE_COLOR` de `NotificationsPage`) com as cores `ALERT`, `WARNING` e `INFO`.
+
+---
+
+### Bug 2 — `values: initialData` incompatível em `FarmForm.tsx`
+
+**File:** `frontend/src/features/farms/components/FarmForm.tsx`
+
+**Problem:**
+`useForm<CreateFarmInput>` recebia `values: initialData` onde `initialData` é `Partial<CreateFarmInput> | undefined`. A prop `values` do react-hook-form exige o tipo completo `T`, não `Partial<T>`, causando 2 erros `TS2322`/`TS2345`.
+
+**Fix:**
+Trocado `values:` por `defaultValues:`, que aceita `Partial<T>`.
+
+---
+
+### Bug 3 — `cardStyle` importado mas não usado em `FarmsPage.tsx`
+
+**File:** `frontend/src/features/farms/pages/FarmsPage.tsx`
+
+**Problem:**
+Import `{ C, cardStyle }` — `cardStyle` não era utilizado na página, gerando `TS6133` e `@typescript-eslint/no-unused-vars`.
+
+**Fix:**
+Removido `cardStyle` do import, mantendo apenas `{ C }`.
+
+---
+
+### Bug 4 — `List` importado mas não usado em `ProfilePage.tsx`
+
+**File:** `frontend/src/pages/profile/ProfilePage.tsx`
+
+**Problem:**
+Import `{ List, Warehouse, Tag, ... }` — `List` não aparecia em nenhum JSX da página, gerando `TS6133` e `@typescript-eslint/no-unused-vars`.
+
+**Fix:**
+Removido `List,` do import lucide.
+
+---
+
+### Bug 5 — `prisma` importado mas não usado em 3 controllers
+
+**Files:**
+- `backend/src/controllers/collarsController.ts`
+- `backend/src/controllers/farmsController.ts`
+- `backend/src/controllers/usersController.ts`
+
+**Problem:**
+Cada controller importava `prisma` diretamente, mas toda comunicação com o banco foi delegada para os respectivos services. O import residual gerava `@typescript-eslint/no-unused-vars`.
+
+**Fix:**
+Removida a linha `import { prisma } from "../lib/prisma";` de cada controller.
+
+---
+
+### Bug 6 — `path` importado mas não usado em `server.ts`
+
+**File:** `backend/src/server.ts`
+
+**Problem:**
+`import path from "path"` estava presente mas `path` não era referenciado em nenhum lugar do arquivo, gerando `@typescript-eslint/no-unused-vars`.
+
+**Fix:**
+Removida a linha de import.
+
+---
+
+### Bug 7 — `any` em `controllerHelpers.ts`
+
+**File:** `backend/src/helpers/controllerHelpers.ts`
+
+**Problem:**
+Dois usos de `any`: `serviceCall: () => Promise<any>` e `catch (error: any)`, gerando 2x `@typescript-eslint/no-explicit-any`.
+
+**Fix:**
+- `Promise<any>` → `Promise<unknown>` (o retorno do service não precisa ser tipado no helper).
+- `catch (error: any)` → `catch (error: unknown)` com narrowing via `error as { statusCode?: number; message?: string }`.
+
+---
+
+### Bug 8 — `any` em `serviceHelpers.ts`
+
+**File:** `backend/src/helpers/serviceHelpers.ts`
+
+**Problem:**
+`(error as any).statusCode = statusCode` para embutir o status HTTP no objeto de erro, gerando `@typescript-eslint/no-explicit-any`.
+
+**Fix:**
+Declarada interface local `interface HttpError extends Error { statusCode: number; }`. Cast alterado para `(error as HttpError).statusCode`.
+
+---
+
+**Resultado:** `npm run lint` e `npm run build` (frontend) + `npx tsc --noEmit` (backend) com **0 erros**.
+
+---
+
 ## 2026-05-25 — Fix Frontend ESLint CI failures
 
 **Branch:** `jcfs/frontEndDesign`
