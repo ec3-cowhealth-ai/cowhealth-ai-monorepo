@@ -609,6 +609,39 @@ Scope: `frontend/` only — no backend changes.
 
 ---
 
+## 2026-05-28 - Detail page redesigns + duplicate title removal (Ian)
+
+Owner: Ian Braz
+Branch: `feature/ian-medical-mobile-v2`
+Scope: Remoção de títulos duplicados (AppBar) de 4 páginas principais; redesign completo das 3 páginas de detalhe (vaca, fazenda, coleira) com tema beige, layout profissional com tabs e tipografia Instrument Serif padronizada.
+
+### Changed
+
+**Remoção de títulos duplicados**
+
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `<AppBar>` removido; header inline com `CowHead` (34 px, verde), título Instrument Serif, subtitle com nome da fazenda + contagem; botões de busca (toggle verde) e "+ Animal" como círculos flutuantes no canto direito.
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — `<AppBar>` removido; header inline com `Warehouse` (34 px, verde), contagem de fazendas como subtitle; botão "+ Nova Fazenda" como círculo verde (visível apenas para SuperAdmin).
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — `<AppBar>` removido; botão "+ Nova Coleira" integrado ao header inline existente com `justify-content: space-between`.
+- `frontend/src/features/access/pages/AccessLayout.tsx` — `<AppBar>` removido; header inline com `ShieldCheck` (34 px, verde) e subtitle "Usuários, papéis e permissões"; imports adicionados: `C`, `ShieldCheck`.
+
+**CowDetailPage — Redesign com tabs (TAREFA 1f)**
+
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — redesign completo: botão "voltar" inline com `ChevronLeft`; botões de ação como círculos (`Edit2`, `Trash2`); hero card branco com avatar 64 px + Instrument Serif 26 px + tag + badge de status + pills de fazenda/coleira; `type TabKey = "overview" | "records" | "alerts"` com navegação por pills; **Tab Visão Geral**: grid de `MetricCard` + gráficos de sensores + botão histórico; **Tab Prontuário**: contador de registros + botão "+ Registro" + lista `MedicalRecordCard`; **Tab Alertas**: notificações filtradas pela vaca; zona de perigo fora das tabs; `STATUS_BG` migrado de `var(--)` para valores hex; componente interno `MetricCard`.
+
+**FarmDetailPage — Migração para tema claro**
+
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — redesign completo: removido `<AppBar>` e `className="card"/"app-content"/"text-secondary"`; header inline com botão voltar + Edit/Trash em círculos; hero com `Warehouse` colorido pelo status + Instrument Serif + cidade/estado; componente interno `InfoItem`; grid de vacas com `CowHead` colorido por status.
+
+**CollarDetailPage — Migração para tema claro**
+
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — redesign completo: removido `<AppBar>`, `<StatusBadge>`, `<EmptyState>` dark; header inline com voltar + Edit + Delete; hero com `Tag` colorido pelo status da coleira + Instrument Serif + badge; mapas `COLLAR_STATUS_LABEL` e `DATA_FREQ_LABEL`; card de vaca vinculada com `CowHead`; componente interno `InfoItem`.
+
+### Build Status
+
+- ✅ Frontend TypeScript: zero erros (`tsc --noEmit`).
+
+---
+
 ## 2026-05-28 - Feature C (Prontuário Médico), Notificação → Vaca, Health Chart, Onboarding, OfflineBanner (Ian)
 
 Owner: Ian Braz
