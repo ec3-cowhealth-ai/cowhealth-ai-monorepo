@@ -1,0 +1,67 @@
+/* Dashboard responsive layout */
+
+.dashboard-main-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-top-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+/* Mobile first — stack everything vertically */
+@media (max-width: 767px) {
+  .dashboard-main-grid {
+    flex-direction: column;
+  }
+
+  .dashboard-top-row {
+    flex-direction: column;
+  }
+
+  /* Remove grid-column constraints on mobile */
+  .dashboard-main-grid > * {
+    width: 100%;
+  }
+
+  .dashboard-top-row > * {
+    width: 100%;
+  }
+}
+
+/* Tablet (768-1023px) — 2 columns top, full width alert */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dashboard-top-row {
+    flex-direction: column;
+  }
+
+  .dashboard-top-row > * {
+    width: 100%;
+  }
+}
+
+/* Desktop (1024px+) — original 3-column layout */
+@media (min-width: 1024px) {
+  .dashboard-main-grid {
+    flex-direction: row;
+  }
+
+  .dashboard-top-row {
+    flex: 1;
+    flex-direction: row;
+  }
+
+  /* Assuming ~3:6:3 ratio */
+  .dashboard-top-row > :first-child {
+    flex: 0 0 25%;
+    min-width: 0;
+  }
+
+  .dashboard-top-row > :last-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
