@@ -1,298 +1,317 @@
-import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@components/common";
-import { Check, AlertTriangle, Bell, Activity, CheckCheck } from "lucide-react";
+import { Check, Bell, CheckCheck, CheckCircle2, ChevronRight } from "lucide-react";
 import {
   useNotifications,
-  useUnreadNotifications,
   useMarkNotificationAsRead,
   useMarkAllAsRead,
 } from "@hooks/useNotifications";
 import type { Notification } from "@hooks/useNotifications";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
-const TYPE_COLOR: Record<string, string> = {
-  ALERT:   C.red,
-  WARNING: C.orange,
-  INFO:    "#6bb4e8",
-};
+// ─── Esquemas de cor por tipo ─────────────────────────────────────────────────
 
-const TYPE_ICON: Record<string, ReactNode> = {
-  ALERT:   <AlertTriangle size={14} />,
-  WARNING: <Bell size={14} />,
-  INFO:    <Activity size={14} />,
+const SCHEME: Record<string, { color: string; bg: string; border: string; label: string }> = {
+  ALERT:   { color: C.red,     bg: "#fdecea", border: "#f5c0b8", label: "Crítico"    },
+  WARNING: { color: C.orange,  bg: "#fdf3e7", border: "#f0d0a0", label: "Aviso"      },
+  INFO:    { color: "#6bb4e8", bg: "#e8f2fb", border: "#aed4f0", label: "Informação" },
 };
+const FALLBACK = { color: C.muted, bg: C.card, border: C.border, label: "Alerta" };
 
-const timeAgo = (dateStr: string) => {
+// ─── Ordenação por urgência ───────────────────────────────────────────────────
+
+const TYPE_RANK: Record<string, number> = { ALERT: 0, WARNING: 1, INFO: 2 };
+
+function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return "agora";
+  if (m < 1)  return "agora";
   if (m < 60) return `${m}min`;
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h`;
   return `${Math.floor(h / 24)}d`;
-};
+}
 
-type ReadFilter     = "all" | "unread";
-type SeverityFilter = "all" | "high" | "medium" | "low" | "read";
+// ─── Filtros ──────────────────────────────────────────────────────────────────
+
+type FilterKey = "all" | "ALERT" | "WARNING" | "INFO";
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
+
+function NotifCard({
+  n,
+  onMark,
+  onNavigate,
+}: {
+  n: Notification;
+  onMark: () => void;
+  onNavigate: () => void;
+}) {
+  const s = (n.type && SCHEME[n.type]) ?? FALLBACK;
+
+  return (
+    <div
+      style={{
+        borderRadius: 14,
+        border: `1px solid ${n.read ? C.border : s.border}`,
+        borderLeft: `4px solid ${n.read ? C.border : s.color}`,
+        background: n.read ? C.card : s.bg,
+        overflow: "hidden",
+        opacity: n.read ? 0.55 : 1,
+        transition: "opacity 0.2s",
+      }}
+    >
+      {/* Corpo clicável (navega para a vaca se houver cowId) */}
+      <div
+        onClick={n.cowId ? onNavigate : undefined}
+        style={{
+          padding: "14px 16px",
+          cursor: n.cowId ? "pointer" : "default",
+        }}
+      >
+        {/* Linha topo: badge + tempo + dot não lido */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span
+              style={{
+                fontSize: 10, fontWeight: 700,
+                padding: "2px 9px", borderRadius: 999,
+                background: s.color + "22", color: s.color,
+                textTransform: "uppercase", letterSpacing: "0.05em",
+              }}
+            >
+              {s.label}
+            </span>
+            {!n.read && (
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.color, display: "inline-block" }} />
+            )}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
+            {n.cowId && <ChevronRight size={13} color={C.muted} />}
+          </div>
+        </div>
+
+        {/* Título */}
+        <p style={{ margin: "0 0 4px 0", fontSize: 14, fontWeight: n.read ? 400 : 700, color: C.text, lineHeight: 1.25 }}>
+          {n.title}
+        </p>
+
+        {/* Mensagem */}
+        <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+          {n.message}
+        </p>
+
+        {/* Link para vaca */}
+        {n.cowId && !n.read && (
+          <p style={{ margin: "6px 0 0 0", fontSize: 11, color: s.color, fontWeight: 600 }}>
+            Ver animal →
+          </p>
+        )}
+      </div>
+
+      {/* Botão Marcar como resolvido — apenas não lidos */}
+      {!n.read && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onMark(); }}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            borderTop: `1px solid ${s.border}`,
+            background: "rgba(255,255,255,0.55)",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            fontSize: 12,
+            fontWeight: 600,
+            color: s.color,
+          }}
+        >
+          <Check size={13} />
+          Marcar como resolvido
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Página ───────────────────────────────────────────────────────────────────
 
 export const NotificationsPage = () => {
   const navigate = useNavigate();
-  const [tab, setTab]           = useState<ReadFilter>("all");
-  const [severity, setSeverity] = useState<SeverityFilter>("all");
+  const [filter, setFilter] = useState<FilterKey>("all");
+  const [showResolved, setShowResolved] = useState(false);
 
   const { data: all, isLoading } = useNotifications();
-  const { data: unread }         = useUnreadNotifications();
   const { mutate: markAsRead }   = useMarkNotificationAsRead();
   const { mutate: markAllAsRead } = useMarkAllAsRead();
 
-  const unreadCount = unread?.length || 0;
+  const pending = useMemo<Notification[]>(() => {
+    const unread = (all ?? []).filter((n) => !n.read);
+    const byType = filter === "all" ? unread : unread.filter((n) => n.type === filter);
+    return [...byType].sort(
+      (a, b) => (TYPE_RANK[a.type ?? ""] ?? 9) - (TYPE_RANK[b.type ?? ""] ?? 9),
+    );
+  }, [all, filter]);
 
-  const byTab = useMemo<Notification[]>(() => {
-    if (tab === "unread") return unread || [];
-    return all || [];
-  }, [tab, all, unread]);
+  const resolved = useMemo<Notification[]>(
+    () => (all ?? []).filter((n) => n.read),
+    [all],
+  );
 
-  const notifications = useMemo<Notification[]>(() => {
-    if (severity === "read")   return byTab.filter((n) => n.read);
-    if (severity === "high")   return byTab.filter((n) => n.severity === "HIGH");
-    if (severity === "medium") return byTab.filter((n) => n.severity === "MEDIUM");
-    if (severity === "low")    return byTab.filter((n) => n.severity === "LOW");
-    return byTab;
-  }, [severity, byTab]);
+  const unreadCount = (all ?? []).filter((n) => !n.read).length;
 
-  const highCount   = (all || []).filter((n) => n.severity === "HIGH").length;
-  const mediumCount = (all || []).filter((n) => n.severity === "MEDIUM").length;
-
-  const handleNotificationClick = (n: Notification) => {
-    if (!n.read) markAsRead(n.id);
-    if (n.cowId) navigate(`/cows/${n.cowId}`);
+  const counts = {
+    ALERT:   (all ?? []).filter((n) => !n.read && n.type === "ALERT").length,
+    WARNING: (all ?? []).filter((n) => !n.read && n.type === "WARNING").length,
+    INFO:    (all ?? []).filter((n) => !n.read && n.type === "INFO").length,
   };
 
+  const FILTERS: [FilterKey, string, number | null][] = [
+    ["all",     "Todos",       unreadCount],
+    ["ALERT",   "Críticos",    counts.ALERT],
+    ["WARNING", "Avisos",      counts.WARNING],
+    ["INFO",    "Informações", counts.INFO],
+  ];
+
   return (
-    <div style={{ background: C.bg, minHeight: "100%" }}>
-      <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
-        {/* Header */}
-        <header
-          style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Bell size={34} color={C.green} />
-            <div>
-              <h1
-                style={{
-                  fontFamily: "'Instrument Serif', Georgia, serif",
-                  fontSize: 34,
-                  lineHeight: 1,
-                  margin: 0,
-                  color: C.text,
-                  fontWeight: 400,
-                }}
-              >
-                Alertas
-              </h1>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  fontSize: 13,
-                  color: unreadCount > 0 ? C.orange : C.muted,
-                }}
-              >
-                {unreadCount > 0
-                  ? `${unreadCount} não lido${unreadCount !== 1 ? "s" : ""}`
-                  : "Tudo em dia"}
-              </p>
-            </div>
-          </div>
-          {unreadCount > 0 && (
-            <button
-              onClick={() => markAllAsRead()}
+    <div className="app-page" style={{ background: C.bg }}>
+      {/* Header */}
+      <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Bell size={34} color={C.green} />
+          <div>
+            <h1
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "8px 14px",
-                borderRadius: 999,
-                fontSize: 12,
-                fontWeight: 600,
-                border: `1px solid ${C.border}`,
-                background: C.card,
-                color: C.muted,
-                cursor: "pointer",
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: 34, lineHeight: 1, margin: 0,
+                color: C.text, fontWeight: 400,
               }}
-              title="Marcar tudo como lido"
             >
-              <CheckCheck size={14} /> Marcar tudo
-            </button>
-          )}
-        </header>
-
-        {/* Read filter pills */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {(
-            [
-              ["all",    "Todos",     all?.length || 0],
-              ["unread", "Não lidos", unreadCount],
-            ] as [ReadFilter, string, number][]
-          ).map(([val, label, count]) => {
-            const active = tab === val;
-            return (
-              <button
-                key={val}
-                onClick={() => setTab(val)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "7px 16px",
-                  borderRadius: 999,
-                  fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  border: `1px solid ${active ? C.green : C.border}`,
-                  background: active ? C.green : C.card,
-                  color: active ? "var(--primary-on)" : C.muted,
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                }}
-              >
-                {label}
-                <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Severity filter pills */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {(
-            [
-              ["all",    "Todos",      null],
-              ["high",   "Críticos",   highCount],
-              ["medium", "Avisos",     mediumCount],
-              ["read",   "Resolvidos", null],
-            ] as [SeverityFilter, string, number | null][]
-          ).map(([val, label, count]) => {
-            const active = severity === val;
-            const accentColor =
-              val === "high" ? C.red : val === "medium" ? C.orange : C.green;
-            return (
-              <button
-                key={val}
-                onClick={() => setSeverity(val)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  padding: "5px 12px",
-                  borderRadius: 999,
-                  fontSize: 12,
-                  fontWeight: active ? 600 : 400,
-                  border: `1px solid ${active ? accentColor : C.border}`,
-                  background: active ? `${accentColor}18` : C.card,
-                  color: active ? accentColor : C.muted,
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                }}
-              >
-                {label}
-                {count !== null && (
-                  <span style={{ opacity: 0.7, fontSize: 10 }}>{count}</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* List */}
-        {isLoading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
-            <LoadingSpinner />
-          </div>
-        ) : notifications.length === 0 ? (
-          <div
-            style={{
-              ...cardStyle,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 12,
-              padding: 48,
-              textAlign: "center",
-            }}
-          >
-            <Check size={36} color={C.green} />
-            <p style={{ margin: 0, fontSize: 14, color: C.muted }}>
-              {tab === "unread" ? "Você está em dia!" : "Sem notificações"}
+              Avisos
+            </h1>
+            <p style={{ margin: "4px 0 0 0", fontSize: 13, color: unreadCount > 0 ? C.orange : C.muted }}>
+              {unreadCount > 0 ? `${unreadCount} não resolvido${unreadCount !== 1 ? "s" : ""}` : "Tudo em dia"}
             </p>
           </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {notifications.map((n) => {
-              const color = (n.type && TYPE_COLOR[n.type]) ?? "var(--border-subtle)";
-              return (
-                <button
-                  key={n.id}
-                  onClick={() => handleNotificationClick(n)}
-                  style={{
-                    ...cardStyle,
-                    display: "flex", alignItems: "flex-start", gap: 12,
-                    padding: 16, cursor: "pointer", textAlign: "left",
-                    borderLeft: `4px solid ${color}`,
-                    opacity: n.read ? 0.65 : 1,
-                    borderRadius: 12,
-                  }}
-                >
-                  <span
-                    style={{
-                      color,
-                      flexShrink: 0,
-                      marginTop: 2,
-                      display: "flex",
-                    }}
-                  >
-                    {(n.type && TYPE_ICON[n.type]) ?? <Bell size={14} />}
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        margin: "0 0 2px 0",
-                        fontSize: 13,
-                        fontWeight: n.read ? 400 : 600,
-                        color: C.text,
-                      }}
-                    >
-                      {n.title}
-                    </p>
-                    <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                      gap: 6,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
-                    {!n.read && (
-                      <span
-                        style={{ width: 7, height: 7, borderRadius: "50%", background: C.green }}
-                      />
-                    )}
-                    {n.cowId && (
-                      <span style={{ fontSize: 9, color: C.green, fontWeight: 600 }}>
-                        Ver vaca →
-                      </span>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+        </div>
+        {unreadCount > 0 && (
+          <button
+            onClick={() => markAllAsRead()}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "8px 14px", borderRadius: 999,
+              fontSize: 12, fontWeight: 600,
+              border: `1px solid ${C.border}`,
+              background: C.card, color: C.muted,
+              cursor: "pointer",
+            }}
+          >
+            <CheckCheck size={14} /> Resolver todos
+          </button>
         )}
+      </header>
+
+      {/* Filtros por tipo */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {FILTERS.map(([val, label, count]) => {
+          const active = filter === val;
+          const accentColor =
+            val === "ALERT" ? C.red : val === "WARNING" ? C.orange : val === "INFO" ? "#6bb4e8" : C.green;
+          return (
+            <button
+              key={val}
+              onClick={() => setFilter(val)}
+              style={{
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "7px 16px", borderRadius: 999, fontSize: 13,
+                fontWeight: active ? 600 : 400,
+                border: `1px solid ${active ? accentColor : C.border}`,
+                background: active ? accentColor + "18" : C.card,
+                color: active ? accentColor : C.muted,
+                cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              {label}
+              {count !== null && count > 0 && (
+                <span style={{ fontSize: 10, opacity: 0.7 }}>{count}</span>
+              )}
+            </button>
+          );
+        })}
       </div>
+
+      {/* Lista de pendentes */}
+      {isLoading ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
+          <LoadingSpinner />
+        </div>
+      ) : pending.length === 0 ? (
+        <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 10, padding: 20 }}>
+          <CheckCircle2 size={22} color={C.green} />
+          <p style={{ margin: 0, fontSize: 13, color: C.muted }}>
+            {filter === "all" ? "Nenhum aviso pendente." : `Nenhum aviso do tipo "${SCHEME[filter]?.label}" pendente.`}
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {pending.map((n) => (
+            <NotifCard
+              key={n.id}
+              n={n}
+              onMark={() => markAsRead(n.id)}
+              onNavigate={() => { markAsRead(n.id); navigate(`/cows/${n.cowId}`); }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Divisor Resolvidos */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+        <button
+          onClick={() => setShowResolved((v) => !v)}
+          style={{
+            display: "flex", alignItems: "center", gap: 5,
+            background: "none", border: "none", cursor: "pointer",
+            color: C.muted, fontSize: 12, padding: "2px 4px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Resolvidos
+          {resolved.length > 0 && (
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 999, background: "#e8f5ee", color: C.green }}>
+              {resolved.length}
+            </span>
+          )}
+          <Check size={12} style={{ transform: showResolved ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+        </button>
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+      </div>
+
+      {/* Lista de resolvidos */}
+      {showResolved && (
+        resolved.length === 0 ? (
+          <p style={{ margin: 0, fontSize: 12, color: C.muted, textAlign: "center" }}>
+            Nenhum aviso resolvido ainda.
+          </p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {resolved.map((n) => (
+              <NotifCard
+                key={n.id}
+                n={n}
+                onMark={() => {}}
+                onNavigate={() => n.cowId && navigate(`/cows/${n.cowId}`)}
+              />
+            ))}
+          </div>
+        )
+      )}
     </div>
   );
 };
