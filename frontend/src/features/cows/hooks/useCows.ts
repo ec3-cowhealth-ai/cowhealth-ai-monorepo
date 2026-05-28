@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cowsService } from "@services/cowsService";
-import type { CreateCowInput, UpdateCowInput } from "../../../types/cows.ts";
+import type { CreateCowInput, UpdateCowInput } from "@/types/cows";
 import { PERIOD_OPTIONS, type Period } from "@/types/period";
 
 const periodToDays = (period: Period, customFrom?: string, customTo?: string): number => {

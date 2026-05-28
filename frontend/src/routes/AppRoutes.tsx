@@ -12,6 +12,11 @@ import { FarmsPage, FarmDetailPage } from "@features/farms";
 import { CollarsPage, CollarDetailPage } from "@features/collars";
 import { NotificationsPage } from "@features/notifications";
 import { CowsPage, CowDetailPage, CowHistoryPage } from "@features/cows";
+import {
+  ClinicalRecordListPage,
+  ClinicalRecordFormPage,
+  ClinicalRecordDetailPage,
+} from "@features/clinicalRecord";
 import { AccessLayout, UsersPage, RolesPage, PermissionsPage } from "@features/access";
 import { SplashPage } from "@pages/splash/SplashPage";
 import { OnboardingPage } from "@pages/onboarding/OnboardingPage";
@@ -47,6 +52,12 @@ const AppRoutesInner = () => {
         <Route path="/cows" element={<CowsPage />} />
         <Route path="/cows/:id" element={<CowDetailPage />} />
         <Route path="/cows/:id/history" element={<CowHistoryPage />} />
+
+        {/* Clinical Records */}
+        <Route path="/cows/:id/clinical-records" element={<ClinicalRecordListPage />} />
+        <Route path="/cows/:id/clinical-records/new" element={<ClinicalRecordFormPage />} />
+        <Route path="/cows/:id/clinical-records/:recordId" element={<ClinicalRecordDetailPage />} />
+        <Route path="/cows/:id/clinical-records/:recordId/edit" element={<ClinicalRecordFormPage />} />
 
         {/* Notifications */}
         <Route path="/notifications" element={<NotificationsPage />} />

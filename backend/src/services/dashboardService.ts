@@ -237,9 +237,64 @@ export const getCowVitals = async (cowId: number) => {
   };
 };
 
-export const getCowActivityTimeline = async (_cowId: number, _date?: string) => {
-  // Tabela activity_events ainda não é populada pelo MQTT
-  return [];
+// Thresholds calibrados com base nos dados reais do DB:
+// accelXY médio ≈ 0 (sem movimento), gyro até ±47 °/s
+// accelZ ≈ 9.42 = gravidade (sensor em m/s²)
+const classifyActivity = (avgXY: number, avgGyro: number) => {
+  if (avgXY > 0.55 || avgGyro > 20)  return { label: "Atividade",    icon: "activity",   color: "#f57f17" };
+  if (avgXY > 0.25 || avgGyro > 10)  return { label: "Alimentação",  icon: "feeding",    color: "#6bb4e8" };
+  if (avgGyro > 4)                    return { label: "Ruminação",    icon: "rumination", color: "#339989" };
+  return                                     { label: "Repouso",      icon: "rest",       color: "#888" };
+};
+
+export const getCowActivityTimeline = async (cowId: number, date?: string) => {
+  const base = date ? new Date(date) : new Date();
+  const start = new Date(base); start.setHours(0, 0, 0, 0);
+  const end   = new Date(base); end.setHours(23, 59, 59, 999);
+
+  const records = await prisma.accelerometerData.findMany({
+    where: { cowId, measuredAt: { gte: start, lte: end } },
+    select: { accelX: true, accelY: true, gyroX: true, gyroY: true, gyroZ: true, measuredAt: true },
+    orderBy: { measuredAt: "asc" },
+  });
+
+  if (records.length === 0) return [];
+
+  // Agrupar por hora
+  const byHour = new Map<number, typeof records>();
+  for (const r of records) {
+    const h = new Date(r.measuredAt).getHours();
+    if (!byHour.has(h)) byHour.set(h, []);
+    byHour.get(h)!.push(r);
+  }
+
+  const hourlyEvents = Array.from(byHour.entries()).map(([hour, recs]) => {
+    const avgXY   = recs.reduce((s, r) => s + Math.sqrt(r.accelX ** 2 + r.accelY ** 2), 0) / recs.length;
+    const avgGyro = recs.reduce((s, r) => s + Math.sqrt(r.gyroX ** 2 + r.gyroY ** 2 + r.gyroZ ** 2), 0) / recs.length;
+    const { label, icon, color } = classifyActivity(avgXY, avgGyro);
+    return {
+      time:        `${String(hour).padStart(2, "0")}:00`,
+      label,
+      icon,
+      color,
+      durationMin: recs.length * 60,
+    };
+  });
+
+  hourlyEvents.sort((a, b) => a.time.localeCompare(b.time));
+
+  // Mesclar horas consecutivas com a mesma atividade para reduzir ruído
+  const merged: typeof hourlyEvents = [];
+  for (const ev of hourlyEvents) {
+    const prev = merged[merged.length - 1];
+    if (prev && prev.label === ev.label) {
+      prev.durationMin += ev.durationMin;
+    } else {
+      merged.push({ ...ev });
+    }
+  }
+
+  return merged;
 };
 
 type Bucket = { start: Date; end: Date; label: string };
@@ -346,7 +401,7 @@ export const getHealthTimeline = async (
   const baseWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
   const buckets = buildBuckets(period, from, to);
 
-  const results = await Promise.all(
+  return Promise.all(
     buckets.map(async ({ end, label }) => {
       const [healthy, alert, heatStress, calving] = await Promise.all([
         prisma.cow.count({ where: { ...baseWhere, status: "HEALTHY",    createdAt: { lte: end } } }),
@@ -357,6 +412,4 @@ export const getHealthTimeline = async (
       return { label, healthy, alert, heatStress, calving };
     }),
   );
-
-  return results;
 };

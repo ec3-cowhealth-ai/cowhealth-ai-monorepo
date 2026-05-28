@@ -7,8 +7,8 @@ import { useCollar, useUpdateCollar, useDeleteCollar } from "../hooks/useCollars
 import { useFarms } from "../../farms/hooks/useFarms";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
-import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
-import type { CollarStatus, DataFrequency } from "../../../types/collars.ts";
+import { COLLAR_STATUS_VALUES } from "@/types/collars";
+import type { CollarStatus, DataFrequency } from "@/types/collars";
 
 const getStatusTone = (status: string): "success" | "warning" | "danger" | "muted" => {
   switch (status) {

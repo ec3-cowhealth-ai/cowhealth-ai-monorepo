@@ -59,6 +59,13 @@ export const PERMISSIONS = {
   CREATE_MEDICAL_RECORD: "Create MedicalRecord",
   UPDATE_MEDICAL_RECORD: "Update MedicalRecord",
   DELETE_MEDICAL_RECORD: "Delete MedicalRecord",
+
+  // ClinicalRecord
+  VIEW_ANY_CLINICAL_RECORD: "ViewAny ClinicalRecord",
+  VIEW_CLINICAL_RECORD: "View ClinicalRecord",
+  CREATE_CLINICAL_RECORD: "Create ClinicalRecord",
+  UPDATE_CLINICAL_RECORD: "Update ClinicalRecord",
+  DELETE_CLINICAL_RECORD: "Delete ClinicalRecord",
 } as const;
 
 export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

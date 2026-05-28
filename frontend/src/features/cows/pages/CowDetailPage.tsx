@@ -549,6 +549,13 @@ export const CowDetailPage = () => {
         >
           Histórico de sensores
         </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          style={{ alignSelf: "flex-start" }}
+          onClick={() => navigate(`/cows/${cow.id}/clinical-records`)}
+        >
+          Prontuário Clínico
+        </button>
 
         {/* Recent notifications */}
         {cowNotifs.length > 0 && (

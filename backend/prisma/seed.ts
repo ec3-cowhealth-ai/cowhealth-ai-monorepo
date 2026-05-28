@@ -49,6 +49,11 @@ const permissionNames = [
   "Create MedicalRecord",
   "Update MedicalRecord",
   "Delete MedicalRecord",
+  "ViewAny ClinicalRecord",
+  "View ClinicalRecord",
+  "Create ClinicalRecord",
+  "Update ClinicalRecord",
+  "Delete ClinicalRecord",
   "Retire Cow",
 ];
 
@@ -356,7 +361,6 @@ async function main() {
   const farmPermissions = createdPermissions.filter((p) => p.name.includes("Farm"));
   const collarPermissions = createdPermissions.filter((p) => p.name.includes("Collar"));
   const cowPermissions = createdPermissions.filter((p) => p.name.includes("Cow"));
-  const userPermissions = createdPermissions.filter((p) => p.name.includes("User"));
   const notificationPermissions = createdPermissions.filter((p) => p.name.includes("Notification"));
   const viewOnlyFarm = farmPermissions.filter(
     (p) => p.name.startsWith("ViewAny") || p.name.startsWith("View"),
@@ -369,7 +373,8 @@ async function main() {
   );
   const medicalRecordPermissions    = createdPermissions.filter((p) => p.name.includes("MedicalRecord"));
   const viewOnlyMedicalRecord       = medicalRecordPermissions.filter((p) => p.name.startsWith("ViewAny") || p.name.startsWith("View"));
-  const writeMedicalRecordPermissions = medicalRecordPermissions.filter((p) => !p.name.startsWith("ViewAny") && !p.name.startsWith("View"));
+  const clinicalRecordPermissions   = createdPermissions.filter((p) => p.name.includes("ClinicalRecord"));
+  const viewOnlyClinicalRecord      = clinicalRecordPermissions.filter((p) => p.name.startsWith("ViewAny") || p.name.startsWith("View"));
   const retireCowPermission         = createdPermissions.filter((p) => p.name === "Retire Cow");
 
   // Grupos de permissões
@@ -379,6 +384,7 @@ async function main() {
     ["Colares", collarPermissions],
     ["Vacas", cowPermissions],
     ["Prontuario", medicalRecordPermissions],
+    ["Prontuario Clinico", clinicalRecordPermissions],
   ] as const) {
     await prisma.permissionGroup.upsert({
       where: { name: groupName },
@@ -430,6 +436,7 @@ async function main() {
           ...cowPermissions,
           ...notificationPermissions,
           ...medicalRecordPermissions,
+          ...clinicalRecordPermissions,
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -448,6 +455,7 @@ async function main() {
           ...cowPermissions,
           ...notificationPermissions,
           ...viewOnlyMedicalRecord,
+          ...viewOnlyClinicalRecord,
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -466,6 +474,7 @@ async function main() {
           ...viewOnlyCow,
           ...notificationPermissions,
           ...viewOnlyMedicalRecord,
+          ...viewOnlyClinicalRecord,
           ...retireCowPermission,
           ...cowPermissions.filter((p) => p.name === "Create Cow" || p.name === "Update Cow"),
         ].map((p) => ({ permissionId: p.id })),
@@ -511,7 +520,7 @@ async function main() {
     },
   });
 
-  const producerRole = await prisma.role.upsert({
+  await prisma.role.upsert({
     where: { name: "Produtor" },
     update: {},
     create: {
@@ -524,6 +533,7 @@ async function main() {
           ...notificationPermissions,
           ...viewOnlyCollar,
           ...viewOnlyMedicalRecord,
+          ...viewOnlyClinicalRecord,
         ].map((p) => ({ permissionId: p.id })),
       },
     },
@@ -1072,7 +1082,7 @@ async function main() {
   console.log("  operador@cowhealth.com         Operador de Campo");
   console.log("  financeiro@cowhealth.com       Financeiro");
   console.log("  obs@cowhealth.com              Observador");
-  console.log("\nNovas permissões: MedicalRecord (5) + Retire Cow (1)");
+  console.log("\nNovas permissões: MedicalRecord (5) + ClinicalRecord (5) + Retire Cow (1)");
 }
 
 main()
