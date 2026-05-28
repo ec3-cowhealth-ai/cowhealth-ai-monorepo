@@ -138,7 +138,7 @@ export const NotificationsPage = () => {
                     ...cardStyle,
                     display: "flex", alignItems: "flex-start", gap: 12,
                     padding: 16, cursor: "pointer", textAlign: "left",
-                    borderLeft: `4px solid ${nColor}`,
+                    borderLeft: `4px solid ${color}`,
                     opacity: n.read ? 0.65 : 1,
                     borderRadius: 12,
                   }}

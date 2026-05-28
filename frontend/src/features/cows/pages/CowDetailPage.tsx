@@ -11,7 +11,7 @@ import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
 import { useMe } from "@hooks/useAuth";
 import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
-import { C } from "@features/dashboard/constants/colors";
+import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY: "Saudável",
