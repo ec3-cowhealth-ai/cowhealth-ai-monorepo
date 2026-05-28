@@ -2380,6 +2380,908 @@ collection:
                 send: true
                 store: true
               rebuildPath: true
+  - name: Validation Error Cases (422)
+    meta:
+      id: fld_val_error_cases_main
+      created: 1778000000000
+      modified: 1778000000000
+      sortKey: -1777904165600
+      description: "Testa validacao Zod — todos devem retornar 422 com details[]"
+    children:
+      - url: "{{ _.api.base_url }}farms"
+        name: Create Farm - Body Vazio
+        meta:
+          id: req_val_farm_empty
+          created: 1778000000001
+          modified: 1778000000001
+          isPrivate: false
+          description: "Sem campos obrigatorios — espera 422"
+          sortKey: -1778000000001
+        method: POST
+        body:
+          mimeType: application/json
+          text: "{}"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: Create Farm - Email Invalido
+        meta:
+          id: req_val_farm_email
+          created: 1778000000002
+          modified: 1778000000002
+          isPrivate: false
+          description: "Email invalido — espera 422 com details[field=email]"
+          sortKey: -1778000000002
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Fazenda Teste",
+              "cnpj": "12.345.678/0001-99",
+              "email": "nao-e-um-email"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows"
+        name: Create Cow - Sem farmId
+        meta:
+          id: req_val_cow_no_farm
+          created: 1778000000003
+          modified: 1778000000003
+          isPrivate: false
+          description: "farmId e obrigatorio — espera 422"
+          sortKey: -1778000000003
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "tag": "BR-999",
+              "name": "Vaca Teste"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login - Email Invalido
+        meta:
+          id: req_val_login_email
+          created: 1778000000004
+          modified: 1778000000004
+          isPrivate: false
+          description: "Email sem @ — espera 422"
+          sortKey: -1778000000004
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "nao-e-um-email",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}collars"
+        name: Create Collar - Body Vazio
+        meta:
+          id: req_val_collar_empty
+          created: 1778000000005
+          modified: 1778000000005
+          isPrivate: false
+          description: "Nome e obrigatorio — espera 422"
+          sortKey: -1778000000005
+        method: POST
+        body:
+          mimeType: application/json
+          text: "{}"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}users"
+        name: Create User - Senha Curta
+        meta:
+          id: req_val_user_password
+          created: 1778000000006
+          modified: 1778000000006
+          isPrivate: false
+          description: "Senha com menos de 8 caracteres — espera 422"
+          sortKey: -1778000000006
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Teste",
+              "email": "teste@cowhealth.com",
+              "password": "123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms/1"
+        name: Update Farm - Body Vazio (200 esperado)
+        meta:
+          id: req_val_farm_update_empty
+          created: 1778000000007
+          modified: 1778000000007
+          isPrivate: false
+          description: "updateFarmSchema e partial — body vazio deve retornar 200, nao 422"
+          sortKey: -1778000000007
+        method: PUT
+        body:
+          mimeType: application/json
+          text: "{}"
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Authenticated Photos
+    meta:
+      id: fld_auth_photos_main
+      created: 1778001000000
+      modified: 1778001000000
+      sortKey: -1777904165590
+      description: "Testa acesso autenticado a fotos de vacas"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/photos/nome-do-arquivo.jpg"
+        name: Get Photo - Com Token
+        meta:
+          id: req_photo_with_token
+          created: 1778001000001
+          modified: 1778001000001
+          isPrivate: false
+          description: "Com token valido deve retornar a foto ou 404 se nao existir"
+          sortKey: -1778001000001
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/photos/nome-do-arquivo.jpg"
+        name: Get Photo - Sem Token (401)
+        meta:
+          id: req_photo_no_token
+          created: 1778001000002
+          modified: 1778001000002
+          isPrivate: false
+          description: "Sem token deve retornar 401 — foto nao e mais publica"
+          sortKey: -1778001000002
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Medical Records
+    meta:
+      id: fld_medical_records_main
+      created: 1779000000000
+      modified: 1779000000000
+      sortKey: -1777904165550
+      description: "Prontuario veterinario vinculado a vacas"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/medical-records"
+        name: List Medical Records
+        meta:
+          id: req_mr_list
+          created: 1779000000001
+          modified: 1779000000001
+          isPrivate: false
+          description: "Lista prontuarios da vaca id:2"
+          sortKey: -1779000000001
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records/1"
+        name: Show Medical Record
+        meta:
+          id: req_mr_show
+          created: 1779000000002
+          modified: 1779000000002
+          isPrivate: false
+          description: ""
+          sortKey: -1779000000002
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records"
+        name: Create Medical Record
+        meta:
+          id: req_mr_create
+          created: 1779000000003
+          modified: 1779000000003
+          isPrivate: false
+          description: "Requer permissao Create MedicalRecord (Veterinario ou Admin)"
+          sortKey: -1779000000003
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "type": "CHECKUP",
+              "title": "Exame de rotina",
+              "notes": "Animal em bom estado geral. Vacinacao em dia.",
+              "recordedAt": "2026-05-25T10:00:00Z"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records/1"
+        name: Update Medical Record
+        meta:
+          id: req_mr_update
+          created: 1779000000004
+          modified: 1779000000004
+          isPrivate: false
+          description: ""
+          sortKey: -1779000000004
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "notes": "Animal recuperado. Retorno em 30 dias."
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/medical-records/1"
+        name: Delete Medical Record
+        meta:
+          id: req_mr_delete
+          created: 1779000000005
+          modified: 1779000000005
+          isPrivate: false
+          description: ""
+          sortKey: -1779000000005
+        method: DELETE
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_mr_error_cases
+          created: 1779000000099
+          modified: 1779000000099
+          sortKey: -1779000000099
+          description: ""
+        children:
+          - url: "{{ _.api.base_url }}cows/2/medical-records"
+            name: Create Medical Record - Gerente (403)
+            meta:
+              id: req_mr_403
+              created: 1779000000006
+              modified: 1779000000006
+              isPrivate: false
+              description: "Gerente de Fazenda so pode visualizar — nao pode criar. Usar token de gerente@cowhealth.com"
+              sortKey: -1779000000006
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "type": "CHECKUP",
+                  "title": "Teste sem permissao",
+                  "recordedAt": "2026-05-25T10:00:00Z"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer TOKEN_DE_GERENTE
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}cows/2/medical-records"
+            name: Create Medical Record - Body Invalido (422)
+            meta:
+              id: req_mr_422
+              created: 1779000000007
+              modified: 1779000000007
+              isPrivate: false
+              description: "Sem campo obrigatorio type — espera 422"
+              sortKey: -1779000000007
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "title": "Sem tipo",
+                  "recordedAt": "2026-05-25T10:00:00Z"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer {{ _.api.token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Cow Retirement
+    meta:
+      id: fld_cow_retirement_main
+      created: 1779001000000
+      modified: 1779001000000
+      sortKey: -1777904165540
+      description: "Aposentadoria de animais — Feature D"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/retire"
+        name: Retire Cow
+        meta:
+          id: req_retire_cow
+          created: 1779001000001
+          modified: 1779001000001
+          isPrivate: false
+          description: "Aposenta a vaca, desvincula colar e marca colar como INACTIVE"
+          sortKey: -1779001000001
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "reason": "SLAUGHTER"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_retire_error_cases
+          created: 1779001000099
+          modified: 1779001000099
+          sortKey: -1779001000099
+          description: ""
+        children:
+          - url: "{{ _.api.base_url }}cows/2/retire"
+            name: Retire Cow - Already Retired (400)
+            meta:
+              id: req_retire_already
+              created: 1779001000002
+              modified: 1779001000002
+              isPrivate: false
+              description: "Tentar aposentar vaca ja aposentada — espera 400"
+              sortKey: -1779001000002
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "reason": "SALE"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer {{ _.api.token }}
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}cows/2/retire"
+            name: Retire Cow - Operador (403)
+            meta:
+              id: req_retire_403
+              created: 1779001000003
+              modified: 1779001000003
+              isPrivate: false
+              description: "Operador de Campo nao tem permissao Retire Cow — usar token de operador@cowhealth.com"
+              sortKey: -1779001000003
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "reason": "SALE"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: Authorization
+                value: Bearer TOKEN_DE_OPERADOR
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Sensor History
+    meta:
+      id: fld_sensor_history_main
+      created: 1779002000000
+      modified: 1779002000000
+      sortKey: -1777904165530
+      description: "Historico unificado de sensores com filtro por periodo — Feature G"
+    children:
+      - url: "{{ _.api.base_url }}cows/2/sensor-history"
+        name: Sensor History - Sem Filtro
+        meta:
+          id: req_sensor_history_all
+          created: 1779002000001
+          modified: 1779002000001
+          isPrivate: false
+          description: "Retorna todos os registros sem filtro de data"
+          sortKey: -1779002000001
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows/2/sensor-history?from=2026-05-20T00:00:00Z&to=2026-05-25T23:59:59Z"
+        name: Sensor History - Com Filtro de Datas
+        meta:
+          id: req_sensor_history_filtered
+          created: 1779002000002
+          modified: 1779002000002
+          isPrivate: false
+          description: "Filtra por intervalo de datas via query params from e to (ISO 8601)"
+          sortKey: -1779002000002
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Farm Access Control
+    meta:
+      id: fld_farm_access_control_main
+      created: 1780000000000
+      modified: 1780000000000
+      sortKey: -1777904165400
+      description: "Testa restricao de acesso por fazenda — farmIds no JWT"
+    children:
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login Veterinario
+        meta:
+          id: req_fac_login_vet
+          created: 1780000000001
+          modified: 1780000000001
+          isPrivate: false
+          description: "Gera token com farmIds: [1, 2] (Aurora + Sao Bento). Copie o token para usar nos proximos testes."
+          sortKey: -1780000000001
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "vet@cowhealth.com",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login Gerente
+        meta:
+          id: req_fac_login_gerente
+          created: 1780000000002
+          modified: 1780000000002
+          isPrivate: false
+          description: "Gera token com farmIds: [1] (Aurora apenas). Copie o token para usar nos proximos testes."
+          sortKey: -1780000000002
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "gerente@cowhealth.com",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login Observador
+        meta:
+          id: req_fac_login_obs
+          created: 1780000000003
+          modified: 1780000000003
+          isPrivate: false
+          description: "Gera token com farmIds: [4] (Santa Clara apenas). Copie o token para usar nos proximos testes."
+          sortKey: -1780000000003
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "obs@cowhealth.com",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: List Farms - Veterinario (Aurora + Sao Bento)
+        meta:
+          id: req_fac_farms_vet
+          created: 1780000000004
+          modified: 1780000000004
+          isPrivate: false
+          description: "Usar token do veterinario — deve retornar apenas Fazenda Aurora e Fazenda Sao Bento"
+          sortKey: -1780000000004
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_VETERINARIO
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: List Farms - Gerente (Aurora apenas)
+        meta:
+          id: req_fac_farms_gerente
+          created: 1780000000005
+          modified: 1780000000005
+          isPrivate: false
+          description: "Usar token do gerente — deve retornar apenas Fazenda Aurora"
+          sortKey: -1780000000005
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_GERENTE
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: List Farms - Admin (todas as fazendas)
+        meta:
+          id: req_fac_farms_admin
+          created: 1780000000006
+          modified: 1780000000006
+          isPrivate: false
+          description: "Usar token do admin — deve retornar todas as 5 fazendas (farmIds: null = irrestrito)"
+          sortKey: -1780000000006
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows"
+        name: List Cows - Veterinario (so vacas de Aurora e Sao Bento)
+        meta:
+          id: req_fac_cows_vet
+          created: 1780000000007
+          modified: 1780000000007
+          isPrivate: false
+          description: "Usar token do veterinario — deve retornar apenas vacas das fazendas Aurora e Sao Bento (64 vacas)"
+          sortKey: -1780000000007
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_VETERINARIO
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows"
+        name: List Cows - Observador (so vacas de Santa Clara)
+        meta:
+          id: req_fac_cows_obs
+          created: 1780000000008
+          modified: 1780000000008
+          isPrivate: false
+          description: "Usar token do observador — deve retornar apenas vacas da Fazenda Santa Clara (32 vacas)"
+          sortKey: -1780000000008
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_OBSERVADOR
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_fac_error_cases
+          created: 1780000000099
+          modified: 1780000000099
+          sortKey: -1780000000099
+          description: ""
+        children:
+          - url: "{{ _.api.base_url }}farms/3"
+            name: Show Farm - Gerente Sem Acesso (403)
+            meta:
+              id: req_fac_farm_403
+              created: 1780000000009
+              modified: 1780000000009
+              isPrivate: false
+              description: "Gerente so tem acesso a Aurora (id:1). Acessar Fazenda Boa Esperanca (id:3) deve retornar 403."
+              sortKey: -1780000000009
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer TOKEN_DE_GERENTE
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}farms/2"
+            name: Show Farm - Observador Sem Acesso (403)
+            meta:
+              id: req_fac_farm_obs_403
+              created: 1780000000010
+              modified: 1780000000010
+              isPrivate: false
+              description: "Observador so tem acesso a Santa Clara (id:4). Acessar Fazenda Sao Bento (id:2) deve retornar 403."
+              sortKey: -1780000000010
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer TOKEN_DE_OBSERVADOR
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}farms/1"
+            name: Show Farm - Veterinario Com Acesso (200)
+            meta:
+              id: req_fac_farm_vet_200
+              created: 1780000000011
+              modified: 1780000000011
+              isPrivate: false
+              description: "Veterinario tem acesso a Aurora (id:1) — deve retornar 200"
+              sortKey: -1780000000011
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer TOKEN_DE_VETERINARIO
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:

@@ -6,7 +6,7 @@
 export interface ChartDataPoint {
   label: string;
   value: number;
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export interface DashboardData {
@@ -24,6 +24,6 @@ export interface DashboardData {
 }
 
 export interface DashboardOverview {
-  period: 'today' | 'week' | 'month';
+  period: "today" | "week" | "month";
   data: DashboardData;
 }

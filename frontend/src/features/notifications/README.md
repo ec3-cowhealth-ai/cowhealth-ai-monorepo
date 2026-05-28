@@ -1,13 +1,13 @@
 # Feature: Notifications
 
-Componentes e lógica para gerenciamento de notificações e alertas.
+Components and logic for notification and alert management.
 
-## Estrutura
+## Structure
 
-- Componentes de centro de notificações
-- Componentes de alertas em tempo real
-- Configurações de preferências de notificação
+- Notification center components
+- Real-time alert components
+- Notification preference settings
 
-## Responsável
+## Responsible
 
-Jafte (conforme matriz de responsabilidades)
+Jafte (according to the responsibility matrix)

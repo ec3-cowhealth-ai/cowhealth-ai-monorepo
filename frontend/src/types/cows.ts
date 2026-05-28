@@ -1,50 +1,73 @@
-export const CowStatusValues = {
-  HEALTHY: "HEALTHY",
-  CALVING: "CALVING",
+export const COW_STATUS_VALUES = {
+  HEALTHY:     "HEALTHY",
+  CALVING:     "CALVING",
   HEAT_STRESS: "HEAT_STRESS",
-  ALERT: "ALERT",
+  ALERT:       "ALERT",
+  RETIRED:     "RETIRED",
 } as const;
 
-export type CowStatus = typeof CowStatusValues[keyof typeof CowStatusValues];
+export type MedicalRecordType = "CHECKUP" | "PROCEDURE" | "MEDICATION";
+
+export interface MedicalRecord {
+  id:         number;
+  type:       MedicalRecordType;
+  title:      string;
+  notes?:     string | null;
+  recordedAt: string;
+  createdAt:  string;
+  user:       { id: number; name: string };
+}
+
+export type CowStatus = (typeof COW_STATUS_VALUES)[keyof typeof COW_STATUS_VALUES];
 
 export interface Cow {
-  id: string;
+  id: number;
   tag: string;
   name: string;
   status: CowStatus;
+  lastLat?: number | null;
+  lastLng?: number | null;
   breed: string;
   weight: number;
-  dateOfBirth: string;
-  farmId: string;
-  collarId?: string;
-  avatar?: string;
+  birthDate?: string;
+  photos?: string[];
+  farm: { id: number; name: string; city?: string; state?: string };
+  collar?: { id: number; name: string; status: string; dataFrequency?: string };
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
-export type CowListItem = Omit<Cow, "breed" | "weight" | "dateOfBirth">;
+// Lista nao retorna birthDate nem photos
+export type CowListItem = Omit<Cow, "birthDate" | "photos" | "updatedAt">;
 
 export interface CreateCowInput {
   tag: string;
   name: string;
   breed: string;
-  weight: number;
-  dateOfBirth: string;
-  farmId: string;
-  collarId?: string;
+  weight?: number;
+  birthDate?: string;
+  farmId: number;
+  collarId?: number;
 }
 
-export type UpdateCowInput = Partial<CreateCowInput>;
-
-export interface HeartRateDailyPoint {
-  timestamp: string;
-  value: number;
+export interface UpdateCowInput {
+  tag?: string;
+  name?: string;
+  breed?: string;
+  weight?: number;
+  birthDate?: string;
+  status?: CowStatus;
+  collarId?: number | null;
 }
 
-export interface TemperatureDailyPoint {
-  timestamp: string;
-  value: number;
+export interface SensorDailyPoint {
+  date: string; // formato "dd/MM" ex: "17/05" — ja vem pronto do backend
+  average: number;
 }
+
+// Aliases para retrocompatibilidade
+export type HeartRateDailyPoint = SensorDailyPoint;
+export type TemperatureDailyPoint = SensorDailyPoint;
 
 export interface SensorPage<T> {
   data: T[];

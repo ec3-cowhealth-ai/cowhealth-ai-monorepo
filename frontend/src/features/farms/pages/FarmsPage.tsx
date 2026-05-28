@@ -2,14 +2,21 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
+import { Warehouse, Plus } from "lucide-react";
 import { FarmCard } from "../components/FarmCard";
 import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
+import { useMe } from "../../../hooks/useAuth";
+import type { CreateFarmInput } from "../../../types/farms";
+import { C } from "@features/dashboard/constants/colors";
 
 export const FarmsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
+
+  const { data: me } = useMe();
+  const isSuperAdmin = me?.roles.some((r) => r.name === "SuperAdmin");
 
   const { data: farms, isLoading } = useFarms();
   const { mutate: createFarm, isPending } = useCreateFarm();
@@ -18,22 +25,18 @@ export const FarmsPage = () => {
     if (!farms) return [];
     return farms.filter(
       (farm) =>
-        farm.name.toLowerCase().includes(search.toLowerCase()) ||
-        farm.cnpj.includes(search)
+        farm.name.toLowerCase().includes(search.toLowerCase()) || farm.cnpj.includes(search),
     );
   }, [farms, search]);
 
-  const handleCreateFarm = (data: any) => {
-    createFarm(data, {
-      onSuccess: () => setShowForm(false),
-    });
+  const handleCreateFarm = (data: CreateFarmInput) => {
+    createFarm(data, { onSuccess: () => setShowForm(false) });
   };
 
   if (isLoading) {
     return (
-      <div className="app-page">
-        <AppBar title="Fazendas" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+      <div style={{ background: C.bg, minHeight: "100%" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48 }}>
           <LoadingSpinner />
         </div>
       </div>
@@ -45,13 +48,15 @@ export const FarmsPage = () => {
       <AppBar
         title="Fazendas"
         actions={
-          <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
-            + Nova
-          </button>
+          isSuperAdmin && (
+            <button className="app-bar__action" onClick={() => setShowForm(true)}>
+              <Plus size={20} />
+            </button>
+          )
         }
       />
 
-      <div className="app-page__section">
+      <div className="app-content">
         <div className="form-field">
           <input
             type="text"
@@ -62,36 +67,37 @@ export const FarmsPage = () => {
           />
         </div>
 
+        {/* Grid */}
         {filteredFarms.length === 0 ? (
           <EmptyState
-            icon="🏡"
+            icon={<Warehouse size={40} />}
             title="Nenhuma fazenda encontrada"
-            description="Crie sua primeira fazenda para começar"
+            description={isSuperAdmin ? "Crie sua primeira fazenda para começar" : "Você não tem acesso a nenhuma fazenda."}
             action={
-              <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-                Criar Fazenda
-              </button>
+              isSuperAdmin ? (
+                <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+                  Criar Fazenda
+                </button>
+              ) : undefined
             }
           />
         ) : (
-          <div className="grid grid--2">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             {filteredFarms.map((farm) => (
-              <FarmCard
-                key={farm.id}
-                farm={farm}
-                onClick={() => navigate(`/farms/${farm.id}`)}
-              />
+              <FarmCard key={farm.id} farm={farm} onClick={() => navigate(`/farms/${farm.id}`)} />
             ))}
           </div>
         )}
       </div>
 
-      <FarmForm
-        open={showForm}
-        onClose={() => setShowForm(false)}
-        onSubmit={handleCreateFarm}
-        isLoading={isPending}
-      />
+      {isSuperAdmin && (
+        <FarmForm
+          open={showForm}
+          onClose={() => setShowForm(false)}
+          onSubmit={handleCreateFarm}
+          isLoading={isPending}
+        />
+      )}
     </div>
   );
 };

@@ -22,6 +22,7 @@ enum CowStatus {
   CALVING
   HEAT_STRESS
   ALERT
+  RETIRED
 }
 
 enum CollarStatus {
@@ -32,9 +33,15 @@ enum CollarStatus {
 }
 
 enum DataFrequency {
-  HIGHER  // 2 minutos
+  HIGHER // 2 minutos
   DEFAULT // 10 minutos
-  LOWER   // 60 minutos
+  LOWER // 60 minutos
+}
+
+enum MedicalRecordType {
+  CHECKUP
+  PROCEDURE
+  MEDICATION
 }
 
 // Auth / RBAC
@@ -46,11 +53,15 @@ model User {
   passwordHash String      @map("password_hash")
   profile      UserProfile @default(VIEWER)
   active       Boolean     @default(true)
+  farmId       Int?        @map("farm_id")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  roles         UserRole[]
-  notifications Notification[]
+  farm           Farm?           @relation(fields: [farmId], references: [id])
+  roles          UserRole[]
+  notifications  Notification[]
+  userFarms      UserFarm[]
+  medicalRecords MedicalRecord[]
 
   @@map("users")
 }
@@ -70,7 +81,7 @@ model Role {
 
 model Permission {
   id          Int      @id @default(autoincrement())
-  name        String   @unique                            // ex: "ViewAny Farm", "Delete Cow"
+  name        String   @unique // ex: "ViewAny Farm", "Delete Cow"
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
 
@@ -89,6 +100,16 @@ model UserRole {
 
   @@id([userId, roleId])
   @@map("user_roles")
+}
+
+model UserFarm {
+  userId Int  @map("user_id")
+  farmId Int  @map("farm_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farm   Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  @@id([userId, farmId])
+  @@map("user_farms")
 }
 
 model RolePermission {
@@ -135,36 +156,45 @@ model Farm {
   state     String?
   phone     String?
   email     String?
+  latitude  Float?
+  longitude Float?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  cows Cow[]
+  cows      Cow[]
+  users     User[]
+  collars   Collar[]
+  userFarms UserFarm[]
 
   @@map("farms")
 }
 
 model Collar {
   id            Int           @id @default(autoincrement())
-  name          String        @unique                                   // device_id usado pelo MQTT para localizar o colar
+  name          String        @unique // device_id usado pelo MQTT para localizar o colar
   status        CollarStatus  @default(ACTIVE)
-  dataFrequency DataFrequency @default(DEFAULT) @map("data_frequency")  // RF10A: HIGHER=2min, DEFAULT=10min, LOWER=60min
+  dataFrequency DataFrequency @default(DEFAULT) @map("data_frequency") // RF10A: HIGHER=2min, DEFAULT=10min, LOWER=60min
+  farmId        Int?          @map("farm_id")
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
-  cow Cow? // 1 colar -> 1 vaca (nullable enquanto não associado)
+  farm Farm? @relation(fields: [farmId], references: [id])
+  cow  Cow? // 1 colar -> 1 vaca (nullable enquanto não associado)
 
   @@map("collars")
 }
 
 model Cow {
   id        Int       @id @default(autoincrement())
-  tag       String    @unique                   // identificador visual da vaca
+  tag       String    @unique // identificador visual da vaca
   name      String?
-  breed     String?                             // raça (breed adotado no lugar de race)
+  breed     String? // raça (breed adotado no lugar de race)
   birthDate DateTime? @map("birth_date")
-  weight    Float?                              // peso em kg
-  photos    Json?                               // array de nomes de arquivo para galeria de identificacao
+  weight    Float? // peso em kg
+  photos    Json? // array de nomes de arquivo para galeria de identificacao
   status    CowStatus @default(HEALTHY)
+  lastLat   Float?    @map("last_lat")
+  lastLng   Float?    @map("last_lng")
   farmId    Int       @map("farm_id")
   collarId  Int?      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
 
@@ -175,6 +205,10 @@ model Cow {
   temperatureData   TemperatureData[]
   accelerometerData AccelerometerData[]
   notifications     Notification[]
+
+  retiredAt      DateTime?       @map("retired_at")
+  retiredReason  String?         @map("retired_reason")
+  medicalRecords MedicalRecord[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -188,7 +222,7 @@ model HeartRateData {
   id         Int      @id @default(autoincrement())
   cowId      Int      @map("cow_id")
   bpm        Int
-  measuredAt DateTime @map("measured_at")                 // timestamp vindo do payload MQTT
+  measuredAt DateTime @map("measured_at") // timestamp vindo do payload MQTT
   receivedAt DateTime @default(now()) @map("received_at") // quando chegou na API
 
   cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
@@ -216,9 +250,9 @@ model AccelerometerData {
   accelX     Float    @map("accel_x") // eixo X do acelerometro (mpu.acc)
   accelY     Float    @map("accel_y") // eixo Y do acelerometro (mpu.acc)
   accelZ     Float    @map("accel_z") // eixo Z do acelerometro (mpu.acc)
-  gyroX      Float    @map("gyro_x")  // eixo X do giroscopio (mpu.gyro)
-  gyroY      Float    @map("gyro_y")  // eixo Y do giroscopio (mpu.gyro)
-  gyroZ      Float    @map("gyro_z")  // eixo Z do giroscopio (mpu.gyro)
+  gyroX      Float    @map("gyro_x") // eixo X do giroscopio (mpu.gyro)
+  gyroY      Float    @map("gyro_y") // eixo Y do giroscopio (mpu.gyro)
+  gyroZ      Float    @map("gyro_z") // eixo Z do giroscopio (mpu.gyro)
   measuredAt DateTime @map("measured_at")
   receivedAt DateTime @default(now()) @map("received_at")
 
@@ -244,4 +278,24 @@ model Notification {
 
   @@index([userId, readAt])
   @@map("notifications")
+}
+
+// Medical Records
+
+model MedicalRecord {
+  id         Int               @id @default(autoincrement())
+  cowId      Int               @map("cow_id")
+  userId     Int               @map("user_id")
+  type       MedicalRecordType
+  title      String
+  notes      String?           @db.Text
+  recordedAt DateTime          @map("recorded_at")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  cow  Cow  @relation(fields: [cowId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([cowId, recordedAt])
+  @@map("medical_records")
 }

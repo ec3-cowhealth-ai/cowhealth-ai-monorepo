@@ -1,5 +1,8 @@
+// TODO[ANGELO] id está tipado como string, mas o backend retorna number (INTEGER no Prisma/MySQL).
+// Corrigir para: id: number
+// e remover os Number(id) / String(id) espalhados no código (buscar por "Number(.*id)" e "String(.*id)").
 export interface Farm {
-  id: string;
+  id: number;
   name: string;
   cnpj: string;
   address: string;
@@ -7,6 +10,8 @@ export interface Farm {
   state: string;
   phone: string;
   email: string;
+  latitude?: number;
+  longitude?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +26,8 @@ export interface CreateFarmInput {
   state: string;
   phone: string;
   email: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type UpdateFarmInput = Partial<CreateFarmInput>;

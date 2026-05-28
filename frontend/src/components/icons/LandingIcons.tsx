@@ -26,7 +26,7 @@ const IconWrapper: React.FC<{
     strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
-    style={{ display: 'block', flexShrink: 0, ...style }}
+    style={{ display: "block", flexShrink: 0, ...style }}
     aria-hidden="true"
   >
     {children}
@@ -35,19 +35,22 @@ const IconWrapper: React.FC<{
 
 export const IcHeartPulse: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
   <IconWrapper size={size} color={color} strokeWidth={strokeWidth} style={style}>
     <path d="M3.5 12h3l2-5 3 9 2-5 1.5 1H21" />
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" opacity="0.45" />
+    <path
+      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
+      opacity="0.45"
+    />
   </IconWrapper>
 );
 
 export const IcActivity: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -58,7 +61,7 @@ export const IcActivity: React.FC<IconProps> = ({
 
 export const IcThermometer: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -70,7 +73,7 @@ export const IcThermometer: React.FC<IconProps> = ({
 
 export const IcAlertTriangle: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -83,7 +86,7 @@ export const IcAlertTriangle: React.FC<IconProps> = ({
 
 export const IcBarChart: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -97,7 +100,7 @@ export const IcBarChart: React.FC<IconProps> = ({
 
 export const IcBroadcast: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -112,7 +115,7 @@ export const IcBroadcast: React.FC<IconProps> = ({
 
 export const IcArrowRight: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -124,7 +127,7 @@ export const IcArrowRight: React.FC<IconProps> = ({
 
 export const IcPlay: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (
@@ -135,7 +138,7 @@ export const IcPlay: React.FC<IconProps> = ({
 
 export const IcCheck: React.FC<IconProps> = ({
   size = 20,
-  color = 'currentColor',
+  color = "currentColor",
   strokeWidth = 1.6,
   style,
 }) => (

@@ -12,13 +12,39 @@ import { SensorQueryOptions } from "../types/sensors";
  * const farm = await findOrThrow("farm", farmId, "Fazenda não encontrada.");
  */
 export const findOrThrow = async <T>(
-    model: { findUnique: (args: any) => Promise<T | null> },
-    id: number,
-    errorMessage: string
+  model: { findUnique: (args: { where: { id: number } }) => Promise<T | null> },
+  id: number,
+  errorMessage: string,
 ): Promise<T> => {
-    const record = await model.findUnique({ where: { id } });
-    if (!record) throw new Error(errorMessage);
-    return record;
+  const record = await model.findUnique({ where: { id } });
+  if (!record) throw new Error(errorMessage);
+  return record;
+};
+
+/**
+ * Lança um erro com um status HTTP específico embutido.
+ * Usado em conjunto com handleRequest, que lê error.statusCode
+ * para retornar o status correto ao cliente.
+ *
+ * Garante que erros de negócio distintos retornem códigos HTTP distintos
+ * sem depender do errorStatus padrão do controller.
+ *
+ * @param message    - Mensagem de erro retornada ao cliente
+ * @param statusCode - Código HTTP a ser retornado (ex: 403, 404, 422)
+ *
+ * @example
+ * // Acesso negado — retorna 403 independente do errorStatus do controller
+ * throwWithStatus("Sem acesso a esta fazenda.", 403);
+ *
+ * // Recurso não encontrado — retorna 404
+ * throwWithStatus("Fazenda não encontrada.", 404);
+ */
+interface HttpError extends Error { statusCode: number; }
+
+export const throwWithStatus = (message: string, statusCode: number): never => {
+  const error = new Error(message);
+  (error as HttpError).statusCode = statusCode;
+  throw error;
 };
 
 /**
@@ -35,19 +61,19 @@ export const findOrThrow = async <T>(
  * await assertUnique(prisma.collar, { name: data.name }, "Já existe um colar com este nome.", collarId);
  */
 export const assertUnique = async (
-    model: { findFirst: (args: any) => Promise<any> },
-    field: Record<string, any>,
-    errorMessage: string,
-    excludeId?: number
+  model: { findFirst: (args: { where: object }) => Promise<unknown> },
+  field: Record<string, unknown>,
+  errorMessage: string,
+  excludeId?: number,
 ): Promise<void> => {
-    const existing = await model.findFirst({
-        where: {
-            ...field,
-            ...(excludeId !== undefined ? { id: { not: excludeId } } : {}),
-        },
-    });
+  const existing = await model.findFirst({
+    where: {
+      ...field,
+      ...(excludeId !== undefined ? { id: { not: excludeId } } : {}),
+    },
+  });
 
-    if (existing) throw new Error(errorMessage);
+  if (existing) throw new Error(errorMessage);
 };
 
 /**
@@ -60,28 +86,28 @@ export const assertUnique = async (
  * @param options    - Filtros opcionais: startDate, endDate, limit
  */
 export const querySensorData = async <T>(
-    model: { findMany: (args: any) => Promise<T[]> },
-    cowId: number,
-    selectFields: Record<string, boolean>,
-    options: SensorQueryOptions
+  model: { findMany: (args: object) => Promise<T[]> },
+  cowId: number,
+  selectFields: Record<string, boolean>,
+  options: SensorQueryOptions,
 ): Promise<T[]> => {
-    return model.findMany({
-        where: {
-            cowId,
-            measuredAt: {
-                gte: options.startDate ? new Date(options.startDate) : undefined,
-                lte: options.endDate   ? new Date(options.endDate)   : undefined,
-            },
-        },
-        select: {
-            id:         true,
-            measuredAt: true,
-            receivedAt: true,
-            ...selectFields,
-        },
-        orderBy: { measuredAt: "desc" },
-        take: options.limit ?? 100,
-    });
+  return model.findMany({
+    where: {
+      cowId,
+      measuredAt: {
+        gte: options.startDate ? new Date(options.startDate) : undefined,
+        lte: options.endDate ? new Date(options.endDate) : undefined,
+      },
+    },
+    select: {
+      id: true,
+      measuredAt: true,
+      receivedAt: true,
+      ...selectFields,
+    },
+    orderBy: { measuredAt: "desc" },
+    take: options.limit ?? 100,
+  });
 };
 
 /**
@@ -92,28 +118,26 @@ export const querySensorData = async <T>(
  * @param field   - Nome do campo numérico a calcular a média
  */
 export const aggregateDailyAverage = (
-    records: Array<{ measuredAt: Date; [key: string]: any }>,
-    field: string
+  records: Array<{ measuredAt: Date } & Record<string, unknown>>,
+  field: string,
 ): Array<{ date: string; average: number }> => {
-    const dailyGroups = new Map<string, number[]>();
+  const dailyGroups = new Map<string, number[]>();
 
-    for (const record of records) {
-        const dateLabel = record.measuredAt.toLocaleDateString("pt-BR", {
-            day:   "2-digit",
-            month: "2-digit",
-        });
+  for (const record of records) {
+    const dateLabel = record.measuredAt.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+    });
 
-        if (!dailyGroups.has(dateLabel)) {
-            dailyGroups.set(dateLabel, []);
-        }
-
-        dailyGroups.get(dateLabel)!.push(record[field]);
+    if (!dailyGroups.has(dateLabel)) {
+      dailyGroups.set(dateLabel, []);
     }
 
-    return Array.from(dailyGroups.entries()).map(([date, values]) => ({
-        date,
-        average: parseFloat(
-            (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)
-        ),
-    }));
+    dailyGroups.get(dateLabel)!.push(record[field] as number);
+  }
+
+  return Array.from(dailyGroups.entries()).map(([date, values]) => ({
+    date,
+    average: parseFloat((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)),
+  }));
 };

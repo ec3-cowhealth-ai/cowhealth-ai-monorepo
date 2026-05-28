@@ -1,39 +1,90 @@
-/**
- * LoginForm Component
- * TODO[ANGELO]: Implementar com validação Zod + react-hook-form
- *
- * Funcionalidades esperadas:
- * - Campo de email (com validação)
- * - Campo de password (com validação)
- * - Botão de submit com loading state
- * - Mensagens de erro
- * - Link para página de registro
- * - Integração com useLogin hook
- */
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Link } from "react-router-dom";
+import { useLogin } from "@hooks/useAuth";
+import type { LoginFormData } from "../types";
 
-import { useLogin } from '@hooks/useAuth';
-import type { LoginFormData } from '../types';
+const schema = z.object({
+  email: z.string().email("Email invalido"),
+  password: z.string().min(6, "Minimo 6 caracteres"),
+});
 
 export const LoginForm = () => {
-  const { mutate: login, isPending, isError, error } = useLogin();
+  const { mutate: login, isPending, isError } = useLogin();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO[ANGELO]: Extrair valores do formulário com react-hook-form
-    const formData: LoginFormData = {
-      email: '',
-      password: '',
-    };
-    login(formData);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({ resolver: zodResolver(schema) });
+
+  const onSubmit = (data: LoginFormData) => {
+    login(data);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {/* TODO[ANGELO]: Adicionar campos com validação Zod */}
-      {isError && <div className="error">{(error as any)?.message}</div>}
-      <button type="submit" disabled={isPending}>
-        {isPending ? 'Entrando...' : 'Entrar'}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      autoComplete="off"
+      style={{ display: "flex", flexDirection: "column", gap: "var(--s-4)" }}
+    >
+      <div className="form-field">
+        <label className="form-field__label" htmlFor="email">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          className="form-field__input"
+          placeholder="seu@email.com"
+          autoComplete="one-time-code"
+          {...register("email")}
+        />
+        {errors.email && <p className="form-field__error">{errors.email.message}</p>}
+      </div>
+
+      <div className="form-field">
+        <label className="form-field__label" htmlFor="password">
+          Senha
+        </label>
+        <input
+          id="password"
+          type="password"
+          className="form-field__input"
+          placeholder="••••••••"
+          {...register("password")}
+        />
+        {errors.password && <p className="form-field__error">{errors.password.message}</p>}
+      </div>
+
+      {isError && (
+        <p className="form-field__error" style={{ textAlign: "center" }}>
+          Email ou senha incorretos.
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={isPending}
+        className="btn btn-primary btn-lg"
+        style={{ marginTop: "var(--s-2)" }}
+      >
+        {isPending ? "Entrando..." : "Entrar"}
       </button>
+
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: "var(--t-sm)",
+          color: "var(--text-secondary)",
+        }}
+      >
+        Nao tem conta?{" "}
+        <Link to="/register" style={{ color: "var(--primary)" }}>
+          Registre-se
+        </Link>
+      </p>
     </form>
   );
 };

@@ -4,7 +4,8 @@ import { AppShell } from "../layout";
 import { LoadingSpinner } from "../common";
 
 export const ProtectedRoute = () => {
-  const { data: user, isLoading } = useMe();
+  const { data: user, isLoading, isError } = useMe();
+  const token = localStorage.getItem("token");
 
   if (isLoading)
     return (
@@ -20,7 +21,13 @@ export const ProtectedRoute = () => {
       </div>
     );
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!token || (!user && !isLoading && isError)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user && !isLoading) {
+    return <Navigate to="/login" replace />;
+  }
 
   return <AppShell />;
 };

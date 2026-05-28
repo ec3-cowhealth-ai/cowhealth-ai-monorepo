@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@lib/api";
 
 export interface Notification {
   id: string;
-  type: string;
+  type?: string;
   title: string;
   message: string;
   read: boolean;
@@ -32,17 +32,21 @@ export const useUnreadNotifications = () => {
 };
 
 export const useMarkNotificationAsRead = () => {
-  return {
-    mutate: async (notificationId: string) => {
-      await api.patch(`/notifications/${notificationId}/read`);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (notificationId: string) => api.patch(`/notifications/${notificationId}/read`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
-  };
+  });
 };
 
 export const useMarkAllAsRead = () => {
-  return {
-    mutate: async () => {
-      await api.patch("/notifications/read-all");
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.patch("/notifications/read-all"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
-  };
+  });
 };

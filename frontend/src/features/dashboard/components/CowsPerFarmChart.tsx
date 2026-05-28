@@ -1,53 +1,21 @@
-/**
- * CowsPerFarmChart Component
- * TODO[IAN]: Implementar gráfico de vacas por fazenda
- *
- * Tipo: Gráfico de barra horizontal ou vertical
- * Mostra: Distribuição de vacas entre as diferentes fazendas
- */
-
-import type { ChartDataPoint } from '../types';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import type { ChartDataPoint } from "../types";
 
 interface CowsPerFarmChartProps {
   data: ChartDataPoint[];
 }
 
-export const CowsPerFarmChart = ({ data }: CowsPerFarmChartProps) => {
-  // TODO[IAN]: Implementar com Recharts Bar Chart:
-  // ```
-  // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-  //
-  // return (
-  //   <BarChart width={500} height={300} data={data}>
-  //     <CartesianGrid strokeDasharray="3 3" />
-  //     <XAxis dataKey="label" />
-  //     <YAxis />
-  //     <Tooltip />
-  //     <Bar dataKey="value" fill="#3b82f6" />
-  //   </BarChart>
-  // );
-  // ```
-
-  return (
-    <div className="chart-container">
-      <h3>Vacas por Fazenda</h3>
-      <p>Gráfico de barras com distribuição por fazenda</p>
-      <table>
-        <thead>
-          <tr>
-            <th>Fazenda</th>
-            <th>Quantidade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((point) => (
-            <tr key={point.label}>
-              <td>{point.label}</td>
-              <td>{point.value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+export const CowsPerFarmChart = ({ data }: CowsPerFarmChartProps) => (
+  <div className="card" style={{ padding: "var(--s-4)", background: "var(--bg-elev-1)" }}>
+    <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>Vacas por Fazenda</p>
+    <ResponsiveContainer width="100%" height={260}>
+      <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+        <XAxis dataKey="label" tick={{ fontSize: 12, fill: "var(--text-muted)" }} axisLine={{ stroke: "var(--border)" }} tickLine={false} />
+        <YAxis tick={{ fontSize: 12, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+        <Tooltip contentStyle={{ background: "var(--bg-elev-2)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
+        <Bar dataKey="value" fill="#339989" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+);

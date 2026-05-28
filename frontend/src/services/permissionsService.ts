@@ -17,10 +17,7 @@ export const permissionsService = {
     return response.data;
   },
 
-  update: async (
-    id: string,
-    input: { name?: string; description?: string }
-  ) => {
+  update: async (id: string, input: { name?: string; description?: string }) => {
     const response = await api.put<Permission>(`/permissions/${id}`, input);
     return response.data;
   },
@@ -35,9 +32,7 @@ export const permissionsService = {
   },
 
   getGroup: async (id: string) => {
-    const response = await api.get<PermissionGroup>(
-      `/permission-groups/${id}`
-    );
+    const response = await api.get<PermissionGroup>(`/permission-groups/${id}`);
     return response.data;
   },
 };

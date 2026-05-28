@@ -54,6 +54,14 @@ export const useUpdateCow = () => {
   });
 };
 
+export const useCowMedicalRecords = (cowId: string) => {
+  return useQuery({
+    queryKey: ["cows", cowId, "medical-records"],
+    queryFn:  () => cowsService.getMedicalRecords(cowId),
+    enabled:  !!cowId,
+  });
+};
+
 export const useDeleteCow = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -61,5 +69,25 @@ export const useDeleteCow = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cows"] });
     },
+  });
+};
+
+export const useRetireCow = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: number; reason: "SALE" | "SLAUGHTER" }) =>
+      cowsService.retireCow(id, reason),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["cows"] });
+    },
+  });
+};
+
+export const useCowAccelerometerDaily = (cowId: string, days: number = 7) => {
+  return useQuery({
+    queryKey: ["cows", cowId, "accelerometer-daily", days],
+    queryFn: () => cowsService.getAccelerometerDaily(cowId, days),
+    refetchInterval: 30000,
+    enabled: !!cowId,
   });
 };

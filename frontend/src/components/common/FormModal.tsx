@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { X } from "lucide-react";
 
 interface FormModalProps {
   open: boolean;
@@ -33,7 +34,7 @@ export const FormModal = ({
         <div className="modal-card__header">
           <h2 className="modal-card__title">{title}</h2>
           <button className="modal-card__close" onClick={onClose}>
-            ✕
+            <X size={16} />
           </button>
         </div>
 
@@ -49,11 +50,7 @@ export const FormModal = ({
             >
               {cancelLabel}
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn btn-primary" disabled={isLoading}>
               {isLoading ? "Salvando..." : submitLabel}
             </button>
           </div>

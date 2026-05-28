@@ -1,0 +1,76 @@
+/* Authenticated app theme tokens. Landing styles remain untouched. */
+.app-shell {
+  color-scheme: dark;
+
+  --bg-canvas: #0b0d0d;
+  --bg-app: #131515;
+  --bg-elev-1: #1b1d1d;
+  --bg-elev-2: #2b2c28;
+  --bg-elev-3: #36383a;
+
+  --border-subtle: rgba(255, 250, 251, 0.06);
+  --border: rgba(255, 250, 251, 0.12);
+  --border-strong: rgba(255, 250, 251, 0.22);
+
+  --text-primary: #fffafb;
+  --text-secondary: rgba(255, 250, 251, 0.66);
+  --text-muted: rgba(255, 250, 251, 0.42);
+  --text-inverse: #131515;
+
+  --danger: #e87c5c;
+  --warning: #e8c66b;
+  --success: #7de2d1;
+  --info: #6bb4e8;
+
+  --primary: #339989;
+  --primary-hover: #2c857a;
+  --primary-soft: rgba(51, 153, 137, 0.16);
+  --primary-on: #fffafb;
+  --accent: #7de2d1;
+  --accent-soft: rgba(125, 226, 209, 0.18);
+  --accent-on: #131515;
+
+  --status-success-bg: rgba(125, 226, 209, 0.16);
+  --status-warning-bg: rgba(232, 198, 107, 0.16);
+  --status-danger-bg: rgba(232, 124, 92, 0.16);
+  --status-info-bg: rgba(107, 180, 232, 0.16);
+
+  --sidebar-bg: #0f2e1f;
+  --sidebar-text: #a8c1b1;
+  --sidebar-active: #1a4632;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-subtle);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border-subtle);
+  --shadow-glow: 0 0 0 1px var(--primary-soft), 0 8px 32px rgba(51, 153, 137, 0.18);
+}
+
+.app-shell[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-canvas: #f2f2f0;
+  --bg-app: #fafaf8;
+  --bg-elev-1: #ffffff;
+  --bg-elev-2: #efefed;
+  --bg-elev-3: #e5e5e3;
+
+  --border-subtle: rgba(19, 21, 21, 0.06);
+  --border: rgba(19, 21, 21, 0.12);
+  --border-strong: rgba(19, 21, 21, 0.22);
+
+  --text-primary: #131515;
+  --text-secondary: rgba(19, 21, 21, 0.62);
+  --text-muted: rgba(19, 21, 21, 0.4);
+  --text-inverse: #fafaf8;
+
+  --primary-soft: rgba(51, 153, 137, 0.12);
+  --accent-soft: rgba(125, 226, 209, 0.25);
+  --accent-on: #131515;
+
+  --status-success-bg: #e6f1ea;
+  --status-warning-bg: #fbe9d8;
+  --status-danger-bg: #fde8e4;
+  --status-info-bg: #e4f0fb;
+
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-subtle);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.14), 0 0 0 1px var(--border-subtle);
+}

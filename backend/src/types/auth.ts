@@ -1,18 +1,28 @@
 export interface LoginInput {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
+/**
+ * Payload de autenticação.
+ * Contém as informações do usuário autenticado, como ID, email, perfil, permissões e IDs das fazendas associadas.
+ * O campo `farmIds` pode ser `null`, indicando acesso irrestrito (para SuperAdmin e Administrador), ou um array
+ * de números, indicando acesso restrito às fazendas listadas.
+ */
 export interface AuthPayload {
-    sub: number;
-    email: string;
-    profile: string;
+  sub: number;
+  id: number;
+  email: string;
+  profile: string;
+  permissions: string[];
+  farmIds:     number[] | null;
 }
 
 declare global {
-    namespace Express {
-        interface Request {
-        user?: AuthPayload;
-        }
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      user?: AuthPayload;
     }
+  }
 }

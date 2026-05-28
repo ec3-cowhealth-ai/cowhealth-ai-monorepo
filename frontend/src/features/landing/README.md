@@ -1,35 +1,39 @@
 # Feature: Landing
 
-Componentes e lógica da página de landing (pública, sem autenticação necessária).
+Components and logic for the landing page (public, no authentication required).
 
-## Estrutura
+## Structure
 
-- `components/` — Componentes reutilizáveis da landing (Hero, Features, CTA, Footer)
-- `hooks/` — Custom hooks para gerenciar estado da landing (ex: tweaks/variações)
-- `pages/` — Página principal da landing
-- `styles/` — CSS específico (incluído em `src/styles/landing.css`)
+- `components/` — Reusable landing components (Hero, Features, CTA, Footer)
+- `hooks/` — Custom hooks to manage landing state (e.g., tweaks/variations)
+- `pages/` — Main landing page
+- `styles/` — Specific CSS (included in `src/styles/landing.css`)
 
-## Componentes
+## Components
 
 ### Hero
-Seção principal com título, subtítulo, visualização e CTAs.
+
+Main section with title, subtitle, visualization, and CTAs.
 
 ### Features
-Cards com ícones, títulos, descrições e dados ao vivo (opcional).
+
+Cards with icons, titles, descriptions, and live data (optional).
 
 ### CTA
-Call-to-action card com mensagem e botões de ação.
+
+Call-to-action card with message and action buttons.
 
 ### Footer
-Rodapé com links institucionais e copyright.
 
-## Responsável
+Footer with institutional links and copyright.
 
-Jcfs (conforme matriz de responsabilidades)
+## Responsible
 
-## Notas
+Jcfs (according to the responsibility matrix)
 
-- A landing é **pública** — não requer autenticação.
-- Usa design system de `agents/design.md`.
-- Paleta fixa em `src/styles/landing.css` (variáveis CSS).
-- Componentes opcionais: tweaks para A/B testing.
+## Notes
+
+- The landing is **public** — it does not require authentication.
+- Uses the design system from `docs/agents/design.md`.
+- Fixed palette in `src/styles/landing.css` (CSS variables).
+- Optional components: tweaks for A/B testing.
