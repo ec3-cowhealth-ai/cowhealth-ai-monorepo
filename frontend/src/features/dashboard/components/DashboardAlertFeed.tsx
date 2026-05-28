@@ -63,7 +63,7 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
   const visible = alerts.slice(0, 6);
 
   return (
-    <aside style={{ display: "flex", flexDirection: "column", gap: 16, flex: 1, minWidth: 0 }}>
+    <aside style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ ...cardStyle }}>
         <div
           style={{

@@ -1,67 +1,77 @@
 /* Dashboard responsive layout */
 
 .dashboard-main-grid {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   gap: 24px;
+  width: 100%;
 }
 
 .dashboard-top-row {
-  display: flex;
-  flex-direction: row;
+  display: flex !important;
+  flex-direction: column !important;
   gap: 24px;
+  width: 100%;
 }
 
-/* Mobile first — stack everything vertically */
-@media (max-width: 767px) {
+/* Ensure cards take full width and have proper constraints */
+.dashboard-main-grid > section,
+.dashboard-main-grid > aside,
+.dashboard-top-row > section,
+.dashboard-top-row > aside {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Mobile first (default) — everything stacked */
+.dashboard-main-grid > * {
+  width: 100% !important;
+  flex: 0 0 auto !important;
+}
+
+.dashboard-top-row > * {
+  width: 100% !important;
+  flex: 0 0 auto !important;
+}
+
+/* Tablet (768px+) — top row still stacked */
+@media (min-width: 768px) {
   .dashboard-main-grid {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   .dashboard-top-row {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
-  /* Remove grid-column constraints on mobile */
-  .dashboard-main-grid > * {
-    width: 100%;
-  }
-
+  .dashboard-main-grid > *,
   .dashboard-top-row > * {
-    width: 100%;
+    width: 100% !important;
   }
 }
 
-/* Tablet (768-1023px) — 2 columns top, full width alert */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .dashboard-top-row {
-    flex-direction: column;
-  }
-
-  .dashboard-top-row > * {
-    width: 100%;
-  }
-}
-
-/* Desktop (1024px+) — original 3-column layout */
+/* Desktop (1024px+) — original layout restored */
 @media (min-width: 1024px) {
   .dashboard-main-grid {
-    flex-direction: row;
+    flex-direction: row !important;
   }
 
   .dashboard-top-row {
+    flex-direction: row !important;
     flex: 1;
-    flex-direction: row;
   }
 
-  /* Assuming ~3:6:3 ratio */
+  .dashboard-main-grid > * {
+    width: auto;
+    flex: 1;
+  }
+
+  .dashboard-top-row > * {
+    width: auto;
+    flex: 1;
+  }
+
   .dashboard-top-row > :first-child {
     flex: 0 0 25%;
-    min-width: 0;
-  }
-
-  .dashboard-top-row > :last-child {
-    flex: 1;
-    min-width: 0;
   }
 }
