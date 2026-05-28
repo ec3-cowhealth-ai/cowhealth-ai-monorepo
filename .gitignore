@@ -167,3 +167,7 @@ temp_design.pdf
 .claude/*
 
 
+/templates
+templates/*
+start-claude.ps1
+docs/tasks/ian-todo.md
