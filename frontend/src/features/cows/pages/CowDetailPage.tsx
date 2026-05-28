@@ -33,9 +33,9 @@ import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const NOTIF_TONE: Record<string, string> = {
-  ALERT: C.red,
+  ALERT:   C.red,
   WARNING: C.orange,
-  INFO: "#6bb4e8",
+  INFO:    "#6bb4e8",
 };
 
 const STATUS_LABEL: Record<string, string> = {

@@ -13,8 +13,9 @@ import { C, cardStyle } from "@features/dashboard/constants/colors";
 const TYPE_COLOR: Record<string, string> = {
   ALERT: C.red,
   WARNING: C.orange,
-  INFO: "#6bb4e8",
+  INFO:    "#6bb4e8",
 };
+
 
 const TYPE_ICON: Record<string, ReactNode> = {
   ALERT: <AlertTriangle size={14} />,
@@ -174,12 +175,8 @@ export const NotificationsPage = () => {
                   }}
                   style={{
                     ...cardStyle,
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 12,
-                    padding: 16,
-                    cursor: "pointer",
-                    textAlign: "left",
+                    display: "flex", alignItems: "flex-start", gap: 12,
+                    padding: 16, cursor: "pointer", textAlign: "left",
                     borderLeft: `4px solid ${color}`,
                     opacity: n.read ? 0.65 : 1,
                     borderRadius: 12,
