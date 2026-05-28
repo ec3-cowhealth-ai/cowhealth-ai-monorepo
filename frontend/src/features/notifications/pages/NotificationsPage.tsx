@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@components/common";
-import { Check, AlertTriangle, Bell, Activity, CheckCheck } from "lucide-react";
+import { Check, AlertTriangle, Bell, Activity, CheckCheck, CheckCircle2 } from "lucide-react";
 import {
   useNotifications,
   useUnreadNotifications,
@@ -50,6 +50,14 @@ const SEVERITY_COLOR: Record<string, string> = {
   LOW: "#6bb4e8",
 };
 
+// Map notification type to severity if not explicitly set
+const inferSeverity = (n: Notification): "HIGH" | "MEDIUM" | "LOW" => {
+  if (n.severity) return n.severity;
+  if (n.type === "ALERT") return "HIGH";
+  if (n.type === "WARNING") return "MEDIUM";
+  return "LOW";
+};
+
 export const NotificationsPage = () => {
   const [tab, setTab] = useState<"all" | "unread">("all");
   const [severity, setSeverity] = useState<SeverityFilter>("all");
@@ -70,7 +78,7 @@ export const NotificationsPage = () => {
   const notifications = useMemo(() => {
     const base = tab === "unread" ? unread || [] : all || [];
     if (severity === "all") return base;
-    return base.filter((n) => n.severity === severity);
+    return base.filter((n) => inferSeverity(n) === severity);
   }, [tab, severity, all, unread]);
 
   return (
@@ -171,6 +179,10 @@ export const NotificationsPage = () => {
           {(["all", "HIGH", "MEDIUM", "LOW"] as SeverityFilter[]).map((sev) => {
             const active = severity === sev;
             const accentColor = sev === "all" ? C.muted : SEVERITY_COLOR[sev];
+            const base = tab === "unread" ? unread || [] : all || [];
+            const count = sev === "all"
+              ? base.length
+              : base.filter((n) => inferSeverity(n) === sev).length;
             return (
               <button
                 key={sev}
@@ -202,6 +214,7 @@ export const NotificationsPage = () => {
                   />
                 )}
                 {SEVERITY_LABEL[sev]}
+                {count > 0 && <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>}
               </button>
             );
           })}
@@ -234,41 +247,67 @@ export const NotificationsPage = () => {
             {notifications.map((n) => {
               const color = (n.type && TYPE_COLOR[n.type]) ?? "var(--border-subtle)";
               return (
-                <button
+                <div
                   key={n.id}
-                  onClick={() => handleNotificationClick(n)}
                   style={{
                     ...cardStyle,
                     display: "flex", alignItems: "flex-start", gap: 12,
-                    padding: 16, cursor: n.cowId ? "pointer" : "default", textAlign: "left",
+                    padding: 16, textAlign: "left",
                     borderLeft: `4px solid ${color}`,
                     opacity: n.read ? 0.65 : 1,
                     borderRadius: 12,
                   }}
                 >
-                  <span
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markAsRead(n.id);
+                    }}
                     style={{
-                      color,
+                      width: 20,
+                      height: 20,
+                      padding: 0,
+                      borderRadius: 4,
+                      border: `1.5px solid ${n.read ? color : C.border}`,
+                      background: n.read ? color : "transparent",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      color: "#fff",
                       flexShrink: 0,
                       marginTop: 2,
-                      display: "flex",
+                    }}
+                    title={n.read ? "Marcar como não lido" : "Marcar como lido"}
+                  >
+                    {n.read && <Check size={14} />}
+                  </button>
+                  <button
+                    onClick={() => handleNotificationClick(n)}
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      background: "transparent",
+                      border: "none",
+                      cursor: n.cowId ? "pointer" : "default",
+                      textAlign: "left",
+                      padding: 0,
                     }}
                   >
-                    {(n.type && TYPE_ICON[n.type]) ?? <Bell size={14} />}
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        margin: "0 0 2px 0",
-                        fontSize: 13,
-                        fontWeight: n.read ? 400 : 600,
-                        color: C.text,
-                      }}
-                    >
-                      {n.title}
-                    </p>
-                    <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
-                  </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p
+                        style={{
+                          margin: "0 0 2px 0",
+                          fontSize: 13,
+                          fontWeight: n.read ? 400 : 600,
+                          color: C.text,
+                        }}
+                      >
+                        {n.title}
+                      </p>
+                      <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
+                    </div>
+                  </button>
                   <div
                     style={{
                       display: "flex",
@@ -279,13 +318,8 @@ export const NotificationsPage = () => {
                     }}
                   >
                     <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
-                    {!n.read && (
-                      <span
-                        style={{ width: 7, height: 7, borderRadius: "50%", background: C.green }}
-                      />
-                    )}
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
