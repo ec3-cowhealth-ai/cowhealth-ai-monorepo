@@ -609,6 +609,68 @@ Scope: `frontend/` only — no backend changes.
 
 ---
 
+## 2026-05-28 - Feature C (Prontuário Médico), Notificação → Vaca, Health Chart, Onboarding, OfflineBanner (Ian)
+
+Owner: Ian Braz
+Branch: `feature/ian-medical-mobile-v2` → base `develop`
+Scope: Implementação completa de todas as tarefas do `docs/tasks/ian-todo-v2.md`. Feature C de prontuário médico com CRUD e RBAC no frontend; notificação agora navega para a vaca relacionada + filtros de severidade; gráfico de linha de saúde do rebanho conectado ao endpoint real; página de onboarding com 3 slides; banner de offline; classe `.skeleton` no CSS.
+
+### Added
+
+**Feature C — Prontuário Médico (TAREFA 1)**
+
+- `frontend/src/services/medicalRecordsService.ts` — serviço dedicado com `getMedicalRecords`, `createMedicalRecord`, `updateMedicalRecord`, `deleteMedicalRecord` consumindo `GET/POST/PUT/DELETE /cows/:id/medical-records`.
+- `frontend/src/features/cows/hooks/useMedicalRecords.ts` — hooks `useMedicalRecords(cowId)`, `useCreateMedicalRecord(cowId)`, `useDeleteMedicalRecord(cowId)` com `invalidateQueries` automático.
+- `frontend/src/features/cows/components/MedicalRecordCard.tsx` — card com badge colorido por tipo (`CHECKUP`=azul / `PROCEDURE`=laranja / `MEDICATION`=verde), data formatada pt-BR, nome do veterinário, notas colapsáveis, botão excluir visível apenas com permissão `Delete MedicalRecord`.
+- `frontend/src/features/cows/components/MedicalRecordModal.tsx` — formulário com `react-hook-form` (validação: título obrigatório, tipo obrigatório), select de tipo, textarea de notas opcional, `datetime-local` com padrão = agora.
+
+**Feature F — Onboarding (TAREFA 5)**
+
+- `frontend/src/pages/onboarding/OnboardingPage.tsx` — 3 slides (Monitoramento em tempo real / Alertas inteligentes / Gerencie seu rebanho) com dot navigation, botão "Próximo" / "Começar", botão "Pular"; guarda `onboardingDone` no `localStorage` para exibir apenas uma vez.
+
+**Feature P3 — OfflineBanner (TAREFA 7)**
+
+- `frontend/src/components/ui/OfflineBanner.tsx` — banner reativo a eventos `online`/`offline` do `window`; retorna `null` quando online; exibe ícone `WifiOff` + texto "Offline · dados podem estar desatualizados".
+
+**Dashboard — Health Timeline Hook (TAREFA 4)**
+
+- `frontend/src/features/dashboard/hooks/useHealthTimeline.ts` — hook `useHealthTimeline(farmId?)` que consome `GET /dashboard/health-timeline` e mapeia a resposta `{ date, healthy, alert, heatStress, calving }[]` para `ChartDataPoint[]` com `label = "MM/DD"` e `value = healthy`.
+
+### Changed
+
+**Feature C — Prontuário Médico em CowDetailPage (TAREFA 1f)**
+
+- `frontend/src/types/cows.ts` — `MedicalRecord` expandido com `cowId: number`, `userId: number`, `updatedAt: string`; campo `notes` deixou de ser opcional (agora `string | null`); `user` tornou-se opcional (`user?`); adicionada interface `CreateMedicalRecordInput`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — seção "Prontuário" adicionada após os gráficos de sensores: cabeçalho com botão "+ Registro" (visível apenas com permissão `Create MedicalRecord`), lista de `MedicalRecordCard`, estado vazio; `<MedicalRecordModal>` integrado; corrigida comparação `n.cowId === id` → `String(n.cowId) === id` (era sempre falsa pois `cowId` é `number` e `id` é `string`).
+
+**Feature B — Notificação navega para a vaca (TAREFA 3)**
+
+- `backend/src/services/notificationsService.ts` — `getAllNotifications`: adicionado `cowId: true` ao `select`; resultado mapeado para incluir `read: n.readAt !== null` (antes o frontend recebia `readAt` mas o tipo esperava `read`).
+- `frontend/src/hooks/useNotifications.ts` — tipo `Notification` atualizado: `id: number` (era `string`), `cowId?: number | null` (era `string`), adicionado `severity?: string`; `useMarkNotificationAsRead` atualizado para aceitar `number`.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `handleNotificationClick`: marca como lida + navega para `/cows/:cowId` quando `n.cowId` existe; adicionados filtros de severidade (Críticos / Avisos / Resolvidos) em pills com cor acento por severidade; indicador "Ver vaca →" no card.
+
+**Dashboard — Health Timeline Chart (TAREFA 4)**
+
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — importa `useHealthTimeline` e `DashboardOverviewChart`; renderiza `<DashboardOverviewChart data={healthTimeline} title="Saúde do rebanho — últimos 7 dias" />` após os KPIs quando dados disponíveis.
+
+**Feature F — Onboarding integrado (TAREFA 5)**
+
+- `frontend/src/routes/AppRoutes.tsx` — rota pública `/onboarding` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Ver tutorial" adicionado ao menu; ao clicar remove o flag `onboardingDone` do `localStorage` e navega para `/onboarding`.
+
+**Feature P3 — OfflineBanner integrado (TAREFA 7)**
+
+- `frontend/src/components/layout/AppShell.tsx` — `<OfflineBanner />` renderizado dentro de `.app-shell__main`, antes do `<Outlet>`.
+- `frontend/src/styles/App.css` — classe `.skeleton` adicionada com animação `shimmer` existente (gradient de 3 stops usando `var(--bg-elev-1/2)`).
+
+### Build Status
+
+- ✅ Frontend TypeScript: zero erros (`tsc --noEmit`).
+- ✅ ESLint: zero warnings (`eslint --max-warnings 0`).
+- ✅ Backend: única falha pré-existente em `collarsService.ts` (`throwWithStatus`), não relacionada a este PR.
+
+---
+
 ## 2026-05-27 - Dashboard polish and visual alignment across all screens (Ian)
 
 Owner: Ian Braz  

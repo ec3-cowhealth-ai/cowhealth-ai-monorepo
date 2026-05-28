@@ -1,6 +1,7 @@
 # TODO — Ian (DevIanBraz)
 > Branch base: `develop` | Data: 2026-05-28
 > Criar branch: `feature/ian-medical-mobile-v2` a partir de `develop`
+> **STATUS: ✅ CONCLUÍDO em 2026-05-28 — branch `feature/ian-medical-mobile-v2` — todas as tarefas implementadas**
 
 ---
 
@@ -19,11 +20,11 @@
 
 ## Prioridade CRÍTICA (apresentação do professor)
 
-### TAREFA 1 — Feature C frontend: Prontuário Médico
+### ✅ TAREFA 1 — Feature C frontend: Prontuário Médico
 
 Esta é a tarefa de maior impacto para amanhã. O backend está 100% pronto.
 
-**1a — Tipos TypeScript**
+**✅ 1a — Tipos TypeScript**
 
 Arquivo: `frontend/src/types/cows.ts` — adicionar:
 
@@ -51,7 +52,7 @@ export interface CreateMedicalRecordInput {
 }
 ```
 
-**1b — Serviço**
+**✅ 1b — Serviço**
 
 Arquivo: `frontend/src/services/medicalRecordsService.ts` (criar novo):
 
@@ -77,7 +78,7 @@ export const deleteMedicalRecord = (cowId: number, recordId: number) =>
   api.delete(`${base(cowId)}/${recordId}`);
 ```
 
-**1c — Hooks**
+**✅ 1c — Hooks**
 
 Arquivo: `frontend/src/features/cows/hooks/useMedicalRecords.ts` (criar novo):
 
@@ -111,7 +112,7 @@ export const useDeleteMedicalRecord = (cowId: number) => {
 };
 ```
 
-**1d — Criar `MedicalRecordCard`**
+**✅ 1d — Criar `MedicalRecordCard`**
 
 Arquivo: `frontend/src/features/cows/components/MedicalRecordCard.tsx`
 
@@ -130,7 +131,7 @@ const TYPE_LABEL: Record<MedicalRecordType, string> = {
 };
 ```
 
-**1e — Criar `MedicalRecordModal`**
+**✅ 1e — Criar `MedicalRecordModal`**
 
 Arquivo: `frontend/src/features/cows/components/MedicalRecordModal.tsx`
 
@@ -143,7 +144,7 @@ Formulário com:
 
 Usar `react-hook-form` + validação simples (título obrigatório, tipo obrigatório).
 
-**1f — Adicionar seção de prontuário em `CowDetailPage`**
+**✅ 1f — Adicionar seção de prontuário em `CowDetailPage`**
 
 Arquivo: `frontend/src/features/cows/pages/CowDetailPage.tsx`
 
@@ -192,7 +193,7 @@ const [showRecordModal, setShowRecordModal] = useState(false);
 
 ## Prioridade ALTA
 
-### TAREFA 2 — Reaplicar correção do bottom nav
+### ✅ TAREFA 2 — Reaplicar correção do bottom nav
 
 O commit `cc06909` reverteu a correção que você fez. Reaplicar no `App.css`:
 
@@ -228,9 +229,9 @@ acima do indicador de home, sem sobreposição.
 
 ---
 
-### TAREFA 3 — Feature B: Notificação navega para a vaca
+### ✅ TAREFA 3 — Feature B: Notificação navega para a vaca
 
-**3a — Backend**
+**✅ 3a — Backend**
 
 Arquivo: `backend/src/services/notificationsService.ts` — na query de listagem,
 adicionar `cowId: true` no `select`:
@@ -252,7 +253,7 @@ Adicionar campo `read` computado:
 records.map(n => ({ ...n, read: n.readAt !== null }))
 ```
 
-**3b — Frontend**
+**✅ 3b — Frontend**
 
 Arquivo: `frontend/src/types/notifications.ts` (ou onde o tipo `Notification` está) —
 confirmar que `cowId` é `number | null`, não `string`.
@@ -273,7 +274,7 @@ Verificar se `useNavigate` já está importado — adicionar se necessário.
 
 ---
 
-### TAREFA 4 — Conectar DashboardOverviewChart ao endpoint health-timeline
+### ✅ TAREFA 4 — Conectar DashboardOverviewChart ao endpoint health-timeline
 
 O componente `DashboardOverviewChart` existe mas não está renderizado em `DashboardPage`.
 O endpoint `GET /dashboard/health-timeline` existe no backend.
@@ -307,7 +308,7 @@ export const useHealthTimeline = (farmId?: number) =>
 
 ## Prioridade MÉDIA
 
-### TAREFA 5 — Feature F: Onboarding (3 slides)
+### ✅ TAREFA 5 — Feature F: Onboarding (3 slides)
 
 **Arquivo a criar:** `frontend/src/pages/onboarding/OnboardingPage.tsx`
 
@@ -337,7 +338,7 @@ navigate("/dashboard", { replace: true });
 
 ---
 
-### TAREFA 6 — P1: Filtros de severidade em NotificationsPage
+### ✅ TAREFA 6 — P1: Filtros de severidade em NotificationsPage
 
 **Arquivo: `frontend/src/features/notifications/pages/NotificationsPage.tsx`**
 
@@ -365,7 +366,7 @@ Pills a adicionar: **Críticos · N** / **Avisos · N** / **Resolvidos**
 
 ---
 
-### TAREFA 7 — P3: OfflineBanner + skeleton shimmer
+### ✅ TAREFA 7 — P3: OfflineBanner + skeleton shimmer
 
 **Arquivo a criar:** `frontend/src/components/ui/OfflineBanner.tsx`
 
