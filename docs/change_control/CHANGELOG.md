@@ -4,6 +4,63 @@
 
 ---
 
+## 2026-05-28 - Seletor de Período, Gráfico de Saúde e Linha do Tempo de Atividade (JCFS)
+
+Scope: Correção do gráfico "Saúde do rebanho" (dados não apareciam), seletor de período reutilizável (7 opções), e implementação da Linha do Tempo de Atividade com classificação comportamental a partir dos dados reais de acelerômetro. Branch: `refactor/rbac_drop_undesired_layer`.
+
+### Fixed
+
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — bug raiz: backend retornava `{ label, healthy, alert, heatStress, calving }` mas chart usava `dataKey="value"` (inexistente). Corrigido com chart multi-linha usando os campos reais.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — comparação inválida `n.cowId === id` (`number` vs `string`) corrigida para `n.cowId === Number(id)`.
+- `frontend/src/features/dashboard/components/CowSelectorBar.tsx` — `first.cowId` (`number`) passado como `string`; `a.cowId === selectedCowId` sem conversão. Ambos corrigidos.
+- `frontend/src/features/dashboard/components/DashboardAlertFeed.tsx` — `a.cowId` passado sem `String()` para `onSelectCow`.
+- `frontend/src/features/dashboard/components/DashboardCenterPanel.tsx` — `r.user.name` sem optional chaining (`r.user?.name`).
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordFormPage.tsx` — `ClinicalRecord` passado direto ao form; campos `null` incompatíveis com `Partial<CreateClinicalRecordInput>` (`undefined`). Corrigido com helper `toFormInput()` usando `Object.entries` + `null → undefined`.
+
+### Added
+
+- `frontend/src/types/period.ts` — tipo `Period` (`hourly|daily|weekly|biweekly|monthly|yearly|custom`) + `PERIOD_OPTIONS` com `days` equivalente por período.
+- `frontend/src/components/ui/PeriodPicker.tsx` — pills horizontalmente scrolláveis (mobile-safe), campo de datas para "Personalizar". Reutilizável em qualquer página.
+- `frontend/src/features/dashboard/hooks/useHealthTimeline.ts` — hook tipado com `HealthTimelinePoint` (retorno real do backend) + params `period`, `from`, `to`.
+- `frontend/src/components/ui/OfflineBanner.tsx` — banner offline com `navigator.onLine` + eventos `online/offline`.
+- `frontend/src/components/ui/PeriodPicker.tsx` — componente reutilizável de seleção de período.
+- `frontend/src/pages/onboarding/OnboardingPage.tsx` — 3 slides, dot nav, skip/começar, persiste `onboardingDone`.
+- `frontend/src/styles/App.css` — `.skeleton` + `@keyframes shimmer`.
+
+### Changed
+
+- `backend/src/services/dashboardService.ts` — `getHealthTimeline` suporta `period` + `from`/`to`; função `buildBuckets` gera buckets corretos para hourly/daily/weekly/biweekly/monthly/yearly/custom.
+- `backend/src/controllers/dashboardController.ts` — `healthTimeline` extrai `period`, `from`, `to` da query e passa ao service.
+- `backend/src/services/dashboardService.ts` — `getCowActivityTimeline` implementado com classificação real por acelerômetro: thresholds calibrados com dados do DB (`accelXY`, `gyroMag`); horas consecutivas mescladas; retorna `{ time, label, icon, color, durationMin }[]`.
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — refatorado: `PeriodPicker` integrado, 4 linhas no chart (Saudável/Alerta/Est. Térmico/Parto), legenda, estado vazio, skeleton.
+- `frontend/src/features/dashboard/components/DashboardActivityTimeline.tsx` — reescrito com dados reais: busca `/dashboard/cow/:id/activity-timeline?date=`, navegação prev/next day, barra visual proporcional, legenda de cores.
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — `DashboardOverviewChart` adicionado após KPIs.
+- `frontend/src/features/cows/hooks/useCows.ts` — `useCowHeartRateDaily`, `useCowTemperatureDaily`, `useCowAccelerometerDaily` aceitam `period` + `customFrom/To`; traduzem para `days` via `periodToDays`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `PeriodPicker` adicionado acima dos gráficos de sensores; botão "+ Novo Registro" movido acima do título "Prontuário" com `width: 100%`.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — filtros de severidade (Críticos/Avisos/Resolvidos); `handleNotificationClick` usa `n.cowId`; `n.read` substitui `n.readAt`.
+- `frontend/src/hooks/useNotifications.ts` — `read: boolean` computado, `cowId: number | null`, `severity?`.
+- `frontend/src/components/layout/AppShell.tsx` — `OfflineBanner` adicionado.
+- `frontend/src/routes/AppRoutes.tsx` — rota pública `/onboarding` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Ver tutorial" com limpeza de `onboardingDone`.
+
+### Classification thresholds (acelerômetro bovino)
+
+Calibrados com 27.213 registros reais (accelZ médio 9.42 m/s² = gravidade, gyro até ±47 °/s):
+
+| accelXY (m/s²) | gyroMag (°/s) | Classificação |
+|---|---|---|
+| > 0.55 ou | > 20 | Atividade (caminhando) |
+| > 0.25 ou | > 10 | Alimentação |
+| qualquer | > 4  | Ruminação |
+| baixo | baixo | Repouso |
+
+### Build Status
+
+- ✅ Frontend: `tsc -b` zero erros.
+- ✅ Backend: zero erros novos (erros pré-existentes em `collarsService.ts` e `clinicalRecordService.ts` não alterados).
+
+---
+
 ## 2026-05-28 - Prontuário Clínico Veterinário Completo (Option 2) (JCFS)
 
 Scope: Implementação end-to-end do sistema de prontuário clínico (`CowClinicalRecord`) conforme `Master_Plan_ClinicalRecord_and_Dashboard.md`. Branch: `refactor/rbac_drop_undesired_layer`.

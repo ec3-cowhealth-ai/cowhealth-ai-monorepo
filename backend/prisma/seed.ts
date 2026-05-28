@@ -1005,6 +1005,143 @@ async function main() {
   await prisma.medicalRecord.createMany({ data: medicalRecordsData });
   console.log(`${medicalRecordsData.length} prontuários médicos criados`);
 
+  // ─── Campos reprodutivos + ClinicalRecords + ActivityEvents ───────────────
+  console.log("Criando dados clínicos e de atividade...");
+
+  const REPRO_STATUSES = ["OPEN", "INSEMINATED", "PREGNANT", "DRY", "POSTPARTUM"] as const;
+  const CLINICAL_STATUSES_LIST = ["STABLE", "MONITORING", "CRITICAL", "RECOVERED"] as const;
+  const ACTIVITY_TYPES = ["RUMINATION", "FEEDING", "RESTING", "LOW_ACTIVITY", "HIGH_ACTIVITY", "WALKING"] as const;
+
+  const DIAGNOSES = [
+    "Mamite subclínica — tratamento local iniciado.",
+    "Timpanismo gasoso leve — desobstrução realizada, dieta ajustada.",
+    "Estresse térmico — recomendado sombreamento e hidratação reforçada.",
+    "Animal saudável sem alterações clínicas no momento do exame.",
+    "Laminite grau 1 — cascos tratados, anti-inflamatório prescrito.",
+  ];
+
+  const TREATMENT_PLANS = [
+    "Penicilina G 22.000 UI/kg IM por 5 dias. Reavaliação em 72 h.",
+    "Flunixina 2,2 mg/kg IV dose única. Monitorar temperatura 2×/dia.",
+    "Reposição hídrica oral, eletrólitos, sombra irrestrita.",
+    "Sem tratamento necessário. Retorno em 30 dias para check-up.",
+    "Cura de cascos + sulfato de cobre tópico. Pastagem firme.",
+  ];
+
+  const VACCINATION_RECORDS = [
+    "Aftosa (12/2025) · Brucelose negativa (10/2025) · Raiva (08/2025)",
+    "Aftosa (01/2026) · IBR/BVD (11/2025) · Clostridioses (09/2025)",
+    "Aftosa (12/2025) · Carbúnculo (10/2025) · Leptospirose (08/2025)",
+    "Protocolo completo em dia. Próximo reforço: Aftosa 06/2026.",
+    "Sem histórico registrado — animal recém-adquirido.",
+  ];
+
+  let clinicalRecordCount = 0;
+  let activityEventCount = 0;
+
+  for (const { cow, scenario } of createdCows) {
+    const rand = makeRand(cow.id * 53 + 17);
+
+    // ── Status reprodutivo por cenário ──────────────────────────────────────
+    const isCalving    = scenario === CowStatus.CALVING;
+    const isHeatStress = scenario === CowStatus.HEAT_STRESS;
+    const isAlert      = scenario === CowStatus.ALERT;
+
+    const reproStatus = isCalving    ? "POSTPARTUM"
+                      : isHeatStress ? pick(["OPEN", "INSEMINATED", "DRY"] as const, rand())
+                      : isAlert      ? pick(["OPEN", "INSEMINATED"] as const, rand())
+                      :                pick(REPRO_STATUSES, rand());
+
+    const lastCalvingDate = (reproStatus === "POSTPARTUM" || reproStatus === "DRY")
+      ? daysAgo(rand() * 120 + 30)
+      : reproStatus === "PREGNANT"
+        ? daysAgo(rand() * 200 + 90)
+        : undefined;
+
+    const expectedCalvingDate = reproStatus === "PREGNANT"
+      ? new Date(Date.now() + (rand() * 180 + 30) * 24 * 60 * 60 * 1000)
+      : undefined;
+
+    const lactationNumber = lastCalvingDate ? Math.floor(rand() * 4) + 1 : undefined;
+
+    await prisma.cow.update({
+      where: { id: cow.id },
+      data: {
+        reproductiveStatus: reproStatus,
+        lastCalvingDate,
+        expectedCalvingDate,
+        lactationNumber,
+        sire: rand() > 0.5 ? pick(["Touro Supremo", "Angus Elite", "Holstein Pride", "Nelore Campeão"], rand()) : undefined,
+      },
+    });
+
+    // ── 2–3 CowClinicalRecords por vaca ─────────────────────────────────────
+    const recordCount = rand() > 0.4 ? 3 : 2;
+    for (let i = 0; i < recordCount; i++) {
+      const isRecent  = i === 0;
+      const daysBack  = isRecent ? rand() * 20 + 2 : rand() * 80 + 25;
+
+      const clinicalStatus = isAlert      ? "MONITORING"
+                           : isHeatStress && isRecent ? "CRITICAL"
+                           : isCalving    ? (isRecent ? "STABLE" : "MONITORING")
+                           :                pick(CLINICAL_STATUSES_LIST, rand());
+
+      const diagIdx = Math.floor(rand() * DIAGNOSES.length);
+
+      await prisma.cowClinicalRecord.create({
+        data: {
+          cowId:                cow.id,
+          veterinarianId:       vetUser.id,
+          recordDate:           daysAgo(daysBack),
+          clinicalStatus,
+          alertOrigin:          isAlert || isHeatStress ? "sensor" : rand() > 0.6 ? "visual" : "scheduled",
+          heartRate:            Math.round(60 + rand() * 30),
+          spo2:                 parseFloat((95 + rand() * 4).toFixed(1)),
+          bodyTemperature:      parseFloat((38.2 + rand() * 1.8).toFixed(1)),
+          ambientTemperature:   parseFloat((22 + rand() * 12).toFixed(1)),
+          activityLevel:        pick(["Normal", "Baixa", "Alta"] as const, rand()),
+          weight:               parseFloat((450 + rand() * 200).toFixed(1)),
+          bodyConditionScore:   parseFloat((2.5 + rand() * 2).toFixed(1)),
+          currentSymptoms:      isAlert      ? "Hipertermia, redução de apetite, isolamento do rebanho."
+                               : isHeatStress ? "Taquipneia, sudorese excessiva, tremores musculares."
+                               : isCalving    ? "Sinais de involução uterina normal, lóquios sem odor."
+                               :               "Sem queixas no momento.",
+          diagnosis:            DIAGNOSES[diagIdx],
+          treatmentPlan:        TREATMENT_PLANS[diagIdx],
+          medicationsAdministered: isAlert || isHeatStress
+            ? "Flunixina Meglumina 500 mg IV. Solução salina 0,9% 5L IV."
+            : rand() > 0.5
+              ? "Complexo vitamínico ADE IM."
+              : null,
+          vaccinationHistory:   pick(VACCINATION_RECORDS, rand()),
+          reproductiveStatus:   reproStatus,
+          pregnancyStatus:      reproStatus === "PREGNANT",
+          lastCalvingDate,
+          expectedCalvingDate,
+          followUpRequired:     isAlert || isHeatStress || clinicalStatus === "MONITORING",
+          followUpDate:         (isAlert || isHeatStress) ? new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) : undefined,
+          generalNotes:         i === 0 ? "Atendimento registrado via sistema CowHealth AI." : null,
+        },
+      });
+      clinicalRecordCount++;
+    }
+
+    // ── 3–5 ActivityEvents por vaca ─────────────────────────────────────────
+    const eventCount = Math.floor(rand() * 3) + 3;
+    const activityData = Array.from({ length: eventCount }, (_, i) => ({
+      cowId:       cow.id,
+      type:        pick(ACTIVITY_TYPES, rand()),
+      startedAt:   daysAgo(rand() * 3 + i * 0.2),
+      durationMin: Math.round(rand() * 90 + 15),
+    }));
+
+    await prisma.activityEvent.createMany({ data: activityData });
+    activityEventCount += eventCount;
+  }
+
+  console.log(`${clinicalRecordCount} prontuários clínicos criados`);
+  console.log(`${activityEventCount} eventos de atividade criados`);
+
   // Vínculos usuário-fazenda
   // Apenas SuperAdmin tem acesso irrestrito (farmIds: null no JWT — sem registro em UserFarm)
   // Administrador e todos os demais perfis são limitados às fazendas vinculadas
@@ -1083,6 +1220,7 @@ async function main() {
   console.log("  financeiro@cowhealth.com       Financeiro");
   console.log("  obs@cowhealth.com              Observador");
   console.log("\nNovas permissões: MedicalRecord (5) + ClinicalRecord (5) + Retire Cow (1)");
+  console.log("Dados novos: CowClinicalRecord · ActivityEvent · campos reprodutivos em Cow");
 }
 
 main()
