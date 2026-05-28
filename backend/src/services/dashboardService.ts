@@ -12,9 +12,14 @@ export const getDashboardOverview = async (
   userId?: number,
   farmIds?: number[] | null,
   _period?: "day" | "week" | "month",
+  dateStart?: string,
+  dateEnd?: string,
 ) => {
   const farmFilter = buildFarmFilter(farmId, farmIds);
-  const cowWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
+  const dateFilter = dateStart && dateEnd
+    ? { createdAt: { gte: new Date(dateStart), lte: new Date(dateEnd + "T23:59:59") } }
+    : {};
+  const cowWhere = { ...farmFilter, ...dateFilter, status: { not: "RETIRED" as const } };
 
   const [
     totalCows,
@@ -55,9 +60,17 @@ export const getDashboardOverview = async (
   };
 };
 
-export const getCowsPerStatus = async (farmId?: number, farmIds?: number[] | null) => {
+export const getCowsPerStatus = async (
+  farmId?: number,
+  farmIds?: number[] | null,
+  dateStart?: string,
+  dateEnd?: string,
+) => {
   const farmFilter = buildFarmFilter(farmId, farmIds);
-  const where = { ...farmFilter, status: { not: "RETIRED" as const } };
+  const dateFilter = dateStart && dateEnd
+    ? { createdAt: { gte: new Date(dateStart), lte: new Date(dateEnd + "T23:59:59") } }
+    : {};
+  const where = { ...farmFilter, ...dateFilter, status: { not: "RETIRED" as const } };
 
   const statusGroups = await prisma.cow.groupBy({
     by: ["status"],

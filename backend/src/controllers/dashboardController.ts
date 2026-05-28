@@ -12,16 +12,21 @@ import {
 import { handleRequest } from "../helpers/controllerHelpers";
 
 export const overview = async (request: Request, response: Response): Promise<void> => {
-  const userId  = request.user!.sub;
-  const farmIds = request.user!.farmIds;
-  const farmId  = request.query.farmId ? Number(request.query.farmId) : undefined;
-  const period  = request.query.period as "day" | "week" | "month" | undefined;
-  await handleRequest(response, () => getDashboardOverview(farmId, userId, farmIds, period));
+  const userId    = request.user!.sub;
+  const farmIds   = request.user!.farmIds;
+  const farmId    = request.query.farmId ? Number(request.query.farmId) : undefined;
+  const period    = request.query.period as "day" | "week" | "month" | undefined;
+  const dateStart = request.query.dateStart as string | undefined;
+  const dateEnd   = request.query.dateEnd as string | undefined;
+  await handleRequest(response, () => getDashboardOverview(farmId, userId, farmIds, period, dateStart, dateEnd));
 };
 
 export const cowsPerStatus = async (request: Request, response: Response): Promise<void> => {
-  const farmId = request.query.farmId ? Number(request.query.farmId) : undefined;
-  const data = await getCowsPerStatus(farmId);
+  const farmId    = request.query.farmId ? Number(request.query.farmId) : undefined;
+  const dateStart = request.query.dateStart as string | undefined;
+  const dateEnd   = request.query.dateEnd as string | undefined;
+  const farmIds   = request.user?.farmIds;
+  const data = await getCowsPerStatus(farmId, farmIds, dateStart, dateEnd);
   response.json(data);
 };
 

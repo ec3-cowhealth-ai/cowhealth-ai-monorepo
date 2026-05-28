@@ -41,12 +41,12 @@ export function DashboardActivityTimeline({ cowId }: Props) {
   });
 
   const prevDay = () => {
-    const d = new Date(date);
+    const d = new Date(date + "T00:00:00");
     d.setDate(d.getDate() - 1);
     setDate(toLocalDate(d));
   };
   const nextDay = () => {
-    const d = new Date(date);
+    const d = new Date(date + "T00:00:00");
     d.setDate(d.getDate() + 1);
     setDate(toLocalDate(d));
   };
