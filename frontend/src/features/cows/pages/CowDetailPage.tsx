@@ -432,6 +432,7 @@ export const CowDetailPage = () => {
                       {n.message}
                     </p>
                   </div>
+                </div>
                 );
               })}
             </div>
