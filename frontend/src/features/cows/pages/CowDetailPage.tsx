@@ -12,8 +12,11 @@ import {
   Link,
   Unlink,
   ChevronLeft,
+  ChevronDown,
   ClipboardList,
   Plus,
+  Check,
+  CheckCircle2,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
@@ -32,16 +35,28 @@ import { MedicalRecordModal } from "../components/MedicalRecordModal";
 import { useMedicalRecords } from "../hooks/useMedicalRecords";
 import { useHasPermission } from "@hooks/usePermission";
 import { useCollars } from "../../collars/hooks/useCollars";
-import { useNotifications } from "@hooks/useNotifications";
+import { useNotifications, useMarkNotificationAsRead } from "@hooks/useNotifications";
 import { useMe } from "@hooks/useAuth";
 import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
-const NOTIF_TONE: Record<string, string> = {
-  ALERT:   C.red,
-  WARNING: C.orange,
-  INFO:    "#6bb4e8",
+const ALERT_SCHEME: Record<string, { color: string; bg: string; border: string; label: string }> = {
+  ALERT:   { color: C.red,     bg: "#fdecea", border: "#f5c0b8", label: "Crítico"    },
+  WARNING: { color: C.orange,  bg: "#fdf3e7", border: "#f0d0a0", label: "Aviso"      },
+  INFO:    { color: "#6bb4e8", bg: "#e8f2fb", border: "#aed4f0", label: "Informação" },
 };
+const ALERT_FALLBACK = { color: C.muted, bg: C.bg, border: C.border, label: "Alerta" };
+const SEVERITY_RANK: Record<string, number> = { ALERT: 0, WARNING: 1, INFO: 2 };
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1)  return "agora";
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h atrás`;
+  return `${Math.floor(h / 24)}d atrás`;
+}
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY:    "Saudável",
@@ -195,6 +210,7 @@ export const CowDetailPage = () => {
   const [showRetireModal, setShowRetireModal] = useState(false);
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [activeTab, setActiveTab]             = useState<TabKey>("overview");
+  const [showSeen, setShowSeen]               = useState(false);
 
   const { data: me }            = useMe();
   const canCRUD                 = me?.profile === "ADMIN" || me?.profile === "MANAGER";
@@ -210,8 +226,13 @@ export const CowDetailPage = () => {
   const { data: temperature }  = useCowTemperatureDaily(id || "");
   const { data: accelerometer} = useCowAccelerometerDaily(id || "");
   const { data: notifications } = useNotifications();
+  const { mutate: markAsRead }  = useMarkNotificationAsRead();
 
-  const cowNotifs = notifications?.filter((n) => n.cowId != null && String(n.cowId) === id).slice(0, 5) || [];
+  const cowNotifs = notifications?.filter((n) => n.cowId != null && String(n.cowId) === id) ?? [];
+  const pending   = cowNotifs
+    .filter((n) => !n.read)
+    .sort((a, b) => (SEVERITY_RANK[a.type ?? ""] ?? 9) - (SEVERITY_RANK[b.type ?? ""] ?? 9));
+  const seen      = cowNotifs.filter((n) => n.read);
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -246,7 +267,7 @@ export const CowDetailPage = () => {
   const TABS: { key: TabKey; label: string; count?: number }[] = [
     { key: "overview", label: "Visão Geral" },
     { key: "records",  label: "Prontuário", count: medicalRecords?.length },
-    { key: "alerts",   label: "Alertas",    count: cowNotifs.length || undefined },
+    { key: "alerts",   label: "Alertas",    count: pending.length || undefined },
   ];
 
   return (
@@ -492,22 +513,144 @@ export const CowDetailPage = () => {
 
         {/* ── Tab: Alertas ── */}
         {activeTab === "alerts" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {cowNotifs.length === 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+            {/* Estado vazio total */}
+            {cowNotifs.length === 0 && (
               <div style={{ ...cardStyle, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 40, textAlign: "center" }}>
                 <AlertTriangle size={36} color={C.muted} />
                 <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Sem alertas recentes para este animal.</p>
               </div>
-            ) : (
-              cowNotifs.map((n) => (
+            )}
+
+            {/* Pendentes */}
+            {cowNotifs.length > 0 && pending.length === 0 && (
+              <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 10, padding: 16 }}>
+                <CheckCircle2 size={20} color={C.green} />
+                <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum alerta pendente.</p>
+              </div>
+            )}
+
+            {pending.map((n) => {
+              const s = ALERT_SCHEME[n.type ?? ""] ?? ALERT_FALLBACK;
+              return (
                 <div
                   key={n.id}
-                  style={{ ...cardStyle, padding: 14, borderLeft: `3px solid ${(n.type && NOTIF_TONE[n.type]) ?? C.border}` }}
+                  style={{
+                    borderRadius: 14,
+                    border: `1px solid ${s.border}`,
+                    borderLeft: `4px solid ${s.color}`,
+                    background: s.bg,
+                    overflow: "hidden",
+                  }}
                 >
-                  <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: 600, color: C.text }}>{n.title}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
+                  <div style={{ padding: "14px 16px" }}>
+                    {/* Topo: badge + tempo + botão marcar */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span
+                          style={{
+                            fontSize: 10, fontWeight: 700,
+                            padding: "2px 9px", borderRadius: 999,
+                            background: s.color + "22", color: s.color,
+                            textTransform: "uppercase", letterSpacing: "0.05em",
+                          }}
+                        >
+                          {s.label}
+                        </span>
+                        {n.createdAt && (
+                          <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => markAsRead(n.id)}
+                        title="Marcar como visto"
+                        style={{
+                          width: 30, height: 30, borderRadius: "50%",
+                          background: "rgba(255,255,255,0.85)",
+                          border: `1px solid ${s.color}50`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer", color: s.color, flexShrink: 0,
+                          transition: "background 0.15s",
+                        }}
+                      >
+                        <Check size={13} />
+                      </button>
+                    </div>
+
+                    {/* Título */}
+                    <p style={{ margin: "0 0 5px 0", fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.25 }}>
+                      {n.title}
+                    </p>
+
+                    {/* Mensagem */}
+                    <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+                      {n.message}
+                    </p>
+                  </div>
                 </div>
-              ))
+              );
+            })}
+
+            {/* Seção Vistos (colapsável) */}
+            {seen.length > 0 && (
+              <div style={{ marginTop: 4 }}>
+                <button
+                  onClick={() => setShowSeen((v) => !v)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    background: "none", border: "none", cursor: "pointer",
+                    color: C.muted, fontSize: 12, padding: "4px 2px",
+                    width: "100%",
+                  }}
+                >
+                  <ChevronDown
+                    size={14}
+                    style={{
+                      transform: showSeen ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.15s",
+                    }}
+                  />
+                  Vistos ({seen.length})
+                </button>
+
+                {showSeen && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                    {seen.map((n) => {
+                      const s = ALERT_SCHEME[n.type ?? ""] ?? ALERT_FALLBACK;
+                      return (
+                        <div
+                          key={n.id}
+                          style={{
+                            ...cardStyle,
+                            padding: "12px 14px",
+                            borderLeft: `3px solid ${C.border}`,
+                            opacity: 0.55,
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                            <span
+                              style={{
+                                fontSize: 10, fontWeight: 700,
+                                padding: "1px 8px", borderRadius: 999,
+                                background: s.color + "18", color: s.color,
+                                textTransform: "uppercase", letterSpacing: "0.04em",
+                              }}
+                            >
+                              {s.label}
+                            </span>
+                            {n.createdAt && (
+                              <span style={{ fontSize: 10, color: C.muted }}>{timeAgo(n.createdAt)}</span>
+                            )}
+                          </div>
+                          <p style={{ margin: "0 0 3px 0", fontSize: 13, fontWeight: 600, color: C.text }}>{n.title}</p>
+                          <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{n.message}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}
