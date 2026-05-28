@@ -574,4 +574,107 @@ Scope: `frontend/` only — no backend changes.
 
 # Changes and Progress by Renato
 
-...
+---
+ 
+## 2026-05-27 - User-farm access control: restrict data by farm assignment (Renato)
+ 
+Scope: Farm-level access control so each user only sees data from the farms they are assigned to. Introduces a `UserFarm` join table, embeds `farmIds` in the JWT payload, and adds a `requireFarmAccess` middleware that isolates queries across farms, collars, and the dashboard — without any extra DB query per request. SuperAdmin is the only role that retains unrestricted access.
+ 
+### Added
+ 
+- `backend/prisma/migrations/add_user_farm_relation/` — migration creating the `UserFarm` join table (N:N between users and farms).
+- `backend/src/middlewares/requireFarmAccess.ts` — new middleware; reads `farmIds` from the JWT and short-circuits for SuperAdmin; returns 403 on unauthorized farm access.
+- `backend/src/helpers/serviceHelpers.ts` — `throwWithStatus()` helper for throwing errors with an explicit HTTP status code.
+### Changed
+ 
+- `backend/prisma/schema.prisma` — added `UserFarm` model with relations to `User` and `Farm`.
+- `backend/prisma/seed.ts` — farm assignments per profile: Veterinário → Aurora + São Bento; Zootecnista → Boa Esperança; Gerente de Fazenda → Aurora; Operador de Campo → Aurora; Financeiro → all 5 farms; Observador → Santa Clara; Administrador → one dedicated admin per farm (5 created); SuperAdmin → unrestricted (no `UserFarm` record required).
+- `backend/src/types/auth.ts` — `AuthPayload` extended with `farmIds: number[] | null` (`null` = unrestricted).
+- `backend/src/services/authService.ts` — `getUserFarmIds()` runs at login to embed `farmIds` in the JWT; checks for the role name `"SuperAdmin"` instead of profile `"ADMIN"`, decoupling access control from profile type.
+- `backend/src/middlewares/requirePermission.ts` — updated to work with the new `AuthPayload`.
+- `backend/src/services/farmsService.ts` — `getAllFarms` and `getFarmById` filter by `farmIds`.
+- `backend/src/services/dashboardService.ts` — all cow counts and `groupBy` queries filter by `farmIds`.
+- `backend/src/controllers/farmsController.ts` — passes `farmIds` from JWT to services.
+- `backend/src/helpers/handleRequest.ts` — updated to read `error.statusCode` when present; access denied → 403, resource not found → 404.
+- `insomnia-backend.yaml` — Farm Access Control folder added with 11 requests covering list, show, 403 and 200 scenarios.
+### Build Status
+ 
+- ✅ Backend TypeScript: zero errors (`npx tsc --noEmit`).
+---
+ 
+## 2026-05-26 - Backend features C, D and G: medical records, cow retirement and sensor history (Renato)
+ 
+Scope: Three backend features from `Master_Plan_NewFeatures.md`. Feature C adds a full veterinary medical record system with RBAC; Feature D implements a soft-delete retirement flow that unlinks the cow's collar; Feature G exposes a unified sensor-history endpoint combining heart rate, temperature and accelerometer for the frontend `CowHistoryPage`.
+ 
+### Added
+ 
+**Feature C — Veterinary Medical Record**
+ 
+- `backend/prisma/migrations/` — `MedicalRecord` model with `MedicalRecordType` enum (`CHECKUP`, `PROCEDURE`, `MEDICATION`) and relation to `Cow` and `User`.
+- `backend/prisma/seed.ts` — permission group `Prontuario` with 5 permissions; role assignments: Veterinário (full CRUD), Zootecnista and Gerente de Fazenda (read-only), Admin and SuperAdmin (full CRUD).
+- `backend/src/schemas/medicalRecordSchemas.ts` — `createMedicalRecordSchema` and `updateMedicalRecordSchema` (Zod).
+- `backend/src/services/medicalRecordsService.ts` — full CRUD service.
+- `backend/src/controllers/medicalRecordsController.ts` — controller wiring service to HTTP.
+- `backend/src/routes/cowsRoutes.ts` — medical record routes appended (flat pattern, consistent with project convention).
+**Feature D — Animal Retirement**
+ 
+- `backend/prisma/migrations/` — `RETIRED` status added to `CowStatus` enum; `retiredAt` and `retiredReason` fields added to `Cow`.
+- `backend/src/services/cowsService.ts` — `retireCow()` with guard against double retirement; unlinks collar and sets it to `INACTIVE`.
+**Feature G — Sensor History**
+ 
+- `backend/src/routes/cowsRoutes.ts` — `GET /cows/:id/sensor-history?from=<ISO>&to=<ISO>` returning `{ measuredAt, heartRate, temperature, activity }` per reading; `activity` computed as Euclidean magnitude of accelerometer axes.
+### Changed
+ 
+**Feature D — Animal Retirement**
+ 
+- `backend/src/services/dashboardService.ts` — all cow counts and `groupBy` queries now exclude `RETIRED` cows.
+- `backend/src/services/cowsService.ts` — cow listing excludes `RETIRED`.
+### Build Status
+ 
+- ✅ Backend TypeScript: zero errors (`npx tsc --noEmit`).
+---
+ 
+## 2026-05-25 - Fix: missing migration for last_lat and last_lng on cows (Renato)
+ 
+Scope: Alignment between `schema.prisma` and the actual database state. The fields `lastLat` and `lastLng` were present in the `Cow` model but the corresponding migration had never been generated, causing `prisma migrate reset` to fail.
+ 
+### Added
+ 
+- `backend/prisma/migrations/add_last_location_to_cows/` — migration creating `last_lat` and `last_lng` columns on the `cows` table.
+### Fixed
+ 
+- **`prisma migrate reset` failed with `The column cowhealth-db.cows.last_lat does not exist`**
+  Cause: `lastLat` / `lastLng` were declared in `schema.prisma` but no migration had been generated for them.
+  Solution: generated `add_last_location_to_cows` migration, aligning the schema with the database.
+### Build Status
+ 
+- ✅ `npx prisma migrate reset` executes without errors.
+- ✅ Seed: 8 users, 200 collars, 160 cows.
+---
+ 
+## 2026-05-24 - Backend security hardening: CORS, authenticated uploads, error handler, Zod validation and permission caching (Renato)
+ 
+Scope: Five backend security and quality tasks from `docs/tasks/triagen-cards.yaml` (cards 9–13). CORS is now restricted to allowed origins; cow photos require authentication and are protected against path traversal; unhandled errors no longer leak stack traces to the client; all POST and PUT endpoints are validated with Zod; and permission checks are resolved directly from the JWT payload, eliminating one DB query per request.
+ 
+### Added
+ 
+- `backend/src/middlewares/errorHandler.ts` — global error handler extracted to its own file; suppresses stack traces in responses.
+- `backend/src/middlewares/validateSchema.ts` — middleware factory that runs Zod validation and returns `422` with a `details[]` array on failure.
+- `backend/src/schemas/` — new directory with Zod schemas for all entities: `authSchemas.ts`, `farmSchemas.ts`, `collarSchemas.ts`, `cowSchemas.ts`, `userSchemas.ts`, `roleSchemas.ts`, `permissionSchemas.ts`, `permissionGroupSchemas.ts`.
+### Changed
+ 
+- `backend/src/server.ts` — `app.use(cors())` replaced by `cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") })`; `express.static("/uploads")` removed; `errorHandler` registered as the last middleware; `validateSchema` applied on all `POST` and `PUT` routes.
+- `backend/src/types/auth.ts` — `AuthPayload` extended with `permissions: string[]`.
+- `backend/src/services/authService.ts` — login now embeds `permissions[]` in the JWT payload.
+- `backend/src/middlewares/requirePermission.ts` — rewritten to read permissions directly from the JWT token; no DB query per request.
+- `backend/src/routes/cowsRoutes.ts` — `GET /cows/:id/photos/:filename` added with `requireAuth` + `requirePermission("View Cow")`; `path.basename()` prevents path traversal.
+- `backend/.env.example` — `ALLOWED_ORIGINS` documented.
+- `insomnia-backend.yaml` — collection updated for all new routes and validation behaviour.
+### Notes
+ 
+- Existing JWT tokens must be renewed — the new payload includes `permissions[]`.
+- `ALLOWED_ORIGINS=http://localhost:5173` must be added to the local `.env` as documented in `.env.example`.
+### Build Status
+ 
+- ✅ Backend TypeScript: zero errors (`npx tsc --noEmit`).
+
