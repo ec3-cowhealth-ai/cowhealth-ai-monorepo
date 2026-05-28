@@ -10,9 +10,11 @@ import {
   removeRoleFromUser,
 } from "../services/usersService";
 import { handleRequest } from "../helpers/controllerHelpers";
+import { prisma } from "../lib/prisma";
 
-export const listUsers = async (_request: Request, response: Response): Promise<void> => {
-  const users = await getAllUsers();
+export const listUsers = async (request: Request, response: Response): Promise<void> => {
+  const farmIds = request.user!.farmIds;
+  const users = await getAllUsers(farmIds);
   response.json(users);
 };
 
@@ -21,7 +23,7 @@ export const showUser = async (request: Request, response: Response): Promise<vo
 };
 
 export const storeUser = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => createUser(request.body), 201);
+  await handleRequest(response, () => createUser(request.body, request.user?.sub), 201);
 };
 
 export const updateUserController = async (request: Request, response: Response): Promise<void> => {

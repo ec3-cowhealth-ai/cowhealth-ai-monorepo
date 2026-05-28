@@ -4,6 +4,110 @@
 
 ---
 
+## 2026-05-26 - Critical Fixes: Login Loop, Build Errors, and Farm Consistency (JCFS)
+
+Scope: Resolved critical authentication and build issues introduced after git synchronization. Fixed a infinite login redirect loop by making the `getMe` service more resilient; unified all ID types to `number` on the frontend to resolve 18+ TypeScript compilation errors; and implemented strict farm validation in `FarmContext` to prevent incorrect farm assignment due to stale local storage data.
+
+### Fixed
+
+- `backend/src/services/authService.ts` — `getMe` now correctly merges the user's primary `farmId` into the accessible farms list and handles missing relations gracefully.
+- `frontend/src/context/FarmContext.tsx` — added validation logic to ensure the selected farm is always allowed for the current user, automatically switching if invalid.
+- `frontend/src/types/access.ts` & `auth.ts` — unified all ID types to `number` to match the backend and resolve build errors.
+- `frontend/src/features/access/pages/UsersPage.tsx` — fixed search filter crash for users without an assigned farm (Super Admins) and updated to numeric IDs.
+- `frontend/src/features/access/pages/RolesPage.tsx` & `PermissionsPage.tsx` — updated to handle numeric IDs and fixed various prop-drilling type mismatches.
+- `frontend/src/components/ProtectedRoute/index.tsx` — improved logic to prevent premature login redirects during API loading or error handling.
+- `frontend/src/features/dashboard/components/DashboardCenterPanel.tsx` — fixed Recharts tooltip formatter type errors.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — fixed unsafe index access for notification types.
+
+### Changed
+
+- `backend/src/controllers/farmsController.ts`, `usersController.ts`, `collarsController.ts` — refactored to use `request.user.sub` for the authenticated user ID and consistently utilize the `farmIds` array from the JWT for high-performance data isolation.
+
+### Build Status
+
+- ✅ Backend: Consolidated schema and isolation logic.
+- ✅ Frontend TypeScript: Successfully built with **zero errors**.
+
+---
+
+## 2026-05-26 - User Isolation by Farm and Cow Weight field (JCFS)
+
+Scope: Implemented backend isolation for user management, restricting Farm Admins to viewing and managing only users within their own farm; added the weight field to the cow creation modal in the frontend to align with the database schema.
+
+### Changed
+
+- `backend/src/services/usersService.ts` — `getAllUsers` now supports farm isolation filtering.
+- `backend/src/controllers/usersController.ts` — `listUsers` updated to detect the current user's farm and apply isolation rules for non-Super Admins.
+- `frontend/src/types/cows.ts` — added `weight` field to `CreateCowInput` interface.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — updated `CreateCowModal` to include a numeric weight field (kg).
+
+### Build Status
+
+- ✅ Backend: Logic updated and verified.
+- ✅ Frontend TypeScript: zero errors.
+
+---
+
+## 2026-05-26 - Farm Isolation and Super Admin Collar CRUD (JCFS)
+
+Scope: Implementation of tenant-style isolation where users are restricted to their assigned farm's data; added `farmId` to the `Collar` model to allow equipment allocation; implemented full Collar CRUD for Super Admins; and updated the seed script to establish realistic farm-linked relationships for users and hardware.
+
+### Added
+
+- `backend/prisma/migrations/20260527030503_add_farm_id_to_collars/` — migration adding `farm_id` to `collars` table.
+
+### Changed
+
+- `backend/prisma/schema.prisma` — added `farmId` to `Collar` model and established relation with `Farm`.
+- `backend/prisma/seed.ts` — updated to link all test users to specific farms (except Super Admin) and distribute the 160 active collars across the 5 farms (32 per farm).
+- `backend/src/services/authService.ts` — `getMe` now includes `farmId` in the response; JWT payload updated to include user `id`.
+- `backend/src/services/farmsService.ts` — `getAllFarms` and `getFarmById` now support isolation filtering via `userFarmId`.
+- `backend/src/services/collarsService.ts` — `getAllCollars` and `getCollarById` now support isolation filtering; `create` and `update` now handle `farmId`.
+- `backend/src/controllers/farmsController.ts` & `collarsController.ts` — updated to extract `userFarmId` from the authenticated request and pass it to services for data isolation.
+- `backend/src/types/farming.ts` — updated Collar input types to include `farmId`.
+- `frontend/src/pages/home/HomePage.tsx` — farm picker restricted to Super Admins; other users are locked to their assigned farm.
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — added "Nova Coleira" action for Super Admins and integrated `CreateCollarModal` with farm selection.
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — added Edit/Delete actions for Super Admins and enabled farm allocation management.
+- `frontend/src/features/collars/components/CollarCard.tsx` — now displays the name of the assigned farm.
+- `frontend/src/types/auth.ts` & `collars.ts` — updated frontend types to reflect backend changes (`farmId`, `farm` objects).
+
+### Build Status
+
+- ✅ Backend: Database migrated and seed updated.
+- ✅ Frontend TypeScript: zero errors.
+
+---
+
+## 2026-05-26 - RBAC system implementation, Users Page refactor, and profile-based CRUD (JCFS)
+
+Scope: Full implementation of Role-Based Access Control (RBAC) linking users to specific farms; backend enforcement for user creation (Super Admin vs Farm Admin); frontend overhaul of the Users page with CSS extraction; automatic email suffix based on farm name; and system-wide CRUD visibility restrictions based on User Profile (Admin/Gestor vs Observador).
+
+### Added
+
+- `frontend/src/styles/access.css` — extracted styles for access management pages.
+- `backend/prisma/migrations/20260527021139_add_farm_id_to_users/` — migration adding `farm_id` to `users` table.
+
+### Changed
+
+- `backend/prisma/schema.prisma` — added `farmId` field to `User` model and established relation with `Farm`.
+- `backend/src/services/usersService.ts` — updated to enforce RBAC rules: Super Admin can create any profile/farm, Farm Admin is restricted to their farm and non-admin profiles; mandatory role assignment on creation.
+- `backend/src/schemas/userSchemas.ts` — updated to accept `farmId` and `roleId`.
+- `backend/src/controllers/usersController.ts` — updated to pass `creatorId` to the service.
+- `frontend/src/features/access/pages/UsersPage.tsx` — complete refactor: removed inline styles, added Farm/Role selection, and implemented automatic email domain filling.
+- `frontend/src/types/access.ts` — updated types to include farm relationship and creation fields.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — added "Novo animal" button restricted to Admin/Manager profiles; integrated `CreateCowModal`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — added Edit, Delete, and Collar Link/Unlink actions, visible only to Admin/Manager profiles; added confirmation dialogs.
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — restricted "Nova Fazenda" creation to Super Admins.
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — enabled farm info editing for Super Admins and the specific Farm Admin.
+- `.gitignore` — permanently removed `docs/*` to allow tracking of documentation files.
+
+### Build Status
+
+- ✅ Backend: Database migrated and schema updated.
+- ✅ Frontend TypeScript: zero errors.
+
+---
+
 ## 2026-05-24 - Farm geolocation, cow position simulation, authentication loop fix, and team task documentation (JCFS)
 
 Scope: Utility for simulating geographic coordinates for cows by farm; fix for infinite reload loop caused by FarmProvider outside the protected route; update of the Farm type with optional latitude/longitude fields; generation of triage cards for the team (Angelo, Ian, Renato); PR task documenting farm geolocation for integration with the MQTT simulator; adjustment of .gitignore to track .claude/SKILL.md.

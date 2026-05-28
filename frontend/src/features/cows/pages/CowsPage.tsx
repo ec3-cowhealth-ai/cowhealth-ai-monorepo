@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
-import { LoadingSpinner } from "@components/common";
-import { Search, ChevronRight } from "lucide-react";
+import { LoadingSpinner, FormModal } from "@components/common";
+import { Search, ChevronRight, Plus } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
-import { useCows } from "../hooks/useCows";
+import { useCows, useCreateCow } from "../hooks/useCows";
 import { useFarmContext } from "../../../context/FarmContext";
+import { useMe } from "../../../hooks/useAuth";
 import { COW_STATUS_VALUES } from "../../../types/cows";
 import type { Cow } from "../../../types/cows";
 
@@ -33,15 +34,136 @@ const statusColor = (s: string) => {
   return "var(--success)";
 };
 
+// ─── Modal de Criação ─────────────────────────────────────────────────────────
+
+interface CreateModalProps {
+  open: boolean;
+  onClose: () => void;
+  isLoading: boolean;
+  farmId: number;
+  onSubmit: (data: {
+    tag: string;
+    name: string;
+    breed: string;
+    weight?: number;
+    birthDate?: string;
+    status: string;
+    farmId: number;
+  }) => void;
+}
+
+function CreateCowModal({ open, onClose, isLoading, farmId, onSubmit }: CreateModalProps) {
+  const [form, setForm] = useState({
+    tag: "",
+    name: "",
+    breed: "",
+    weight: "",
+    birthDate: "",
+    status: "HEALTHY",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      ...form,
+      weight: form.weight ? Number(form.weight) : undefined,
+      birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : undefined,
+      farmId,
+    });
+    setForm({ tag: "", name: "", breed: "", weight: "", birthDate: "", status: "HEALTHY" });
+  };
+
+  return (
+    <FormModal
+      open={open}
+      title="Novo Animal"
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+    >
+      <div className="form-field">
+        <label className="form-field__label is-required">Tag (Brinco)</label>
+        <input
+          className="form-field__input"
+          value={form.tag}
+          required
+          placeholder="Ex: BR123"
+          onChange={(e) => setForm({ ...form, tag: e.target.value })}
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-field__label is-required">Nome</label>
+        <input
+          className="form-field__input"
+          value={form.name}
+          required
+          placeholder="Ex: Mimosa"
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-field__label is-required">Raça</label>
+        <input
+          className="form-field__input"
+          value={form.breed}
+          required
+          placeholder="Ex: Nelore"
+          onChange={(e) => setForm({ ...form, breed: e.target.value })}
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-field__label">Peso (kg)</label>
+        <input
+          type="number"
+          step="0.01"
+          className="form-field__input"
+          value={form.weight}
+          placeholder="Ex: 450.5"
+          onChange={(e) => setForm({ ...form, weight: e.target.value })}
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-field__label">Data de Nascimento</label>
+        <input
+          type="date"
+          className="form-field__input"
+          value={form.birthDate}
+          onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-field__label is-required">Status Inicial</label>
+        <select
+          className="form-field__select"
+          value={form.status}
+          onChange={(e) => setForm({ ...form, status: e.target.value })}
+        >
+          <option value="HEALTHY">Saudável</option>
+          <option value="ALERT">Alerta</option>
+          <option value="HEAT_STRESS">Estresse Térmico</option>
+          <option value="CALVING">Parto</option>
+        </select>
+      </div>
+    </FormModal>
+  );
+}
+
+// ─── Componente Principal ──────────────────────────────────────────────────────
+
 export const CowsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+
+  const { data: me } = useMe();
+  const canCRUD = me?.profile === "ADMIN" || me?.profile === "MANAGER";
 
   const { selectedFarm } = useFarmContext();
   const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
   const { data: cows, isLoading } = useCows({ farmId });
+  const { mutate: createCow, isPending: creating } = useCreateCow();
 
   const counts = useMemo(
     () => ({
@@ -72,9 +194,16 @@ export const CowsPage = () => {
         title="Rebanho"
         subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
         actions={
-          <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
-            <Search size={20} />
-          </button>
+          <div style={{ display: "flex", gap: 12 }}>
+            <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
+              <Search size={20} />
+            </button>
+            {canCRUD && (
+              <button className="app-bar__action" onClick={() => setShowCreate(true)}>
+                <Plus size={20} />
+              </button>
+            )}
+          </div>
         }
       />
 
@@ -154,6 +283,16 @@ export const CowsPage = () => {
           </div>
         )}
       </div>
+
+      {selectedFarm && (
+        <CreateCowModal
+          open={showCreate}
+          onClose={() => setShowCreate(false)}
+          isLoading={creating}
+          farmId={selectedFarm.id}
+          onSubmit={(data) => createCow(data, { onSuccess: () => setShowCreate(false) })}
+        />
+      )}
     </div>
   );
 };

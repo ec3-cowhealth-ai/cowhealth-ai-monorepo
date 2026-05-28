@@ -225,25 +225,23 @@ export const PermissionsPage = () => {
         onSubmit={(data) => createPermission(data, { onSuccess: () => setShowCreate(false) })}
       />
 
-      {editingPerm && (
-        <PermissionFormModal
-          open
-          permission={editingPerm}
-          onClose={() => setEditingPerm(null)}
-          isLoading={updating}
-          onSubmit={(data) =>
-            updatePermission(
-              { id: String(editingPerm.id), input: data },
-              { onSuccess: () => setEditingPerm(null) },
-            )
-          }
-        />
-      )}
+      <PermissionFormModal
+        open={!!editingPerm}
+        permission={editingPerm}
+        onClose={() => setEditingPerm(null)}
+        isLoading={updating}
+        onSubmit={(data) =>
+          updatePermission(
+            { id: String(editingPerm!.id), input: data },
+            { onSuccess: () => setEditingPerm(null) },
+          )
+        }
+      />
 
       <ConfirmDialog
         open={!!deletingPerm}
         title="Excluir permissao"
-        description={`Tem certeza que deseja excluir a permissao "${deletingPerm?.name}"? Ela nao pode estar vinculada a papeis ou grupos.`}
+        description={`Tem certeza que deseja excluir a permissao "${deletingPerm?.name}"? Esta acao nao pode ser desfeita.`}
         confirmLabel={deleting ? "Excluindo..." : "Excluir"}
         isDangerous
         onConfirm={() =>

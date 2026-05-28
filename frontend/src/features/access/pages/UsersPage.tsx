@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { X, User } from "lucide-react";
 import {
@@ -12,7 +12,10 @@ import {
   useRemoveRole,
 } from "../hooks/useUsers";
 import { useRoles } from "../hooks/useRoles";
+import { useFarms } from "../../farms/hooks/useFarms";
+import { useMe } from "../../../hooks/useAuth";
 import type { UserListItem, UserProfile } from "../../../types/access.ts";
+import "../../../styles/access.css";
 
 // ─── Helpers visuais ──────────────────────────────────────────────────────────
 
@@ -37,27 +40,77 @@ function avatarInitials(name: string): string {
     .toUpperCase();
 }
 
+function normalizeEmailPattern(farmName: string): string {
+  return farmName
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
 // ─── Modal de criação ─────────────────────────────────────────────────────────
 
 interface CreateModalProps {
   open: boolean;
   onClose: () => void;
   isLoading: boolean;
-  onSubmit: (data: { name: string; email: string; password: string; profile: UserProfile }) => void;
+  onSubmit: (data: {
+    name: string;
+    email: string;
+    password: string;
+    profile: UserProfile;
+    farmId?: number;
+    roleId?: number;
+  }) => void;
 }
 
 function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProps) {
+  const { data: me } = useMe();
+  const { data: farms } = useFarms();
+  const { data: roles } = useRoles();
+
+  const isSuperAdmin = useMemo(
+    () => me?.roles.some((r) => r.name === "SuperAdmin") || false,
+    [me],
+  );
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     profile: "VIEWER" as UserProfile,
+    farmId: "" as string | number,
+    roleId: "" as string | number,
   });
+
+  // Autopreenchimento de e-mail ao mudar a fazenda
+  useEffect(() => {
+    if (form.farmId && farms) {
+      const selectedFarm = farms.find((f) => String(f.id) === String(form.farmId));
+      if (selectedFarm) {
+        const domain = normalizeEmailPattern(selectedFarm.name);
+        const prefix = form.email.split("@")[0] || "";
+        setForm((prev) => ({ ...prev, email: `${prefix}@${domain}.com` }));
+      }
+    }
+  }, [form.farmId, farms]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
-    setForm({ name: "", email: "", password: "", profile: "VIEWER" });
+    onSubmit({
+      ...form,
+      farmId: form.farmId ? Number(form.farmId) : undefined,
+      roleId: form.roleId ? Number(form.roleId) : undefined,
+    });
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      profile: "VIEWER",
+      farmId: "",
+      roleId: "",
+    });
   };
 
   return (
@@ -77,6 +130,26 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
       </div>
+
+      {isSuperAdmin && (
+        <div className="form-field">
+          <label className="form-field__label is-required">Fazenda</label>
+          <select
+            className="form-field__select"
+            value={form.farmId}
+            required
+            onChange={(e) => setForm({ ...form, farmId: e.target.value })}
+          >
+            <option value="">Selecionar fazenda...</option>
+            {farms?.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="form-field">
         <label className="form-field__label is-required">E-mail</label>
         <input
@@ -87,6 +160,7 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
       </div>
+
       <div className="form-field">
         <label className="form-field__label is-required">Senha</label>
         <input
@@ -97,16 +171,34 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
       </div>
+
       <div className="form-field">
-        <label className="form-field__label is-required">Perfil</label>
+        <label className="form-field__label is-required">Papel Principal</label>
+        <select
+          className="form-field__select"
+          value={form.roleId}
+          required
+          onChange={(e) => setForm({ ...form, roleId: e.target.value })}
+        >
+          <option value="">Selecionar papel...</option>
+          {roles?.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-field">
+        <label className="form-field__label is-required">Perfil (Nível de Acesso)</label>
         <select
           className="form-field__select"
           value={form.profile}
           onChange={(e) => setForm({ ...form, profile: e.target.value as UserProfile })}
         >
-          <option value="VIEWER">Observador</option>
-          <option value="MANAGER">Gestor</option>
-          <option value="ADMIN">Admin</option>
+          <option value="VIEWER">Observador (Leitura)</option>
+          <option value="MANAGER">Gestor (CRUD)</option>
+          {isSuperAdmin && <option value="ADMIN">Admin da Fazenda</option>}
         </select>
       </div>
     </FormModal>
@@ -119,19 +211,31 @@ interface EditModalProps {
   user: UserListItem | null;
   onClose: () => void;
   isLoading: boolean;
-  onSubmit: (data: { name: string; email: string; profile: UserProfile }) => void;
+  onSubmit: (data: { name: string; email: string; profile: UserProfile; farmId?: number }) => void;
 }
 
 function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
+  const { data: me } = useMe();
+  const { data: farms } = useFarms();
+
+  const isSuperAdmin = useMemo(
+    () => me?.roles.some((r) => r.name === "SuperAdmin") || false,
+    [me],
+  );
+
   const [form, setForm] = useState({
     name: user?.name ?? "",
     email: user?.email ?? "",
     profile: (user?.profile ?? "VIEWER") as UserProfile,
+    farmId: user?.farmId ?? ("" as string | number),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      farmId: form.farmId ? Number(form.farmId) : undefined,
+    });
   };
 
   if (!user) return null;
@@ -153,6 +257,26 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
       </div>
+
+      {isSuperAdmin && (
+        <div className="form-field">
+          <label className="form-field__label is-required">Fazenda</label>
+          <select
+            className="form-field__select"
+            value={form.farmId}
+            required
+            onChange={(e) => setForm({ ...form, farmId: e.target.value })}
+          >
+            <option value="">Selecionar fazenda...</option>
+            {farms?.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="form-field">
         <label className="form-field__label is-required">E-mail</label>
         <input
@@ -163,6 +287,7 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
       </div>
+
       <div className="form-field">
         <label className="form-field__label is-required">Perfil</label>
         <select
@@ -172,7 +297,7 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
         >
           <option value="VIEWER">Observador</option>
           <option value="MANAGER">Gestor</option>
-          <option value="ADMIN">Admin</option>
+          {isSuperAdmin && <option value="ADMIN">Admin</option>}
         </select>
       </div>
     </FormModal>
@@ -182,12 +307,12 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
 // ─── Modal de papéis ──────────────────────────────────────────────────────────
 
 interface RolesModalProps {
-  userId: string;
+  userId: number;
   onClose: () => void;
 }
 
 function ManageRolesModal({ userId, onClose }: RolesModalProps) {
-  const { data: user, isLoading } = useUser(userId);
+  const { data: user, isLoading } = useUser(String(userId));
   const { data: allRoles } = useRoles();
   const { mutate: assign, isPending: assigning } = useAssignRole();
   const { mutate: remove, isPending: removing } = useRemoveRole();
@@ -212,67 +337,23 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
 
         <div className="modal-card__body">
           {isLoading ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "var(--t-sm)" }}>Carregando...</p>
+            <p className="text-muted text-sm">Carregando...</p>
           ) : (
             <>
               {/* Papéis atuais */}
-              <div>
-                <p
-                  style={{
-                    margin: "0 0 var(--s-2)",
-                    fontSize: "var(--t-sm)",
-                    color: "var(--text-secondary)",
-                    fontWeight: 600,
-                  }}
-                >
-                  Papéis atribuídos
-                </p>
+              <div className="roles-modal__section">
+                <p className="roles-modal__label">Papéis atribuídos</p>
                 {(user?.roles ?? []).length === 0 ? (
-                  <p
-                    style={{
-                      fontSize: "var(--t-sm)",
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    Nenhum papel atribuído.
-                  </p>
+                  <p className="text-sm text-muted">Nenhum papel atribuído.</p>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "var(--s-2)",
-                    }}
-                  >
+                  <div className="roles-list">
                     {(user?.roles ?? []).map((role) => (
-                      <span
-                        key={role.id}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "var(--s-1)",
-                          padding: "4px 10px",
-                          borderRadius: "var(--r-full)",
-                          background: "var(--primary-soft)",
-                          color: "var(--accent)",
-                          fontSize: "var(--t-sm)",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <span key={role.id} className="role-badge">
                         {role.name}
                         <button
-                          onClick={() => remove({ userId, roleId: String(role.id) })}
+                          onClick={() => remove({ userId: String(userId), roleId: String(role.id) })}
                           disabled={removing}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            color: "inherit",
-                            cursor: "pointer",
-                            padding: 0,
-                            lineHeight: 1,
-                            opacity: 0.7,
-                            display: "flex",
-                          }}
+                          className="role-badge__remove"
                         >
                           <X size={12} />
                         </button>
@@ -284,18 +365,9 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
 
               {/* Adicionar papel */}
               {availableRoles.length > 0 && (
-                <div>
-                  <p
-                    style={{
-                      margin: "0 0 var(--s-2)",
-                      fontSize: "var(--t-sm)",
-                      color: "var(--text-secondary)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Adicionar papel
-                  </p>
-                  <div style={{ display: "flex", gap: "var(--s-2)" }}>
+                <div className="roles-modal__section">
+                  <p className="roles-modal__label">Adicionar papel</p>
+                  <div className="role-add-row">
                     <select
                       className="form-field__select"
                       style={{ flex: 1 }}
@@ -314,7 +386,7 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
                       disabled={!selectedRole || assigning}
                       onClick={() => {
                         if (selectedRole) {
-                          assign({ userId, roleId: selectedRole });
+                          assign({ userId: String(userId), roleId: selectedRole });
                           setSelectedRole("");
                         }
                       }}
@@ -344,7 +416,7 @@ export const UsersPage = () => {
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [editingUser, setEditingUser] = useState<UserListItem | null>(null);
-  const [managingRolesUserId, setManagingRolesUserId] = useState<string | null>(null);
+  const [managingRolesUserId, setManagingRolesUserId] = useState<number | null>(null);
   const [togglingUser, setTogglingUser] = useState<UserListItem | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserListItem | null>(null);
 
@@ -358,23 +430,18 @@ export const UsersPage = () => {
     if (!users) return [];
     const q = search.toLowerCase();
     return users.filter(
-      (u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
+      (u) =>
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.farm?.name ?? "").toLowerCase().includes(q),
     );
   }, [users, search]);
 
   if (isLoading) {
     return (
-      <div style={{ marginTop: "var(--s-4)" }}>
+      <div className="access-container">
         {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="loading-skeleton"
-            style={{
-              height: 56,
-              marginBottom: "var(--s-2)",
-              borderRadius: "var(--r-md)",
-            }}
-          />
+          <div key={i} className="loading-skeleton user-skeleton" />
         ))}
       </div>
     );
@@ -389,20 +456,13 @@ export const UsersPage = () => {
     );
 
   return (
-    <div
-      style={{
-        marginTop: "var(--s-4)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "var(--s-3)",
-      }}
-    >
+    <div className="access-container">
       {/* Barra de ações */}
-      <div style={{ display: "flex", gap: "var(--s-3)", alignItems: "center" }}>
-        <div className="form-field" style={{ flex: 1, margin: 0 }}>
+      <div className="access-actions">
+        <div className="form-field access-search">
           <input
             className="form-field__input"
-            placeholder="Buscar por nome ou e-mail..."
+            placeholder="Buscar por nome, e-mail ou fazenda..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -442,46 +502,14 @@ export const UsersPage = () => {
             <tbody>
               {filtered.map((user) => (
                 <tr key={user.id}>
-                  {/* Nome + e-mail com avatar */}
+                  {/* Nome + e-mail com avatar e fazenda */}
                   <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "var(--s-3)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: "var(--r-full)",
-                          background: "var(--primary-soft)",
-                          color: "var(--accent)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontFamily: "var(--font-display)",
-                          fontWeight: 700,
-                          fontSize: "var(--t-sm)",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {avatarInitials(user.name)}
-                      </div>
+                    <div className="user-cell">
+                      <div className="user-avatar">{avatarInitials(user.name)}</div>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: "var(--t-body)" }}>
-                          {user.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "var(--t-sm)",
-                            color: "var(--text-muted)",
-                            fontFamily: "var(--font-mono)",
-                          }}
-                        >
-                          {user.email}
-                        </div>
+                        <div className="user-info__name">{user.name}</div>
+                        <div className="user-info__email">{user.email}</div>
+                        {user.farm && <div className="user-info__farm">{user.farm.name}</div>}
                       </div>
                     </div>
                   </td>
@@ -505,16 +533,10 @@ export const UsersPage = () => {
 
                   {/* Ações */}
                   <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "var(--s-2)",
-                        justifyContent: "flex-end",
-                      }}
-                    >
+                    <div className="actions-cell">
                       <button
                         className="btn btn-sm btn-ghost"
-                        onClick={() => setManagingRolesUserId(String(user.id))}
+                        onClick={() => setManagingRolesUserId(user.id)}
                       >
                         Papéis
                       </button>

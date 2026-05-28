@@ -2,16 +2,20 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
-import { Warehouse } from "lucide-react";
+import { Warehouse, Plus } from "lucide-react";
 import { FarmCard } from "../components/FarmCard";
 import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
+import { useMe } from "../../../hooks/useAuth";
 import type { CreateFarmInput } from "../../../types/farms";
 
 export const FarmsPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
+
+  const { data: me } = useMe();
+  const isSuperAdmin = me?.roles.some((r) => r.name === "SuperAdmin");
 
   const { data: farms, isLoading } = useFarms();
   const { mutate: createFarm, isPending } = useCreateFarm();
@@ -53,13 +57,15 @@ export const FarmsPage = () => {
       <AppBar
         title="Fazendas"
         actions={
-          <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
-            + Nova
-          </button>
+          isSuperAdmin && (
+            <button className="app-bar__action" onClick={() => setShowForm(true)}>
+              <Plus size={20} />
+            </button>
+          )
         }
       />
 
-      <div className="app-page__section">
+      <div className="app-content">
         <div className="form-field">
           <input
             type="text"
@@ -74,11 +80,13 @@ export const FarmsPage = () => {
           <EmptyState
             icon={<Warehouse size={40} />}
             title="Nenhuma fazenda encontrada"
-            description="Crie sua primeira fazenda para começar"
+            description={isSuperAdmin ? "Crie sua primeira fazenda para começar" : "Você não tem acesso a nenhuma fazenda."}
             action={
-              <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-                Criar Fazenda
-              </button>
+              isSuperAdmin ? (
+                <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+                  Criar Fazenda
+                </button>
+              ) : undefined
             }
           />
         ) : (
@@ -90,12 +98,14 @@ export const FarmsPage = () => {
         )}
       </div>
 
-      <FarmForm
-        open={showForm}
-        onClose={() => setShowForm(false)}
-        onSubmit={handleCreateFarm}
-        isLoading={isPending}
-      />
+      {isSuperAdmin && (
+        <FarmForm
+          open={showForm}
+          onClose={() => setShowForm(false)}
+          onSubmit={handleCreateFarm}
+          isLoading={isPending}
+        />
+      )}
     </div>
   );
 };

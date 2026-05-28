@@ -20,6 +20,8 @@ export interface Collar {
   name: string;
   status: CollarStatus;
   dataFrequency: DataFrequency;
+  farmId?: number | null;
+  farm?: { id: number; name: string };
   createdAt: string;
   updatedAt?: string;
   cow?: {
@@ -38,6 +40,7 @@ export interface CreateCollarInput {
   name: string;
   status?: CollarStatus;
   dataFrequency?: DataFrequency;
+  farmId?: number;
 }
 
-export type UpdateCollarInput = Partial<Omit<CreateCollarInput, "name">>;
+export type UpdateCollarInput = Partial<CreateCollarInput>;

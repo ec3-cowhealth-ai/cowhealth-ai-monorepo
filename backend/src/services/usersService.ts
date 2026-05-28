@@ -6,8 +6,11 @@ import type { Prisma } from "@prisma/client";
 
 const SUPER_ADMIN_USER_ID = 1;
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (farmIds: number[] | null) => {
+  const where = farmIds === null ? {} : { farmId: { in: farmIds } };
+
   return prisma.user.findMany({
+    where,
     select: {
       id: true,
       name: true,
@@ -15,6 +18,10 @@ export const getAllUsers = async () => {
       profile: true,
       active: true,
       createdAt: true,
+      farmId: true,
+      farm: {
+        select: { id: true, name: true },
+      },
       roles: {
         select: {
           role: { select: { id: true, name: true } },
@@ -34,6 +41,10 @@ export const getUserById = async (userId: number) => {
       email: true,
       profile: true,
       active: true,
+      farmId: true,
+      farm: {
+        select: { id: true, name: true },
+      },
       createdAt: true,
       updatedAt: true,
       roles: {
@@ -58,13 +69,46 @@ export const getUserById = async (userId: number) => {
   return user;
 };
 
-export const createUser = async ({ name, email, password, profile }: CreateUserInput) => {
+export const createUser = async (
+  { name, email, password, profile, farmId, roleId }: CreateUserInput,
+  creatorId?: number,
+) => {
   await assertUnique(prisma.user, { email }, "Email já cadastrado.");
+
+  // Lógica de restrição de perfil e fazenda baseada no criador
+  let finalFarmId = farmId;
+
+  if (creatorId) {
+    const creator = await prisma.user.findUnique({
+      where: { id: creatorId },
+      include: { roles: { include: { role: true } } },
+    });
+
+    if (creator) {
+      const isSuperAdmin = creator.roles.some((r) => r.role.name === "SuperAdmin");
+
+      if (!isSuperAdmin) {
+        // Se não for Super Admin, o farmId deve ser o mesmo do criador
+        finalFarmId = creator.farmId || undefined;
+
+        // E não pode criar perfil ADMIN
+        if (profile === "ADMIN") {
+          throw new Error("Somente o Super Admin pode criar usuários com perfil Admin.");
+        }
+      }
+    }
+  }
 
   const passwordHash = await bcrypt.hash(password, 12);
 
-  return prisma.user.create({
-    data: { name, email, passwordHash, profile: profile ?? "VIEWER" },
+  const newUser = await prisma.user.create({
+    data: {
+      name,
+      email,
+      passwordHash,
+      profile: profile ?? "VIEWER",
+      farmId: finalFarmId,
+    },
     select: {
       id: true,
       name: true,
@@ -74,6 +118,18 @@ export const createUser = async ({ name, email, password, profile }: CreateUserI
       createdAt: true,
     },
   });
+
+  // Atribui papel inicial se fornecido
+  if (roleId) {
+    await prisma.userRole.create({
+      data: {
+        userId: newUser.id,
+        roleId,
+      },
+    });
+  }
+
+  return newUser;
 };
 
 export const updateUser = async (

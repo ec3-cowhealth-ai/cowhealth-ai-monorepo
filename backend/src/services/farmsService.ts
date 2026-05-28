@@ -3,8 +3,7 @@ import { assertUnique, throwWithStatus } from "../helpers/serviceHelpers";
 import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
 
 export const getAllFarms = async (farmIds: number[] | null) => {
-  // farmIds null = irrestrito (ADMIN) — retorna todas
-  const where = farmIds ? { id: { in: farmIds } } : {};
+  const where = farmIds === null ? {} : { id: { in: farmIds || [] } };
 
   return prisma.farm.findMany({
     where,
@@ -27,9 +26,8 @@ export const getAllFarms = async (farmIds: number[] | null) => {
 };
 
 export const getFarmById = async (farmId: number, farmIds: number[] | null) => {
-  // Verifica acesso antes de buscar
   if (farmIds !== null && !farmIds.includes(farmId)) {
-    throwWithStatus("Sem acesso a esta fazenda.", 403);
+    throwWithStatus("Acesso negado a esta fazenda.", 403);
   }
 
   const farm = await prisma.farm.findUnique({
