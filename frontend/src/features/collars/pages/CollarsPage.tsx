@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar } from "@components/layout";
 import { LoadingSpinner, FormModal } from "@components/common";
 import { Plus, Tag } from "lucide-react";
 import { CollarCard } from "../components/CollarCard";
@@ -159,39 +158,44 @@ export const CollarsPage = () => {
   }
 
   return (
-    <div className="app-page">
-      <AppBar
-        title="Coleiras"
-        actions={
-          isSuperAdmin && (
-            <button className="app-bar__action" onClick={() => setShowCreate(true)}>
-              <Plus size={20} />
-            </button>
-          )
-        }
-      />
-
+    <div className="app-page" style={{ background: C.bg }}>
       {/* Header */}
-      <header style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <Tag size={34} color={C.green} />
-        <div>
-          <h1
-            style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontSize: 34,
-              lineHeight: 1,
-              margin: 0,
-              color: C.text,
-              fontWeight: 400,
-            }}
-          >
-            Coleiras
-          </h1>
-          <p style={{ margin: "4px 0 0 0", fontSize: 13, color: C.muted }}>
-            {counts.all} dispositivo{counts.all !== 1 ? "s" : ""} · {counts.active} ativo
-            {counts.active !== 1 ? "s" : ""}
-          </p>
+      <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Tag size={34} color={C.green} />
+          <div>
+            <h1
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: 34,
+                lineHeight: 1,
+                margin: 0,
+                color: C.text,
+                fontWeight: 400,
+              }}
+            >
+              Coleiras
+            </h1>
+            <p style={{ margin: "4px 0 0 0", fontSize: 13, color: C.muted }}>
+              {counts.all} dispositivo{counts.all !== 1 ? "s" : ""} · {counts.active} ativo
+              {counts.active !== 1 ? "s" : ""}
+            </p>
+          </div>
         </div>
+        {isSuperAdmin && (
+          <button
+            onClick={() => setShowCreate(true)}
+            style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: C.green, border: "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", color: "#fff", flexShrink: 0,
+            }}
+            title="Nova coleira"
+          >
+            <Plus size={18} />
+          </button>
+        )}
       </header>
 
       {/* Filter pills */}

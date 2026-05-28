@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar } from "@components/layout";
 import { LoadingSpinner, FormModal } from "@components/common";
 import { Search, Plus } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
@@ -197,23 +196,59 @@ export const CowsPage = () => {
   ];
 
   return (
-    <div className="app-page">
-      <AppBar
-        title="Rebanho"
-        subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
-        actions={
-          <div style={{ display: "flex", gap: 12 }}>
-            <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
-              <Search size={20} />
-            </button>
-            {canCRUD && (
-              <button className="app-bar__action" onClick={() => setShowCreate(true)}>
-                <Plus size={20} />
-              </button>
-            )}
+    <div className="app-page" style={{ background: C.bg }}>
+      {/* Header */}
+      <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <CowHead size={34} color={C.green} />
+          <div>
+            <h1
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: 34,
+                lineHeight: 1,
+                margin: 0,
+                color: C.text,
+                fontWeight: 400,
+              }}
+            >
+              Rebanho
+            </h1>
+            <p style={{ margin: "4px 0 0 0", fontSize: 13, color: C.muted }}>
+              {selectedFarm?.name ?? "Todas as fazendas"} · {counts.all} animais
+            </p>
           </div>
-        }
-      />
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => setShowSearch((v) => !v)}
+            style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: showSearch ? C.green : C.card,
+              border: `1px solid ${showSearch ? C.green : C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", color: showSearch ? "#fff" : C.muted,
+            }}
+            title="Buscar"
+          >
+            <Search size={18} />
+          </button>
+          {canCRUD && (
+            <button
+              onClick={() => setShowCreate(true)}
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: C.green, border: "none",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", color: "#fff",
+              }}
+              title="Novo animal"
+            >
+              <Plus size={18} />
+            </button>
+          )}
+        </div>
+      </header>
 
       {/* Search */}
       {showSearch && (

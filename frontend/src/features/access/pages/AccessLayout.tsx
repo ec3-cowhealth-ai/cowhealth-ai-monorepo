@@ -1,8 +1,8 @@
 import { useNavigate, Outlet } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
-import { AppBar } from "@components/layout";
 import { EmptyState } from "@components/common";
-import { Lock } from "lucide-react";
+import { Lock, ShieldCheck } from "lucide-react";
+import { C } from "@features/dashboard/constants/colors";
 
 export const AccessLayout = () => {
   const navigate = useNavigate();
@@ -13,7 +13,6 @@ export const AccessLayout = () => {
   if (!isAdmin) {
     return (
       <div className="app-page">
-        <AppBar title="Acesso" />
         <EmptyState
           icon={<Lock size={40} />}
           title="Acesso Negado"
@@ -30,7 +29,27 @@ export const AccessLayout = () => {
 
   return (
     <div className="app-page">
-      <AppBar title="Acesso e Permissões" />
+      {/* Header */}
+      <header style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <ShieldCheck size={34} color={C.green} />
+        <div>
+          <h1
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: 34,
+              lineHeight: 1,
+              margin: 0,
+              color: C.text,
+              fontWeight: 400,
+            }}
+          >
+            Acesso
+          </h1>
+          <p style={{ margin: "4px 0 0 0", fontSize: 13, color: C.muted }}>
+            Usuários, papéis e permissões
+          </p>
+        </div>
+      </header>
 
       <div className="app-page__section">
         {/* Tabs */}
