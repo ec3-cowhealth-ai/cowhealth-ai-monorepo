@@ -30,7 +30,7 @@ export const getDashboardOverview = async (
     unreadNotifications,
   ] = await Promise.all([
     prisma.cow.count({ where: cowWhere }),
-    prisma.cow.count({ where: { ...cowWhere, collarId: { not: null } } }),
+    prisma.cow.count({ where: { ...cowWhere, status: "HEALTHY" } }),
     prisma.cow.count({
       where: { ...cowWhere, status: { in: ["ALERT", "HEAT_STRESS", "CALVING"] } },
     }),

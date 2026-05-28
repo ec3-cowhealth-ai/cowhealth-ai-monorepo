@@ -36,6 +36,9 @@ export const useUnreadNotifications = () => {
       const response = await api.get<Omit<Notification, "read">[]>("/notifications");
       return response.data.map(mapRead).filter((n) => !n.read);
     },
+    staleTime: 10 * 1000, // 10 segundos
+    refetchInterval: 30 * 1000, // refetch a cada 30 segundos
+    refetchIntervalInBackground: true, // continua refetchando mesmo em background
   });
 };
 
