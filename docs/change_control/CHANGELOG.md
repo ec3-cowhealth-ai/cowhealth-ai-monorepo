@@ -609,6 +609,56 @@ Scope: `frontend/` only — no backend changes.
 
 ---
 
+## 2026-05-28 - UI polish: MedicalRecord card, cow cards, alerts tab e página de Avisos (Ian)
+
+Owner: Ian Braz
+Branch: `feature/ian-medical-mobile-v2`
+Scope: Série de melhorias de UX e padronização visual: redesign do card de prontuário médico; padronização dos cards de vaca; prontuário movido para dentro do hero card da vaca; aba Alertas com esquema de cores por severidade; página de Avisos reescrita com checkbox de toggle lido/não-lido e endpoint de unread no backend.
+
+### Added
+
+- `backend/src/services/notificationsService.ts` — `markNotificationAsUnread`: seta `readAt = null`, devolvendo o aviso para não-lido; `markNotificationAsRead` tornou-se idempotente (removida a exceção "já lida").
+- `backend/src/controllers/notificationsController.ts` — handler `markAsUnread`.
+- `backend/src/routes/notificationsRoutes.ts` — `PATCH /notifications/:id/unread`; rota `/read-all` movida para antes de `/:id/read` para evitar conflito de parâmetro.
+- `frontend/src/hooks/useNotifications.ts` — hook `useMarkNotificationAsUnread` com `invalidateQueries(["notifications"])`.
+
+### Changed
+
+**MedicalRecordCard — redesign de layout**
+
+- `frontend/src/features/cows/components/MedicalRecordCard.tsx` — badge de tipo movido para linha própria no topo (esquerda) com botões de ação (direita); título em destaque 16 px / bold em linha exclusiva; data e veterinário separados por divisor vertical; `TYPE_BG` migrado de `var(--)` para hex (`#fdf3e7`, `#e8f5ee`).
+
+**CowsPage — padronização de cards**
+
+- `frontend/src/features/cows/pages/CowsPage.tsx` — todos os cards agora têm `minHeight: 178px` e `justifyContent: center`; linha de nome da fazenda sempre renderizada com `height: 15px` fixo (evita variação de altura quando fazenda está ausente); `STATUS_BG` migrado para hex.
+
+**CowDetailPage — prontuário no hero card + MetricCards + aba Alertas**
+
+- `frontend/src/features/cows/pages/CowDetailPage.tsx`:
+  - **Hero card**: seção de prontuário adicionada abaixo de divisor — contador "X registros clínicos" (clicável, navega para aba) + botão verde "+ Registro" (visível apenas com permissão); imports adicionados: `Plus`, `Check`, `CheckCircle2`, `ChevronDown`.
+  - **MetricCard**: `padding: 18px`, valor `17px bold`, `minHeight: 80px`, alinhamento central — mesma densidade visual dos cards de gráfico.
+  - **Aba Prontuário**: header de contagem/botão removido (redundante com hero card); estado vazio inclui botão "+ Novo registro".
+  - **Aba Alertas**: cards coloridos por severidade (`ALERT`=vermelho `#fdecea` / `WARNING`=laranja `#fdf3e7` / `INFO`=azul `#e8f2fb`), borda esquerda 4 px, badge de tipo, tempo relativo; botão "Marcar como resolvido" de largura total na base de cada card pendente; seção "Resolvidos" com divisor centralizado sempre visível — expande/recolhe, mostra estado vazio quando limpa; ordenação por severidade (ALERT → WARNING → INFO); tab pill "Alertas" mostra apenas contagem de pendentes.
+
+**NotificationsPage — reescrita completa**
+
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — reescrita com componente `NotifCard` extraído:
+  - **Checkbox lateral** em todos os cards (pendentes e resolvidos): vazio = não-lido; verde preenchido com `✓` = resolvido; clicar faz toggle — chama `markAsRead` ou `markAsUnread` conforme estado atual.
+  - Corpo do card clicável navega para `/cows/:cowId` quando `cowId` presente; clicar na checkbox não dispara navegação (`stopPropagation`).
+  - Cards pendentes: fundo colorido por tipo, borda esquerda 4 px, dot de não-lido, badge de severidade, "Ver animal →".
+  - Cards resolvidos: `opacity: 0.6`, borda cinza, checkbox verde — a checkbox desmarca e move de volta para pendentes.
+  - **Filtros** por tipo: Todos / Críticos / Avisos / Informações (contadores em tempo real, apenas pendentes).
+  - **Seção "Resolvidos"** com divisor centralizado e contador verde; sempre visível; expande/recolhe.
+  - Botão "Resolver todos" no header (só aparece quando há pendentes).
+  - Usa `className="app-page"` no lugar do padding manual — alinhado com as demais páginas.
+
+### Build Status
+
+- ✅ Frontend TypeScript: zero erros (`tsc --noEmit`).
+- ✅ Backend TypeScript: único erro pré-existente em `collarsService.ts` (`throwWithStatus`), não relacionado a este PR.
+
+---
+
 ## 2026-05-28 - Detail page redesigns + duplicate title removal (Ian)
 
 Owner: Ian Braz
