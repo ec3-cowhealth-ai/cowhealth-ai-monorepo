@@ -9,7 +9,7 @@ const NAV_ITEMS: {
   icon: ReactNode;
   badge?: boolean;
 }[] = [
-  { label: "Início", path: "/home", icon: <Home size={20} /> },
+  { label: "Início", path: "/dashboard", icon: <Home size={20} /> },
   { label: "Rebanho", path: "/cows", icon: <List size={20} /> },
   {
     label: "Alertas",

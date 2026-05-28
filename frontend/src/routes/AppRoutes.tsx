@@ -4,7 +4,6 @@ import { LoginPage } from "@pages/auth/LoginPage";
 import { RegisterPage } from "@pages/auth/RegisterPage";
 import { LandingPage } from "@features/landing";
 import { DashboardPreviewPage } from "@features/landing/pages/DashboardPreviewPage";
-import { HomePage } from "@pages/home/HomePage";
 import { MapPage } from "@pages/map/MapPage";
 import { ProfilePage } from "@pages/profile/ProfilePage";
 import { DashboardPage } from "@features/dashboard/pages/DashboardPage";
@@ -25,7 +24,7 @@ export const AppRoutes = () => (
 
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/home" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
 
         {/* Farms */}

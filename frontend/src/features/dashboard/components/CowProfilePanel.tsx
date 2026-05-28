@@ -1,10 +1,17 @@
+import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cowsService } from "@services/cowsService";
+import { ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { CowHead } from "@components/ui/CowHeadIcon";
 import { C, cardStyle } from "../constants/colors";
 import { CameraIcon, ChevronRight } from "./DashboardIcons";
 
 interface Props {
   cowId: string | null;
+  onPrev?: () => void;
+  onNext?: () => void;
+  hasPrev?: boolean;
+  hasNext?: boolean;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -21,7 +28,7 @@ function age(birthDate: string | undefined): string {
   return `${years.toFixed(1)} anos`;
 }
 
-export function CowProfilePanel({ cowId }: Props) {
+export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Props) {
   const { data: cow, isLoading } = useQuery({
     queryKey: ["cows", cowId],
     queryFn:  () => cowsService.get(cowId!),
@@ -32,10 +39,7 @@ export function CowProfilePanel({ cowId }: Props) {
     return (
       <section style={{ ...cardStyle, gridColumn: "span 3", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, minHeight: 300, textAlign: "center" }}>
         <div style={{ width: 56, height: 56, borderRadius: 999, background: "#e6f1ea", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg viewBox="0 0 24 24" style={{ width: 28, height: 28, color: C.green }} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            <path d="M5 11c0-3 2-5 7-5s7 2 7 5c0 1-.5 2-1 2.5V17a2 2 0 01-2 2h-1v-2H9v2H8a2 2 0 01-2-2v-3.5c-.5-.5-1-1.5-1-2.5z"/>
-            <path d="M9 14h.01M15 14h.01M4 9l-2-1M20 9l2-1"/>
-          </svg>
+          <CowHead size={28} color={C.green} />
         </div>
         <p style={{ fontSize: 13, color: C.muted, margin: 0 }}>Selecione uma vaca acima para ver o perfil.</p>
       </section>
@@ -70,18 +74,55 @@ export function CowProfilePanel({ cowId }: Props) {
     ["Status reprodutivo","--"],
   ];
 
+  const arrowBtn: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    background: "#fff",
+    border: `1px solid ${C.border}`,
+    boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+    transition: "opacity 0.15s",
+  };
+
   return (
-    <section style={{ ...cardStyle, gridColumn: "span 3" }}>
+    <div style={{ gridColumn: "span 3", position: "relative" }}>
+      {onPrev && (
+        <button
+          onClick={onPrev}
+          disabled={!hasPrev}
+          style={{ ...arrowBtn, left: -16, opacity: hasPrev ? 1 : 0.3 }}
+          title="Vaca anterior"
+        >
+          <ChevronLeft size={16} color={C.text} />
+        </button>
+      )}
+      {onNext && (
+        <button
+          onClick={onNext}
+          disabled={!hasNext}
+          style={{ ...arrowBtn, right: -16, opacity: hasNext ? 1 : 0.3 }}
+          title="Próxima vaca"
+        >
+          <ChevronRightIcon size={16} color={C.text} />
+        </button>
+      )}
+
+    <section style={{ ...cardStyle }}>
       {/* Photo */}
       <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto", borderRadius: 999, overflow: "hidden", border: `4px solid ${C.bg}`, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
         {photoUrl ? (
           <img src={photoUrl} alt={cow.tag} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", background: "#e6f1ea", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg viewBox="0 0 24 24" style={{ width: 48, height: 48, color: C.green }} fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
-              <path d="M5 11c0-3 2-5 7-5s7 2 7 5c0 1-.5 2-1 2.5V17a2 2 0 01-2 2h-1v-2H9v2H8a2 2 0 01-2-2v-3.5c-.5-.5-1-1.5-1-2.5z"/>
-              <path d="M9 14h.01M15 14h.01M4 9l-2-1M20 9l2-1"/>
-            </svg>
+            <CowHead size={56} color={C.green} />
           </div>
         )}
         <button style={{
@@ -135,6 +176,7 @@ export function CowProfilePanel({ cowId }: Props) {
         <ChevronRight style={{ width: 16, height: 16 }} />
       </button>
     </section>
+    </div>
   );
 }
 
