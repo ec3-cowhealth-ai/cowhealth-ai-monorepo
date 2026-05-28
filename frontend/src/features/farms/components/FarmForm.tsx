@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FormModal } from "@components/common";
-import type { CreateFarmInput } from "../../../types/farms";
+import type { CreateFarmInput } from "@/types/farms";
 
 const farmSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),
@@ -19,15 +19,19 @@ interface FarmFormProps {
   onClose: () => void;
   onSubmit: (data: CreateFarmInput) => void;
   isLoading?: boolean;
+  initialData?: Partial<CreateFarmInput>;
 }
 
-export const FarmForm = ({ open, onClose, onSubmit, isLoading }: FarmFormProps) => {
+export const FarmForm = ({ open, onClose, onSubmit, isLoading, initialData }: FarmFormProps) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CreateFarmInput>({ resolver: zodResolver(farmSchema) });
+  } = useForm<CreateFarmInput>({
+    resolver: zodResolver(farmSchema),
+    values: initialData,
+  });
 
   const onValid = (data: CreateFarmInput) => {
     onSubmit(data);

@@ -7,9 +7,19 @@ const MAX_PHOTOS = 3;
 
 // CRUD
 
-export const getAllCows = async (farmId?: number) => {
+export const getAllCows = async (farmId?: number, farmIds?: number[] | null) => {
+  // Constrói o where considerando restrição de fazenda do usuário
+  const farmFilter = farmId
+    ? { farmId }
+    : farmIds !== null && farmIds
+      ? { farmId: { in: farmIds } }
+      : {};
+
   return prisma.cow.findMany({
-    where: farmId ? { farmId, status: { not: "RETIRED" } } : { status: { not: "RETIRED" } },
+    where: {
+      ...farmFilter,
+      status: { not: "RETIRED" as const },
+    },
     select: {
       id: true,
       tag: true,

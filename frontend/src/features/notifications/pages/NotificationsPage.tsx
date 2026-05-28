@@ -129,8 +129,7 @@ export const NotificationsPage = () => {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {notifications.map((n) => {
-              const nColor = TYPE_COLOR[n.type] ?? C.muted;
-              const nBg    = TYPE_BG[n.type]    ?? "#f0f0ee";
+              const color = (n.type && TYPE_COLOR[n.type]) ?? "var(--border-subtle)";
               return (
                 <button
                   key={n.id}
@@ -144,14 +143,16 @@ export const NotificationsPage = () => {
                     borderRadius: 12,
                   }}
                 >
-                  <div style={{
-                    width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                    background: nBg,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    color: nColor,
-                  }}>
-                    {TYPE_ICON[n.type] ?? <Bell size={14} />}
-                  </div>
+                  <span
+                    style={{
+                      color,
+                      flexShrink: 0,
+                      marginTop: 2,
+                      display: "flex",
+                    }}
+                  >
+                    {(n.type && TYPE_ICON[n.type]) ?? <Bell size={14} />}
+                  </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: n.read ? 400 : 600, color: C.text }}>
                       {n.title}

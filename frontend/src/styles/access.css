@@ -1,0 +1,117 @@
+/* Styles for Access Management (Users, Roles, Permissions) */
+
+.access-container {
+  margin-top: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.access-actions {
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+}
+
+.access-search {
+  flex: 1;
+  margin: 0;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-full);
+  background: var(--primary-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-sm);
+  flex-shrink: 0;
+}
+
+.user-info__name {
+  font-weight: 600;
+  font-size: var(--t-body);
+}
+
+.user-info__email {
+  font-size: var(--t-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.user-info__farm {
+  font-size: var(--t-xs);
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: var(--s-2);
+  justify-content: flex-end;
+}
+
+/* Roles Management Modal */
+.roles-modal__section {
+  margin-bottom: var(--s-4);
+}
+
+.roles-modal__label {
+  margin: 0 0 var(--s-2);
+  font-size: var(--t-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.roles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  background: var(--primary-soft);
+  color: var(--accent);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.role-badge__remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.7;
+  display: flex;
+}
+
+.role-add-row {
+  display: flex;
+  gap: var(--s-2);
+}
+
+/* Skeleton Loading */
+.user-skeleton {
+  height: 56px;
+  margin-bottom: var(--s-2);
+  border-radius: var(--r-md);
+}

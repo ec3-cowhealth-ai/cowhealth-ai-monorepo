@@ -1,9 +1,20 @@
 import { prisma } from "../lib/prisma";
 
-export const getDashboardOverview = async (farmId?: number, userId?: number) => {
-  const cowWhere = farmId
-    ? { farmId, status: { not: "RETIRED" as const } }
-    : { status: { not: "RETIRED" as const } };
+// Constrói o filtro de fazenda respeitando restrição do usuário
+const buildFarmFilter = (farmId?: number, farmIds?: number[] | null) => {
+  if (farmId) return { farmId };
+  if (farmIds !== null && farmIds && farmIds.length > 0) return { farmId: { in: farmIds } };
+  return {};
+};
+
+export const getDashboardOverview = async (
+  farmId?: number,
+  userId?: number,
+  farmIds?: number[] | null,
+  _period?: "day" | "week" | "month",
+) => {
+  const farmFilter = buildFarmFilter(farmId, farmIds);
+  const cowWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
 
   const [
     totalCows,
@@ -16,17 +27,13 @@ export const getDashboardOverview = async (farmId?: number, userId?: number) => 
     prisma.cow.count({ where: cowWhere }),
     prisma.cow.count({ where: { ...cowWhere, collarId: { not: null } } }),
     prisma.cow.count({
-      where: {
-        ...cowWhere,
-        status: { in: ["ALERT", "HEAT_STRESS", "CALVING"] },
-      },
+      where: { ...cowWhere, status: { in: ["ALERT", "HEAT_STRESS", "CALVING"] } },
     }),
     prisma.farm.count(),
     prisma.collar.count({ where: { status: "ACTIVE" } }),
     prisma.notification.count({ where: { readAt: null, userId } }),
   ]);
 
-  // Se filtrou por fazenda, retorna ela; senão, a com mais vacas
   const topFarm = farmId
     ? await prisma.farm.findUnique({
         where: { id: farmId },
@@ -48,10 +55,9 @@ export const getDashboardOverview = async (farmId?: number, userId?: number) => 
   };
 };
 
-export const getCowsPerStatus = async (farmId?: number) => {
-  const where = farmId
-    ? { farmId, status: { not: "RETIRED" as const } }
-    : { status: { not: "RETIRED" as const } };
+export const getCowsPerStatus = async (farmId?: number, farmIds?: number[] | null) => {
+  const farmFilter = buildFarmFilter(farmId, farmIds);
+  const where = { ...farmFilter, status: { not: "RETIRED" as const } };
 
   const statusGroups = await prisma.cow.groupBy({
     by: ["status"],
@@ -65,13 +71,12 @@ export const getCowsPerStatus = async (farmId?: number) => {
   }));
 };
 
-export const getCowsPerFarm = async () => {
+export const getCowsPerFarm = async (farmIds?: number[] | null) => {
+  const where = farmIds !== null && farmIds && farmIds.length > 0 ? { id: { in: farmIds } } : {};
+
   const farms = await prisma.farm.findMany({
-    select: {
-      id: true,
-      name: true,
-      _count: { select: { cows: true } },
-    },
+    where,
+    select: { id: true, name: true, _count: { select: { cows: true } } },
     orderBy: { cows: { _count: "desc" } },
     take: 5,
   });
@@ -82,10 +87,9 @@ export const getCowsPerFarm = async () => {
   }));
 };
 
-export const getHealthTimeline = async (farmId?: number) => {
-  const baseWhere = farmId
-    ? { farmId, status: { not: "RETIRED" as const } }
-    : { status: { not: "RETIRED" as const } };
+export const getHealthTimeline = async (farmId?: number, farmIds?: number[] | null) => {
+  const farmFilter = buildFarmFilter(farmId, farmIds);
+  const baseWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
@@ -103,9 +107,7 @@ export const getHealthTimeline = async (farmId?: number) => {
         prisma.cow.count({
           where: { ...baseWhere, status: "HEALTHY", createdAt: { lte: nextDay } },
         }),
-        prisma.cow.count({
-          where: { ...baseWhere, status: "ALERT", createdAt: { lte: nextDay } },
-        }),
+        prisma.cow.count({ where: { ...baseWhere, status: "ALERT", createdAt: { lte: nextDay } } }),
         prisma.cow.count({
           where: { ...baseWhere, status: "HEAT_STRESS", createdAt: { lte: nextDay } },
         }),

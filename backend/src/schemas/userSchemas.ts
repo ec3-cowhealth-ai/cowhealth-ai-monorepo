@@ -5,6 +5,8 @@ export const createUserSchema = z.object({
   email: z.email("Email inválido."),
   password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres."),
   profile: z.enum(["ADMIN", "MANAGER", "VIEWER"]).optional(),
+  farmId: z.number().int().positive().optional(),
+  roleId: z.number().int().positive().optional(),
 });
 
 export const updateUserSchema = z.object({
@@ -12,4 +14,5 @@ export const updateUserSchema = z.object({
   email: z.email().optional(),
   password: z.string().min(8).optional(),
   profile: z.enum(["ADMIN", "MANAGER", "VIEWER"]).optional(),
+  farmId: z.number().int().positive().optional(),
 });

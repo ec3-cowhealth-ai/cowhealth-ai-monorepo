@@ -183,16 +183,15 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
 function Skeleton() {
   const pulse = {
     background: "#f0ece4",
-    borderRadius: 8,
     animation: "pulse 1.5s ease-in-out infinite",
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
       <div style={{ width: 140, height: 140, borderRadius: 999, ...pulse }} />
-      <div style={{ width: 100, height: 20, ...pulse }} />
+      <div style={{ width: 100, height: 20, borderRadius: 8, ...pulse }} />
       <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} style={{ width: "100%", height: 14, ...pulse }} />
+          <div key={i} style={{ width: "100%", height: 14, borderRadius: 8, ...pulse }} />
         ))}
       </div>
     </div>

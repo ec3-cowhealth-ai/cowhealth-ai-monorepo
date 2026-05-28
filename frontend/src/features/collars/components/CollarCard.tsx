@@ -61,9 +61,29 @@ export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
       <p style={{ margin: 0, fontSize: 12, color: C.muted }}>
         Frequência: {FREQ_LABEL[collar.dataFrequency] ?? collar.dataFrequency}
       </p>
-      <p style={{ margin: 0, fontSize: 12, color: C.muted }}>
-        Vaca: {collar.cow ? collar.cow.tag : "Sem vaca vinculada"}
+
+      <p
+        style={{
+          margin: "0 0 var(--s-1) 0",
+          fontSize: "var(--t-sm)",
+          color: "var(--text-secondary)",
+        }}
+      >
+        <strong>Vaca:</strong> {collar.cow ? collar.cow.tag : "Sem vaca vinculada"}
       </p>
+
+      {collar.farm && (
+        <p
+          style={{
+            margin: 0,
+            fontSize: "var(--t-xs)",
+            color: "var(--accent)",
+            fontWeight: 600,
+          }}
+        >
+          {collar.farm.name}
+        </p>
+      )}
     </div>
   );
 };

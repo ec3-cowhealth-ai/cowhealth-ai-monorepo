@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./landing.css";
+@import "./App.css";
 
 /* ═══════════════════════════════════════════════════════════════════════
    LANDING THEME — Exact tokens from HerdHealthInsight template
@@ -56,6 +58,3 @@
     );
   }
 }
-
-@import "./landing.css";
-@import "./app.css";

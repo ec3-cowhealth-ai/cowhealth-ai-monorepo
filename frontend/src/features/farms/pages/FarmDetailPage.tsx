@@ -1,15 +1,26 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
-import { XCircle } from "lucide-react";
+import { XCircle, Edit2 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { cowsService } from "@services/cowsService";
-import { useFarm } from "../hooks/useFarms";
+import { useFarm, useUpdateFarm } from "../hooks/useFarms";
+import { useMe } from "../../../hooks/useAuth";
+import { FarmForm } from "../components/FarmForm";
 
 export const FarmDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [showEdit, setShowEdit] = useState(false);
+
+  const { data: me } = useMe();
   const { data: farm, isLoading } = useFarm(id || "");
+  const { mutate: updateFarm, isPending: updating } = useUpdateFarm();
+
+  const isSuperAdmin = me?.roles.some((r) => r.name === "SuperAdmin");
+  const isFarmAdmin = me?.profile === "ADMIN" && String(me?.farmId) === id;
+  const canEdit = isSuperAdmin || isFarmAdmin;
 
   const { data: cows } = useQuery({
     queryKey: ["cows", { farmId: id }],
@@ -17,7 +28,6 @@ export const FarmDetailPage = () => {
     enabled: !!id,
   });
 
-  // API ja filtra por farmId — usar cows direto
   const farmCows = cows ?? [];
 
   if (isLoading) {
@@ -41,7 +51,7 @@ export const FarmDetailPage = () => {
   if (!farm) {
     return (
       <div className="app-page">
-        <AppBar title="Detalhes da Fazenda" />
+        <AppBar title="Detalhes da Fazenda" showBack />
         <EmptyState icon={<XCircle size={40} />} title="Fazenda não encontrada" />
       </div>
     );
@@ -49,9 +59,19 @@ export const FarmDetailPage = () => {
 
   return (
     <div className="app-page">
-      <AppBar title={farm.name} />
+      <AppBar
+        title={farm.name}
+        showBack
+        actions={
+          canEdit && (
+            <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+              <Edit2 size={18} />
+            </button>
+          )
+        }
+      />
 
-      <div className="app-page__section">
+      <div className="app-content">
         {/* Farm Info */}
         <div className="card">
           <h3
@@ -222,6 +242,16 @@ export const FarmDetailPage = () => {
           )}
         </div>
       </div>
+
+      {canEdit && (
+        <FarmForm
+          open={showEdit}
+          onClose={() => setShowEdit(false)}
+          initialData={farm}
+          onSubmit={(data) => updateFarm({ id: String(farm.id), input: data }, { onSuccess: () => setShowEdit(false) })}
+          isLoading={updating}
+        />
+      )}
     </div>
   );
 };

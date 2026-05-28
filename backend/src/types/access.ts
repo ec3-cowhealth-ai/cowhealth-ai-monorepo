@@ -5,6 +5,8 @@ export interface CreateUserInput {
   email: string;
   password: string;
   profile?: "ADMIN" | "MANAGER" | "VIEWER";
+  farmId?: number;
+  roleId?: number;
 }
 
 export interface UpdateUserInput {
@@ -12,6 +14,7 @@ export interface UpdateUserInput {
   email?: string;
   password?: string;
   profile?: "ADMIN" | "MANAGER" | "VIEWER";
+  farmId?: number;
 }
 
 // Roles

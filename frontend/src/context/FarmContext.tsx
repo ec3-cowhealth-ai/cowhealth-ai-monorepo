@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useMemo, useEffect, type ReactNode } from "react";
 import { useFarms } from "@features/farms/hooks/useFarms";
 import type { Farm } from "../types/farms";
 
@@ -21,21 +21,27 @@ export const useFarmContext = () => useContext(FarmContext);
 
 export const FarmProvider = ({ children }: { children: ReactNode }) => {
   const { data: farms = [], isLoading } = useFarms();
-  const [selectedFarm, setSelectedFarmState] = useState<Farm | null>(null);
+  const [selectedFarmId, setSelectedFarmId] = useState<string | null>(
+    () => localStorage.getItem("selectedFarmId"),
+  );
 
-  // Auto-seleciona a primeira fazenda ao carregar
+  // Deriva a fazenda selecionada sem setState em efeito
+  const selectedFarm = useMemo((): Farm | null => {
+    if (!farms.length) return null;
+    const found = selectedFarmId ? farms.find((f) => String(f.id) === selectedFarmId) : null;
+    return found ?? farms[0];
+  }, [farms, selectedFarmId]);
+
+  // Sincroniza localStorage quando a fazenda resolvida muda (sistema externo, não setState)
   useEffect(() => {
-    if (farms.length > 0 && !selectedFarm) {
-      const saved = localStorage.getItem("selectedFarmId");
-      const found = saved ? farms.find((f) => String(f.id) === saved) : null;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedFarmState(found ?? farms[0]);
+    if (selectedFarm) {
+      localStorage.setItem("selectedFarmId", String(selectedFarm.id));
     }
-  }, [farms, selectedFarm]);
+  }, [selectedFarm]);
 
   const setSelectedFarm = (farm: Farm) => {
     localStorage.setItem("selectedFarmId", String(farm.id));
-    setSelectedFarmState(farm);
+    setSelectedFarmId(String(farm.id));
   };
 
   return (

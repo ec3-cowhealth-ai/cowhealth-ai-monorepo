@@ -53,11 +53,14 @@ model User {
   passwordHash String      @map("password_hash")
   profile      UserProfile @default(VIEWER)
   active       Boolean     @default(true)
+  farmId       Int?        @map("farm_id")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  roles         UserRole[]
-  notifications Notification[]
+  farm           Farm?           @relation(fields: [farmId], references: [id])
+  roles          UserRole[]
+  notifications  Notification[]
+  userFarms      UserFarm[]
   medicalRecords MedicalRecord[]
 
   @@map("users")
@@ -97,6 +100,16 @@ model UserRole {
 
   @@id([userId, roleId])
   @@map("user_roles")
+}
+
+model UserFarm {
+  userId Int  @map("user_id")
+  farmId Int  @map("farm_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farm   Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  @@id([userId, farmId])
+  @@map("user_farms")
 }
 
 model RolePermission {
@@ -148,7 +161,10 @@ model Farm {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  cows Cow[]
+  cows      Cow[]
+  users     User[]
+  collars   Collar[]
+  userFarms UserFarm[]
 
   @@map("farms")
 }
@@ -158,27 +174,29 @@ model Collar {
   name          String        @unique // device_id usado pelo MQTT para localizar o colar
   status        CollarStatus  @default(ACTIVE)
   dataFrequency DataFrequency @default(DEFAULT) @map("data_frequency") // RF10A: HIGHER=2min, DEFAULT=10min, LOWER=60min
+  farmId        Int?          @map("farm_id")
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
-  cow Cow? // 1 colar -> 1 vaca (nullable enquanto não associado)
+  farm Farm? @relation(fields: [farmId], references: [id])
+  cow  Cow? // 1 colar -> 1 vaca (nullable enquanto não associado)
 
   @@map("collars")
 }
 
 model Cow {
-  id        Int                       @id @default(autoincrement())
-  tag       String                    @unique // identificador visual da vaca
+  id        Int       @id @default(autoincrement())
+  tag       String    @unique // identificador visual da vaca
   name      String?
-  breed     String?                   // raça (breed adotado no lugar de race)
-  birthDate DateTime?                 @map("birth_date")
-  weight    Float?                    // peso em kg
-  photos    Json?                     // array de nomes de arquivo para galeria de identificacao
-  status    CowStatus                 @default(HEALTHY)
-  lastLat   Float?                    @map("last_lat")
-  lastLng   Float?                    @map("last_lng")
-  farmId    Int                       @map("farm_id")
-  collarId  Int?                      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
+  breed     String? // raça (breed adotado no lugar de race)
+  birthDate DateTime? @map("birth_date")
+  weight    Float? // peso em kg
+  photos    Json? // array de nomes de arquivo para galeria de identificacao
+  status    CowStatus @default(HEALTHY)
+  lastLat   Float?    @map("last_lat")
+  lastLng   Float?    @map("last_lng")
+  farmId    Int       @map("farm_id")
+  collarId  Int?      @unique @map("collar_id") // único: garante relação 1-para-1 colar-vaca
 
   farm   Farm    @relation(fields: [farmId], references: [id])
   collar Collar? @relation(fields: [collarId], references: [id])
@@ -188,12 +206,12 @@ model Cow {
   accelerometerData AccelerometerData[]
   notifications     Notification[]
 
-  retiredAt     DateTime?             @map("retired_at")
-  retiredReason String?               @map("retired_reason")
+  retiredAt      DateTime?       @map("retired_at")
+  retiredReason  String?         @map("retired_reason")
   medicalRecords MedicalRecord[]
 
-  createdAt DateTime @default(now())  @map("created_at")
-  updatedAt DateTime @updatedAt       @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("cows")
 }

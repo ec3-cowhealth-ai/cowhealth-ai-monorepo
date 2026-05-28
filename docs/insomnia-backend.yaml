@@ -3006,6 +3006,282 @@ collection:
             send: true
             store: true
           rebuildPath: true
+  - name: Farm Access Control
+    meta:
+      id: fld_farm_access_control_main
+      created: 1780000000000
+      modified: 1780000000000
+      sortKey: -1777904165400
+      description: "Testa restricao de acesso por fazenda — farmIds no JWT"
+    children:
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login Veterinario
+        meta:
+          id: req_fac_login_vet
+          created: 1780000000001
+          modified: 1780000000001
+          isPrivate: false
+          description: "Gera token com farmIds: [1, 2] (Aurora + Sao Bento). Copie o token para usar nos proximos testes."
+          sortKey: -1780000000001
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "vet@cowhealth.com",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login Gerente
+        meta:
+          id: req_fac_login_gerente
+          created: 1780000000002
+          modified: 1780000000002
+          isPrivate: false
+          description: "Gera token com farmIds: [1] (Aurora apenas). Copie o token para usar nos proximos testes."
+          sortKey: -1780000000002
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "gerente@cowhealth.com",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}auth/login"
+        name: Login Observador
+        meta:
+          id: req_fac_login_obs
+          created: 1780000000003
+          modified: 1780000000003
+          isPrivate: false
+          description: "Gera token com farmIds: [4] (Santa Clara apenas). Copie o token para usar nos proximos testes."
+          sortKey: -1780000000003
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "obs@cowhealth.com",
+              "password": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: List Farms - Veterinario (Aurora + Sao Bento)
+        meta:
+          id: req_fac_farms_vet
+          created: 1780000000004
+          modified: 1780000000004
+          isPrivate: false
+          description: "Usar token do veterinario — deve retornar apenas Fazenda Aurora e Fazenda Sao Bento"
+          sortKey: -1780000000004
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_VETERINARIO
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: List Farms - Gerente (Aurora apenas)
+        meta:
+          id: req_fac_farms_gerente
+          created: 1780000000005
+          modified: 1780000000005
+          isPrivate: false
+          description: "Usar token do gerente — deve retornar apenas Fazenda Aurora"
+          sortKey: -1780000000005
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_GERENTE
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}farms"
+        name: List Farms - Admin (todas as fazendas)
+        meta:
+          id: req_fac_farms_admin
+          created: 1780000000006
+          modified: 1780000000006
+          isPrivate: false
+          description: "Usar token do admin — deve retornar todas as 5 fazendas (farmIds: null = irrestrito)"
+          sortKey: -1780000000006
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.api.token }}
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows"
+        name: List Cows - Veterinario (so vacas de Aurora e Sao Bento)
+        meta:
+          id: req_fac_cows_vet
+          created: 1780000000007
+          modified: 1780000000007
+          isPrivate: false
+          description: "Usar token do veterinario — deve retornar apenas vacas das fazendas Aurora e Sao Bento (64 vacas)"
+          sortKey: -1780000000007
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_VETERINARIO
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api.base_url }}cows"
+        name: List Cows - Observador (so vacas de Santa Clara)
+        meta:
+          id: req_fac_cows_obs
+          created: 1780000000008
+          modified: 1780000000008
+          isPrivate: false
+          description: "Usar token do observador — deve retornar apenas vacas da Fazenda Santa Clara (32 vacas)"
+          sortKey: -1780000000008
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer TOKEN_DE_OBSERVADOR
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: Error Cases
+        meta:
+          id: fld_fac_error_cases
+          created: 1780000000099
+          modified: 1780000000099
+          sortKey: -1780000000099
+          description: ""
+        children:
+          - url: "{{ _.api.base_url }}farms/3"
+            name: Show Farm - Gerente Sem Acesso (403)
+            meta:
+              id: req_fac_farm_403
+              created: 1780000000009
+              modified: 1780000000009
+              isPrivate: false
+              description: "Gerente so tem acesso a Aurora (id:1). Acessar Fazenda Boa Esperanca (id:3) deve retornar 403."
+              sortKey: -1780000000009
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer TOKEN_DE_GERENTE
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}farms/2"
+            name: Show Farm - Observador Sem Acesso (403)
+            meta:
+              id: req_fac_farm_obs_403
+              created: 1780000000010
+              modified: 1780000000010
+              isPrivate: false
+              description: "Observador so tem acesso a Santa Clara (id:4). Acessar Fazenda Sao Bento (id:2) deve retornar 403."
+              sortKey: -1780000000010
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer TOKEN_DE_OBSERVADOR
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.api.base_url }}farms/1"
+            name: Show Farm - Veterinario Com Acesso (200)
+            meta:
+              id: req_fac_farm_vet_200
+              created: 1780000000011
+              modified: 1780000000011
+              isPrivate: false
+              description: "Veterinario tem acesso a Aurora (id:1) — deve retornar 200"
+              sortKey: -1780000000011
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer TOKEN_DE_VETERINARIO
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:

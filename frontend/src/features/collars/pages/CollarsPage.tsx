@@ -1,17 +1,129 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoadingSpinner } from "@components/common";
-import { Tag } from "lucide-react";
+import { AppBar } from "@components/layout";
+import { LoadingSpinner, EmptyState, FormModal } from "@components/common";
+import { Plus } from "lucide-react";
 import { CollarCard } from "../components/CollarCard";
-import { useCollars } from "../hooks/useCollars";
-import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
-import { C, cardStyle } from "@features/dashboard/constants/colors";
+import { useCollars, useCreateCollar } from "../hooks/useCollars";
+import { useFarms } from "../../farms/hooks/useFarms";
+import { useMe } from "../../../hooks/useAuth";
+import { COLLAR_STATUS_VALUES, DATA_FREQUENCY_VALUES } from "../../../types/collars.ts";
+import type { CollarStatus, DataFrequency } from "../../../types/collars.ts";
+
+// ─── Modal de Criação ─────────────────────────────────────────────────────────
+
+interface CreateModalProps {
+  open: boolean;
+  onClose: () => void;
+  isLoading: boolean;
+  onSubmit: (data: {
+    name: string;
+    status: CollarStatus;
+    dataFrequency: DataFrequency;
+    farmId?: number;
+  }) => void;
+}
+
+function CreateCollarModal({ open, onClose, isLoading, onSubmit }: CreateModalProps) {
+  const { data: farms } = useFarms();
+  const [form, setForm] = useState({
+    name: "",
+    status: COLLAR_STATUS_VALUES.ACTIVE as CollarStatus,
+    dataFrequency: DATA_FREQUENCY_VALUES.DEFAULT as DataFrequency,
+    farmId: "" as string | number,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      ...form,
+      farmId: form.farmId ? Number(form.farmId) : undefined,
+    });
+    setForm({
+      name: "",
+      status: COLLAR_STATUS_VALUES.ACTIVE,
+      dataFrequency: DATA_FREQUENCY_VALUES.DEFAULT,
+      farmId: "",
+    });
+  };
+
+  return (
+    <FormModal
+      open={open}
+      title="Nova Coleira"
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+    >
+      <div className="form-field">
+        <label className="form-field__label is-required">Nome / ID do Dispositivo</label>
+        <input
+          className="form-field__input"
+          value={form.name}
+          required
+          placeholder="Ex: RF10A-001"
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+      </div>
+
+      <div className="form-field">
+        <label className="form-field__label">Fazenda Destino (Opcional)</label>
+        <select
+          className="form-field__select"
+          value={form.farmId}
+          onChange={(e) => setForm({ ...form, farmId: e.target.value })}
+        >
+          <option value="">Sem fazenda (Estoque)</option>
+          {farms?.map((f) => (
+            <option key={f.id} value={f.id}>
+              {f.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-field">
+        <label className="form-field__label is-required">Status</label>
+        <select
+          className="form-field__select"
+          value={form.status}
+          onChange={(e) => setForm({ ...form, status: e.target.value as CollarStatus })}
+        >
+          <option value="ACTIVE">Ativo</option>
+          <option value="INACTIVE">Inativo</option>
+          <option value="MAINTENANCE">Manutenção</option>
+          <option value="BATTERY">Bateria Fraca</option>
+        </select>
+      </div>
+
+      <div className="form-field">
+        <label className="form-field__label is-required">Frequência de Dados</label>
+        <select
+          className="form-field__select"
+          value={form.dataFrequency}
+          onChange={(e) => setForm({ ...form, dataFrequency: e.target.value as DataFrequency })}
+        >
+          <option value="HIGHER">Alta (2 min)</option>
+          <option value="DEFAULT">Padrão (10 min)</option>
+          <option value="LOWER">Baixa (60 min)</option>
+        </select>
+      </div>
+    </FormModal>
+  );
+}
+
+// ─── Componente Principal ──────────────────────────────────────────────────────
 
 export const CollarsPage = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [showCreate, setShowCreate] = useState(false);
+
+  const { data: user } = useMe();
+  const isSuperAdmin = user?.roles.some((r) => r.name === "SuperAdmin");
 
   const { data: collars, isLoading } = useCollars();
+  const { mutate: createCollar, isPending: creating } = useCreateCollar();
 
   const filteredCollars = useMemo(() => {
     if (!collars) return [];
@@ -44,8 +156,17 @@ export const CollarsPage = () => {
   }
 
   return (
-    <div style={{ background: C.bg, minHeight: "100%" }}>
-      <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
+    <div className="app-page">
+      <AppBar
+        title="Coleiras"
+        actions={
+          isSuperAdmin && (
+            <button className="app-bar__action" onClick={() => setShowCreate(true)}>
+              <Plus size={20} />
+            </button>
+          )
+        }
+      />
 
         {/* Header */}
         <header style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -106,6 +227,15 @@ export const CollarsPage = () => {
           </div>
         )}
       </div>
+
+      {isSuperAdmin && (
+        <CreateCollarModal
+          open={showCreate}
+          onClose={() => setShowCreate(false)}
+          isLoading={creating}
+          onSubmit={(data) => createCollar(data, { onSuccess: () => setShowCreate(false) })}
+        />
+      )}
     </div>
   );
 };

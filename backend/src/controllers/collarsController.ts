@@ -7,14 +7,17 @@ import {
   deleteCollar,
 } from "../services/collarsService";
 import { handleRequest } from "../helpers/controllerHelpers";
+import { prisma } from "../lib/prisma";
 
-export const listCollars = async (_request: Request, response: Response): Promise<void> => {
-  const collars = await getAllCollars();
+export const listCollars = async (request: Request, response: Response): Promise<void> => {
+  const farmIds = request.user!.farmIds;
+  const collars = await getAllCollars(farmIds);
   response.json(collars);
 };
 
 export const showCollar = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => getCollarById(Number(request.params.id)), 200, 404);
+  const farmIds = request.user!.farmIds;
+  await handleRequest(response, () => getCollarById(Number(request.params.id), farmIds), 200, 404);
 };
 
 export const storeCollar = async (request: Request, response: Response): Promise<void> => {
