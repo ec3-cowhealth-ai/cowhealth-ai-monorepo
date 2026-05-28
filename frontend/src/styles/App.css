@@ -50,8 +50,9 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg-app);
   color: var(--text-primary);
   font-family: "Manrope", system-ui, sans-serif;
@@ -62,6 +63,7 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
+  min-height: 0;
 }
 
 @media (min-width: 768px) {
@@ -79,11 +81,9 @@
   border-right: 1px solid var(--border);
   padding: var(--s-4);
   gap: var(--s-4);
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  position: sticky;
-  top: 0;
 }
 
 @media (min-width: 768px) {

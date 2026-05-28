@@ -570,7 +570,54 @@ Scope: `frontend/` only — no backend changes.
 
 # Changes and Progress by Ian
 
-...
+---
+
+## 2026-05-27 - Profissionalização do dashboard e alinhamento visual de todas as telas (Ian)
+
+Responsável: Ian Braz  
+Scope: Unificação da navegação "Home" com o Dashboard real; substituição dos SVGs inline pelo ícone oficial CowHead; setas de navegação entre vacas; sidebar fixa; remoção de título duplicado; alinhamento visual de todas as telas da sidebar com o padrão do Dashboard (fundo bege, cards brancos, tipografia Instrument Serif, filtros em pill).
+
+### Changed
+
+**Frontend — Navegação**
+
+- `frontend/src/components/layout/Sidebar.tsx` — item "Home" redirecionava para `/home` (HomePage); alterado para `/dashboard` (DashboardPage), a tela principal do produto.
+- `frontend/src/components/layout/BottomNav.tsx` — item "Início" redirecionava para `/home`; alterado para `/dashboard`.
+- `frontend/src/routes/AppRoutes.tsx` — rota `/home` substituída por `<Navigate to="/dashboard" replace />` para não quebrar links diretos; import de `HomePage` removido.
+
+**Frontend — Dashboard: ícone de vaca**
+
+- `frontend/src/features/dashboard/components/CowProfilePanel.tsx` — dois SVGs inline de cabeça de vaca (estado vazio e placeholder de foto) substituídos pelo componente oficial `CowHead` de `@components/ui/CowHeadIcon`, alinhando com o ícone já usado na Sidebar, `CowsPage` e `CowDetailPage`.
+
+**Frontend — Dashboard: navegação entre vacas**
+
+- `frontend/src/features/dashboard/components/CowProfilePanel.tsx` — adicionadas props `onPrev`, `onNext`, `hasPrev`, `hasNext`; botões com `ChevronLeft`/`ChevronRight` (lucide-react) em posição absoluta nas laterais do card; opacidade 30% quando desabilitado (primeira/última vaca).
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — adicionados `currentIndex`, `hasPrev`, `hasNext`, `handlePrev` e `handleNext` derivados de `cowList` e `effectiveCowId`; passados ao `CowProfilePanel`.
+
+**Frontend — Layout: sidebar fixa**
+
+- `frontend/src/styles/App.css` — `.app-shell`: `min-height: 100vh` → `height: 100dvh` + `overflow: hidden`; `.app-shell__main`: adicionado `min-height: 0` (necessário para grid child respeitar `overflow-y: auto`); `.sidebar`: `height: 100vh` → `height: 100%`, removido `position: sticky`.
+
+**Frontend — Dashboard: título duplicado**
+
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — removido `<AppBar title="Visão geral do rebanho" />` e seu import; o título estilizado com Instrument Serif e CowHead já existe na área de conteúdo.
+
+**Frontend — Alinhamento visual: todas as telas da sidebar**
+
+Todas as telas agora usam o mesmo padrão visual do Dashboard: fundo bege (`#f5f1ea`), cards brancos com sombra sutil, tipografia `Instrument Serif` nos títulos de página, filtros em pill (border-radius 999, borda verde quando ativo) e headers com ícone + subtítulo descritivo.
+
+- `frontend/src/features/cows/pages/CowsPage.tsx` — reescrita completa: removido AppBar e lista `cow-row`; adicionado header estilizado com `CowHead`; grid 2 colunas com cards brancos (avatar circular por status, nome, tag, fazenda, pill de status); filtros convertidos para pill verde; busca com toggle circular.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — fundo bege; hero card com bg branco e avatar `CowHead` colorido por status; métricas em cards brancos inline; sensor tabs convertidos para pills; notificações recentes com card branco + borda colorida à esquerda.
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — reescrita: removido AppBar e `EmptyState` genérico; header com ícone `Warehouse`; botão "+ Nova" em pill verde; busca inline; grid 2 colunas com `FarmCard` atualizado.
+- `frontend/src/features/farms/components/FarmCard.tsx` — atualizado para card branco com ícone `Warehouse` em quadrado verde claro, nome, CNPJ e cidade/estado.
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — reescrita: removido AppBar; header com ícone `Tag`; filtros de status convertidos de `btn btn-sm` para pills; grid 2 colunas com `CollarCard` atualizado.
+- `frontend/src/features/collars/components/CollarCard.tsx` — atualizado para card branco com ícone `Tag` colorido por status em quadrado de background, label de status em pill, frequência e vaca vinculada.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — reescrita: fundo bege; header com `Bell` + contagem de não lidos em laranja; filtros em pill; cada notificação em card branco com borda esquerda colorida por tipo + ícone contextual em quadrado colorido + dot verde para não lido; botão "Marcar tudo" no header.
+- `frontend/src/pages/profile/ProfilePage.tsx` — reescrita: fundo bege; avatar com inicial do nome em círculo verde claro (Instrument Serif); badge de perfil em pill; menu em card branco unificado com separadores; ícones em quadrado verde claro; botão "Sair" com ícone vermelho.
+
+### Build Status
+
+- Frontend TypeScript: zero errors (`npx tsc --noEmit`).
 
 # Changes and Progress by Renato
 

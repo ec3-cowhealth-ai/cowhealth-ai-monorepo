@@ -8,6 +8,7 @@ import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
 import { useMe } from "../../../hooks/useAuth";
 import type { CreateFarmInput } from "../../../types/farms";
+import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 export const FarmsPage = () => {
   const navigate = useNavigate();
@@ -29,23 +30,13 @@ export const FarmsPage = () => {
   }, [farms, search]);
 
   const handleCreateFarm = (data: CreateFarmInput) => {
-    createFarm(data, {
-      onSuccess: () => setShowForm(false),
-    });
+    createFarm(data, { onSuccess: () => setShowForm(false) });
   };
 
   if (isLoading) {
     return (
-      <div className="app-page">
-        <AppBar title="Fazendas" />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
+      <div style={{ background: C.bg, minHeight: "100%" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48 }}>
           <LoadingSpinner />
         </div>
       </div>
@@ -76,6 +67,7 @@ export const FarmsPage = () => {
           />
         </div>
 
+        {/* Grid */}
         {filteredFarms.length === 0 ? (
           <EmptyState
             icon={<Warehouse size={40} />}
@@ -90,7 +82,7 @@ export const FarmsPage = () => {
             }
           />
         ) : (
-          <div className="grid grid--2">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
             {filteredFarms.map((farm) => (
               <FarmCard key={farm.id} farm={farm} onClick={() => navigate(`/farms/${farm.id}`)} />
             ))}

@@ -22,7 +22,7 @@ export const Sidebar = () => {
   const isAdmin = user?.profile === "ADMIN";
 
   const navItems: NavItem[] = [
-    { label: "Home", path: "/home", icon: <Home size={18} /> },
+    { label: "Home", path: "/dashboard", icon: <Home size={18} /> },
     { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
     { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
     { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },

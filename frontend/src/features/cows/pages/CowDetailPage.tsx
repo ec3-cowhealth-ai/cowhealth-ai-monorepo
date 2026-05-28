@@ -19,6 +19,20 @@ const STATUS_LABEL: Record<string, string> = {
   CALVING: "Parto",
 };
 
+const STATUS_COLOR: Record<string, string> = {
+  HEALTHY: C.green,
+  ALERT: C.red,
+  HEAT_STRESS: C.orange,
+  CALVING: "#6bb4e8",
+};
+
+const STATUS_BG: Record<string, string> = {
+  HEALTHY: "#e6f1ea",
+  ALERT: "#fde8e4",
+  HEAT_STRESS: "#fbe9d8",
+  CALVING: "#e4f0fb",
+};
+
 const statusTone = (s: string) => {
   if (s === COW_STATUS_VALUES.ALERT) return "danger" as const;
   if (s === COW_STATUS_VALUES.HEAT_STRESS) return "warn" as const;
@@ -26,17 +40,10 @@ const statusTone = (s: string) => {
   return "success" as const;
 };
 
-const statusColor = (s: string) => {
-  if (s === COW_STATUS_VALUES.ALERT) return "var(--danger)";
-  if (s === COW_STATUS_VALUES.HEAT_STRESS) return "var(--warning)";
-  if (s === COW_STATUS_VALUES.CALVING) return "var(--info)";
-  return "var(--success)";
-};
-
-const NOTIF_TONE: Record<string, string> = {
-  ALERT: "var(--danger)",
-  WARNING: "var(--warning)",
-  INFO: "var(--info)",
+const NOTIF_COLOR: Record<string, string> = {
+  ALERT: C.red,
+  WARNING: C.orange,
+  INFO: "#6bb4e8",
 };
 
 // ─── Modal de Edição ──────────────────────────────────────────────────────────
@@ -187,16 +194,9 @@ export const CowDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="app-page">
+      <div style={{ background: C.bg, minHeight: "100%" }}>
         <AppBar title="Detalhes" showBack />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, padding: 48 }}>
           <LoadingSpinner />
         </div>
       </div>
@@ -205,17 +205,20 @@ export const CowDetailPage = () => {
 
   if (!cow) {
     return (
-      <div className="app-page">
+      <div style={{ background: C.bg, minHeight: "100%" }}>
         <AppBar title="Detalhes" showBack />
-        <div className="home-empty">
-          <AlertTriangle size={36} color="var(--text-muted)" />
-          <p>Vaca não encontrada</p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 48, color: C.muted }}>
+          <AlertTriangle size={36} color={C.muted} />
+          <p style={{ margin: 0 }}>Vaca não encontrada</p>
         </div>
       </div>
     );
   }
 
-  const tone = statusTone(cow.status);
+  const tone     = statusTone(cow.status);
+  const sColor   = STATUS_COLOR[cow.status] ?? C.green;
+  const sBg      = STATUS_BG[cow.status]    ?? "#e6f1ea";
+  const sLabel   = STATUS_LABEL[cow.status] ?? cow.status;
 
   return (
     <div className="app-page">
@@ -237,59 +240,32 @@ export const CowDetailPage = () => {
         }
       />
 
-      <div className="app-content">
+      <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 16 }}>
+
         {/* Hero card */}
-        <div className="card" style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: "50%",
-              background: "var(--bg-elev-2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <CowHead size={32} color={statusColor(cow.status)} />
+        <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{
+            width: 60, height: 60, borderRadius: "50%",
+            background: sBg,
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
+            <CowHead size={32} color={sColor} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 4,
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
               <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: `var(--${tone === "warn" ? "warning" : tone === "success" ? "success" : tone === "info" ? "info" : "danger"})`,
-                }}
-              >
-                {STATUS_LABEL[cow.status] ?? cow.status}
-              </span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: sColor }}>{sLabel}</span>
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {cow.farm && (
                 <button
-                  style={{
-                    padding: "3px 8px",
-                    background: "var(--bg-elev-2)",
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: 12,
-                    fontSize: 11,
-                    color: "var(--text-secondary)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
                   onClick={() => navigate(`/farms/${cow.farm.id}`)}
+                  style={{
+                    padding: "3px 10px", background: sBg,
+                    border: `1px solid ${C.border}`, borderRadius: 12,
+                    fontSize: 11, color: sColor, cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 4,
+                  }}
                 >
                   <Warehouse size={11} /> {cow.farm.name}
                 </button>
@@ -349,35 +325,26 @@ export const CowDetailPage = () => {
           </div>
         </div>
 
-        {/* Metrics grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 8,
-          }}
-        >
+        {/* Metrics */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
           {cow.breed && (
-            <div className="kpi-card">
-              <p className="kpi-card__label">Raça</p>
-              <p className="kpi-card__value" style={{ fontSize: 14 }}>
-                {cow.breed}
-              </p>
+            <div style={{ ...cardStyle, padding: 16, textAlign: "center" }}>
+              <p style={{ margin: "0 0 4px 0", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Raça</p>
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>{cow.breed}</p>
             </div>
           )}
           {cow.weight && (
-            <div className="kpi-card">
-              <p className="kpi-card__label">Peso</p>
-              <p className="kpi-card__value">
-                {cow.weight}
-                <span className="kpi-card__unit">kg</span>
+            <div style={{ ...cardStyle, padding: 16, textAlign: "center" }}>
+              <p style={{ margin: "0 0 4px 0", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Peso</p>
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
+                {cow.weight}<span style={{ fontSize: 11, color: C.muted }}> kg</span>
               </p>
             </div>
           )}
           {cow.birthDate && (
-            <div className="kpi-card">
-              <p className="kpi-card__label">Nascimento</p>
-              <p className="kpi-card__value" style={{ fontSize: 13 }}>
+            <div style={{ ...cardStyle, padding: 16, textAlign: "center" }}>
+              <p style={{ margin: "0 0 4px 0", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Nascimento</p>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: C.text }}>
                 {new Date(cow.birthDate).toLocaleDateString("pt-BR")}
               </p>
             </div>
@@ -385,43 +352,46 @@ export const CowDetailPage = () => {
         </div>
 
         {/* Sensor charts */}
-        {temperature?.length || heartRate?.length ? (
-          <div className="card">
-            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-              <button
-                className={`filter-chip${sensorTab === "temp" ? " is-active" : ""}`}
-                onClick={() => setSensorTab("temp")}
-              >
-                <Thermometer size={12} /> Temperatura
-              </button>
-              <button
-                className={`filter-chip${sensorTab === "hr" ? " is-active" : ""}`}
-                onClick={() => setSensorTab("hr")}
-              >
-                <Heart size={12} /> Freq. Cardíaca
-              </button>
+        {(temperature?.length || heartRate?.length) ? (
+          <div style={{ ...cardStyle }}>
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              {(["temp", "hr"] as const).map((tab) => {
+                const active = sensorTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setSensorTab(tab)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      padding: "6px 14px", borderRadius: 999, fontSize: 12,
+                      fontWeight: active ? 600 : 400,
+                      border: `1px solid ${active ? C.green : C.border}`,
+                      background: active ? C.green : "#fff",
+                      color: active ? "#fff" : C.muted,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {tab === "temp" ? <Thermometer size={12} /> : <Heart size={12} />}
+                    {tab === "temp" ? "Temperatura" : "Freq. Cardíaca"}
+                  </button>
+                );
+              })}
             </div>
 
             {sensorTab === "temp" && temperature && (
               <LineChart
                 data={temperature}
-                color="var(--warning)"
+                color={C.orange}
                 unit="°C"
-                thresholds={[
-                  { v: 39.5, c: "var(--danger)" },
-                  { v: 38.0, c: "var(--info)" },
-                ]}
+                thresholds={[{ v: 39.5, c: C.red }, { v: 38.0, c: "#6bb4e8" }]}
               />
             )}
             {sensorTab === "hr" && heartRate && (
               <LineChart
                 data={heartRate}
-                color="var(--danger)"
+                color={C.red}
                 unit=" bpm"
-                thresholds={[
-                  { v: 120, c: "var(--danger)" },
-                  { v: 40, c: "var(--info)" },
-                ]}
+                thresholds={[{ v: 120, c: C.red }, { v: 40, c: "#6bb4e8" }]}
               />
             )}
           </div>
@@ -430,15 +400,8 @@ export const CowDetailPage = () => {
         {/* Recent notifications */}
         {cowNotifs.length > 0 && (
           <div>
-            <p
-              style={{
-                margin: "0 0 8px 0",
-                fontWeight: 600,
-                fontSize: 13,
-                color: "var(--text-secondary)",
-              }}
-            >
-              Notificações Recentes
+            <p style={{ margin: "0 0 10px 0", fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              Notificações recentes
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {cowNotifs.map((n) => (
@@ -469,8 +432,8 @@ export const CowDetailPage = () => {
                       {n.message}
                     </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
