@@ -66,7 +66,7 @@ Scope: Implementation of tenant-style isolation where users are restricted to th
 - `backend/src/controllers/farmsController.ts` & `collarsController.ts` — updated to extract `userFarmId` from the authenticated request and pass it to services for data isolation.
 - `backend/src/types/farming.ts` — updated Collar input types to include `farmId`.
 - `frontend/src/pages/home/HomePage.tsx` — farm picker restricted to Super Admins; other users are locked to their assigned farm.
-- `frontend/src/features/collars/pages/CollarsPage.tsx` — added "Nova Coleira" action for Super Admins and integrated `CreateCollarModal` with farm selection.
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — added "New Collar" action for Super Admins and integrated `CreateCollarModal` with farm selection.
 - `frontend/src/features/collars/pages/CollarDetailPage.tsx` — added Edit/Delete actions for Super Admins and enabled farm allocation management.
 - `frontend/src/features/collars/components/CollarCard.tsx` — now displays the name of the assigned farm.
 - `frontend/src/types/auth.ts` & `collars.ts` — updated frontend types to reflect backend changes (`farmId`, `farm` objects).
@@ -95,9 +95,9 @@ Scope: Full implementation of Role-Based Access Control (RBAC) linking users to 
 - `backend/src/controllers/usersController.ts` — updated to pass `creatorId` to the service.
 - `frontend/src/features/access/pages/UsersPage.tsx` — complete refactor: removed inline styles, added Farm/Role selection, and implemented automatic email domain filling.
 - `frontend/src/types/access.ts` — updated types to include farm relationship and creation fields.
-- `frontend/src/features/cows/pages/CowsPage.tsx` — added "Novo animal" button restricted to Admin/Manager profiles; integrated `CreateCowModal`.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — added "New animal" button restricted to Admin/Manager profiles; integrated `CreateCowModal`.
 - `frontend/src/features/cows/pages/CowDetailPage.tsx` — added Edit, Delete, and Collar Link/Unlink actions, visible only to Admin/Manager profiles; added confirmation dialogs.
-- `frontend/src/features/farms/pages/FarmsPage.tsx` — restricted "Nova Fazenda" creation to Super Admins.
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — restricted "New Farm" creation to Super Admins.
 - `frontend/src/features/farms/pages/FarmDetailPage.tsx` — enabled farm info editing for Super Admins and the specific Farm Admin.
 - `.gitignore` — permanently removed `docs/*` to allow tracking of documentation files.
 
@@ -572,48 +572,48 @@ Scope: `frontend/` only — no backend changes.
 
 ---
 
-## 2026-05-27 - Profissionalização do dashboard e alinhamento visual de todas as telas (Ian)
+## 2026-05-27 - Dashboard polish and visual alignment across all screens (Ian)
 
-Responsável: Ian Braz  
-Scope: Unificação da navegação "Home" com o Dashboard real; substituição dos SVGs inline pelo ícone oficial CowHead; setas de navegação entre vacas; sidebar fixa; remoção de título duplicado; alinhamento visual de todas as telas da sidebar com o padrão do Dashboard (fundo bege, cards brancos, tipografia Instrument Serif, filtros em pill).
+Owner: Ian Braz  
+Scope: Unified the "Home" navigation with the real Dashboard; replaced inline SVGs with the official CowHead icon; added previous/next cow navigation arrows; fixed the sidebar; removed a duplicate title; visually aligned all sidebar screens with the Dashboard pattern (beige background, white cards, Instrument Serif typography, pill filters).
 
 ### Changed
 
-**Frontend — Navegação**
+**Frontend — Navigation**
 
-- `frontend/src/components/layout/Sidebar.tsx` — item "Home" redirecionava para `/home` (HomePage); alterado para `/dashboard` (DashboardPage), a tela principal do produto.
-- `frontend/src/components/layout/BottomNav.tsx` — item "Início" redirecionava para `/home`; alterado para `/dashboard`.
-- `frontend/src/routes/AppRoutes.tsx` — rota `/home` substituída por `<Navigate to="/dashboard" replace />` para não quebrar links diretos; import de `HomePage` removido.
+- `frontend/src/components/layout/Sidebar.tsx` — the "Home" item redirected to `/home` (HomePage); changed to `/dashboard` (DashboardPage), the product's main screen.
+- `frontend/src/components/layout/BottomNav.tsx` — the "Home" item redirected to `/home`; changed to `/dashboard`.
+- `frontend/src/routes/AppRoutes.tsx` — `/home` route replaced with `<Navigate to="/dashboard" replace />` to avoid breaking direct links; `HomePage` import removed.
 
-**Frontend — Dashboard: ícone de vaca**
+**Frontend — Dashboard: cow icon**
 
-- `frontend/src/features/dashboard/components/CowProfilePanel.tsx` — dois SVGs inline de cabeça de vaca (estado vazio e placeholder de foto) substituídos pelo componente oficial `CowHead` de `@components/ui/CowHeadIcon`, alinhando com o ícone já usado na Sidebar, `CowsPage` e `CowDetailPage`.
+- `frontend/src/features/dashboard/components/CowProfilePanel.tsx` — two inline cow-head SVGs (empty state and photo placeholder) replaced with the official `CowHead` component from `@components/ui/CowHeadIcon`, aligning with the icon already used in the Sidebar, `CowsPage`, and `CowDetailPage`.
 
-**Frontend — Dashboard: navegação entre vacas**
+**Frontend — Dashboard: cow navigation**
 
-- `frontend/src/features/dashboard/components/CowProfilePanel.tsx` — adicionadas props `onPrev`, `onNext`, `hasPrev`, `hasNext`; botões com `ChevronLeft`/`ChevronRight` (lucide-react) em posição absoluta nas laterais do card; opacidade 30% quando desabilitado (primeira/última vaca).
-- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — adicionados `currentIndex`, `hasPrev`, `hasNext`, `handlePrev` e `handleNext` derivados de `cowList` e `effectiveCowId`; passados ao `CowProfilePanel`.
+- `frontend/src/features/dashboard/components/CowProfilePanel.tsx` — added `onPrev`, `onNext`, `hasPrev`, and `hasNext` props; buttons with `ChevronLeft`/`ChevronRight` (lucide-react) positioned absolutely on the card sides; 30% opacity when disabled (first/last cow).
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — added `currentIndex`, `hasPrev`, `hasNext`, `handlePrev`, and `handleNext` derived from `cowList` and `effectiveCowId`; passed them to `CowProfilePanel`.
 
-**Frontend — Layout: sidebar fixa**
+**Frontend — Layout: fixed sidebar**
 
-- `frontend/src/styles/App.css` — `.app-shell`: `min-height: 100vh` → `height: 100dvh` + `overflow: hidden`; `.app-shell__main`: adicionado `min-height: 0` (necessário para grid child respeitar `overflow-y: auto`); `.sidebar`: `height: 100vh` → `height: 100%`, removido `position: sticky`.
+- `frontend/src/styles/App.css` — `.app-shell`: `min-height: 100vh` → `height: 100dvh` + `overflow: hidden`; `.app-shell__main`: added `min-height: 0` (required for the grid child to respect `overflow-y: auto`); `.sidebar`: `height: 100vh` → `height: 100%`, removed `position: sticky`.
 
-**Frontend — Dashboard: título duplicado**
+**Frontend — Dashboard: duplicate title**
 
-- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — removido `<AppBar title="Visão geral do rebanho" />` e seu import; o título estilizado com Instrument Serif e CowHead já existe na área de conteúdo.
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — removed `<AppBar title="Herd overview" />` and its import; the styled title with Instrument Serif and CowHead already exists in the content area.
 
-**Frontend — Alinhamento visual: todas as telas da sidebar**
+**Frontend — Visual alignment: all sidebar screens**
 
-Todas as telas agora usam o mesmo padrão visual do Dashboard: fundo bege (`#f5f1ea`), cards brancos com sombra sutil, tipografia `Instrument Serif` nos títulos de página, filtros em pill (border-radius 999, borda verde quando ativo) e headers com ícone + subtítulo descritivo.
+All screens now use the same visual pattern as the Dashboard: beige background (`#f5f1ea`), white cards with subtle shadow, `Instrument Serif` typography in page titles, pill filters (border-radius 999, green border when active), and headers with an icon plus descriptive subtitle.
 
-- `frontend/src/features/cows/pages/CowsPage.tsx` — reescrita completa: removido AppBar e lista `cow-row`; adicionado header estilizado com `CowHead`; grid 2 colunas com cards brancos (avatar circular por status, nome, tag, fazenda, pill de status); filtros convertidos para pill verde; busca com toggle circular.
-- `frontend/src/features/cows/pages/CowDetailPage.tsx` — fundo bege; hero card com bg branco e avatar `CowHead` colorido por status; métricas em cards brancos inline; sensor tabs convertidos para pills; notificações recentes com card branco + borda colorida à esquerda.
-- `frontend/src/features/farms/pages/FarmsPage.tsx` — reescrita: removido AppBar e `EmptyState` genérico; header com ícone `Warehouse`; botão "+ Nova" em pill verde; busca inline; grid 2 colunas com `FarmCard` atualizado.
-- `frontend/src/features/farms/components/FarmCard.tsx` — atualizado para card branco com ícone `Warehouse` em quadrado verde claro, nome, CNPJ e cidade/estado.
-- `frontend/src/features/collars/pages/CollarsPage.tsx` — reescrita: removido AppBar; header com ícone `Tag`; filtros de status convertidos de `btn btn-sm` para pills; grid 2 colunas com `CollarCard` atualizado.
-- `frontend/src/features/collars/components/CollarCard.tsx` — atualizado para card branco com ícone `Tag` colorido por status em quadrado de background, label de status em pill, frequência e vaca vinculada.
-- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — reescrita: fundo bege; header com `Bell` + contagem de não lidos em laranja; filtros em pill; cada notificação em card branco com borda esquerda colorida por tipo + ícone contextual em quadrado colorido + dot verde para não lido; botão "Marcar tudo" no header.
-- `frontend/src/pages/profile/ProfilePage.tsx` — reescrita: fundo bege; avatar com inicial do nome em círculo verde claro (Instrument Serif); badge de perfil em pill; menu em card branco unificado com separadores; ícones em quadrado verde claro; botão "Sair" com ícone vermelho.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — complete rewrite: removed AppBar and the `cow-row` list; added a styled header with `CowHead`; 2-column grid with white cards (circular avatar by status, name, tag, farm, status pill); filters converted to green pills; search with a circular toggle.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — beige background; hero card with white background and `CowHead` avatar colored by status; metrics in inline white cards; sensor tabs converted to pills; recent notifications with white cards and a colored left border.
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — rewrite: removed AppBar and generic `EmptyState`; header with `Warehouse` icon; "+ New" button as a green pill; inline search; 2-column grid with updated `FarmCard`.
+- `frontend/src/features/farms/components/FarmCard.tsx` — updated to a white card with a `Warehouse` icon in a light-green square, name, CNPJ, and city/state.
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — rewrite: removed AppBar; header with `Tag` icon; status filters converted from `btn btn-sm` to pills; 2-column grid with updated `CollarCard`.
+- `frontend/src/features/collars/components/CollarCard.tsx` — updated to a white card with a status-colored `Tag` icon in a background square, status label as a pill, frequency, and linked cow.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — rewrite: beige background; header with `Bell` + unread count in orange; pill filters; each notification in a white card with left border colored by type + contextual icon in a colored square + green dot for unread; "Mark all" button in the header.
+- `frontend/src/pages/profile/ProfilePage.tsx` — rewrite: beige background; avatar with the name initial in a light-green circle (Instrument Serif); profile badge as a pill; unified white-card menu with separators; icons in light-green squares; red "Sign out" button with icon.
 
 ### Build Status
 
@@ -658,7 +658,7 @@ Scope: Three backend features from `Master_Plan_NewFeatures.md`. Feature C adds 
 **Feature C — Veterinary Medical Record**
  
 - `backend/prisma/migrations/` — `MedicalRecord` model with `MedicalRecordType` enum (`CHECKUP`, `PROCEDURE`, `MEDICATION`) and relation to `Cow` and `User`.
-- `backend/prisma/seed.ts` — permission group `Prontuario` with 5 permissions; role assignments: Veterinário (full CRUD), Zootecnista and Gerente de Fazenda (read-only), Admin and SuperAdmin (full CRUD).
+- `backend/prisma/seed.ts` — permission group `Medical Records` with 5 permissions; role assignments: Veterinário (full CRUD), Zootecnista and Gerente de Fazenda (read-only), Admin and SuperAdmin (full CRUD).
 - `backend/src/schemas/medicalRecordSchemas.ts` — `createMedicalRecordSchema` and `updateMedicalRecordSchema` (Zod).
 - `backend/src/services/medicalRecordsService.ts` — full CRUD service.
 - `backend/src/controllers/medicalRecordsController.ts` — controller wiring service to HTTP.

@@ -11,6 +11,7 @@ import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
 import { useMe } from "@hooks/useAuth";
 import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
+import { C } from "@features/dashboard/constants/colors";
 
 const STATUS_LABEL: Record<string, string> = {
   HEALTHY: "Saudável",
@@ -40,11 +41,6 @@ const statusTone = (s: string) => {
   return "success" as const;
 };
 
-const NOTIF_COLOR: Record<string, string> = {
-  ALERT: C.red,
-  WARNING: C.orange,
-  INFO: "#6bb4e8",
-};
 
 // ─── Modal de Edição ──────────────────────────────────────────────────────────
 
@@ -433,8 +429,7 @@ export const CowDetailPage = () => {
                     </p>
                   </div>
                 </div>
-                );
-              })}
+              ))}
             </div>
           </div>
         )}

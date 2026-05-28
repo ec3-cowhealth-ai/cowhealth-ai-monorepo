@@ -1,14 +1,15 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
-import { LoadingSpinner, EmptyState, FormModal } from "@components/common";
-import { Plus } from "lucide-react";
+import { LoadingSpinner, FormModal } from "@components/common";
+import { Plus, Tag } from "lucide-react";
 import { CollarCard } from "../components/CollarCard";
 import { useCollars, useCreateCollar } from "../hooks/useCollars";
-import { useFarms } from "../../farms/hooks/useFarms";
-import { useMe } from "../../../hooks/useAuth";
-import { COLLAR_STATUS_VALUES, DATA_FREQUENCY_VALUES } from "../../../types/collars.ts";
-import type { CollarStatus, DataFrequency } from "../../../types/collars.ts";
+import { useFarms } from "@features/farms/hooks/useFarms";
+import { useMe } from "@hooks/useAuth";
+import { COLLAR_STATUS_VALUES, DATA_FREQUENCY_VALUES } from "@/types/collars";
+import type { CollarStatus, DataFrequency } from "@/types/collars";
+import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 // ─── Modal de Criação ─────────────────────────────────────────────────────────
 
@@ -226,7 +227,6 @@ export const CollarsPage = () => {
             ))}
           </div>
         )}
-      </div>
 
       {isSuperAdmin && (
         <CreateCollarModal
@@ -236,6 +236,6 @@ export const CollarsPage = () => {
           onSubmit={(data) => createCollar(data, { onSuccess: () => setShowCreate(false) })}
         />
       )}
-    </div>
+      </div>
   );
 };

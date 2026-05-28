@@ -2,14 +2,13 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, FormModal } from "@components/common";
-import { Search, ChevronRight, Plus } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
-import { StatusDot } from "@components/ui/StatusDot";
 import { useCows, useCreateCow } from "../hooks/useCows";
-import { useFarmContext } from "../../../context/FarmContext";
-import { useMe } from "../../../hooks/useAuth";
-import { COW_STATUS_VALUES } from "../../../types/cows";
-import type { Cow } from "../../../types/cows";
+import { useFarmContext } from "@/context/FarmContext";
+import { useMe } from "@hooks/useAuth";
+import { COW_STATUS_VALUES } from "@/types/cows";
+import type { Cow } from "@/types/cows";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 type StatusFilter = "" | "HEALTHY" | "ALERT" | "HEAT_STRESS" | "CALVING";
@@ -318,7 +317,6 @@ export const CowsPage = () => {
             })}
           </div>
         )}
-      </div>
 
       {selectedFarm && (
         <CreateCowModal
@@ -329,6 +327,6 @@ export const CowsPage = () => {
           onSubmit={(data) => createCow(data, { onSuccess: () => setShowCreate(false) })}
         />
       )}
-    </div>
+      </div>
   );
 };
