@@ -37,7 +37,7 @@ If a document conflicts with the code, trust the code and update the source-of-t
 
 - [Team handoff](/docs/reviews/20260524-handoff-team.md)
 - [ESLint and TODO report](/docs/reviews/20260524-eslint-todo-report.md)
-- [Landing implementation report](/docs/reports/landing-implementation.md)
+- [Landing implementation report](/docs/reports/deprecated/landing-implementation.md)
 - [Main changelog](/docs/change_control/CHANGELOG.md)
 
 ## Historical Docs
@@ -46,12 +46,12 @@ These files are snapshots. They should not be treated as current implementation 
 
 - [Architecture audit](/docs/reviews/20260523-222104-architecture-audit.md)
 - [Architecture refactor plan](/docs/reviews/20260523-223645-architecture-refactor.md)
-- [Daily report 2026-05-15](/docs/reports/DAILY_REPORT_2026-05-15.md)
-- [Trello task snapshot](/docs/reports/trello_tasks_2026-05-23.md)
+- [Daily report 2026-05-15](/docs/reports/deprecated/DAILY_REPORT_2026-05-15.md)
+- [Trello task snapshot](/docs/reports/deprecated/trello_tasks_2026-05-23.md)
 - [Legacy implementation plan](/docs/plan/TODO_EXECUTION_PLAN.md)
 - [Legacy frontend implementation plan](/docs/instructions/frontend-implementation-plan.md)
 - [Legacy implementation guide](/docs/guidances/IMPLEMENTATION_GUIDE.md)
 - [Frontend alignment summary](/docs/guidances/FRONTEND_ALIGNMENT_SUMMARY.md)
-- [IoT simulator plan](/docs/plan/iot-simulator-plan.md)
+- [IoT simulator plan](/docs/plan/deprecated/iot-simulator-plan.md)
 - [Heuristic model notes](/docs/heuristic_models/plan_heuristicas_completas.md)
 
