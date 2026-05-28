@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { List, Warehouse, Tag, User, ChevronRight, LogOut } from "lucide-react";
+import { Warehouse, Tag, User, ChevronRight, LogOut } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { useMe, useLogout } from "@hooks/useAuth";
 import { C, cardStyle } from "@features/dashboard/constants/colors";

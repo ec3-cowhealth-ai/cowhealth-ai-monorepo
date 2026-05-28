@@ -6,9 +6,9 @@ import { Warehouse, Plus } from "lucide-react";
 import { FarmCard } from "../components/FarmCard";
 import { FarmForm } from "../components/FarmForm";
 import { useFarms, useCreateFarm } from "../hooks/useFarms";
-import { useMe } from "../../../hooks/useAuth";
-import type { CreateFarmInput } from "../../../types/farms";
-import { C, cardStyle } from "@features/dashboard/constants/colors";
+import { useMe } from "@hooks/useAuth";
+import type { CreateFarmInput } from "@/types/farms";
+import { C } from "@features/dashboard/constants/colors";
 
 export const FarmsPage = () => {
   const navigate = useNavigate();
