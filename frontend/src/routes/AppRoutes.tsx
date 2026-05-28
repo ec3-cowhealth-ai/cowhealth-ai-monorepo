@@ -10,11 +10,16 @@ import { DashboardPage } from "@features/dashboard/pages/DashboardPage";
 import { FarmsPage, FarmDetailPage } from "@features/farms";
 import { CollarsPage, CollarDetailPage } from "@features/collars";
 import { NotificationsPage } from "@features/notifications";
-import { CowsPage, CowDetailPage } from "@features/cows";
+import { CowsPage, CowDetailPage, CowHistoryPage } from "@features/cows";
 import { AccessLayout, UsersPage, RolesPage, PermissionsPage } from "@features/access";
+import { SplashPage } from "@pages/splash/SplashPage";
+import { useMe } from "@hooks/useAuth";
 
-export const AppRoutes = () => (
-  <BrowserRouter>
+const AppRoutesInner = () => {
+  const { isLoading: isLoadingAuth } = useMe();
+  if (isLoadingAuth) return <SplashPage />;
+
+  return (
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
@@ -38,6 +43,7 @@ export const AppRoutes = () => (
         {/* Cows */}
         <Route path="/cows" element={<CowsPage />} />
         <Route path="/cows/:id" element={<CowDetailPage />} />
+        <Route path="/cows/:id/history" element={<CowHistoryPage />} />
 
         {/* Notifications */}
         <Route path="/notifications" element={<NotificationsPage />} />
@@ -57,5 +63,11 @@ export const AppRoutes = () => (
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+};
+
+export const AppRoutes = () => (
+  <BrowserRouter>
+    <AppRoutesInner />
   </BrowserRouter>
 );

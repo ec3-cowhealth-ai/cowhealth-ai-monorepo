@@ -7,7 +7,6 @@ import {
   deleteFarm,
 } from "../services/farmsService";
 import { handleRequest } from "../helpers/controllerHelpers";
-import { prisma } from "../lib/prisma";
 
 export const listFarms = async (request: Request, response: Response): Promise<void> => {
   const farmIds = request.user!.farmIds;

@@ -13,6 +13,7 @@ import {
   listAccelerometer,
   listHeartRateDaily,
   listTemperatureDaily,
+  listAccelerometerDaily,
   retireCowController,
   listSensorHistory,
 } from "../controllers/cowsController";
@@ -114,6 +115,12 @@ router.get(
   requireAuth,
   requirePermission("View Cow"),
   listTemperatureDaily,
+);
+router.get(
+  "/:id/accelerometer/daily",
+  requireAuth,
+  requirePermission("View Cow"),
+  listAccelerometerDaily,
 );
 
 // Histórico — tabela unificada com filtro por período

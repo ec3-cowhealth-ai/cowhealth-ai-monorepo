@@ -59,7 +59,7 @@ export const CowPin = ({ x, y, tone, label, cow, selected, onClick }: CowPinProp
             fontSize: 9,
             fontWeight: 700,
             color: "var(--text-inverse)",
-            border: selected ? "2px solid #fff" : "none",
+            border: selected ? "2px solid var(--primary-on)" : "none",
             transition: "inset 0.15s ease",
           }}
         >

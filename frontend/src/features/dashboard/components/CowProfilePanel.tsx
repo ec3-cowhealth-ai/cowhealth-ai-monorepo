@@ -15,10 +15,10 @@ interface Props {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  HEALTHY:     "Saudável",
-  CALVING:     "Recém-parida",
+  HEALTHY: "Saudável",
+  CALVING: "Recém-parida",
   HEAT_STRESS: "Estresse térmico",
-  ALERT:       "Alerta",
+  ALERT: "Alerta",
 };
 
 function age(birthDate: string | undefined): string {
@@ -31,17 +31,41 @@ function age(birthDate: string | undefined): string {
 export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Props) {
   const { data: cow, isLoading } = useQuery({
     queryKey: ["cows", cowId],
-    queryFn:  () => cowsService.get(cowId!),
-    enabled:  !!cowId,
+    queryFn: () => cowsService.get(cowId!),
+    enabled: !!cowId,
   });
 
   if (!cowId) {
     return (
-      <section style={{ ...cardStyle, gridColumn: "span 3", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, minHeight: 300, textAlign: "center" }}>
-        <div style={{ width: 56, height: 56, borderRadius: 999, background: "#e6f1ea", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <section
+        style={{
+          ...cardStyle,
+          gridColumn: "span 3",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 12,
+          minHeight: 300,
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 999,
+            background: "var(--status-success-bg)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <CowHead size={28} color={C.green} />
         </div>
-        <p style={{ fontSize: 13, color: C.muted, margin: 0 }}>Selecione uma vaca acima para ver o perfil.</p>
+        <p style={{ fontSize: 13, color: C.muted, margin: 0 }}>
+          Selecione uma vaca acima para ver o perfil.
+        </p>
       </section>
     );
   }
@@ -58,20 +82,23 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
 
   const statusLabel = STATUS_LABEL[cow.status] ?? cow.status;
   const statusColor = cow.status === "ALERT" || cow.status === "HEAT_STRESS" ? C.orange : C.green;
-  const statusBg    = cow.status === "ALERT" || cow.status === "HEAT_STRESS" ? "#fbe9d8" : "#e6f1ea";
+  const statusBg =
+    cow.status === "ALERT" || cow.status === "HEAT_STRESS"
+      ? "var(--status-warning-bg)"
+      : "var(--status-success-bg)";
 
   const firstPhoto = cow.photos?.[0];
-  const photoUrl   = firstPhoto ? `/uploads/${firstPhoto}` : null;
+  const photoUrl = firstPhoto ? `/uploads/${firstPhoto}` : null;
 
   const rows = [
-    ["Fazenda",           cow.farm?.name         ?? "--"],
-    ["Raça",              cow.breed              ?? "--"],
-    ["Peso",              cow.weight             ? `${cow.weight} kg` : "--"],
-    ["Idade",             age(cow.birthDate)],
-    ["Colar",             cow.collar?.name       ?? "Sem colar"],
-    ["Status",            statusLabel],
-    ["Dias em lactação",  "--"],
-    ["Status reprodutivo","--"],
+    ["Fazenda", cow.farm?.name ?? "--"],
+    ["Raça", cow.breed ?? "--"],
+    ["Peso", cow.weight ? `${cow.weight} kg` : "--"],
+    ["Idade", age(cow.birthDate)],
+    ["Colar", cow.collar?.name ?? "Sem colar"],
+    ["Status", statusLabel],
+    ["Dias em lactação", "--"],
+    ["Status reprodutivo", "--"],
   ];
 
   const arrowBtn: React.CSSProperties = {
@@ -81,7 +108,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
     width: 32,
     height: 32,
     borderRadius: 999,
-    background: "#fff",
+    background: C.card,
     border: `1px solid ${C.border}`,
     boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
     cursor: "pointer",
@@ -115,81 +142,166 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
         </button>
       )}
 
-    <section style={{ ...cardStyle }}>
-      {/* Photo */}
-      <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto", borderRadius: 999, overflow: "hidden", border: `4px solid ${C.bg}`, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
-        {photoUrl ? (
-          <img src={photoUrl} alt={cow.tag} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <div style={{ width: "100%", height: "100%", background: "#e6f1ea", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <CowHead size={56} color={C.green} />
+      <section style={{ ...cardStyle }}>
+        {/* Photo */}
+        <div
+          style={{
+            position: "relative",
+            width: 140,
+            height: 140,
+            margin: "0 auto",
+            borderRadius: 999,
+            overflow: "hidden",
+            border: `4px solid ${C.bg}`,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={cow.tag}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                background: "var(--status-success-bg)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CowHead size={56} color={C.green} />
+            </div>
+          )}
+          <button
+            style={{
+              position: "absolute",
+              bottom: 4,
+              right: 4,
+              width: 28,
+              height: 28,
+              borderRadius: 999,
+              background: C.card,
+              border: `1px solid ${C.border}`,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            <CameraIcon style={{ width: 13, height: 13, color: C.green }} />
+          </button>
+        </div>
+
+        {/* Name + status */}
+        <div style={{ textAlign: "center", marginTop: 14 }}>
+          <div
+            style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: 26,
+              color: C.text,
+              fontWeight: 400,
+            }}
+          >
+            {cow.name || cow.tag}
           </div>
-        )}
-        <button style={{
-          position: "absolute", bottom: 4, right: 4, width: 28, height: 28, borderRadius: 999,
-          background: "#fff", border: `1px solid ${C.border}`, cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-        }}>
-          <CameraIcon style={{ width: 13, height: 13, color: C.green }} />
+          <div
+            style={{
+              fontSize: 11,
+              color: C.muted,
+              marginTop: 2,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            Brinco {cow.tag}
+          </div>
+          <span
+            style={{
+              display: "inline-block",
+              marginTop: 8,
+              fontSize: 11,
+              fontWeight: 600,
+              padding: "3px 10px",
+              borderRadius: 999,
+              background: statusBg,
+              color: statusColor,
+            }}
+          >
+            {statusLabel}
+          </span>
+        </div>
+
+        {/* Info rows */}
+        <dl style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+          {rows.map(([k, v]) => (
+            <div
+              key={k}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                fontSize: 13,
+              }}
+            >
+              <dt style={{ color: C.muted, display: "flex", alignItems: "center", gap: 8 }}>
+                <span
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 999,
+                    background: "var(--status-success-bg)",
+                    display: "inline-block",
+                  }}
+                />
+                {k}
+              </dt>
+              <dd style={{ color: C.text, fontWeight: 500, margin: 0 }}>{v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <button
+          style={{
+            marginTop: 16,
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "10px 16px",
+            borderRadius: 10,
+            border: `1px solid ${C.border}`,
+            background: "transparent",
+            fontSize: 13,
+            cursor: "pointer",
+            color: C.text,
+          }}
+          onClick={() => (window.location.href = `/cows/${cow.id}`)}
+        >
+          Ver perfil completo
+          <ChevronRight style={{ width: 16, height: 16 }} />
         </button>
-      </div>
-
-      {/* Name + status */}
-      <div style={{ textAlign: "center", marginTop: 14 }}>
-        <div style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 26, color: C.text, fontWeight: 400 }}>
-          {cow.name || cow.tag}
-        </div>
-        <div style={{ fontSize: 11, color: C.muted, marginTop: 2, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-          Brinco {cow.tag}
-        </div>
-        <span style={{
-          display: "inline-block", marginTop: 8, fontSize: 11, fontWeight: 600,
-          padding: "3px 10px", borderRadius: 999, background: statusBg, color: statusColor,
-        }}>
-          {statusLabel}
-        </span>
-      </div>
-
-      {/* Info rows */}
-      <dl style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-        {rows.map(([k, v]) => (
-          <div key={k} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}>
-            <dt style={{ color: C.muted, display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 10, height: 10, borderRadius: 999, background: "#e6f1ea", display: "inline-block" }} />
-              {k}
-            </dt>
-            <dd style={{ color: C.text, fontWeight: 500, margin: 0 }}>{v}</dd>
-          </div>
-        ))}
-      </dl>
-
-      <button style={{
-        marginTop: 16, width: "100%", display: "flex", alignItems: "center",
-        justifyContent: "space-between", padding: "10px 16px", borderRadius: 10,
-        border: `1px solid ${C.border}`, background: "transparent", fontSize: 13,
-        cursor: "pointer", color: C.text,
-      }}
-        onClick={() => window.location.href = `/cows/${cow.id}`}
-      >
-        Ver perfil completo
-        <ChevronRight style={{ width: 16, height: 16 }} />
-      </button>
-    </section>
+      </section>
     </div>
   );
 }
 
 function Skeleton() {
   const pulse = {
-    background: "#f0ece4",
+    background: "var(--bg-elev-2)",
     animation: "pulse 1.5s ease-in-out infinite",
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
       <div style={{ width: 140, height: 140, borderRadius: 999, ...pulse }} />
       <div style={{ width: 100, height: 20, borderRadius: 8, ...pulse }} />
-      <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+      <div
+        style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}
+      >
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} style={{ width: "100%", height: 14, borderRadius: 8, ...pulse }} />
         ))}

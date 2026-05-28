@@ -7,7 +7,6 @@ import {
   deleteCollar,
 } from "../services/collarsService";
 import { handleRequest } from "../helpers/controllerHelpers";
-import { prisma } from "../lib/prisma";
 
 export const listCollars = async (request: Request, response: Response): Promise<void> => {
   const farmIds = request.user!.farmIds;

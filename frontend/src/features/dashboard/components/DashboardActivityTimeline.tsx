@@ -7,11 +7,11 @@ interface Props {
 
 // Placeholder events — replaced by real accelerometer data when DB is ready
 const PLACEHOLDER_EVENTS = [
-  { time: "--:--", label: "Ruminação",       sub: "-- min", icon: "heart"   },
-  { time: "--:--", label: "Alimentação",     sub: "-- min", icon: "cow"     },
-  { time: "--:--", label: "Atividade baixa", sub: "-- min", icon: "alert"   },
-  { time: "--:--", label: "Alimentação",     sub: "-- min", icon: "cow"     },
-  { time: "--:--", label: "Ruminação",       sub: "-- min", icon: "heart"   },
+  { time: "--:--", label: "Ruminação", sub: "-- min", icon: "heart" },
+  { time: "--:--", label: "Alimentação", sub: "-- min", icon: "cow" },
+  { time: "--:--", label: "Atividade baixa", sub: "-- min", icon: "alert" },
+  { time: "--:--", label: "Alimentação", sub: "-- min", icon: "cow" },
+  { time: "--:--", label: "Ruminação", sub: "-- min", icon: "heart" },
 ];
 
 const HOUR_LABELS = ["00h", "04h", "08h", "12h", "16h", "20h"];
@@ -29,22 +29,57 @@ export function DashboardActivityTimeline({ cowId }: Props) {
       </div>
 
       {!cowId ? (
-        <div style={{ marginTop: 16, textAlign: "center", padding: "24px 0", color: C.muted, fontSize: 13, border: `1px dashed ${C.border}`, borderRadius: 10 }}>
+        <div
+          style={{
+            marginTop: 16,
+            textAlign: "center",
+            padding: "24px 0",
+            color: C.muted,
+            fontSize: 13,
+            border: `1px dashed ${C.border}`,
+            borderRadius: 10,
+          }}
+        >
           Selecione uma vaca para ver a linha do tempo
         </div>
       ) : (
         <div style={{ marginTop: 24 }}>
           <div style={{ height: 1, background: C.border }} />
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${HOUR_LABELS.length}, 1fr)`, fontSize: 11, color: C.muted, marginTop: 8 }}>
-            {HOUR_LABELS.map((h) => <div key={h}>{h}</div>)}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${HOUR_LABELS.length}, 1fr)`,
+              fontSize: 11,
+              color: C.muted,
+              marginTop: 8,
+            }}
+          >
+            {HOUR_LABELS.map((h) => (
+              <div key={h}>{h}</div>
+            ))}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${events.length}, 1fr)`, gap: 16, marginTop: 24 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${events.length}, 1fr)`,
+              gap: 16,
+              marginTop: 24,
+            }}
+          >
             {events.map((t, i) => (
               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                <div style={{
-                  width: 34, height: 34, borderRadius: 10, background: "#e6f1ea",
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                }}>
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    background: "var(--status-success-bg)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
                   <EventIcon name={t.icon} />
                 </div>
                 <div>
@@ -67,9 +102,13 @@ export function DashboardActivityTimeline({ cowId }: Props) {
 function EventIcon({ name }: { name: string }) {
   const s = { width: 15, height: 15, color: C.green };
   switch (name) {
-    case "heart": return <HeartIcon style={s} />;
-    case "cow":   return <CowGlyph style={s} />;
-    case "alert": return <AlertTriangleIcon style={s} />;
-    default:      return null;
+    case "heart":
+      return <HeartIcon style={s} />;
+    case "cow":
+      return <CowGlyph style={s} />;
+    case "alert":
+      return <AlertTriangleIcon style={s} />;
+    default:
+      return null;
   }
 }

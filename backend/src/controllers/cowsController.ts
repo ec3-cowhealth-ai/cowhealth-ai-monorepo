@@ -13,6 +13,7 @@ import {
   getCowAccelerometer,
   getCowHeartRateDaily,
   getCowTemperatureDaily,
+  getCowAccelerometerDaily,
   retireCow,
   getCowSensorHistory,
 } from "../services/cowsService";
@@ -136,6 +137,10 @@ export const listHeartRateDaily = async (request: Request, response: Response): 
 
 export const listTemperatureDaily = async (request: Request, response: Response): Promise<void> => {
   await handleRequest(response, () => getCowTemperatureDaily(Number(request.params.id)), 200, 404);
+};
+
+export const listAccelerometerDaily = async (request: Request, response: Response): Promise<void> => {
+  await handleRequest(response, () => getCowAccelerometerDaily(Number(request.params.id)), 200, 404);
 };
 
 // Histórico completo dos sensores

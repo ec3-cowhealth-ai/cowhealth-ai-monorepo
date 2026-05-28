@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut } from "lucide-react";
+import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut, Sun, Moon } from "lucide-react";
+import { useTheme } from "@hooks/useTheme";
 import { CowHead } from "@components/ui/CowHeadIcon";
 
 interface NavItem {
@@ -43,6 +44,8 @@ export const Sidebar = () => {
       : []),
   ];
 
+  const { theme, toggle } = useTheme();
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
@@ -74,6 +77,9 @@ export const Sidebar = () => {
             <p className="sidebar__user-role">{user?.profile}</p>
           </div>
         </div>
+        <button onClick={toggle} className="sidebar__logout" title="Alternar tema">
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
         <button onClick={handleLogout} className="sidebar__logout" title="Logout">
           <LogOut size={18} />
         </button>

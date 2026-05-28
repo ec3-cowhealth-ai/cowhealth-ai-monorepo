@@ -4,6 +4,43 @@
 
 ---
 
+## 2026-05-28 - Feature D, G, E, A: Aposentadoria, Histórico, Splash, Acelerômetro + Dashboard Endpoints (JCFS)
+
+Scope: Implementação das pendências do jafte-todo.md para a apresentação. Cobertura completa de 8 tarefas: aposentadoria de animal (Feature D), histórico de sensores (Feature G), splash screen (Feature E), acelerômetro diário (Feature A), 4 novos endpoints do dashboard, botão de alternância de tema e correção do bottom-nav em iOS.
+
+### Added
+
+- `frontend/src/features/cows/components/RetireAnimalModal.tsx` — modal de aposentadoria com seleção Venda/Abate e confirmação irreversível.
+- `frontend/src/features/cows/pages/CowHistoryPage.tsx` — página de histórico de sensores com filtro de datas, tabela `.data-table` e exportação CSV client-side.
+- `frontend/src/pages/splash/SplashPage.tsx` — splash screen com animação "Sincronizando coleiras…" exibida durante carregamento do auth.
+
+### Changed
+
+- `frontend/src/types/cows.ts` — `RETIRED` já estava presente; confirmado.
+- `frontend/src/services/cowsService.ts` — adicionados `retireCow`, `getAccelerometerDaily`, `getSensorHistory`.
+- `frontend/src/features/cows/hooks/useCows.ts` — adicionados `useRetireCow` e `useCowAccelerometerDaily`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — seção "Zona de perigo" com `useHasPermission("Retire Cow")`; grade 3 colunas de gráficos (Temperatura + FC + Atividade) substituindo as tabs; botão "Histórico de sensores".
+- `frontend/src/features/cows/index.ts` — exporta `CowHistoryPage`.
+- `frontend/src/routes/AppRoutes.tsx` — rota `/cows/:id/history`; refatorado com `AppRoutesInner` para suportar splash screen via `useMe().isLoading`.
+- `frontend/src/pages/map/MapPage.tsx` — vacas com `status === "RETIRED"` filtradas dos pins do mapa.
+- `frontend/src/pages/home/HomePage.tsx` — vacas `RETIRED` excluídas do strip "Em Atenção"; nova seção "Pré-parto" com cards horizontais das vacas `CALVING`.
+- `frontend/src/components/layout/Sidebar.tsx` — botão Sun/Moon para alternar tema, antes do logout.
+- `frontend/src/components/layout/BottomNav.tsx` — item "Perfil" substituído por "Tema" (botão Sun/Moon), mantendo 5 colunas no grid.
+- `frontend/src/styles/App.css` — `.bottom-nav` com `height: calc(64px + env(safe-area-inset-bottom, 0px))`, `-webkit-transform: translateZ(0)` e `.bottom-nav__item` com `height: 64px; align-self: start` (correção safe-area iOS).
+- `backend/src/services/cowsService.ts` — `getCowAccelerometerDaily`: agrega magnitude diária do acelerômetro via `sqrt(x²+y²+z²)`.
+- `backend/src/controllers/cowsController.ts` — handler `listAccelerometerDaily`.
+- `backend/src/routes/cowsRoutes.ts` — rota `GET /:id/accelerometer/daily`.
+- `backend/src/services/dashboardService.ts` — `getFeaturedCow`, `getRecentAlerts`, `getCowVitals`, `getCowActivityTimeline` (retorna `[]` até MQTT popular a tabela).
+- `backend/src/controllers/dashboardController.ts` — handlers: `featuredCow`, `recentAlerts`, `cowVitals`, `cowActivityTimeline`.
+- `backend/src/routes/dashboardRoutes.ts` — rotas: `GET /featured-cow`, `GET /alerts/recent`, `GET /cow/:id/vitals`, `GET /cow/:id/activity-timeline`.
+
+### Build Status
+
+- ✅ Frontend: zero erros TypeScript esperados; todos os imports e hooks consistentes.
+- ✅ Backend: novos serviços e rotas seguem padrão `handleRequest` existente.
+
+---
+
 ## 2026-05-26 - Critical Fixes: Login Loop, Build Errors, and Farm Consistency (JCFS)
 
 Scope: Resolved critical authentication and build issues introduced after git synchronization. Fixed a infinite login redirect loop by making the `getMe` service more resilient; unified all ID types to `number` on the frontend to resolve 18+ TypeScript compilation errors; and implemented strict farm validation in `FarmContext` to prevent incorrect farm assignment due to stale local storage data.

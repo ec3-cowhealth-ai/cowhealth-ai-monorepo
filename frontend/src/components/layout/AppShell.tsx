@@ -2,17 +2,28 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
 import { FarmProvider } from "@/context/FarmContext";
+import { ThemeProvider, useTheme } from "@/hooks/useTheme";
+
+const AppShellFrame = () => {
+  const { theme } = useTheme();
+
+  return (
+    <div className="app-shell" data-theme={theme}>
+      <Sidebar />
+      <div className="app-shell__main">
+        <Outlet />
+      </div>
+      <BottomNav />
+    </div>
+  );
+};
 
 export const AppShell = () => {
   return (
-    <FarmProvider>
-      <div className="app-shell">
-        <Sidebar />
-        <div className="app-shell__main">
-          <Outlet />
-        </div>
-        <BottomNav />
-      </div>
-    </FarmProvider>
+    <ThemeProvider>
+      <FarmProvider>
+        <AppShellFrame />
+      </FarmProvider>
+    </ThemeProvider>
   );
 };
