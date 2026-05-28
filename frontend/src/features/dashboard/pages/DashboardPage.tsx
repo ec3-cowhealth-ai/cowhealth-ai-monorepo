@@ -30,6 +30,11 @@ export const DashboardPage = () => {
   const { data: overview }      = useDashboardOverview(kpiFarmId);
   const { data: cowsPerStatus } = useCowsPerStatus(kpiFarmId);
 
+  // Get the display farm based on selection mode
+  const displayFarm = selectionMode === "farm" && selectedFarmId
+    ? farms.find((f) => String(f.id) === selectedFarmId)
+    : null;
+
   // Cow list for selector
   const cowListFilters =
     selectionMode === "farm" && selectedFarmId
@@ -82,7 +87,7 @@ export const DashboardPage = () => {
               Visão geral do rebanho
             </h1>
             <div style={{ marginTop: 4, fontSize: 13, color: C.muted }}>
-              {selectedFarm?.name ?? "Todas as fazendas"}
+              {displayFarm?.name ?? "Todas as fazendas"}
               {overview?.totalCows !== undefined && ` · ${overview.totalCows} cabeças`}
             </div>
           </div>
