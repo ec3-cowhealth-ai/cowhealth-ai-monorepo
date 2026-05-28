@@ -27,10 +27,10 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const STATUS_BG: Record<string, string> = {
-  HEALTHY: "var(--status-success-bg)",
-  ALERT: "var(--status-danger-bg)",
-  HEAT_STRESS: "var(--status-warning-bg)",
-  CALVING: "var(--status-info-bg)",
+  HEALTHY:    "#e8f5ee",
+  ALERT:      "#fdecea",
+  HEAT_STRESS:"#fdf3e7",
+  CALVING:    "#e8f2fb",
 };
 
 // ─── Modal de Criação ─────────────────────────────────────────────────────────
@@ -335,12 +335,15 @@ export const CowsPage = () => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: 10,
-                  padding: 20,
+                  justifyContent: "center",
+                  gap: 8,
+                  padding: "20px 14px",
                   cursor: "pointer",
                   textAlign: "center",
+                  minHeight: 178,
                 }}
               >
+                {/* Avatar */}
                 <div
                   style={{
                     width: 56,
@@ -350,24 +353,40 @@ export const CowsPage = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    flexShrink: 0,
                   }}
                 >
                   <CowHead size={30} color={sColor} />
                 </div>
 
+                {/* Nome + brinco */}
                 <div>
-                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text, lineHeight: 1.2 }}>
                     {cow.name || cow.tag}
                   </p>
-                  <p style={{ margin: "2px 0 0 0", fontSize: 11, color: C.muted }}>
+                  <p style={{ margin: "3px 0 0 0", fontSize: 11, color: C.muted }}>
                     Brinco {cow.tag}
                   </p>
                 </div>
 
-                {cow.farm && (
-                  <p style={{ margin: 0, fontSize: 11, color: C.muted }}>{cow.farm.name}</p>
-                )}
+                {/* Fazenda — sempre renderizada, reserva altura mesmo sem dado */}
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 11,
+                    color: C.muted,
+                    height: 15,
+                    lineHeight: "15px",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    maxWidth: "100%",
+                  }}
+                >
+                  {cow.farm?.name ?? ""}
+                </p>
 
+                {/* Status badge */}
                 <span
                   style={{
                     fontSize: 11,

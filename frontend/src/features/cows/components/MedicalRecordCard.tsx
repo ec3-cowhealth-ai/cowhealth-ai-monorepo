@@ -18,10 +18,11 @@ const TYPE_COLOR: Record<MedicalRecordType, string> = {
 };
 
 const TYPE_BG: Record<MedicalRecordType, string> = {
-  CHECKUP:   "rgba(107,180,232,0.12)",
-  PROCEDURE: "var(--status-warning-bg)",
-  MEDICATION: "var(--status-success-bg)",
+  CHECKUP:    "rgba(107,180,232,0.12)",
+  PROCEDURE:  "#fdf3e7",
+  MEDICATION: "#e8f5ee",
 };
+
 
 interface MedicalRecordCardProps {
   record: MedicalRecord;
@@ -41,72 +42,93 @@ export const MedicalRecordCard = ({ record, cowId }: MedicalRecordCardProps) => 
   });
 
   return (
-    <div style={{ ...cardStyle, padding: 14, borderLeft: `3px solid ${color}` }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        {/* Badge */}
+    <div style={{ ...cardStyle, padding: 16, borderLeft: `3px solid ${color}` }}>
+
+      {/* Linha topo: badge (esquerda) + ações (direita) */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
         <span
           style={{
-            flexShrink: 0,
-            display: "inline-block",
-            padding: "2px 10px",
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "3px 10px",
             borderRadius: 999,
             fontSize: 10,
             fontWeight: 700,
             background: bg,
             color,
-            letterSpacing: "0.04em",
+            letterSpacing: "0.05em",
             textTransform: "uppercase",
-            marginTop: 2,
           }}
         >
           {label}
         </span>
-
-        {/* Main content */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: 600, color: C.text }}>
-            {record.title}
-          </p>
-          <p style={{ margin: 0, fontSize: 11, color: C.muted }}>
-            {date}
-            {record.user && ` · ${record.user.name}`}
-          </p>
-        </div>
-
-        {/* Actions */}
-        <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 2 }}>
           {record.notes && (
             <button
               onClick={() => setExpanded((v) => !v)}
-              style={{ background: "none", border: "none", cursor: "pointer", color: C.muted, padding: 4 }}
-              title={expanded ? "Recolher" : "Ver notas"}
+              style={{
+                width: 28, height: 28, borderRadius: "50%",
+                background: expanded ? C.bg : "none",
+                border: "none", cursor: "pointer", color: C.muted,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+              title={expanded ? "Recolher notas" : "Ver notas"}
             >
-              {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
             </button>
           )}
           {canDelete && (
             <button
               onClick={() => deleteRecord(record.id)}
               disabled={isPending}
-              style={{ background: "none", border: "none", cursor: "pointer", color: C.red, padding: 4, opacity: isPending ? 0.5 : 1 }}
+              style={{
+                width: 28, height: 28, borderRadius: "50%",
+                background: "none", border: "none",
+                cursor: isPending ? "default" : "pointer",
+                color: C.red, opacity: isPending ? 0.4 : 1,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
               title="Excluir registro"
             >
-              <Trash2 size={14} />
+              <Trash2 size={13} />
             </button>
           )}
         </div>
       </div>
 
-      {/* Collapsible notes */}
+      {/* Título em destaque */}
+      <p
+        style={{
+          margin: "0 0 6px 0",
+          fontSize: 16,
+          fontWeight: 600,
+          color: C.text,
+          lineHeight: 1.25,
+        }}
+      >
+        {record.title}
+      </p>
+
+      {/* Data + veterinário */}
+      <p style={{ margin: 0, fontSize: 12, color: C.muted }}>
+        {date}
+        {record.user && (
+          <span style={{ marginLeft: 6, paddingLeft: 6, borderLeft: `1px solid ${C.border}` }}>
+            {record.user.name}
+          </span>
+        )}
+      </p>
+
+      {/* Notas colapsáveis */}
       {expanded && record.notes && (
         <p
           style={{
-            margin: "10px 0 0 0",
-            fontSize: 12,
+            margin: "12px 0 0 0",
+            fontSize: 13,
             color: C.muted,
             borderTop: `1px solid ${C.border}`,
-            paddingTop: 8,
-            lineHeight: 1.5,
+            paddingTop: 10,
+            lineHeight: 1.6,
           }}
         >
           {record.notes}
