@@ -28,10 +28,12 @@ export interface CreateCollarInput {
   name: string;
   status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE" | "BATTERY";
   dataFrequency?: "HIGHER" | "DEFAULT" | "LOWER";
+  farmId?: number;
 }
 
 export interface UpdateCollarInput {
   name?: string;
   status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE" | "BATTERY";
   dataFrequency?: "HIGHER" | "DEFAULT" | "LOWER";
+  farmId?: number;
 }

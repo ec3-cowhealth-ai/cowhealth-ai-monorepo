@@ -160,7 +160,6 @@ vite.config.ts.timestamp-*
 
 # User JCFS Specific
 .env.local
-docs/*
 
 temp_design.pdf
 

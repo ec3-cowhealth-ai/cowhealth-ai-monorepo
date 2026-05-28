@@ -23,15 +23,26 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
   const { data: farms = [], isLoading } = useFarms();
   const [selectedFarm, setSelectedFarmState] = useState<Farm | null>(null);
 
-  // Auto-seleciona a primeira fazenda ao carregar
+  // Auto-seleciona a primeira fazenda ao carregar ou valida a seleção atual
   useEffect(() => {
-    if (farms.length > 0 && !selectedFarm) {
-      const saved = localStorage.getItem("selectedFarmId");
-      const found = saved ? farms.find((f) => String(f.id) === saved) : null;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedFarmState(found ?? farms[0]);
+    if (farms.length > 0) {
+      const savedId = localStorage.getItem("selectedFarmId");
+      const currentId = selectedFarm?.id;
+
+      // Se não temos nada selecionado, ou se o ID salvo é diferente do atual, ou se o atual não está na lista
+      const isCurrentValid = farms.some((f) => f.id === currentId);
+      
+      if (!selectedFarm || !isCurrentValid) {
+        const found = savedId ? farms.find((f) => String(f.id) === savedId) : null;
+        const nextFarm = found ?? farms[0];
+        
+        setSelectedFarmState(nextFarm);
+        localStorage.setItem("selectedFarmId", String(nextFarm.id));
+      }
+    } else if (!isLoading) {
+      setSelectedFarmState(null);
     }
-  }, [farms, selectedFarm]);
+  }, [farms, selectedFarm, isLoading]);
 
   const setSelectedFarm = (farm: Farm) => {
     localStorage.setItem("selectedFarmId", String(farm.id));

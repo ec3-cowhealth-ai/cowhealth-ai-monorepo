@@ -528,9 +528,23 @@ async function main() {
     "Roles criadas: SuperAdmin, Administrador, Veterinario, Zootecnista, Gerente de Fazenda, Operador de Campo, Financeiro, Observador, Produtor",
   );
 
+  // Fazendas — Criar ANTES dos usuários para evitar violação de FK
+  console.log("Criando fazendas...");
+  const createdFarms = await Promise.all(
+    farmData.map((farm) =>
+      prisma.farm.upsert({ where: { cnpj: farm.cnpj }, update: {}, create: farm }),
+    ),
+  );
+
   // Usuários
   console.log("Criando usuários...");
   const PASSWORD = "12345678";
+
+  const aurora = createdFarms[0];
+  const saoBento = createdFarms[1];
+  const boaEsperanca = createdFarms[2];
+  const santaClara = createdFarms[3];
+  const valeVerde = createdFarms[4];
 
   const userData = [
     {
@@ -538,79 +552,91 @@ async function main() {
       email: "admin@cowhealth.com",
       profile: "ADMIN" as const,
       roleModel: superAdminRole,
+      farmId: null,
     },
     {
       name: "Administrador Aurora",
       email: "administrador@aurora.com",
       profile: "ADMIN" as const,
       roleModel: adminRole,
+      farmId: aurora.id,
     },
     {
       name: "Administrador Sao Bento",
       email: "administrador@saobento.com",
       profile: "ADMIN" as const,
       roleModel: adminRole,
+      farmId: saoBento.id,
     },
     {
       name: "Administrador Boa Esperanca",
       email: "administrador@boaesperanca.com",
       profile: "ADMIN" as const,
       roleModel: adminRole,
+      farmId: boaEsperanca.id,
     },
     {
       name: "Administrador Santa Clara",
       email: "administrador@santaclara.com",
       profile: "ADMIN" as const,
       roleModel: adminRole,
+      farmId: santaClara.id,
     },
     {
       name: "Administrador Vale Verde",
       email: "administrador@valeverde.com",
       profile: "ADMIN" as const,
       roleModel: adminRole,
+      farmId: valeVerde.id,
     },
     {
       name: "Veterinario",
       email: "vet@cowhealth.com",
       profile: "MANAGER" as const,
       roleModel: veterinarianRole,
+      farmId: aurora.id, // Vinculado a uma fazenda principal
     },
     {
       name: "Zootecnista",
       email: "zoot@cowhealth.com",
       profile: "MANAGER" as const,
       roleModel: zootecnistaRole,
+      farmId: boaEsperanca.id,
     },
     {
       name: "Gerente de Fazenda",
       email: "gerente@cowhealth.com",
       profile: "MANAGER" as const,
       roleModel: gerenteFazendaRole,
+      farmId: aurora.id,
     },
     {
       name: "Operador de Campo",
       email: "operador@cowhealth.com",
       profile: "VIEWER" as const,
       roleModel: operadorRole,
+      farmId: aurora.id,
     },
     {
       name: "Financeiro",
       email: "financeiro@cowhealth.com",
       profile: "VIEWER" as const,
       roleModel: financeiroRole,
+      farmId: aurora.id,
     },
     {
       name: "Observador",
       email: "obs@cowhealth.com",
       profile: "VIEWER" as const,
       roleModel: observadorRole,
+      farmId: santaClara.id,
     },
   ];
 
   const passwordHash = await bcrypt.hash(PASSWORD, 12);
 
   const createdUsers = await Promise.all(
-    userData.map(({ name, email, profile, roleModel }) =>
+    userData.map(({ name, email, profile, roleModel, farmId }) =>
       prisma.user.upsert({
         where: { email },
         update: {},
@@ -620,6 +646,7 @@ async function main() {
           passwordHash,
           profile,
           active: true,
+          farmId,
           roles: { create: [{ roleId: roleModel.id }] },
         },
       }),
@@ -627,14 +654,6 @@ async function main() {
   );
 
   console.log(`${createdUsers.length} usuários criados`);
-
-  // Fazendas
-  console.log("Criando fazendas...");
-  const createdFarms = await Promise.all(
-    farmData.map((farm) =>
-      prisma.farm.upsert({ where: { cnpj: farm.cnpj }, update: {}, create: farm }),
-    ),
-  );
 
   // Colares — 200 total
   // 160 ACTIVE (nomes do simulador IoT) + 20 INACTIVE (estoque) + 10 MAINTENANCE + 5 INACTIVE + 5 BATTERY
@@ -670,14 +689,18 @@ async function main() {
 
   const createdCollars = await Promise.all(
     collarData.map((collar) =>
-      prisma.collar.upsert({ where: { name: collar.name }, update: {}, create: collar }),
+      prisma.collar.upsert({
+        where: { name: collar.name },
+        update: {},
+        create: collar,
+      }),
     ),
   );
 
   console.log(`${createdCollars.length} colares criados`);
 
   // Vacas — 160 total (32 por fazenda)
-  console.log("Criando vacas (160)...");
+  console.log("Criando vacas (160) e vinculando colares às fazendas...");
 
   const COWS_PER_FARM = 32;
   let statusIndex = 0;
@@ -697,6 +720,12 @@ async function main() {
 
       // Vincula colar ACTIVE (os 160 primeiros colares)
       const collar = createdCollars[collarIndex++];
+
+      // ATUALIZAÇÃO: Vincula o colar à fazenda também
+      await prisma.collar.update({
+        where: { id: collar.id },
+        data: { farmId: farm.id },
+      });
 
       const cow = await prisma.cow.upsert({
         where: { tag },
@@ -993,8 +1022,6 @@ async function main() {
     financeiroUser,    // financeiro@cowhealth.com
     observadorUser,    // obs@cowhealth.com
   ] = createdUsers;
-
-  const [aurora, saoBento, boaEsperanca, santaClara, valeVerde] = createdFarms;
 
   const userFarmData = [
     // Cada administrador gerencia apenas a sua fazenda

@@ -43,21 +43,24 @@ const getUserPermissions = async (userId: number): Promise<string[]> => {
  * @returns null para SuperAdmin (irrestrito) | number[] para os demais
  */
 const getUserFarmIds = async (userId: number): Promise<number[] | null> => {
-  const isSuperAdmin = await prisma.userRole.findFirst({
-    where: {
-      userId,
-      role: { name: "SuperAdmin" },
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      roles: { include: { role: true } },
+      userFarms: true,
     },
   });
 
+  if (!user) return [];
+
+  const isSuperAdmin = user.roles.some((r) => r.role.name === "SuperAdmin");
   if (isSuperAdmin) return null;
 
-  const userFarms = await prisma.userFarm.findMany({
-    where: { userId },
-    select: { farmId: true },
-  });
+  const farmIds = new Set<number>();
+  if (user.farmId) farmIds.add(user.farmId);
+  user.userFarms.forEach((uf) => farmIds.add(uf.farmId));
 
-  return userFarms.map((userFarm) => userFarm.farmId);
+  return Array.from(farmIds);
 };
 
 const signToken = (payload: AuthPayload): string =>
@@ -82,6 +85,7 @@ export const login = async ({ email, password }: LoginInput) => {
 
   const payload: AuthPayload = {
     sub: user.id,
+    id: user.id,
     email: user.email,
     profile: user.profile,
     permissions,
@@ -100,6 +104,10 @@ export const getMe = async (userId: number) => {
       email: true,
       profile: true,
       active: true,
+      farmId: true,
+      farm: {
+        select: { id: true, name: true },
+      },
       createdAt: true,
       roles: {
         select: {
@@ -130,16 +138,24 @@ export const getMe = async (userId: number) => {
     }
   }
 
+  const farms = (user.userFarms ?? []).map((uf) => uf.farm);
+  if (user.farmId && user.farm) {
+    if (!farms.some((f) => f.id === user.farmId)) {
+      farms.unshift(user.farm);
+    }
+  }
+
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     profile: user.profile,
     active: user.active,
+    farmId: user.farmId,
     createdAt: user.createdAt,
-    roles: user.roles.map((userRole) => ({ id: userRole.role.id, name: userRole.role.name })),
+    roles: (user.roles ?? []).map((userRole) => ({ id: userRole.role.id, name: userRole.role.name })),
     permissions: Array.from(permissionSet.entries()).map(([id, name]) => ({ id, name })),
-    farms: user.userFarms.map((userFarm) => userFarm.farm),
+    farms,
   };
 };
 

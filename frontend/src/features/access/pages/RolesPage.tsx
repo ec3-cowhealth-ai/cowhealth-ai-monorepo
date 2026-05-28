@@ -69,13 +69,13 @@ function RoleFormModal({ open, role, onClose, isLoading, onSubmit }: RoleFormMod
 // ─── Modal de gerenciamento de permissoes ─────────────────────────────────────
 
 interface ManagePermsModalProps {
-  roleId: string;
+  roleId: number;
   roleName: string;
   onClose: () => void;
 }
 
 function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalProps) {
-  const { data: roleDetail, isLoading } = useRole(roleId);
+  const { data: roleDetail, isLoading } = useRole(String(roleId));
   const { data: allPermissions } = usePermissions();
   const { mutate: grant, isPending: granting } = useGrantPermission();
   const { mutate: revoke, isPending: revoking } = useRevokePermission();
@@ -87,12 +87,12 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
 
   const isPending = granting || revoking;
 
-  const togglePermission = (permId: string) => {
+  const togglePermission = (permId: number) => {
     if (isPending) return;
-    if (grantedIds.has(permId)) {
-      revoke({ roleId, permissionId: permId });
+    if (grantedIds.has(String(permId))) {
+      revoke({ roleId: String(roleId), permissionId: String(permId) });
     } else {
-      grant({ roleId, permissionId: permId });
+      grant({ roleId: String(roleId), permissionId: String(permId) });
     }
   };
 
@@ -169,7 +169,7 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
                       type="checkbox"
                       checked={active}
                       disabled={isPending}
-                      onChange={() => togglePermission(String(perm.id))}
+                      onChange={() => togglePermission(perm.id)}
                       style={{
                         accentColor: "var(--primary)",
                         width: 16,
@@ -413,7 +413,7 @@ export const RolesPage = () => {
 
       {managingPermsRole && (
         <ManagePermissionsModal
-          roleId={String(managingPermsRole.id)}
+          roleId={managingPermsRole.id}
           roleName={managingPermsRole.name}
           onClose={() => setManagingPermsRole(null)}
         />

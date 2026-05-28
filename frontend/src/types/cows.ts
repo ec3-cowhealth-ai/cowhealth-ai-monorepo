@@ -44,13 +44,21 @@ export interface CreateCowInput {
   tag: string;
   name: string;
   breed: string;
-  weight: number;
-  birthDate: string;
+  weight?: number;
+  birthDate?: string;
   farmId: number;
   collarId?: number;
 }
 
-export type UpdateCowInput = Partial<CreateCowInput>;
+export interface UpdateCowInput {
+  tag?: string;
+  name?: string;
+  breed?: string;
+  weight?: number;
+  birthDate?: string;
+  status?: CowStatus;
+  collarId?: number | null;
+}
 
 export interface SensorDailyPoint {
   date: string; // formato "dd/MM" ex: "17/05" — ja vem pronto do backend

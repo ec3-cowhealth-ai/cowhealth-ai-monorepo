@@ -35,6 +35,8 @@ export const HomePage = () => {
   const { selectedFarm, setSelectedFarm, farms } = useFarmContext();
   const [showFarmPicker, setShowFarmPicker] = useState(false);
 
+  const isSuperAdmin = user?.roles.some((r) => r.name === "SuperAdmin");
+
   const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
   const { data: overview } = useDashboardOverview(farmId);
   const { data: cows } = useCows({ farmId });
@@ -42,7 +44,7 @@ export const HomePage = () => {
 
   const unreadCount = unread?.length || 0;
   const total = overview?.totalCows ?? cows?.length ?? 0;
-  const alertCount = overview?.cowsInAlert ?? 0;
+  const alertCount = overview?.unhealthyCows ?? 0;
   const healthyCount = cows?.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length ?? 0;
   const healthPct = total > 0 ? Math.round((healthyCount / total) * 100) : 0;
 
@@ -55,18 +57,24 @@ export const HomePage = () => {
         title={`${greeting()}, ${user?.name?.split(" ")[0] ?? ""}`}
         subtitle={selectedFarm?.name ?? "Carregando…"}
         left={
-          <button
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-              display: "flex",
-            }}
-            onClick={() => setShowFarmPicker(true)}
-          >
-            <CowHead size={32} />
-          </button>
+          isSuperAdmin ? (
+            <button
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                display: "flex",
+              }}
+              onClick={() => setShowFarmPicker(true)}
+            >
+              <CowHead size={32} />
+            </button>
+          ) : (
+            <div style={{ display: "flex", color: "var(--accent)" }}>
+              <CowHead size={32} />
+            </div>
+          )
         }
         actions={
           <button className="app-bar__action" onClick={toggle} title="Alternar tema">

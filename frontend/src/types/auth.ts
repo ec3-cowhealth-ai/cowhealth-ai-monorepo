@@ -19,7 +19,9 @@ export interface AuthUser {
   email: string;
   profile: "ADMIN" | "MANAGER" | "VIEWER";
   active: boolean;
+  farmId: number | null;
   createdAt: string;
   roles: Role[];
   permissions: Permission[];
+  farms: Array<{ id: number; name: string }>;
 }

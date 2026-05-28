@@ -11,6 +11,7 @@ export interface LoginInput {
  */
 export interface AuthPayload {
   sub: number;
+  id: number;
   email: string;
   profile: string;
   permissions: string[];

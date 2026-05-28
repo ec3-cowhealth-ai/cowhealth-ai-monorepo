@@ -100,7 +100,7 @@ export const NotificationsPage = () => {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {notifications.map((n) => {
-              const color = TYPE_COLOR[n.type] ?? "var(--border-subtle)";
+              const color = (n.type && TYPE_COLOR[n.type]) ?? "var(--border-subtle)";
               return (
                 <button
                   key={n.id}
@@ -123,7 +123,7 @@ export const NotificationsPage = () => {
                       display: "flex",
                     }}
                   >
-                    {TYPE_ICON[n.type] ?? <Bell size={14} />}
+                    {(n.type && TYPE_ICON[n.type]) ?? <Bell size={14} />}
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p

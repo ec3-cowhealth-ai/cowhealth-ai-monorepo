@@ -2,13 +2,18 @@ import { prisma } from "../lib/prisma";
 import { assertUnique } from "../helpers/serviceHelpers";
 import type { CreateCollarInput, UpdateCollarInput } from "../types/farming";
 
-export const getAllCollars = async () => {
+export const getAllCollars = async (farmIds: number[] | null) => {
+  const where = farmIds === null ? {} : { farmId: { in: farmIds || [] } };
+
   return prisma.collar.findMany({
+    where,
     select: {
       id: true,
       name: true,
       status: true,
       dataFrequency: true,
+      farmId: true,
+      farm: { select: { id: true, name: true } },
       createdAt: true,
       cow: { select: { id: true, tag: true, name: true, status: true } },
     },
@@ -16,7 +21,7 @@ export const getAllCollars = async () => {
   });
 };
 
-export const getCollarById = async (collarId: number) => {
+export const getCollarById = async (collarId: number, farmIds: number[] | null) => {
   const collar = await prisma.collar.findUnique({
     where: { id: collarId },
     select: {
@@ -24,6 +29,8 @@ export const getCollarById = async (collarId: number) => {
       name: true,
       status: true,
       dataFrequency: true,
+      farmId: true,
+      farm: { select: { id: true, name: true } },
       createdAt: true,
       updatedAt: true,
       cow: {
@@ -40,6 +47,11 @@ export const getCollarById = async (collarId: number) => {
   });
 
   if (!collar) throw new Error("Colar não encontrado.");
+
+  if (farmIds !== null && collar.farmId && !farmIds.includes(collar.farmId)) {
+    throwWithStatus("Acesso negado a esta coleira.", 403);
+  }
+
   return collar;
 };
 
@@ -53,6 +65,7 @@ export const createCollar = async (data: CreateCollarInput) => {
       name: true,
       status: true,
       dataFrequency: true,
+      farmId: true,
       createdAt: true,
     },
   });
@@ -79,6 +92,7 @@ export const updateCollar = async (collarId: number, data: UpdateCollarInput) =>
       name: true,
       status: true,
       dataFrequency: true,
+      farmId: true,
       updatedAt: true,
     },
   });

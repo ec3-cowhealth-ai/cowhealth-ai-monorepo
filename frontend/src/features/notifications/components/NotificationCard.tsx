@@ -19,14 +19,14 @@ const getTimeAgo = (date: string) => {
   return `há ${Math.floor(seconds / 86400)}d`;
 };
 
-const getIcon = (type: string): ReactNode => {
+const getIcon = (type?: string): ReactNode => {
   const icons: Record<string, ReactNode> = {
     alert: <AlertTriangle size={24} />,
     warning: <Bell size={24} />,
     info: <Info size={24} />,
     error: <XCircle size={24} />,
   };
-  return icons[type] ?? <Megaphone size={24} />;
+  return (type && icons[type]) ?? <Megaphone size={24} />;
 };
 
 export const NotificationCard = ({ notification, onMarkAsRead }: NotificationCardProps) => {
