@@ -4,6 +4,64 @@
 
 ---
 
+## 2026-05-28 - Prontuário Clínico Veterinário Completo (Option 2) (JCFS)
+
+Scope: Implementação end-to-end do sistema de prontuário clínico (`CowClinicalRecord`) conforme `Master_Plan_ClinicalRecord_and_Dashboard.md`. Branch: `refactor/rbac_drop_undesired_layer`.
+
+### Added — Backend
+
+- `backend/prisma/migrations/20260528000001_clinical_records/migration.sql` — migration completa:
+  - Campos novos em `cows`: `lactation_number`, `last_calving_date`, `expected_calving_date`, `reproductive_status`, `sire`
+  - Campos novos em `notifications`: `severity ENUM('HIGH','MEDIUM','LOW')`, `alert_type VARCHAR(64)`
+  - Nova tabela `activity_events` (comportamento classificado por sensor)
+  - Nova tabela `cow_clinical_records` com 30+ campos: sinais vitais, biometria, avaliação clínica, medicamentos, vacinação, status reprodutivo, acompanhamento, soft delete
+- `backend/src/schemas/clinicalRecordSchemas.ts` — validação Zod (`createClinicalRecordSchema`, `updateClinicalRecordSchema`)
+- `backend/src/services/clinicalRecordService.ts` — CRUD completo + `syncCowReproductiveData` (atualiza `Cow` ao salvar prontuário)
+- `backend/src/controllers/clinicalRecordController.ts` — 5 controllers via `handleRequest`
+
+### Changed — Backend
+
+- `backend/prisma/schema.prisma` — enums `ReproductiveStatus`, `ClinicalStatus`, `BreedingEligibility`, `EstrusStatus`, `AlertSeverity`, `ActivityType`; modelos `Cow` (5 campos novos), `Notification` (2 campos), `User` (relação `clinicalRecords`), `ActivityEvent` (novo), `CowClinicalRecord` (novo)
+- `backend/src/routes/cowsRoutes.ts` — 5 rotas `GET/POST/GET/PUT/DELETE /cows/:id/clinical-records[/:recordId]` com `requirePermission("*ClinicalRecord")` e validação de schema
+- `backend/prisma/seed.ts`:
+  - 5 permissões novas: `ViewAny/View/Create/Update/Delete ClinicalRecord`
+  - Grupo `"Prontuario Clinico"` adicionado
+  - Atribuição por role: Veterinário → todas; Zootecnista + Gerente + Produtor → view only
+  - `userFarm.createMany` com `skipDuplicates: true` (evita `P2002` em re-seed)
+
+### Added — Frontend
+
+- `frontend/src/features/clinicalRecord/types/index.ts` — tipos `ClinicalRecord`, `ClinicalRecordSummary`, `CreateClinicalRecordInput`, `UpdateClinicalRecordInput` e enums
+- `frontend/src/services/clinicalRecordService.ts` — API calls (`getClinicalRecords`, `getClinicalRecord`, `createClinicalRecord`, `updateClinicalRecord`, `deleteClinicalRecord`)
+- `frontend/src/features/clinicalRecord/hooks/useClinicalRecords.ts` — hooks React Query (`useClinicalRecords`, `useClinicalRecord`, `useCreateClinicalRecord`, `useUpdateClinicalRecord`, `useDeleteClinicalRecord`)
+- `frontend/src/features/clinicalRecord/components/ClinicalRecordCard.tsx` — card clicável com badge de status e nome do veterinário
+- `frontend/src/features/clinicalRecord/components/ClinicalRecordDetail.tsx` — visualização somente-leitura em 6 seções
+- `frontend/src/features/clinicalRecord/components/ClinicalRecordForm.tsx` — formulário completo em 6 seções (Informações Gerais, Sinais Vitais, Avaliação Clínica, Medicamentos, Status Reprodutivo, Acompanhamento)
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordListPage.tsx` — rota `/cows/:id/clinical-records`
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordDetailPage.tsx` — rota `/cows/:id/clinical-records/:recordId`
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordFormPage.tsx` — rotas `/new` e `/:recordId/edit`; converte `null → undefined` via `toFormInput()`
+- `frontend/src/features/clinicalRecord/index.ts` — barrel exports
+
+### Changed — Frontend
+
+- `frontend/src/config/permissions.ts` — 5 constants `VIEW_ANY/VIEW/CREATE/UPDATE/DELETE_CLINICAL_RECORD`
+- `frontend/src/routes/AppRoutes.tsx` — 4 rotas de prontuário clínico adicionadas
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — botão "Prontuário Clínico" adicionado ao lado de "Histórico de sensores"
+
+### Fixed — Backend
+
+- `backend/src/services/clinicalRecordService.ts` `getClinicalRecord` — removido check `record.deletedAt !== undefined` incorreto (campo não faz parte do `detailSelect`)
+
+### Pending (próxima sessão)
+
+- Seed: dados de exemplo (`ActivityEvent`, `CowClinicalRecord`, campos reprodutivos nas `Cow`)
+- Dashboard backend: 5 novos endpoints (`/overview`, `/alerts/recent`, `/featured-cow`, `/cow/:id/vitals`, `/cow/:id/activity-timeline`)
+- Dashboard frontend: refatoração completa com novo layout 12-col + tema claro
+- `SensorDataPrefill` component (pré-preenche formulário com dados do sensor)
+- Sidebar: badge de alertas não lidos + itens placeholder
+
+---
+
 ## 2026-05-28 - Tasks Ian: Prontuário Médico, Notificações, Dashboard e Mobile (JCFS)
 
 Scope: Implementação das tasks do `ian-todo-v2.md` (TARs 1–7) entregues por JCFS em sessão paralela. Branch alvo: `feature/ian-medical-mobile-v2`.
