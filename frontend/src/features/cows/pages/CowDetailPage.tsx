@@ -12,10 +12,12 @@ import {
   Trash2,
   Link,
   Unlink,
+  Plus,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
+import { PeriodPicker } from "@components/ui/PeriodPicker";
 import {
   useCow,
   useCowHeartRateDaily,
@@ -25,11 +27,15 @@ import {
   useDeleteCow,
 } from "../hooks/useCows";
 import { RetireAnimalModal } from "../components/RetireAnimalModal";
+import { MedicalRecordCard } from "../components/MedicalRecordCard";
+import { MedicalRecordModal } from "../components/MedicalRecordModal";
+import { useMedicalRecords } from "../hooks/useMedicalRecords";
 import { useHasPermission } from "@hooks/usePermission";
 import { useCollars } from "../../collars/hooks/useCollars";
 import { useNotifications } from "@hooks/useNotifications";
-import { useMe } from "@hooks/useAuth";
+import { PERMISSIONS } from "@config/permissions";
 import { COW_STATUS_VALUES, type CowStatus } from "@/types/cows";
+import type { Period } from "@/types/period";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const NOTIF_TONE: Record<string, string> = {
@@ -200,20 +206,25 @@ export const CowDetailPage = () => {
   const [showLink, setShowLink] = useState(false);
   const [showRetireModal, setShowRetireModal] = useState(false);
 
-  const { data: me } = useMe();
-  const canCRUD = me?.profile === "ADMIN" || me?.profile === "MANAGER";
-  const canRetire = useHasPermission("Retire Cow");
+  const canCRUD = useHasPermission(PERMISSIONS.UPDATE_COW);
+  const canRetire = useHasPermission(PERMISSIONS.RETIRE_COW);
+  const canCreateRecord = useHasPermission(PERMISSIONS.CREATE_MEDICAL_RECORD);
+  const [showRecordModal, setShowRecordModal] = useState(false);
+  const [sensorPeriod, setSensorPeriod] = useState<Period>("daily");
+  const [sensorFrom, setSensorFrom] = useState("");
+  const [sensorTo, setSensorTo] = useState("");
 
   const { data: cow, isLoading } = useCow(id || "");
   const { mutate: updateCow, isPending: updating } = useUpdateCow();
   const { mutate: deleteCow, isPending: deleting } = useDeleteCow();
 
-  const { data: heartRate } = useCowHeartRateDaily(id || "");
-  const { data: temperature } = useCowTemperatureDaily(id || "");
-  const { data: accelerometer } = useCowAccelerometerDaily(id || "");
+  const { data: heartRate } = useCowHeartRateDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
+  const { data: temperature } = useCowTemperatureDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
+  const { data: accelerometer } = useCowAccelerometerDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
   const { data: notifications } = useNotifications();
+  const { data: medicalRecords } = useMedicalRecords(Number(id));
 
-  const cowNotifs = notifications?.filter((n) => n.cowId === id).slice(0, 5) || [];
+  const cowNotifs = notifications?.filter((n) => n.cowId === Number(id)).slice(0, 5) || [];
 
   if (isLoading) {
     return (
@@ -282,98 +293,149 @@ export const CowDetailPage = () => {
 
       <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 16 }}>
         {/* Hero card */}
-        <div style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: "50%",
-              background: sBg,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <CowHead size={32} color={sColor} />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: sColor }}>{sLabel}</span>
+        <div style={{ ...cardStyle, display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Avatar + name */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: sBg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <CowHead size={36} color={sColor} />
             </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {cow.farm && (
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1
+                style={{
+                  fontFamily: "'Instrument Serif', Georgia, serif",
+                  fontSize: 26,
+                  fontWeight: 400,
+                  margin: 0,
+                  color: C.text,
+                  lineHeight: 1.1,
+                }}
+              >
+                {cow.name || cow.tag}
+              </h1>
+              <p style={{ margin: "3px 0 0 0", fontSize: 12, color: C.muted }}>Brinco {cow.tag}</p>
+            </div>
+            <span
+              style={{
+                flexShrink: 0,
+                fontSize: 11,
+                fontWeight: 700,
+                padding: "4px 12px",
+                borderRadius: 999,
+                background: sBg,
+                color: sColor,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {sLabel}
+            </span>
+          </div>
+
+          {/* Status pills + Registro button */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
+            {cow.farm && (
+              <button
+                onClick={() => navigate(`/farms/${cow.farm.id}`)}
+                style={{
+                  padding: "3px 10px",
+                  background: sBg,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 12,
+                  fontSize: 11,
+                  color: sColor,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                <Warehouse size={11} /> {cow.farm.name}
+              </button>
+            )}
+            {cow.collar ? (
+              <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                 <button
-                  onClick={() => navigate(`/farms/${cow.farm.id}`)}
                   style={{
-                    padding: "3px 10px",
-                    background: sBg,
+                    padding: "3px 8px",
+                    background: C.bg,
                     border: `1px solid ${C.border}`,
                     borderRadius: 12,
                     fontSize: 11,
-                    color: sColor,
+                    color: C.muted,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                  onClick={() => navigate(`/collars/${cow.collar!.id}`)}
+                >
+                  <Tag size={11} /> {cow.collar.name}
+                </button>
+                {canCRUD && (
+                  <button
+                    className="btn btn-xs btn-ghost"
+                    title="Desvincular"
+                    onClick={() => updateCow({ id: String(cow.id), input: { collarId: null } })}
+                  >
+                    <Unlink size={12} />
+                  </button>
+                )}
+              </div>
+            ) : (
+              canCRUD && (
+                <button
+                  onClick={() => setShowLink(true)}
+                  style={{
+                    padding: "3px 8px",
+                    background: "var(--primary-soft)",
+                    border: "1px solid var(--accent)",
+                    borderRadius: 12,
+                    fontSize: 11,
+                    color: "var(--accent)",
+                    fontWeight: 600,
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: 4,
                   }}
                 >
-                  <Warehouse size={11} /> {cow.farm.name}
+                  <Link size={11} /> Vincular Colar
                 </button>
-              )}
-              {cow.collar ? (
-                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                  <button
-                    style={{
-                      padding: "3px 8px",
-                      background: "var(--bg-elev-2)",
-                      border: "1px solid var(--border-subtle)",
-                      borderRadius: 12,
-                      fontSize: 11,
-                      color: "var(--text-secondary)",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                    onClick={() => navigate(`/collars/${cow.collar!.id}`)}
-                  >
-                    <Tag size={11} /> {cow.collar.name}
-                  </button>
-                  {canCRUD && (
-                    <button
-                      className="btn btn-xs btn-ghost"
-                      title="Desvincular"
-                      onClick={() => updateCow({ id: String(cow.id), input: { collarId: null } })}
-                    >
-                      <Unlink size={12} />
-                    </button>
-                  )}
-                </div>
-              ) : (
-                canCRUD && (
-                  <button
-                    style={{
-                      padding: "3px 8px",
-                      background: "var(--primary-soft)",
-                      border: "1px solid var(--accent)",
-                      borderRadius: 12,
-                      fontSize: 11,
-                      color: "var(--accent)",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                    onClick={() => setShowLink(true)}
-                  >
-                    <Link size={11} /> Vincular Colar
-                  </button>
-                )
-              )}
-            </div>
+              )
+            )}
+            {canCreateRecord && (
+              <button
+                onClick={() => setShowRecordModal(true)}
+                style={{
+                  padding: "3px 10px",
+                  background: C.green,
+                  border: "none",
+                  borderRadius: 12,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "#fff",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  flexShrink: 0,
+                }}
+              >
+                <Plus size={11} /> Registro
+              </button>
+            )}
           </div>
         </div>
 
@@ -436,6 +498,20 @@ export const CowDetailPage = () => {
 
         {/* Sensor charts — grade 3 colunas desktop / 1 coluna mobile */}
         {temperature?.length || heartRate?.length || accelerometer?.length ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ ...cardStyle, padding: "12px 14px" }}>
+            <p style={{ margin: "0 0 10px 0", fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Período dos sensores
+            </p>
+            <PeriodPicker
+              value={sensorPeriod}
+              onChange={setSensorPeriod}
+              customFrom={sensorFrom}
+              customTo={sensorTo}
+              onCustomFromChange={setSensorFrom}
+              onCustomToChange={setSensorTo}
+            />
+          </div>
           <div
             style={{
               display: "grid",
@@ -514,6 +590,7 @@ export const CowDetailPage = () => {
               </div>
             )}
           </div>
+          </div>
         ) : null}
 
         {/* Botão histórico */}
@@ -523,6 +600,13 @@ export const CowDetailPage = () => {
           onClick={() => navigate(`/cows/${cow.id}/history`)}
         >
           Histórico de sensores
+        </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          style={{ alignSelf: "flex-start" }}
+          onClick={() => navigate(`/cows/${cow.id}/clinical-records`)}
+        >
+          Prontuário Clínico
         </button>
 
         {/* Recent notifications */}
@@ -574,6 +658,22 @@ export const CowDetailPage = () => {
             </div>
           </div>
         )}
+        {/* Prontuário */}
+        <div className="card" style={{ marginTop: "var(--s-4)" }}>
+          <div style={{ marginBottom: 12 }}>
+            <p style={{ margin: 0, fontWeight: 700, color: C.text }}>Prontuário</p>
+          </div>
+          {!medicalRecords || medicalRecords.length === 0 ? (
+            <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro clínico.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {medicalRecords.map((r) => (
+                <MedicalRecordCard key={r.id} record={r} cowId={cow.id} />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Zona de perigo */}
         {canRetire && cow.status !== "RETIRED" && (
           <div className="card" style={{ borderColor: "var(--danger)", marginTop: "var(--s-4)" }}>
@@ -595,6 +695,12 @@ export const CowDetailPage = () => {
           </div>
         )}
       </div>
+
+      <MedicalRecordModal
+        open={showRecordModal}
+        cowId={cow.id}
+        onClose={() => setShowRecordModal(false)}
+      />
 
       <RetireAnimalModal
         open={showRetireModal}

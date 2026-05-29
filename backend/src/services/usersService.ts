@@ -15,7 +15,6 @@ export const getAllUsers = async (farmIds: number[] | null) => {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       createdAt: true,
       farmId: true,
@@ -39,7 +38,6 @@ export const getUserById = async (userId: number) => {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       farmId: true,
       farm: {
@@ -70,12 +68,11 @@ export const getUserById = async (userId: number) => {
 };
 
 export const createUser = async (
-  { name, email, password, profile, farmId, roleId }: CreateUserInput,
+  { name, email, password, farmId, roleId }: CreateUserInput,
   creatorId?: number,
 ) => {
   await assertUnique(prisma.user, { email }, "Email já cadastrado.");
 
-  // Lógica de restrição de perfil e fazenda baseada no criador
   let finalFarmId = farmId;
 
   if (creatorId) {
@@ -90,11 +87,6 @@ export const createUser = async (
       if (!isSuperAdmin) {
         // Se não for Super Admin, o farmId deve ser o mesmo do criador
         finalFarmId = creator.farmId || undefined;
-
-        // E não pode criar perfil ADMIN
-        if (profile === "ADMIN") {
-          throw new Error("Somente o Super Admin pode criar usuários com perfil Admin.");
-        }
       }
     }
   }
@@ -106,14 +98,12 @@ export const createUser = async (
       name,
       email,
       passwordHash,
-      profile: profile ?? "VIEWER",
       farmId: finalFarmId,
     },
     select: {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       createdAt: true,
     },
@@ -134,7 +124,7 @@ export const createUser = async (
 
 export const updateUser = async (
   userId: number,
-  { name, email, password, profile }: UpdateUserInput,
+  { name, email, password }: UpdateUserInput,
 ) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("Usuário não encontrado.");
@@ -143,7 +133,7 @@ export const updateUser = async (
     await assertUnique(prisma.user, { email }, "Email já cadastrado.", userId);
   }
 
-  const updatedData: Prisma.UserUpdateInput = { name, email, profile };
+  const updatedData: Prisma.UserUpdateInput = { name, email };
 
   if (password) {
     updatedData.passwordHash = await bcrypt.hash(password, 12);
@@ -156,7 +146,6 @@ export const updateUser = async (
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       updatedAt: true,
     },

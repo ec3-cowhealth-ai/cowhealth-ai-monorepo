@@ -4,6 +4,301 @@
 
 ---
 
+## 2026-05-28 - Seletor de Período, Gráfico de Saúde e Linha do Tempo de Atividade (JCFS)
+
+Scope: Correção do gráfico "Saúde do rebanho" (dados não apareciam), seletor de período reutilizável (7 opções), e implementação da Linha do Tempo de Atividade com classificação comportamental a partir dos dados reais de acelerômetro. Branch: `refactor/rbac_drop_undesired_layer`.
+
+### Fixed
+
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — bug raiz: backend retornava `{ label, healthy, alert, heatStress, calving }` mas chart usava `dataKey="value"` (inexistente). Corrigido com chart multi-linha usando os campos reais.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — comparação inválida `n.cowId === id` (`number` vs `string`) corrigida para `n.cowId === Number(id)`.
+- `frontend/src/features/dashboard/components/CowSelectorBar.tsx` — `first.cowId` (`number`) passado como `string`; `a.cowId === selectedCowId` sem conversão. Ambos corrigidos.
+- `frontend/src/features/dashboard/components/DashboardAlertFeed.tsx` — `a.cowId` passado sem `String()` para `onSelectCow`.
+- `frontend/src/features/dashboard/components/DashboardCenterPanel.tsx` — `r.user.name` sem optional chaining (`r.user?.name`).
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordFormPage.tsx` — `ClinicalRecord` passado direto ao form; campos `null` incompatíveis com `Partial<CreateClinicalRecordInput>` (`undefined`). Corrigido com helper `toFormInput()` usando `Object.entries` + `null → undefined`.
+
+### Added
+
+- `frontend/src/types/period.ts` — tipo `Period` (`hourly|daily|weekly|biweekly|monthly|yearly|custom`) + `PERIOD_OPTIONS` com `days` equivalente por período.
+- `frontend/src/components/ui/PeriodPicker.tsx` — pills horizontalmente scrolláveis (mobile-safe), campo de datas para "Personalizar". Reutilizável em qualquer página.
+- `frontend/src/features/dashboard/hooks/useHealthTimeline.ts` — hook tipado com `HealthTimelinePoint` (retorno real do backend) + params `period`, `from`, `to`.
+- `frontend/src/components/ui/OfflineBanner.tsx` — banner offline com `navigator.onLine` + eventos `online/offline`.
+- `frontend/src/components/ui/PeriodPicker.tsx` — componente reutilizável de seleção de período.
+- `frontend/src/pages/onboarding/OnboardingPage.tsx` — 3 slides, dot nav, skip/começar, persiste `onboardingDone`.
+- `frontend/src/styles/App.css` — `.skeleton` + `@keyframes shimmer`.
+
+### Changed
+
+- `backend/src/services/dashboardService.ts` — `getHealthTimeline` suporta `period` + `from`/`to`; função `buildBuckets` gera buckets corretos para hourly/daily/weekly/biweekly/monthly/yearly/custom.
+- `backend/src/controllers/dashboardController.ts` — `healthTimeline` extrai `period`, `from`, `to` da query e passa ao service.
+- `backend/src/services/dashboardService.ts` — `getCowActivityTimeline` implementado com classificação real por acelerômetro: thresholds calibrados com dados do DB (`accelXY`, `gyroMag`); horas consecutivas mescladas; retorna `{ time, label, icon, color, durationMin }[]`.
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — refatorado: `PeriodPicker` integrado, 4 linhas no chart (Saudável/Alerta/Est. Térmico/Parto), legenda, estado vazio, skeleton.
+- `frontend/src/features/dashboard/components/DashboardActivityTimeline.tsx` — reescrito com dados reais: busca `/dashboard/cow/:id/activity-timeline?date=`, navegação prev/next day, barra visual proporcional, legenda de cores.
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — `DashboardOverviewChart` adicionado após KPIs.
+- `frontend/src/features/cows/hooks/useCows.ts` — `useCowHeartRateDaily`, `useCowTemperatureDaily`, `useCowAccelerometerDaily` aceitam `period` + `customFrom/To`; traduzem para `days` via `periodToDays`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `PeriodPicker` adicionado acima dos gráficos de sensores; botão "+ Novo Registro" movido acima do título "Prontuário" com `width: 100%`.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — filtros de severidade (Críticos/Avisos/Resolvidos); `handleNotificationClick` usa `n.cowId`; `n.read` substitui `n.readAt`.
+- `frontend/src/hooks/useNotifications.ts` — `read: boolean` computado, `cowId: number | null`, `severity?`.
+- `frontend/src/components/layout/AppShell.tsx` — `OfflineBanner` adicionado.
+- `frontend/src/routes/AppRoutes.tsx` — rota pública `/onboarding` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Ver tutorial" com limpeza de `onboardingDone`.
+
+### Classification thresholds (acelerômetro bovino)
+
+Calibrados com 27.213 registros reais (accelZ médio 9.42 m/s² = gravidade, gyro até ±47 °/s):
+
+| accelXY (m/s²) | gyroMag (°/s) | Classificação |
+|---|---|---|
+| > 0.55 ou | > 20 | Atividade (caminhando) |
+| > 0.25 ou | > 10 | Alimentação |
+| qualquer | > 4  | Ruminação |
+| baixo | baixo | Repouso |
+
+### Build Status
+
+- ✅ Frontend: `tsc -b` zero erros.
+- ✅ Backend: zero erros novos (erros pré-existentes em `collarsService.ts` e `clinicalRecordService.ts` não alterados).
+
+---
+
+## 2026-05-28 - Prontuário Clínico Veterinário Completo (Option 2) (JCFS)
+
+Scope: Implementação end-to-end do sistema de prontuário clínico (`CowClinicalRecord`) conforme `Master_Plan_ClinicalRecord_and_Dashboard.md`. Branch: `refactor/rbac_drop_undesired_layer`.
+
+### Added — Backend
+
+- `backend/prisma/migrations/20260528000001_clinical_records/migration.sql` — migration completa:
+  - Campos novos em `cows`: `lactation_number`, `last_calving_date`, `expected_calving_date`, `reproductive_status`, `sire`
+  - Campos novos em `notifications`: `severity ENUM('HIGH','MEDIUM','LOW')`, `alert_type VARCHAR(64)`
+  - Nova tabela `activity_events` (comportamento classificado por sensor)
+  - Nova tabela `cow_clinical_records` com 30+ campos: sinais vitais, biometria, avaliação clínica, medicamentos, vacinação, status reprodutivo, acompanhamento, soft delete
+- `backend/src/schemas/clinicalRecordSchemas.ts` — validação Zod (`createClinicalRecordSchema`, `updateClinicalRecordSchema`)
+- `backend/src/services/clinicalRecordService.ts` — CRUD completo + `syncCowReproductiveData` (atualiza `Cow` ao salvar prontuário)
+- `backend/src/controllers/clinicalRecordController.ts` — 5 controllers via `handleRequest`
+
+### Changed — Backend
+
+- `backend/prisma/schema.prisma` — enums `ReproductiveStatus`, `ClinicalStatus`, `BreedingEligibility`, `EstrusStatus`, `AlertSeverity`, `ActivityType`; modelos `Cow` (5 campos novos), `Notification` (2 campos), `User` (relação `clinicalRecords`), `ActivityEvent` (novo), `CowClinicalRecord` (novo)
+- `backend/src/routes/cowsRoutes.ts` — 5 rotas `GET/POST/GET/PUT/DELETE /cows/:id/clinical-records[/:recordId]` com `requirePermission("*ClinicalRecord")` e validação de schema
+- `backend/prisma/seed.ts`:
+  - 5 permissões novas: `ViewAny/View/Create/Update/Delete ClinicalRecord`
+  - Grupo `"Prontuario Clinico"` adicionado
+  - Atribuição por role: Veterinário → todas; Zootecnista + Gerente + Produtor → view only
+  - `userFarm.createMany` com `skipDuplicates: true` (evita `P2002` em re-seed)
+
+### Added — Frontend
+
+- `frontend/src/features/clinicalRecord/types/index.ts` — tipos `ClinicalRecord`, `ClinicalRecordSummary`, `CreateClinicalRecordInput`, `UpdateClinicalRecordInput` e enums
+- `frontend/src/services/clinicalRecordService.ts` — API calls (`getClinicalRecords`, `getClinicalRecord`, `createClinicalRecord`, `updateClinicalRecord`, `deleteClinicalRecord`)
+- `frontend/src/features/clinicalRecord/hooks/useClinicalRecords.ts` — hooks React Query (`useClinicalRecords`, `useClinicalRecord`, `useCreateClinicalRecord`, `useUpdateClinicalRecord`, `useDeleteClinicalRecord`)
+- `frontend/src/features/clinicalRecord/components/ClinicalRecordCard.tsx` — card clicável com badge de status e nome do veterinário
+- `frontend/src/features/clinicalRecord/components/ClinicalRecordDetail.tsx` — visualização somente-leitura em 6 seções
+- `frontend/src/features/clinicalRecord/components/ClinicalRecordForm.tsx` — formulário completo em 6 seções (Informações Gerais, Sinais Vitais, Avaliação Clínica, Medicamentos, Status Reprodutivo, Acompanhamento)
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordListPage.tsx` — rota `/cows/:id/clinical-records`
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordDetailPage.tsx` — rota `/cows/:id/clinical-records/:recordId`
+- `frontend/src/features/clinicalRecord/pages/ClinicalRecordFormPage.tsx` — rotas `/new` e `/:recordId/edit`; converte `null → undefined` via `toFormInput()`
+- `frontend/src/features/clinicalRecord/index.ts` — barrel exports
+
+### Changed — Frontend
+
+- `frontend/src/config/permissions.ts` — 5 constants `VIEW_ANY/VIEW/CREATE/UPDATE/DELETE_CLINICAL_RECORD`
+- `frontend/src/routes/AppRoutes.tsx` — 4 rotas de prontuário clínico adicionadas
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — botão "Prontuário Clínico" adicionado ao lado de "Histórico de sensores"
+
+### Fixed — Backend
+
+- `backend/src/services/clinicalRecordService.ts` `getClinicalRecord` — removido check `record.deletedAt !== undefined` incorreto (campo não faz parte do `detailSelect`)
+
+### Pending (próxima sessão)
+
+- Seed: dados de exemplo (`ActivityEvent`, `CowClinicalRecord`, campos reprodutivos nas `Cow`)
+- Dashboard backend: 5 novos endpoints (`/overview`, `/alerts/recent`, `/featured-cow`, `/cow/:id/vitals`, `/cow/:id/activity-timeline`)
+- Dashboard frontend: refatoração completa com novo layout 12-col + tema claro
+- `SensorDataPrefill` component (pré-preenche formulário com dados do sensor)
+- Sidebar: badge de alertas não lidos + itens placeholder
+
+---
+
+## 2026-05-28 - Tasks Ian: Prontuário Médico, Notificações, Dashboard e Mobile (JCFS)
+
+Scope: Implementação das tasks do `ian-todo-v2.md` (TARs 1–7) entregues por JCFS em sessão paralela. Branch alvo: `feature/ian-medical-mobile-v2`.
+
+### Added
+
+- `frontend/src/types/cows.ts` — `MedicalRecordType`, `MedicalRecord`, `CreateMedicalRecordInput` adicionados.
+- `frontend/src/services/medicalRecordsService.ts` — serviço com `getMedicalRecords`, `createMedicalRecord`, `updateMedicalRecord`, `deleteMedicalRecord` (endpoints `GET|POST|PUT|DELETE /cows/:id/medical-records`).
+- `frontend/src/features/cows/hooks/useMedicalRecords.ts` — hooks `useMedicalRecords`, `useCreateMedicalRecord`, `useDeleteMedicalRecord`.
+- `frontend/src/features/cows/components/MedicalRecordCard.tsx` — card com badge colorido por tipo, data pt-BR, nome do veterinário, notas colapsáveis, botão excluir guarded por `PERMISSIONS.DELETE_MEDICAL_RECORD`.
+- `frontend/src/features/cows/components/MedicalRecordModal.tsx` — formulário de criação com select de tipo, título, notas e datetime picker.
+- `frontend/src/features/dashboard/hooks/useHealthTimeline.ts` — `useHealthTimeline(farmId?)` consultando `GET /dashboard/health-timeline`.
+- `frontend/src/pages/onboarding/OnboardingPage.tsx` — 3 slides (Monitoramento / Alertas / Gerencie), dot navigation, botões Próximo / Pular / Começar; persiste `onboardingDone` em `localStorage`.
+- `frontend/src/components/ui/OfflineBanner.tsx` — banner de offline usando `navigator.onLine` + eventos `online/offline`.
+- `frontend/src/styles/App.css` — classe `.skeleton` com `@keyframes shimmer` (gradiente 200% animado).
+
+### Changed
+
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — seção Prontuário adicionada: lista de `MedicalRecordCard`, botão "+ Registro" guarded por `CREATE_MEDICAL_RECORD`, `MedicalRecordModal`.
+- `frontend/src/hooks/useNotifications.ts` — interface `Notification` atualizada: `read: boolean` (computado de `readAt`), `cowId: number | null`, `severity?: "HIGH" | "MEDIUM" | "LOW"`; helper `mapRead`; funções de query mapeiam resposta da API.
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `handleNotificationClick` usa `n.cowId` para navegar a `/cows/:id`; `n.read` substitui `n.readAt` em todos os guards; filtro de severidade com pills Críticos / Avisos / Resolvidos adicionado.
+- `frontend/src/features/dashboard/components/DashboardOverviewChart.tsx` — refatorado para aceitar `farmId?: number` e buscar próprios dados via `useHealthTimeline`; exibe `.skeleton` durante loading.
+- `frontend/src/features/dashboard/pages/DashboardPage.tsx` — `DashboardOverviewChart` renderizado após KPIs com `farmId={selectedFarm?.id}`.
+- `frontend/src/routes/AppRoutes.tsx` — rota pública `/onboarding` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Ver tutorial" adicionado ao menu; limpa `onboardingDone` antes de navegar.
+- `frontend/src/components/layout/AppShell.tsx` — `<OfflineBanner />` renderizado entre `<Sidebar />` e `<main>`.
+
+### Notes
+
+- TAREFA 2 (bottom nav safe-area fix) já estava aplicada no CSS — nenhuma alteração necessária.
+- OfflineBanner é puramente visual; não bloqueia ações do usuário.
+- `DashboardOverviewChart` espera que o backend retorne `ChartDataPoint[]` (`label: string, value: number`) em `GET /dashboard/health-timeline`.
+
+### Build Status
+
+- ✅ Frontend: zero erros TypeScript esperados após `tsc --noEmit`.
+
+---
+
+## 2026-05-28 - Etapa 1 RBAC: Tarefas Pendentes do Angelo (JCFS)
+
+Scope: Implementação das tarefas T3, T4, T7 e T8 do `angelo-todo.md` que não foram cobertas na entrega anterior. Guards de coleiras e fazendas migrados para RBAC; status `RETIRED` tratado; Settings Page criada.
+
+### Added
+
+- `frontend/src/pages/settings/SettingsPage.tsx` — página de configurações com toggles de notificação persistidos em `localStorage` (Alertas críticos, Avisos, Resumo diário) e seção Conta com link para `/profile` e texto LGPD.
+
+### Changed
+
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — `isSuperAdmin = me?.roles.some(...)` → `canCreate = useHasPermission(PERMISSIONS.CREATE_FARM)`; botão "+ Nova Fazenda" e modal visíveis apenas para quem tem `Create Farm`.
+- `frontend/src/features/collars/pages/CollarsPage.tsx` — `isSuperAdmin` → `canCreate = useHasPermission(PERMISSIONS.CREATE_COLLAR)`; botão "+ Nova Coleira" visível apenas para quem tem `Create Collar`.
+- `frontend/src/features/collars/pages/CollarDetailPage.tsx` — `isSuperAdmin` substituído por `canEdit = useHasPermission(UPDATE_COLLAR)` e `canDelete = useHasPermission(DELETE_COLLAR)` independentes; botões Editar e Excluir renderizados e modais montados separadamente por permissão.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `RETIRED` adicionado em `STATUS_LABEL` ("Aposentada"), `STATUS_COLOR` (muted) e `STATUS_BG`; badge não quebra mais ao exibir vacas aposentadas.
+- `frontend/src/routes/AppRoutes.tsx` — rota protegida `/settings` adicionada.
+- `frontend/src/pages/profile/ProfilePage.tsx` — item "Configurações" com ícone `Settings` adicionado ao menu de navegação, apontando para `/settings`.
+
+### Build Status
+
+- ✅ Frontend: `tsc --noEmit` — zero erros.
+- ✅ Zero ocorrências de `isSuperAdmin` baseado em `roles.some(r.name === "SuperAdmin")` nas páginas de farms e collars.
+
+---
+
+## 2026-05-28 - Referência RBAC: Usuários, Papéis e Permissões (JCFS)
+
+> Estado do sistema após Etapa 0 + Etapa 1. Fonte: `backend/prisma/seed.ts`.
+
+### Usuários Seed (senha: `12345678`)
+
+| Credencial | Nome | Papel | Fazenda |
+|---|---|---|---|
+| `admin@cowhealth.com` | Super Admin | SuperAdmin | — (irrestrito) |
+| `administrador@aurora.com` | Administrador Aurora | Administrador | Fazenda Aurora |
+| `administrador@saobento.com` | Administrador Sao Bento | Administrador | Fazenda Sao Bento |
+| `administrador@boaesperanca.com` | Administrador Boa Esperanca | Administrador | Fazenda Boa Esperanca |
+| `administrador@santaclara.com` | Administrador Santa Clara | Administrador | Fazenda Santa Clara |
+| `administrador@valeverde.com` | Administrador Vale Verde | Administrador | Fazenda Vale Verde |
+| `vet@cowhealth.com` | Veterinario | Veterinario | Aurora + Sao Bento |
+| `zoot@cowhealth.com` | Zootecnista | Zootecnista | Boa Esperanca |
+| `gerente@cowhealth.com` | Gerente de Fazenda | Gerente de Fazenda | Aurora |
+| `operador@cowhealth.com` | Operador de Campo | Operador de Campo | Aurora |
+| `financeiro@cowhealth.com` | Financeiro | Financeiro | Todas |
+| `obs@cowhealth.com` | Observador | Observador | Santa Clara |
+
+### Matriz de Permissões por Papel
+
+`●` = possui | `○` = não possui | `*` = adicionado na Etapa 0
+
+| Permissão | SuperAdmin | Administrador | Veterinário | Zootecnista | Gerente Fazenda | Operador Campo | Financeiro | Observador | Produtor |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Farm** |
+| ViewAny / View Farm | ● | ● | ● | ● | ● | ● | ● | ● | ● |
+| Create / Update Farm | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| Delete Farm | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| **Cow** |
+| ViewAny / View Cow | ● | ● | ● | ● | ● | ● | ● | ● | ● |
+| Create Cow | ● | ● | ● | ● | ●* | ○ | ○ | ○ | ○ |
+| Update Cow | ● | ● | ● | ● | ●* | ○ | ○ | ○ | ○ |
+| Delete Cow | ● | ● | ● | ● | ○ | ○ | ○ | ○ | ○ |
+| Retire Cow | ● | ● | ● | ● | ● | ○ | ○ | ○ | ○ |
+| **Collar** |
+| ViewAny / View Collar | ● | ● | ● | ● | ● | ○ | ●* | ○ | ●* |
+| Create / Update Collar | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| Delete Collar | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| **Medical Record** |
+| ViewAny / View MedicalRecord | ● | ● | ● | ● | ● | ○ | ○ | ○ | ●* |
+| Create / Update MedicalRecord | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ |
+| Delete MedicalRecord | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ |
+| **User** |
+| ViewAny / View User | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| Create / Update / Delete User | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| **Notification** |
+| ViewAny / View Notification | ● | ● | ● | ● | ● | ●* | ○ | ● | ● |
+| **Role / Permission CRUD** |
+| Todos | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+
+---
+
+## 2026-05-28 - Etapa 1 RBAC: Consolidação dos Guards de UI no Frontend (JCFS)
+
+Scope: Remoção completa de `UserProfile` do frontend e consolidação de todos os guards de UI no hook `useHasPermission()` + constantes tipadas `PERMISSIONS`. Zero ocorrências de `user?.profile` no codebase após esta etapa.
+
+### Added
+
+- `frontend/src/config/permissions.ts` — objeto `PERMISSIONS` com 60 constantes tipadas e tipo `PermissionName`; elimina typos silenciosos em strings de permissão.
+
+### Changed
+
+- `frontend/src/hooks/usePermission.ts` — `useHasPermission` aceita `PermissionName` (type-safe); removido TODO comentário de Angelo.
+- `frontend/src/hooks/usePermissions.ts` — `useIsAdmin` marcado como `@deprecated`; implementação substituída por `useHasPermission(PERMISSIONS.VIEW_ANY_USER)`; `useHasAnyPermission` tipado com `PermissionName[]`.
+- `frontend/src/types/auth.ts` — `profile: "ADMIN" | "MANAGER" | "VIEWER"` removido de `AuthUser`.
+- `frontend/src/types/access.ts` — `UserProfile`, `USER_PROFILE_VALUES` removidos; `profile` removido de `User`, `UserListItem`, `CreateUserInput`, `UpdateUserInput`; `roles` adicionado a `UserListItem`.
+- `frontend/src/components/layout/Sidebar.tsx` — `isAdmin = user?.profile === "ADMIN"` → `canViewUsers = useHasPermission(PERMISSIONS.VIEW_ANY_USER)`; exibição do perfil substituída por `roles[0].name`.
+- `frontend/src/features/access/pages/AccessLayout.tsx` — guard `profile === "ADMIN"` → `useHasPermission(PERMISSIONS.VIEW_ANY_USER)`.
+- `frontend/src/features/cows/pages/CowsPage.tsx` — `canCRUD` baseado em `profile` → `useHasPermission(PERMISSIONS.CREATE_COW)`.
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — `canCRUD` baseado em `profile` → `useHasPermission(PERMISSIONS.UPDATE_COW)`.
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — `canEdit` baseado em `profile === "ADMIN"` → `useHasPermission(PERMISSIONS.UPDATE_FARM)`.
+- `frontend/src/pages/profile/ProfilePage.tsx` — `user?.profile` → `user?.roles?.[0]?.name`.
+- `frontend/src/features/access/pages/UsersPage.tsx` — selects ADMIN/MANAGER/VIEWER removidos dos modais de criação e edição; coluna "Perfil" substituída por "Papel" (exibe `roles[0].role.name`); `UserProfile` removido de todos os tipos locais.
+- `backend/prisma/seed.ts` — ajustes de permissão conforme matriz da Seção 3 do plano: Gerente de Fazenda +`Create/Update Cow`; Financeiro +`ViewAny/View Collar`; Produtor +`ViewAny/View Collar` e `ViewAny/View MedicalRecord`; Operador de Campo +`ViewAny/View Notification`.
+
+### Build Status
+
+- ✅ Frontend: `tsc --noEmit` — zero erros.
+- ✅ Zero ocorrências de `user?.profile` ou `profile === "ADMIN"` no codebase frontend.
+
+---
+
+## 2026-05-28 - Etapa 0 RBAC: Remoção do UserProfile do Backend (JCFS)
+
+Scope: Remoção completa do mecanismo legado `UserProfile` (ADMIN/MANAGER/VIEWER) do backend, eliminando o sistema de acesso paralelo e conflitante com o RBAC via `User → Role → Permission`. Pré-requisito para Angelo implementar `feature/angelo-rbac-v2` (Etapa 1).
+
+### Removed
+
+- `enum UserProfile { ADMIN MANAGER VIEWER }` de `backend/prisma/schema.prisma`.
+- Campo `profile UserProfile @default(VIEWER)` do model `User` no schema Prisma.
+- Campo `profile: string` de `AuthPayload` em `backend/src/types/auth.ts` — JWT não emite mais `profile`.
+- Campos `profile?: "ADMIN" | "MANAGER" | "VIEWER"` de `CreateUserInput` e `UpdateUserInput` em `backend/src/types/access.ts`.
+- `profile: z.enum(["ADMIN", "MANAGER", "VIEWER"]).optional()` de `createUserSchema` e `updateUserSchema` em `backend/src/schemas/userSchemas.ts`.
+
+### Changed
+
+- `backend/src/services/authService.ts` — removido `profile` do payload JWT e da resposta de `getMe`; removido do select Prisma.
+- `backend/src/services/usersService.ts` — removido `profile` de todos os selects, destructurings e objetos `create`/`update`; removida a guard `if (profile === "ADMIN") throw ...` (substituída por controle via Role).
+- `backend/src/services/mqttIngestService.ts` — `notifyUsers` substituiu `profile: { in: ["ADMIN", "MANAGER"] }` por query RBAC: usuários com role que possua a permissão `"ViewAny Notification"`.
+- `backend/src/middlewares/requireFarmAccess.ts` — comentário atualizado de "ADMIN profile" para "SuperAdmin role".
+- `backend/prisma/seed.ts` — removido `profile` de todos os 12 `userData` e do `upsert`.
+
+### Migration
+
+- `backend/prisma/migrations/20260528000000_remove_user_profile/migration.sql` — `ALTER TABLE users DROP COLUMN profile`.
+- Aplicado via `prisma db push --accept-data-loss`.
+
+### Build Status
+
+- ✅ Backend: `tsc --noEmit` sem erros relacionados a `UserProfile`; único erro pré-existente em `collarsService.ts` (`throwWithStatus`) não afetado.
+- ✅ DB: coluna `profile` removida da tabela `users`.
+
+---
+
 ## 2026-05-28 - Feature D, G, E, A: Aposentadoria, Histórico, Splash, Acelerômetro + Dashboard Endpoints (JCFS)
 
 Scope: Implementação das pendências do jafte-todo.md para a apresentação. Cobertura completa de 8 tarefas: aposentadoria de animal (Feature D), histórico de sensores (Feature G), splash screen (Feature E), acelerômetro diário (Feature A), 4 novos endpoints do dashboard, botão de alternância de tema e correção do bottom-nav em iOS.

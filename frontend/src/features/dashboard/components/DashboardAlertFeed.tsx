@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { Notification } from "@hooks/useNotifications";
 import { C, cardStyle } from "../constants/colors";
 import { AlertFeedIcon } from "./DashboardIcons";
@@ -60,6 +61,7 @@ function SevBadge({ sev }: { sev: Severity }) {
 }
 
 export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
+  const navigate = useNavigate();
   const visible = alerts.slice(0, 6);
 
   return (
@@ -144,7 +146,12 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
               return (
                 <li
                   key={a.id}
-                  onClick={() => a.cowId && onSelectCow?.(a.cowId)}
+                  onClick={() => {
+                    if (a.cowId) {
+                      onSelectCow?.(String(a.cowId));
+                      navigate(`/cows/${a.cowId}`);
+                    }
+                  }}
                   style={{
                     display: "flex",
                     alignItems: "flex-start",

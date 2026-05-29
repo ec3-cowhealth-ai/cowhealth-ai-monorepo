@@ -14,22 +14,8 @@ import {
 import { useRoles } from "../hooks/useRoles";
 import { useFarms } from "../../farms/hooks/useFarms";
 import { useMe } from "@hooks/useAuth";
-import type { UserListItem, UserProfile } from "@/types/access";
+import type { UserListItem } from "@/types/access";
 import "../../../styles/access.css";
-
-// ─── Helpers visuais ──────────────────────────────────────────────────────────
-
-const PROFILE_LABEL: Record<UserProfile, string> = {
-  ADMIN: "Admin",
-  MANAGER: "Gestor",
-  VIEWER: "Observador",
-};
-
-const PROFILE_CLASS: Record<UserProfile, string> = {
-  ADMIN: "badge",
-  MANAGER: "badge badge--warning",
-  VIEWER: "badge badge--muted",
-};
 
 function avatarInitials(name: string): string {
   return name
@@ -59,7 +45,6 @@ interface CreateModalProps {
     name: string;
     email: string;
     password: string;
-    profile: UserProfile;
     farmId?: number;
     roleId?: number;
   }) => void;
@@ -79,11 +64,9 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
     name: "",
     email: "",
     password: "",
-    profile: "VIEWER" as UserProfile,
     farmId: "" as string | number,
     roleId: "" as string | number,
   });
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +79,6 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
       name: "",
       email: "",
       password: "",
-      profile: "VIEWER",
       farmId: "",
       roleId: "",
     });
@@ -184,18 +166,6 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
         </select>
       </div>
 
-      <div className="form-field">
-        <label className="form-field__label is-required">Perfil (Nível de Acesso)</label>
-        <select
-          className="form-field__select"
-          value={form.profile}
-          onChange={(e) => setForm({ ...form, profile: e.target.value as UserProfile })}
-        >
-          <option value="VIEWER">Observador (Leitura)</option>
-          <option value="MANAGER">Gestor (CRUD)</option>
-          {isSuperAdmin && <option value="ADMIN">Admin da Fazenda</option>}
-        </select>
-      </div>
     </FormModal>
   );
 }
@@ -206,7 +176,7 @@ interface EditModalProps {
   user: UserListItem | null;
   onClose: () => void;
   isLoading: boolean;
-  onSubmit: (data: { name: string; email: string; profile: UserProfile; farmId?: number }) => void;
+  onSubmit: (data: { name: string; email: string; farmId?: number }) => void;
 }
 
 function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
@@ -221,7 +191,6 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
   const [form, setForm] = useState({
     name: user?.name ?? "",
     email: user?.email ?? "",
-    profile: (user?.profile ?? "VIEWER") as UserProfile,
     farmId: user?.farmId ?? ("" as string | number),
   });
 
@@ -283,18 +252,6 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
         />
       </div>
 
-      <div className="form-field">
-        <label className="form-field__label is-required">Perfil</label>
-        <select
-          className="form-field__select"
-          value={form.profile}
-          onChange={(e) => setForm({ ...form, profile: e.target.value as UserProfile })}
-        >
-          <option value="VIEWER">Observador</option>
-          <option value="MANAGER">Gestor</option>
-          {isSuperAdmin && <option value="ADMIN">Admin</option>}
-        </select>
-      </div>
     </FormModal>
   );
 }
@@ -489,7 +446,7 @@ export const UsersPage = () => {
             <thead>
               <tr>
                 <th>Usuário</th>
-                <th>Perfil</th>
+                <th>Papel</th>
                 <th>Status</th>
                 <th style={{ textAlign: "right" }}>Ações</th>
               </tr>
@@ -509,10 +466,10 @@ export const UsersPage = () => {
                     </div>
                   </td>
 
-                  {/* Perfil */}
+                  {/* Papel */}
                   <td>
-                    <span className={PROFILE_CLASS[user.profile]}>
-                      {PROFILE_LABEL[user.profile]}
+                    <span className="badge badge--muted">
+                      {user.roles?.[0]?.role?.name ?? "—"}
                     </span>
                   </td>
 

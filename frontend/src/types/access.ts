@@ -1,11 +1,3 @@
-export const USER_PROFILE_VALUES = {
-  ADMIN: "ADMIN",
-  MANAGER: "MANAGER",
-  VIEWER: "VIEWER",
-} as const;
-
-export type UserProfile = (typeof USER_PROFILE_VALUES)[keyof typeof USER_PROFILE_VALUES];
-
 export interface Permission {
   id: number;
   name: string;
@@ -45,7 +37,6 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  profile: UserProfile;
   farmId: number | null;
   farm?: { id: number; name: string };
   roles: RoleListItem[];
@@ -59,17 +50,16 @@ export interface UserListItem {
   id: number;
   name: string;
   email: string;
-  profile: UserProfile;
   isActive: boolean;
   farmId: number | null;
   farm?: { id: number; name: string };
+  roles: Array<{ role: { id: number; name: string } }>;
 }
 
 export interface CreateUserInput {
   name: string;
   email: string;
   password: string;
-  profile: UserProfile;
   farmId?: number;
   roleId?: number;
 }
@@ -77,7 +67,6 @@ export interface CreateUserInput {
 export interface UpdateUserInput {
   name?: string;
   email?: string;
-  profile?: UserProfile;
   farmId?: number;
 }
 

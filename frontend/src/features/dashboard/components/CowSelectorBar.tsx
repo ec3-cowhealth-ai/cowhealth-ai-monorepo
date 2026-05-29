@@ -42,7 +42,7 @@ export function CowSelectorBar({
   useEffect(() => {
     if (mode !== "alert") return;
     const first = alerts.find((a) => a.cowId);
-    if (first?.cowId) onCowSelect(first.cowId);
+    if (first?.cowId) onCowSelect(String(first.cowId));
   }, [mode, alerts, onCowSelect]);
 
   const alertCow = mode === "alert" ? cowList.find((c) => String(c.id) === selectedCowId) : null;
@@ -219,7 +219,7 @@ export function CowSelectorBar({
                 </strong>
               </span>
               <span style={{ fontSize: 11, color: C.muted }}>
-                ({alerts.find((a) => a.cowId === selectedCowId)?.title ?? "último alerta"})
+                ({alerts.find((a) => String(a.cowId) === selectedCowId)?.title ?? "último alerta"})
               </span>
             </>
           ) : (

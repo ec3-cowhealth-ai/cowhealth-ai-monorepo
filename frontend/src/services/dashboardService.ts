@@ -20,17 +20,27 @@ export interface CowFarmItem {
   value: number;
 }
 
-export const getDashboardOverview = (farmId?: string) =>
-  api
-    .get<DashboardOverviewResponse>("/dashboard/overview", {
-      params: farmId ? { farmId } : {},
-    })
-    .then((r) => r.data);
+export const getDashboardOverview = (farmId?: string, dateStart?: string, dateEnd?: string) => {
+  const params: Record<string, string> = {};
+  if (farmId) params.farmId = farmId;
+  if (dateStart) params.dateStart = dateStart;
+  if (dateEnd) params.dateEnd = dateEnd;
 
-export const getCowsPerStatus = (farmId?: string) =>
-  api
-    .get<CowStatusItem[]>("/dashboard/cows-per-status", { params: farmId ? { farmId } : {} })
+  return api
+    .get<DashboardOverviewResponse>("/dashboard/overview", { params })
     .then((r) => r.data);
+};
+
+export const getCowsPerStatus = (farmId?: string, dateStart?: string, dateEnd?: string) => {
+  const params: Record<string, string> = {};
+  if (farmId) params.farmId = farmId;
+  if (dateStart) params.dateStart = dateStart;
+  if (dateEnd) params.dateEnd = dateEnd;
+
+  return api
+    .get<CowStatusItem[]>("/dashboard/cows-per-status", { params })
+    .then((r) => r.data);
+};
 
 export const getCowsPerFarm = () =>
   api.get<CowFarmItem[]>("/dashboard/cows-per-farm").then((r) => r.data);

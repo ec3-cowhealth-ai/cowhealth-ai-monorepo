@@ -45,7 +45,7 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
     {
       label: "Saúde do rebanho",
       value: score,
-      unit: score !== "--" ? "/100" : "",
+      unit: score !== "--" ? "%" : "",
       sub: "",
       delta: score !== "--" ? `${overview?.healthyCows} saudáveis` : "Aguardando dados",
       tone: "good",
