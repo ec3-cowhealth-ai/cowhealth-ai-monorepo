@@ -4,6 +4,55 @@
 
 ---
 
+## 2026-05-28 - Cherry-pick de Melhorias UI: Collars, Farms, Cows & Notifications (JCFS)
+
+Scope: Import de melhorias visuais e funcionais de `feature/ian-medical-mobile-v2`. Adicionado sorting na lista de vacas da fazenda, hero card melhorado para detalhes da vaca, checkboxes para notificações, e filtragem corrigida de severidade. Branch: `refactor/rbac_drop_undesired_layer`.
+
+### Added
+
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — **Sorting dropdown** com 3 opções:
+  - Nome (alfabético, default)
+  - ID (tag alphanumericamente)
+  - Status (por saúde: HEALTHY > CALVING > HEAT_STRESS > ALERT > RETIRED)
+  - Implementado com `useMemo` + `COW_STATUS_ORDER` constant
+  - Grid responsivo com `repeat(auto-fill, minmax(160px, 1fr))`
+
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — **Melhorias no hero card**:
+  - Avatar circular (64x64px) com status color-coded
+  - Nome da vaca em serif font (Instrument Serif)
+  - Status badge posicionado à direita
+  - Botão **"+ Registro"** adicionado ao header para criar registros médicos rapidamente
+  - Removido duplicate "+ Novo Registro" da seção de prontuário
+
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — **Checkboxes para read/unread**:
+  - Cada notificação tem checkbox clicável
+  - Toggle read status sem navegar para cow detail
+  - Visual feedback: checkbox preenchido com cor quando lido
+  - **Filtragem por severidade** corrigida (Críticos/Avisos/Resolvidos)
+  - Função `inferSeverity()`: se não houver `severity` field, mapeia tipo → severity
+    - ALERT → HIGH (Críticos)
+    - WARNING → MEDIUM (Avisos)
+    - INFO → LOW (Resolvidos)
+  - Contadores em cada filtro mostrando quantidade de notificações
+
+### Changed
+
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — Refatorado para layout vertical com sorting
+- `frontend/src/features/cows/pages/CowDetailPage.tsx` — Hero card refatorado com melhor hierarchy visual
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — UI remodelada com checkboxes e filtragem inteligente
+
+### Fixed
+
+- `frontend/src/features/farms/pages/FarmDetailPage.tsx` — Lexical declarations em case blocks (no-case-declarations)
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — Unused imports e variables (@typescript-eslint/no-unused-vars)
+
+### Build Status
+
+- ✅ Frontend: ESLint zero erros
+- ✅ TypeScript: zero erros
+
+---
+
 ## 2026-05-28 - Seletor de Período, Gráfico de Saúde e Linha do Tempo de Atividade (JCFS)
 
 Scope: Correção do gráfico "Saúde do rebanho" (dados não apareciam), seletor de período reutilizável (7 opções), e implementação da Linha do Tempo de Atividade com classificação comportamental a partir dos dados reais de acelerômetro. Branch: `refactor/rbac_drop_undesired_layer`.
