@@ -1,8 +1,7 @@
-import type { ReactNode } from "react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@components/common";
-import { Check, AlertTriangle, Bell, Activity, CheckCheck, CheckCircle2 } from "lucide-react";
+import { Check, Bell, CheckCheck } from "lucide-react";
 import {
   useNotifications,
   useUnreadNotifications,
@@ -16,13 +15,6 @@ const TYPE_COLOR: Record<string, string> = {
   ALERT: C.red,
   WARNING: C.orange,
   INFO:    "#6bb4e8",
-};
-
-
-const TYPE_ICON: Record<string, ReactNode> = {
-  ALERT: <AlertTriangle size={14} />,
-  WARNING: <Bell size={14} />,
-  INFO: <Activity size={14} />,
 };
 
 const timeAgo = (dateStr: string) => {

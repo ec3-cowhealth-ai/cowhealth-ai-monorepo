@@ -42,16 +42,18 @@ export const FarmDetailPage = () => {
     const list = cows ?? [];
     const sorted = [...list].sort((a, b) => {
       switch (sortBy) {
-        case "name":
+        case "name": {
           const nameA = (a.name || a.tag).toLowerCase();
           const nameB = (b.name || b.tag).toLowerCase();
           return nameA.localeCompare(nameB);
+        }
         case "id":
           return String(a.tag).localeCompare(String(b.tag));
-        case "status":
+        case "status": {
           const orderA = COW_STATUS_ORDER[a.status] ?? 99;
           const orderB = COW_STATUS_ORDER[b.status] ?? 99;
           return orderA - orderB;
+        }
         default:
           return 0;
       }
