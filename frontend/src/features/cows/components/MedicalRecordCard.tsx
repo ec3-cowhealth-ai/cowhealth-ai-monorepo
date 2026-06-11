@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { ConfirmDialog } from "@components/common";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
 import { useDeleteMedicalRecord } from "../hooks/useMedicalRecords";
@@ -28,6 +29,7 @@ interface Props {
 
 export const MedicalRecordCard = ({ record, cowId }: Props) => {
   const [expanded, setExpanded] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const canDelete = useHasPermission(PERMISSIONS.DELETE_MEDICAL_RECORD);
   const { mutate: deleteRecord, isPending } = useDeleteMedicalRecord(cowId);
 
@@ -69,7 +71,7 @@ export const MedicalRecordCard = ({ record, cowId }: Props) => {
           <span style={{ fontSize: 11, color: C.muted }}>{formatDate(record.recordedAt)}</span>
           {canDelete && (
             <button
-              onClick={() => deleteRecord(record.id)}
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={isPending}
               style={{ background: "none", border: "none", cursor: "pointer", color: "var(--danger)", padding: 2, display: "flex" }}
               title="Excluir registro"
@@ -106,6 +108,19 @@ export const MedicalRecordCard = ({ record, cowId }: Props) => {
           )}
         </>
       )}
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Excluir Registro"
+        description={`Tem certeza que deseja excluir "${record.title}"? Esta ação não pode ser desfeita.`}
+        confirmLabel={isPending ? "Excluindo..." : "Excluir"}
+        isDangerous
+        onConfirm={() => {
+          deleteRecord(record.id);
+          setShowDeleteConfirm(false);
+        }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 };

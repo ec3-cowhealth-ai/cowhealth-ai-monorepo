@@ -92,6 +92,7 @@ model User {
   farmId       Int?        @map("farm_id")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
+  deletedAt    DateTime?   @map("deleted_at")
 
   farm           Farm?           @relation(fields: [farmId], references: [id])
   roles          UserRole[]
@@ -197,6 +198,7 @@ model Farm {
   longitude Float?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   cows      Cow[]
   users     User[]
@@ -339,6 +341,7 @@ model MedicalRecord {
   recordedAt DateTime          @map("recorded_at")
   createdAt  DateTime          @default(now()) @map("created_at")
   updatedAt  DateTime          @updatedAt @map("updated_at")
+  deletedAt  DateTime?         @map("deleted_at")
 
   cow  Cow  @relation(fields: [cowId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id])

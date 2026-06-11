@@ -7,7 +7,9 @@ import type { Prisma } from "@prisma/client";
 const SUPER_ADMIN_USER_ID = 1;
 
 export const getAllUsers = async (farmIds: number[] | null) => {
-  const where = farmIds === null ? {} : { farmId: { in: farmIds } };
+  const where = farmIds === null
+    ? { deletedAt: null }
+    : { farmId: { in: farmIds }, deletedAt: null };
 
   return prisma.user.findMany({
     where,
@@ -32,8 +34,8 @@ export const getAllUsers = async (farmIds: number[] | null) => {
 };
 
 export const getUserById = async (userId: number) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
     select: {
       id: true,
       name: true,
@@ -126,7 +128,9 @@ export const updateUser = async (
   userId: number,
   { name, email, password }: UpdateUserInput,
 ) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+  });
   if (!user) throw new Error("Usuário não encontrado.");
 
   if (email && email !== user.email) {
@@ -153,7 +157,9 @@ export const updateUser = async (
 };
 
 export const toggleUserActive = async (userId: number) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+  });
   if (!user) throw new Error("Usuário não encontrado.");
 
   return prisma.user.update({
@@ -164,8 +170,8 @@ export const toggleUserActive = async (userId: number) => {
 };
 
 export const deleteUser = async (userId: number) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
     include: { roles: { select: { role: { select: { name: true } } } } },
   });
 
@@ -176,11 +182,16 @@ export const deleteUser = async (userId: number) => {
     throw new Error("Não é possível excluir o usuário SuperAdmin.");
   }
 
-  await prisma.user.delete({ where: { id: userId } });
+  await prisma.user.update({
+    where: { id: userId },
+    data: { deletedAt: new Date() },
+  });
 };
 
 export const assignRoleToUser = async (userId: number, roleId: number) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+  });
   if (!user) throw new Error("Usuário não encontrado.");
 
   const role = await prisma.role.findUnique({ where: { id: roleId } });
