@@ -312,7 +312,7 @@ const shuffleStatuses = (statuses: CowStatus[]): CowStatus[] => {
 
 const SHUFFLED_STATUSES = shuffleStatuses(COW_STATUS_DISTRIBUTION);
 
-const BREEDS = ["Nelore", "Gir", "Holandesa", "Angus", "Brahman", "Senepol", "Girolando", "Jersey"];
+const BREEDS = ["Gir", "Holandesa", "Girolando", "Jersey"];
 const COW_NAMES = [
   "Mimosa",
   "Bonita",
@@ -1079,7 +1079,7 @@ async function main() {
         lastCalvingDate,
         expectedCalvingDate,
         lactationNumber,
-        sire: rand() > 0.5 ? pick(["Touro Supremo", "Angus Elite", "Holstein Pride", "Nelore Campeão"], rand()) : undefined,
+        sire: rand() > 0.5 ? pick(["Holstein Premier", "Gir Elite", "Girolando Campeão", "Jersey Pride"], rand()) : undefined,
       },
     });
 

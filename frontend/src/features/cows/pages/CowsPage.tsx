@@ -111,7 +111,7 @@ function CreateCowModal({ open, onClose, isLoading, farmId, onSubmit }: CreateMo
           className="form-field__input"
           value={form.breed}
           required
-          placeholder="Ex: Nelore"
+          placeholder="Ex: Holandesa"
           onChange={(e) => setForm({ ...form, breed: e.target.value })}
         />
       </div>

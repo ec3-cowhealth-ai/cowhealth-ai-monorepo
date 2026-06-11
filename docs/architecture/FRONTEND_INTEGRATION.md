@@ -12,7 +12,7 @@ Tabela: `cow`
 | id          | INT            | PK                                       |
 | tag         | VARCHAR        | ex: `BR-0001`                            |
 | name        | VARCHAR        | ex: `Mimosa`                             |
-| breed       | VARCHAR        | ex: `Nelore`                             |
+| breed       | VARCHAR        | ex: `Holandesa`                          |
 | birth_date  | DATE (null)    | campo no DB e na API: `birthDate`        |
 | weight      | DECIMAL (null) |                                          |
 | status      | ENUM           | `HEALTHY` `HEAT_STRESS` `ALERT` `CALVING`|
@@ -85,7 +85,7 @@ Tabela: `notification`
     "id": 1,
     "tag": "BR-0001",
     "name": "Mimosa",
-    "breed": "Nelore",
+    "breed": "Holandesa",
     "weight": 395.5,
     "status": "HEALTHY",
     "createdAt": "2025-01-01T00:00:00.000Z",
@@ -101,7 +101,7 @@ Tabela: `notification`
   "id": 1,
   "tag": "BR-0001",
   "name": "Mimosa",
-  "breed": "Nelore",
+  "breed": "Holandesa",
   "birthDate": "2016-06-15T00:00:00.000Z",
   "weight": 395.5,
   "photos": [],
@@ -150,7 +150,7 @@ Tabela: `notification`
     "id": 1,
     "tag": "BR-0001",
     "name": "Mimosa",
-    "breed": "Nelore",
+    "breed": "Holandesa",
     "status": "HEALTHY",
     "farm": { "id": 1, "name": "Fazenda 1" }
   }
