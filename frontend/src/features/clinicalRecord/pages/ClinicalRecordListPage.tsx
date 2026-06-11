@@ -1,15 +1,24 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useClinicalRecords } from "../hooks/useClinicalRecords";
+import { useClinicalRecords, useCreateClinicalRecord } from "../hooks/useClinicalRecords";
 import ClinicalRecordCard from "../components/ClinicalRecordCard";
+import ClinicalRecordDrawer from "../components/ClinicalRecordDrawer";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
+import type { CreateClinicalRecordInput } from "../types";
 
 export default function ClinicalRecordListPage() {
   const { id } = useParams<{ id: string }>();
   const cowId = Number(id);
   const navigate = useNavigate();
+  const [showDrawer, setShowDrawer] = useState(false);
   const canCreate = useHasPermission(PERMISSIONS.CREATE_CLINICAL_RECORD);
   const { data: records, isLoading, isError } = useClinicalRecords(cowId);
+  const create = useCreateClinicalRecord(cowId);
+
+  const handleCreateSubmit = async (data: CreateClinicalRecordInput) => {
+    await create.mutateAsync(data);
+  };
 
   return (
     <div className="app-page">
@@ -21,7 +30,7 @@ export default function ClinicalRecordListPage() {
           <h1 style={{ margin: 0 }}>Prontuário Clínico</h1>
         </div>
         {canCreate && (
-          <button className="btn btn-primary" onClick={() => navigate(`/cows/${cowId}/clinical-records/new`)}>
+          <button className="btn btn-primary" onClick={() => setShowDrawer(true)}>
             + Novo Atendimento
           </button>
         )}
@@ -39,6 +48,13 @@ export default function ClinicalRecordListPage() {
           ))}
         </div>
       )}
+
+      <ClinicalRecordDrawer
+        open={showDrawer}
+        onClose={() => setShowDrawer(false)}
+        onSubmit={handleCreateSubmit}
+        isLoading={create.isPending}
+      />
     </div>
   );
 }

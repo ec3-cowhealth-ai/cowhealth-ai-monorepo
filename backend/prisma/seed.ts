@@ -766,7 +766,6 @@ async function main() {
     const heartRateRecords = [];
     const temperatureRecords = [];
     const accelerometerRecords = [];
-    const isRecentAlert = true; // todas as vacas têm dados completos
 
     for (let hoursAgo = HOURS_OF_DATA; hoursAgo >= 0; hoursAgo--) {
       const measuredAt = dateHoursAgo(hoursAgo);
