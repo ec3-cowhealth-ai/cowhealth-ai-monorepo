@@ -1,6 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cowsService } from "@services/cowsService";
-import type { CreateCowInput, UpdateCowInput } from "../../../types/cows.ts";
+import type { CreateCowInput, UpdateCowInput } from "@/types/cows";
+import { PERIOD_OPTIONS, type Period } from "@/types/period";
+
+const periodToDays = (period: Period, customFrom?: string, customTo?: string): number => {
+  if (period === "custom" && customFrom && customTo) {
+    const diff = new Date(customTo).getTime() - new Date(customFrom).getTime();
+    return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  }
+  return PERIOD_OPTIONS.find((o) => o.value === period)?.days ?? 7;
+};
 
 export const useCows = (filters?: { farmId?: string; status?: string }) => {
   return useQuery({
@@ -16,7 +25,8 @@ export const useCow = (id: string) => {
   });
 };
 
-export const useCowHeartRateDaily = (cowId: string, days: number = 7) => {
+export const useCowHeartRateDaily = (cowId: string, period: Period = "daily", customFrom?: string, customTo?: string) => {
+  const days = periodToDays(period, customFrom, customTo);
   return useQuery({
     queryKey: ["cows", cowId, "heart-rate-daily", days],
     queryFn: () => cowsService.getHeartRateDaily(cowId, days),
@@ -24,7 +34,8 @@ export const useCowHeartRateDaily = (cowId: string, days: number = 7) => {
   });
 };
 
-export const useCowTemperatureDaily = (cowId: string, days: number = 7) => {
+export const useCowTemperatureDaily = (cowId: string, period: Period = "daily", customFrom?: string, customTo?: string) => {
+  const days = periodToDays(period, customFrom, customTo);
   return useQuery({
     queryKey: ["cows", cowId, "temperature-daily", days],
     queryFn: () => cowsService.getTemperatureDaily(cowId, days),
@@ -83,7 +94,8 @@ export const useRetireCow = () => {
   });
 };
 
-export const useCowAccelerometerDaily = (cowId: string, days: number = 7) => {
+export const useCowAccelerometerDaily = (cowId: string, period: Period = "daily", customFrom?: string, customTo?: string) => {
+  const days = periodToDays(period, customFrom, customTo);
   return useQuery({
     queryKey: ["cows", cowId, "accelerometer-daily", days],
     queryFn: () => cowsService.getAccelerometerDaily(cowId, days),

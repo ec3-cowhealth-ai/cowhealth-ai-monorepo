@@ -13,7 +13,7 @@ export const MapLegend = ({ okCount, warnCount, alertCount }: MapLegendProps) =>
       top: 120,
       right: 16,
       zIndex: 10,
-      background: "rgba(19,21,21,0.85)",
+      background: "var(--bg-elev-2)",
       backdropFilter: "blur(12px)",
       border: "1px solid var(--border)",
       borderRadius: 10,

@@ -17,7 +17,6 @@ export interface AuthUser {
   id: number;
   name: string;
   email: string;
-  profile: "ADMIN" | "MANAGER" | "VIEWER";
   active: boolean;
   farmId: number | null;
   createdAt: string;

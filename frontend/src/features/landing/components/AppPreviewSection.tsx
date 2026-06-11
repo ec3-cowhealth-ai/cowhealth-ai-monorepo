@@ -119,7 +119,7 @@ const ScreenCowDetail: React.FC = () => (
       <div className="ps-cow-avatar">🐄</div>
       <div className="ps-cow-info">
         <div className="ps-cow-name">Estrela #A-041</div>
-        <div className="ps-cow-meta">Nelore · 4 anos · 482 kg</div>
+        <div className="ps-cow-meta">Holandesa · 4 anos · 650 kg</div>
       </div>
     </div>
     <div className="ps-risk-card">

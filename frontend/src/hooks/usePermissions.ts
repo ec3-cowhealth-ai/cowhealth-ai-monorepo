@@ -1,35 +1,23 @@
 import { useMe } from "./useAuth";
+import { PERMISSIONS } from "@config/permissions";
+import type { PermissionName } from "@config/permissions";
 
-/**
- * Hook to check if the current user has a specific permission.
- * 
- * @param permissionName The name of the permission to check (e.g., "ViewAny User")
- * @returns boolean
- */
-export const useHasPermission = (permissionName: string) => {
+export const useHasPermission = (permissionName: PermissionName) => {
   const { data: user } = useMe();
-
   if (!user) return false;
-
-  // Checks if user has the specific permission in their permissions array
   return user.permissions.some((p) => p.name === permissionName);
 };
 
 /**
- * Hook to check if the user has ADMIN profile.
+ * @deprecated Use useHasPermission(PERMISSIONS.VIEW_ANY_USER) instead.
  */
 export const useIsAdmin = () => {
   const { data: user } = useMe();
-  return user?.profile === "ADMIN";
+  return user?.permissions?.some((p) => p.name === PERMISSIONS.VIEW_ANY_USER) ?? false;
 };
 
-/**
- * Hook to check if the user has any of the provided permissions.
- */
-export const useHasAnyPermission = (permissionNames: string[]) => {
+export const useHasAnyPermission = (permissionNames: PermissionName[]) => {
   const { data: user } = useMe();
-
   if (!user) return false;
-
-  return user.permissions.some((p) => permissionNames.includes(p.name));
+  return user.permissions.some((p) => permissionNames.includes(p.name as PermissionName));
 };

@@ -167,7 +167,7 @@ Conteúdo faux (dados estáticos, sem API):
   - 🏃 Atividade baixa — Vaca #A-029 · 12 passos/h · há 2h → `warning`
 
 #### `ScreenCowDetail`
-- Header: avatar 🐄 + nome "Estrela #A-041" + meta (Nelore · 4 anos · 482 kg)
+- Header: avatar 🐄 + nome "Estrela #A-041" + meta (Holandesa · 4 anos · 650 kg)
 - Arc SVG de risco de saúde: **70% · Alto** (stroke laranja)
 - 3 vital chips: Temp 39.8°C (danger) / FC 78 bpm / Atividade 18/h (warning)
 - Mini sparkline SVG de temperatura 24h (linha ascendente em laranja)

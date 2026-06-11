@@ -23,6 +23,45 @@ Os nomes exatos das permissões estão em `backend/prisma/seed.ts` (~linha 330).
 
 ## Prioridade CRÍTICA (apresentação do professor)
 
+### TAREFA 0 — Substituir guards de `profile` em `Sidebar` e `AccessLayout`
+
+> **Pré-requisito:** aguardar Etapa 0 do plano RBAC (JCFS) estar merged em `develop`
+> antes de fazer push — o campo `profile` será removido do JWT nessa etapa.
+
+**Arquivo: `frontend/src/components/layout/Sidebar.tsx`** (~linha 23)
+
+```tsx
+// REMOVER:
+const isAdmin = user?.profile === "ADMIN";
+
+// ADICIONAR (após criar config/permissions.ts na Tarefa 1):
+const canViewUsers = useHasPermission(PERMISSIONS.VIEW_ANY_USER);
+```
+
+Substituir `isAdmin` por `canViewUsers` na condição de visibilidade do link de admin
+na sidebar.
+
+**Arquivo: `frontend/src/features/access/pages/AccessLayout.tsx`** (~linha 11)
+
+```tsx
+// REMOVER:
+const isAdmin = user?.profile === "ADMIN";
+if (!isAdmin) return <Navigate to="/dashboard" />;
+
+// ADICIONAR:
+const canAccess = useHasPermission(PERMISSIONS.VIEW_ANY_USER);
+if (!canAccess) return <Navigate to="/dashboard" />;
+```
+
+**Arquivo: `frontend/src/hooks/usePermissions.ts`** — deprecar `useIsAdmin`:
+
+```ts
+/** @deprecated Use useHasPermission() with a specific permission instead */
+export const useIsAdmin = () => useHasPermission(PERMISSIONS.VIEW_ANY_USER);
+```
+
+---
+
 ### TAREFA 1 — Criar `frontend/src/config/permissions.ts`
 
 Este arquivo centraliza os nomes de permissão como constantes tipadas,
@@ -238,6 +277,40 @@ Após implementar, testar com cada perfil abaixo:
 
 **Atenção:** Veterinário e Zootecnista recebem `cowPermissions` completo (inclui Delete Cow).
 Gerente de Fazenda recebe apenas `viewOnlyCow` + `Retire Cow` — sem botões de criar/editar/excluir.
+
+---
+
+### TAREFA 6b — Remover campo `profile` do formulário de usuários
+
+> **Pré-requisito:** Etapa 0 do plano RBAC (JCFS) merged — a coluna `profile` será
+> dropada do banco nessa etapa.
+
+**Arquivo: `frontend/src/features/access/pages/UsersPage.tsx`**
+
+Remover o `<select>` de perfil (ADMIN / MANAGER / VIEWER) dos formulários de criação
+e edição de usuário. O campo `roleId` já existe no form e é a única fonte de autoridade
+para nível de acesso no novo modelo.
+
+```tsx
+// REMOVER dos formulários de criação (~linha 191) e edição (~linha 290):
+<select
+  value={form.profile}
+  onChange={(e) => setForm({ ...form, profile: e.target.value as UserProfile })}
+>
+  <option value="VIEWER">Observador</option>
+  <option value="MANAGER">Gerente</option>
+  <option value="ADMIN">Administrador</option>
+</select>
+```
+
+Remover também:
+- `import type { UserListItem, UserProfile } from "@/types/access"` → manter apenas `UserListItem`
+- Constantes `PROFILE_LABEL` e `PROFILE_CLASS`
+- Campo `profile` do estado local do form e do tipo do componente `UserFormProps`
+- Coluna de perfil na tabela (~linha 514–515)
+
+Após a remoção, o único campo de nível de acesso no form deve ser o `roleId`
+(select de papel/role), que já está implementado.
 
 ---
 

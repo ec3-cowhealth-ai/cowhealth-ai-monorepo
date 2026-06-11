@@ -10,12 +10,22 @@ export type MedicalRecordType = "CHECKUP" | "PROCEDURE" | "MEDICATION";
 
 export interface MedicalRecord {
   id:         number;
+  cowId:      number;
+  userId:     number;
   type:       MedicalRecordType;
   title:      string;
-  notes?:     string | null;
+  notes:      string | null;
   recordedAt: string;
   createdAt:  string;
-  user:       { id: number; name: string };
+  updatedAt:  string;
+  user?:      { id: number; name: string };
+}
+
+export interface CreateMedicalRecordInput {
+  type:        MedicalRecordType;
+  title:       string;
+  notes?:      string;
+  recordedAt:  string;
 }
 
 export type CowStatus = (typeof COW_STATUS_VALUES)[keyof typeof COW_STATUS_VALUES];

@@ -9,6 +9,7 @@ export const getAllNotifications = async (userId: number) => {
       message: true,
       readAt: true,
       createdAt: true,
+      cowId: true,
       cow: { select: { id: true, tag: true, name: true, status: true } },
     },
     orderBy: { createdAt: "desc" },

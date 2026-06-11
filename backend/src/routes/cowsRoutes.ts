@@ -24,6 +24,13 @@ import {
   updateMedicalRecordController,
   destroyMedicalRecord,
 } from "../controllers/medicalRecordsController";
+import {
+  listClinicalRecords,
+  showClinicalRecord,
+  storeClinicalRecord,
+  updateClinicalRecordController,
+  destroyClinicalRecord,
+} from "../controllers/clinicalRecordController";
 import { cowUpload } from "../helpers/multerUpload";
 import { requireAuth } from "../middlewares/requireAuth";
 import { requirePermission } from "../middlewares/requirePermission";
@@ -33,6 +40,10 @@ import {
   createMedicalRecordSchema,
   updateMedicalRecordSchema,
 } from "../schemas/medicalRecordSchemas";
+import {
+  createClinicalRecordSchema,
+  updateClinicalRecordSchema,
+} from "../schemas/clinicalRecordSchemas";
 
 const router = Router();
 
@@ -101,6 +112,40 @@ router.delete(
   requireAuth,
   requirePermission("Delete MedicalRecord"),
   destroyMedicalRecord,
+);
+
+// Prontuário Clínico Veterinário completo
+router.get(
+  "/:id/clinical-records",
+  requireAuth,
+  requirePermission("ViewAny ClinicalRecord"),
+  listClinicalRecords,
+);
+router.get(
+  "/:id/clinical-records/:recordId",
+  requireAuth,
+  requirePermission("View ClinicalRecord"),
+  showClinicalRecord,
+);
+router.post(
+  "/:id/clinical-records",
+  requireAuth,
+  requirePermission("Create ClinicalRecord"),
+  validateSchema(createClinicalRecordSchema),
+  storeClinicalRecord,
+);
+router.put(
+  "/:id/clinical-records/:recordId",
+  requireAuth,
+  requirePermission("Update ClinicalRecord"),
+  validateSchema(updateClinicalRecordSchema),
+  updateClinicalRecordController,
+);
+router.delete(
+  "/:id/clinical-records/:recordId",
+  requireAuth,
+  requirePermission("Delete ClinicalRecord"),
+  destroyClinicalRecord,
 );
 
 // Sensores — listagem paginada

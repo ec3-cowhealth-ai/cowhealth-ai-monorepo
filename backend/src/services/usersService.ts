@@ -7,7 +7,9 @@ import type { Prisma } from "@prisma/client";
 const SUPER_ADMIN_USER_ID = 1;
 
 export const getAllUsers = async (farmIds: number[] | null) => {
-  const where = farmIds === null ? {} : { farmId: { in: farmIds } };
+  const where = farmIds === null
+    ? { deletedAt: null }
+    : { farmId: { in: farmIds }, deletedAt: null };
 
   return prisma.user.findMany({
     where,
@@ -15,7 +17,6 @@ export const getAllUsers = async (farmIds: number[] | null) => {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       createdAt: true,
       farmId: true,
@@ -33,13 +34,12 @@ export const getAllUsers = async (farmIds: number[] | null) => {
 };
 
 export const getUserById = async (userId: number) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
     select: {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       farmId: true,
       farm: {
@@ -70,12 +70,11 @@ export const getUserById = async (userId: number) => {
 };
 
 export const createUser = async (
-  { name, email, password, profile, farmId, roleId }: CreateUserInput,
+  { name, email, password, farmId, roleId }: CreateUserInput,
   creatorId?: number,
 ) => {
   await assertUnique(prisma.user, { email }, "Email já cadastrado.");
 
-  // Lógica de restrição de perfil e fazenda baseada no criador
   let finalFarmId = farmId;
 
   if (creatorId) {
@@ -90,11 +89,6 @@ export const createUser = async (
       if (!isSuperAdmin) {
         // Se não for Super Admin, o farmId deve ser o mesmo do criador
         finalFarmId = creator.farmId || undefined;
-
-        // E não pode criar perfil ADMIN
-        if (profile === "ADMIN") {
-          throw new Error("Somente o Super Admin pode criar usuários com perfil Admin.");
-        }
       }
     }
   }
@@ -106,14 +100,12 @@ export const createUser = async (
       name,
       email,
       passwordHash,
-      profile: profile ?? "VIEWER",
       farmId: finalFarmId,
     },
     select: {
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       createdAt: true,
     },
@@ -134,16 +126,18 @@ export const createUser = async (
 
 export const updateUser = async (
   userId: number,
-  { name, email, password, profile }: UpdateUserInput,
+  { name, email, password }: UpdateUserInput,
 ) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+  });
   if (!user) throw new Error("Usuário não encontrado.");
 
   if (email && email !== user.email) {
     await assertUnique(prisma.user, { email }, "Email já cadastrado.", userId);
   }
 
-  const updatedData: Prisma.UserUpdateInput = { name, email, profile };
+  const updatedData: Prisma.UserUpdateInput = { name, email };
 
   if (password) {
     updatedData.passwordHash = await bcrypt.hash(password, 12);
@@ -156,7 +150,6 @@ export const updateUser = async (
       id: true,
       name: true,
       email: true,
-      profile: true,
       active: true,
       updatedAt: true,
     },
@@ -164,7 +157,9 @@ export const updateUser = async (
 };
 
 export const toggleUserActive = async (userId: number) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+  });
   if (!user) throw new Error("Usuário não encontrado.");
 
   return prisma.user.update({
@@ -175,8 +170,8 @@ export const toggleUserActive = async (userId: number) => {
 };
 
 export const deleteUser = async (userId: number) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
     include: { roles: { select: { role: { select: { name: true } } } } },
   });
 
@@ -187,11 +182,16 @@ export const deleteUser = async (userId: number) => {
     throw new Error("Não é possível excluir o usuário SuperAdmin.");
   }
 
-  await prisma.user.delete({ where: { id: userId } });
+  await prisma.user.update({
+    where: { id: userId },
+    data: { deletedAt: new Date() },
+  });
 };
 
 export const assignRoleToUser = async (userId: number, roleId: number) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+  });
   if (!user) throw new Error("Usuário não encontrado.");
 
   const role = await prisma.role.findUnique({ where: { id: roleId } });

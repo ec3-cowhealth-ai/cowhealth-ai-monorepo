@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMe } from "@hooks/useAuth";
+import { useHasPermission } from "@hooks/usePermission";
+import { PERMISSIONS } from "@config/permissions";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut, Sun, Moon } from "lucide-react";
+import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut, Sun, Moon, Map } from "lucide-react";
 import { useTheme } from "@hooks/useTheme";
 import { CowHead } from "@components/ui/CowHeadIcon";
 
@@ -20,20 +22,21 @@ export const Sidebar = () => {
   const { data: notifications } = useUnreadNotifications();
 
   const unreadCount = notifications?.length || 0;
-  const isAdmin = user?.profile === "ADMIN";
+  const canViewUsers = useHasPermission(PERMISSIONS.VIEW_ANY_USER);
 
   const navItems: NavItem[] = [
     { label: "Home", path: "/dashboard", icon: <Home size={18} /> },
     { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
     { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
     { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },
+    { label: "Mapa", path: "/map", icon: <Map size={18} /> },
     {
       label: "Alertas",
       path: "/notifications",
       icon: <Bell size={18} />,
       badge: unreadCount,
     },
-    ...(isAdmin
+    ...(canViewUsers
       ? [
           {
             label: "Acesso",
@@ -74,7 +77,7 @@ export const Sidebar = () => {
           <div className="sidebar__avatar">{user?.name?.charAt(0).toUpperCase()}</div>
           <div className="sidebar__user-info">
             <p className="sidebar__user-name">{user?.name}</p>
-            <p className="sidebar__user-role">{user?.profile}</p>
+            <p className="sidebar__user-role">{user?.roles?.[0]?.name ?? "—"}</p>
           </div>
         </div>
         <button onClick={toggle} className="sidebar__logout" title="Alternar tema">

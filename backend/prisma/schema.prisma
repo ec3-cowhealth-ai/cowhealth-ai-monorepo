@@ -11,12 +11,6 @@ datasource db {
 
 // Enums
 
-enum UserProfile {
-  ADMIN
-  MANAGER
-  VIEWER
-}
-
 enum CowStatus {
   HEALTHY
   CALVING
@@ -44,6 +38,49 @@ enum MedicalRecordType {
   MEDICATION
 }
 
+enum ReproductiveStatus {
+  OPEN
+  INSEMINATED
+  PREGNANT
+  DRY
+  POSTPARTUM
+}
+
+enum ClinicalStatus {
+  STABLE
+  MONITORING
+  CRITICAL
+  RECOVERED
+  REFERRED
+}
+
+enum BreedingEligibility {
+  ELIGIBLE
+  INELIGIBLE
+  PENDING
+}
+
+enum EstrusStatus {
+  IN_ESTRUS
+  NOT_IN_ESTRUS
+  UNKNOWN
+}
+
+enum AlertSeverity {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum ActivityType {
+  RUMINATION
+  FEEDING
+  RESTING
+  LOW_ACTIVITY
+  HIGH_ACTIVITY
+  WALKING
+}
+
 // Auth / RBAC
 
 model User {
@@ -51,17 +88,18 @@ model User {
   name         String
   email        String      @unique
   passwordHash String      @map("password_hash")
-  profile      UserProfile @default(VIEWER)
   active       Boolean     @default(true)
   farmId       Int?        @map("farm_id")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
+  deletedAt    DateTime?   @map("deleted_at")
 
   farm           Farm?           @relation(fields: [farmId], references: [id])
   roles          UserRole[]
   notifications  Notification[]
   userFarms      UserFarm[]
-  medicalRecords MedicalRecord[]
+  medicalRecords  MedicalRecord[]
+  clinicalRecords CowClinicalRecord[]
 
   @@map("users")
 }
@@ -160,6 +198,7 @@ model Farm {
   longitude Float?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   cows      Cow[]
   users     User[]
@@ -206,9 +245,17 @@ model Cow {
   accelerometerData AccelerometerData[]
   notifications     Notification[]
 
-  retiredAt      DateTime?       @map("retired_at")
-  retiredReason  String?         @map("retired_reason")
-  medicalRecords MedicalRecord[]
+  retiredAt           DateTime?          @map("retired_at")
+  retiredReason       String?            @map("retired_reason")
+  lactationNumber     Int?               @map("lactation_number")
+  lastCalvingDate     DateTime?          @map("last_calving_date")
+  expectedCalvingDate DateTime?          @map("expected_calving_date")
+  reproductiveStatus  ReproductiveStatus? @map("reproductive_status")
+  sire                String?
+
+  medicalRecords  MedicalRecord[]
+  clinicalRecords CowClinicalRecord[]
+  activityEvents  ActivityEvent[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -270,8 +317,10 @@ model Notification {
   cowId     Int?      @map("cow_id")
   title     String
   message   String    @db.Text
-  readAt    DateTime? @map("read_at")
-  createdAt DateTime  @default(now()) @map("created_at")
+  readAt    DateTime?     @map("read_at")
+  severity  AlertSeverity @default(MEDIUM)
+  alertType String?       @map("alert_type")
+  createdAt DateTime      @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   cow  Cow? @relation(fields: [cowId], references: [id], onDelete: SetNull)
@@ -292,10 +341,95 @@ model MedicalRecord {
   recordedAt DateTime          @map("recorded_at")
   createdAt  DateTime          @default(now()) @map("created_at")
   updatedAt  DateTime          @updatedAt @map("updated_at")
+  deletedAt  DateTime?         @map("deleted_at")
 
   cow  Cow  @relation(fields: [cowId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id])
 
   @@index([cowId, recordedAt])
   @@map("medical_records")
+}
+
+// Activity Events
+
+model ActivityEvent {
+  id          Int          @id @default(autoincrement())
+  cowId       Int          @map("cow_id")
+  type        ActivityType
+  startedAt   DateTime     @map("started_at")
+  durationMin Int          @map("duration_min")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  cow Cow @relation(fields: [cowId], references: [id], onDelete: Cascade)
+
+  @@index([cowId, startedAt])
+  @@map("activity_events")
+}
+
+// Clinical Records (Prontuário Clínico Veterinário)
+
+model CowClinicalRecord {
+  id             Int      @id @default(autoincrement())
+  cowId          Int      @map("cow_id")
+  veterinarianId Int      @map("veterinarian_id")
+  recordDate     DateTime @map("record_date")
+
+  // Avaliação geral
+  clinicalStatus ClinicalStatus @map("clinical_status")
+  alertOrigin    String?        @map("alert_origin")
+
+  // Sinais vitais (medidos/confirmados pelo veterinário)
+  heartRate          Int?   @map("heart_rate")
+  spo2               Float?
+  bodyTemperature    Float? @map("body_temperature")
+  ambientTemperature Float? @map("ambient_temperature")
+  activityLevel      String? @map("activity_level")
+  postureNotes       String? @map("posture_notes") @db.Text
+
+  // Biometria
+  weight             Float?
+  bodyConditionScore Float? @map("body_condition_score")
+
+  // Alimentação
+  feedingNotes String? @map("feeding_notes") @db.Text
+
+  // Avaliação clínica
+  healthHistory   String? @map("health_history") @db.Text
+  currentSymptoms String? @map("current_symptoms") @db.Text
+  diagnosis       String? @db.Text
+  treatmentPlan   String? @map("treatment_plan") @db.Text
+
+  // Medicamentos e procedimentos
+  medicationsAdministered String? @map("medications_administered") @db.Text
+  vaccinationHistory      String? @map("vaccination_history") @db.Text
+  surgicalProcedures      String? @map("surgical_procedures") @db.Text
+  allergyNotes            String? @map("allergy_notes") @db.Text
+
+  // Status reprodutivo (snapshot da consulta)
+  reproductiveStatus  ReproductiveStatus? @map("reproductive_status")
+  breedingEligibility BreedingEligibility? @map("breeding_eligibility")
+  estrusStatus        EstrusStatus?        @map("estrus_status")
+  inseminationWindow  String?              @map("insemination_window")
+  pregnancyStatus     Boolean?             @map("pregnancy_status")
+  lastCalvingDate     DateTime?            @map("last_calving_date")
+  expectedCalvingDate DateTime?            @map("expected_calving_date")
+
+  // Acompanhamento
+  veterinaryRecommendations String?   @map("veterinary_recommendations") @db.Text
+  followUpRequired          Boolean   @default(false) @map("follow_up_required")
+  followUpDate              DateTime? @map("follow_up_date")
+
+  // Notas gerais + soft delete
+  generalNotes String?   @map("general_notes") @db.Text
+  deletedAt    DateTime? @map("deleted_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cow          Cow  @relation(fields: [cowId], references: [id], onDelete: Cascade)
+  veterinarian User @relation(fields: [veterinarianId], references: [id])
+
+  @@index([cowId, recordDate])
+  @@index([veterinarianId])
+  @@map("cow_clinical_records")
 }

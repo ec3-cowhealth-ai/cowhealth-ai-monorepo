@@ -531,7 +531,7 @@ function TratamentosTab({ cowId }: { cowId: string | null }) {
                     year: "numeric",
                   })}
                 </span>
-                <span>por {r.user.name}</span>
+                <span>por {r.user?.name}</span>
               </div>
             </div>
           </div>

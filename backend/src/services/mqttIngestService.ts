@@ -139,7 +139,18 @@ const notifyUsers = async (
   const message = `A vaca ${identifier} apresenta indícios de ${label}. Verificação imediata necessária.`;
 
   const adminsAndManagers = await prisma.user.findMany({
-    where: { active: true, profile: { in: ["ADMIN", "MANAGER"] } },
+    where: {
+      active: true,
+      roles: {
+        some: {
+          role: {
+            permissions: {
+              some: { permission: { name: "ViewAny Notification" } },
+            },
+          },
+        },
+      },
+    },
     select: { id: true },
   });
 

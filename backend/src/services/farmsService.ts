@@ -3,7 +3,9 @@ import { assertUnique, throwWithStatus } from "../helpers/serviceHelpers";
 import type { CreateFarmInput, UpdateFarmInput } from "../types/farming";
 
 export const getAllFarms = async (farmIds: number[] | null) => {
-  const where = farmIds === null ? {} : { id: { in: farmIds || [] } };
+  const where = farmIds === null
+    ? { deletedAt: null }
+    : { id: { in: farmIds || [] }, deletedAt: null };
 
   return prisma.farm.findMany({
     where,
@@ -30,8 +32,8 @@ export const getFarmById = async (farmId: number, farmIds: number[] | null) => {
     throwWithStatus("Acesso negado a esta fazenda.", 403);
   }
 
-  const farm = await prisma.farm.findUnique({
-    where: { id: farmId },
+  const farm = await prisma.farm.findFirst({
+    where: { id: farmId, deletedAt: null },
     select: {
       id: true,
       name: true,
@@ -89,7 +91,9 @@ export const updateFarm = async (
     throwWithStatus("Sem acesso a esta fazenda.", 403);
   }
 
-  const farm = await prisma.farm.findUnique({ where: { id: farmId } });
+  const farm = await prisma.farm.findFirst({
+    where: { id: farmId, deletedAt: null },
+  });
   if (!farm) throw new Error("Fazenda não encontrada.");
 
   if (data.cnpj && data.cnpj !== farm.cnpj) {
@@ -118,8 +122,8 @@ export const updateFarm = async (
 };
 
 export const deleteFarm = async (farmId: number) => {
-  const farm = await prisma.farm.findUnique({
-    where: { id: farmId },
+  const farm = await prisma.farm.findFirst({
+    where: { id: farmId, deletedAt: null },
     include: { _count: { select: { cows: true } } },
   });
 
@@ -129,5 +133,8 @@ export const deleteFarm = async (farmId: number) => {
     throw new Error("Não é possível excluir uma fazenda com vacas vinculadas.");
   }
 
-  await prisma.farm.delete({ where: { id: farmId } });
+  await prisma.farm.update({
+    where: { id: farmId },
+    data: { deletedAt: new Date() },
+  });
 };

@@ -213,3 +213,92 @@ The `useEffect` initializes `selectedFarm` from the `farms` array (loaded asynch
 
 **Fix:**
 Added `// eslint-disable-next-line react-hooks/set-state-in-effect` above the `setState` call. The initialization logic is correct and intentional — refactoring it would add complexity without solving a real problem.
+
+---
+
+## 2026-05-28 — Fix runtime ReferenceErrors causing black screen on navigation
+
+**Branch:** `develop`
+**Author:** JCFS
+
+---
+
+### Bug 5 — `cardStyle` not imported in `CowDetailPage.tsx`
+
+**File:** `frontend/src/features/cows/pages/CowDetailPage.tsx`
+
+**Problem:**
+The component used `cardStyle` in multiple `style` props (lines 242, 327, 333, 341, 352) but only imported `C` from `@features/dashboard/constants/colors`. This caused an `Uncaught ReferenceError: cardStyle is not defined` at runtime when navigating to any cow detail page, crashing the React tree and rendering a black screen. Navigating back to the cows list kept the screen black until a full page refresh.
+
+**Fix:**
+Added `cardStyle` to the named import: `import { C, cardStyle } from "@features/dashboard/constants/colors"`.
+
+---
+
+### Bug 6 — `nColor` typo in `NotificationsPage.tsx`
+
+**File:** `frontend/src/features/notifications/pages/NotificationsPage.tsx`
+
+**Problem:**
+Inside the `notifications.map()` callback, a local variable was declared as `const color = ...` (line 132) but referenced as `nColor` on line 141 (`borderLeft: \`4px solid ${nColor}\``). This caused an `Uncaught ReferenceError: nColor is not defined` whenever the notifications page rendered, crashing the React tree with the same black screen symptom.
+
+**Fix:**
+Corrected the reference from `nColor` to `color` on line 141.
+
+---
+
+## 2026-05-28 — Fix TypeScript build errors and unused import warnings
+
+**Branch:** `develop`
+**Author:** JCFS
+
+---
+
+### Bug 7 — `NOTIF_TONE` not defined in `CowDetailPage.tsx`
+
+**File:** `frontend/src/features/cows/pages/CowDetailPage.tsx`
+
+**Problem:**
+The notification list inside the cow detail page referenced `NOTIF_TONE[n.type]` for the `borderLeftColor` style, but `NOTIF_TONE` was never declared. This caused a `TS2304: Cannot find name 'NOTIF_TONE'` build error.
+
+**Fix:**
+Declared `NOTIF_TONE` as a local constant mapping notification types to their accent colors (`ALERT → C.red`, `WARNING → C.orange`, `INFO → #6bb4e8`), consistent with the equivalent mapping in `NotificationsPage.tsx`.
+
+---
+
+### Bug 8 — Type mismatch in `FarmForm.tsx` (`values` and `SubmitHandler`)
+
+**File:** `frontend/src/features/farms/components/FarmForm.tsx`
+
+**Problem:**
+`useForm<CreateFarmInput>` expects `values` to be `CreateFarmInput | undefined`, but the prop `initialData` is typed as `Partial<CreateFarmInput> | undefined`. This caused two TS errors: `TS2322` on the `values` assignment and `TS2345` on the `handleSubmit(onValid)` call.
+
+**Fix:**
+Cast `initialData` to `CreateFarmInput | undefined` at the `values` assignment. The form validation via Zod ensures all required fields are populated before `onValid` is called, so the cast is safe.
+
+---
+
+### Bug 9 — Unused imports in `FarmsPage.tsx`, `NotificationsPage.tsx`, `ProfilePage.tsx`
+
+**Files:**
+- `frontend/src/features/farms/pages/FarmsPage.tsx` — `cardStyle` imported but not used
+- `frontend/src/features/notifications/pages/NotificationsPage.tsx` — `TYPE_BG` constant declared but not used
+- `frontend/src/pages/profile/ProfilePage.tsx` — `List` icon imported but not used
+
+**Problem:**
+Leftover imports/declarations from earlier refactors caused `TS6133` errors, blocking the production build.
+
+**Fix:**
+Removed each unused symbol from its respective import or declaration.
+
+---
+
+### Bug 10 — Relative import paths in `FarmsPage.tsx`
+
+**File:** `frontend/src/features/farms/pages/FarmsPage.tsx`
+
+**Problem:**
+Imports for `useMe` and `CreateFarmInput` used deep relative paths (`../../../hooks/useAuth`, `../../../types/farms`) instead of the configured path aliases, triggering IDE warnings.
+
+**Fix:**
+Replaced with `@hooks/useAuth` and `@/types/farms`.

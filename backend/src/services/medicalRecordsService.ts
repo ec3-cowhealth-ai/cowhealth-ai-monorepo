@@ -6,7 +6,7 @@ export const getMedicalRecords = async (cowId: number) => {
   if (!cow) throw new Error("Vaca não encontrada.");
 
   return prisma.medicalRecord.findMany({
-    where: { cowId },
+    where: { cowId, deletedAt: null },
     select: {
       id: true,
       type: true,
@@ -21,8 +21,8 @@ export const getMedicalRecords = async (cowId: number) => {
 };
 
 export const getMedicalRecord = async (cowId: number, recordId: number) => {
-  const record = await prisma.medicalRecord.findUnique({
-    where: { id: recordId },
+  const record = await prisma.medicalRecord.findFirst({
+    where: { id: recordId, deletedAt: null },
     select: {
       id: true,
       type: true,
@@ -76,7 +76,9 @@ export const updateMedicalRecord = async (
   recordId: number,
   data: UpdateMedicalRecordInput,
 ) => {
-  const record = await prisma.medicalRecord.findUnique({ where: { id: recordId } });
+  const record = await prisma.medicalRecord.findFirst({
+    where: { id: recordId, deletedAt: null },
+  });
   if (!record) throw new Error("Registro não encontrado.");
   if (record.cowId !== cowId) throw new Error("Registro não pertence a esta vaca.");
 
@@ -99,9 +101,14 @@ export const updateMedicalRecord = async (
 };
 
 export const deleteMedicalRecord = async (cowId: number, recordId: number) => {
-  const record = await prisma.medicalRecord.findUnique({ where: { id: recordId } });
+  const record = await prisma.medicalRecord.findFirst({
+    where: { id: recordId, deletedAt: null },
+  });
   if (!record) throw new Error("Registro não encontrado.");
   if (record.cowId !== cowId) throw new Error("Registro não pertence a esta vaca.");
 
-  await prisma.medicalRecord.delete({ where: { id: recordId } });
+  await prisma.medicalRecord.update({
+    where: { id: recordId },
+    data: { deletedAt: new Date() },
+  });
 };
