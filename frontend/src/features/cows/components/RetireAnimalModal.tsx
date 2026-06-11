@@ -10,7 +10,7 @@ interface RetireAnimalModalProps {
 
 export const RetireAnimalModal = ({ open, cowId, onClose }: RetireAnimalModalProps) => {
   const navigate = useNavigate();
-  const [reason, setReason] = useState<"SALE" | "SLAUGHTER" | null>(null);
+  const [reason, setReason] = useState<"SALE" | "SLAUGHTER" | "DEATH" | null>(null);
   const { mutate: retireCow, isPending } = useRetireCow();
 
   if (!open) return null;
@@ -41,7 +41,7 @@ export const RetireAnimalModal = ({ open, cowId, onClose }: RetireAnimalModalPro
           <p style={{ fontSize: "var(--t-sm)", color: "var(--text-secondary)", marginBottom: 16 }}>
             Selecione o motivo da aposentadoria:
           </p>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <button
               className={`btn btn-sm ${reason === "SALE" ? "btn-primary" : "btn-ghost"}`}
               onClick={() => setReason("SALE")}
@@ -53,6 +53,12 @@ export const RetireAnimalModal = ({ open, cowId, onClose }: RetireAnimalModalPro
               onClick={() => setReason("SLAUGHTER")}
             >
               Abate
+            </button>
+            <button
+              className={`btn btn-sm ${reason === "DEATH" ? "btn-danger" : "btn-ghost"}`}
+              onClick={() => setReason("DEATH")}
+            >
+              Falecimento
             </button>
           </div>
         </div>

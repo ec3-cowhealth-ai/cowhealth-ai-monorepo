@@ -726,7 +726,7 @@ async function main() {
       const tag = `BR-${String(globalIndex + 1).padStart(3, "0")}`;
       const name = COW_NAMES[cowIndex % COW_NAMES.length];
       const breed = BREEDS[globalIndex % BREEDS.length];
-      const weight = Math.round(randomBetween(380, 580));
+      const weight = Math.round(randomBetween(700, 850));
 
       // Vincula colar ACTIVE (os 160 primeiros colares)
       const collar = createdCollars[collarIndex++];

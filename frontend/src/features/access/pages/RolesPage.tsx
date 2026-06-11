@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { X, Users } from "lucide-react";
 import {
@@ -79,6 +79,7 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
   const { data: allPermissions } = usePermissions();
   const { mutate: grant, isPending: granting } = useGrantPermission();
   const { mutate: revoke, isPending: revoking } = useRevokePermission();
+  const [optimisticToggles, setOptimisticToggles] = useState<Set<string>>(new Set());
 
   const grantedIds = useMemo(
     () => new Set((roleDetail?.permissions ?? []).map((p) => String(p.permission.id))),
@@ -87,14 +88,38 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
 
   const isPending = granting || revoking;
 
-  const togglePermission = (permId: number) => {
+  const togglePermission = useCallback((permId: number) => {
     if (isPending) return;
-    if (grantedIds.has(String(permId))) {
-      revoke({ roleId: String(roleId), permissionId: String(permId) });
+    const permIdStr = String(permId);
+
+    // Otimistic update
+    setOptimisticToggles((prev) => {
+      const next = new Set(prev);
+      next.has(permIdStr) ? next.delete(permIdStr) : next.add(permIdStr);
+      return next;
+    });
+
+    // API call
+    if (grantedIds.has(permIdStr)) {
+      revoke({ roleId: String(roleId), permissionId: permIdStr });
     } else {
-      grant({ roleId: String(roleId), permissionId: String(permId) });
+      grant({ roleId: String(roleId), permissionId: permIdStr });
     }
-  };
+  }, [isPending, grantedIds, roleId, grant, revoke]);
+
+  const effectiveGrants = useMemo(() => {
+    const base = new Set(grantedIds);
+    optimisticToggles.forEach((id) => {
+      base.has(id) ? base.delete(id) : base.add(id);
+    });
+    return base;
+  }, [grantedIds, optimisticToggles]);
+
+  useEffect(() => {
+    if (!isPending) {
+      setOptimisticToggles(new Set());
+    }
+  }, [isPending]);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -149,7 +174,7 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
               }}
             >
               {allPermissions.map((perm) => {
-                const active = grantedIds.has(String(perm.id));
+                const active = effectiveGrants.has(String(perm.id));
                 return (
                   <label
                     key={perm.id}
