@@ -76,7 +76,7 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontWeight: 500, fontSize: 14 }}>Feed de alertas</span>
+            <span style={{ fontWeight: 500, fontSize: 14 }}>Últimos alertas</span>
             {alerts.length > 0 && (
               <span
                 style={{

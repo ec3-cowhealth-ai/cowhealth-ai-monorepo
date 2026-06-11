@@ -3,13 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
-import { XCircle, Edit2, ChevronDown } from "lucide-react";
+import { XCircle, Edit2, ChevronDown, Stethoscope } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { cowsService } from "@services/cowsService";
 import { useFarm, useUpdateFarm } from "../hooks/useFarms";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
 import { FarmForm } from "../components/FarmForm";
+import { VeterinarianRequestModal, type VeterinarianRequestData } from "../components/VeterinarianRequestModal";
 
 type SortBy = "name" | "id" | "status";
 
@@ -25,6 +26,7 @@ export const FarmDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [showEdit, setShowEdit] = useState(false);
+  const [showVetRequest, setShowVetRequest] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>("name");
   const [showSortMenu, setShowSortMenu] = useState(false);
 
@@ -37,6 +39,12 @@ export const FarmDetailPage = () => {
     queryFn: () => cowsService.list({ farmId: id }),
     enabled: !!id,
   });
+
+  const handleVetRequest = (data: VeterinarianRequestData) => {
+    // TODO: Implement backend API call for veterinarian request
+    console.log("Veterinarian request submitted:", data);
+    setShowVetRequest(false);
+  };
 
   const farmCows = useMemo(() => {
     const list = cows ?? [];
@@ -94,11 +102,20 @@ export const FarmDetailPage = () => {
         title={farm.name}
         showBack
         actions={
-          canEdit && (
-            <button className="app-bar__action" onClick={() => setShowEdit(true)}>
-              <Edit2 size={18} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              className="app-bar__action"
+              onClick={() => setShowVetRequest(true)}
+              title="Solicitar veterinário"
+            >
+              <Stethoscope size={18} />
             </button>
-          )
+            {canEdit && (
+              <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+                <Edit2 size={18} />
+              </button>
+            )}
+          </div>
         }
       />
 
@@ -446,6 +463,13 @@ export const FarmDetailPage = () => {
           isLoading={updating}
         />
       )}
+
+      <VeterinarianRequestModal
+        open={showVetRequest}
+        farmName={farm.name}
+        onClose={() => setShowVetRequest(false)}
+        onSubmit={handleVetRequest}
+      />
     </div>
   );
 };

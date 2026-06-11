@@ -51,7 +51,7 @@ const inferSeverity = (n: Notification): "HIGH" | "MEDIUM" | "LOW" => {
 };
 
 export const NotificationsPage = () => {
-  const [tab, setTab] = useState<"all" | "unread">("all");
+  const [tab, setTab] = useState<"all" | "unread" | "read">("unread");
   const [severity, setSeverity] = useState<SeverityFilter>("all");
   const navigate = useNavigate();
 
@@ -61,14 +61,36 @@ export const NotificationsPage = () => {
   const { mutate: markAllAsRead } = useMarkAllAsRead();
 
   const unreadCount = unread?.length || 0;
+  const readCount = (all?.length || 0) - unreadCount;
 
   const handleNotificationClick = (n: Notification) => {
-    if (!n.read) markAsRead(n.id);
+    if (!n.read) {
+      markAsRead(n.id);
+      setTab("unread");
+    }
     if (n.cowId) navigate(`/cows/${n.cowId}`);
   };
 
+  const handleToggleRead = (n: Notification, e: React.MouseEvent) => {
+    e.stopPropagation();
+    markAsRead(n.id);
+    // Move para a aba correspondente
+    if (n.read && tab === "read") {
+      setTab("unread");
+    } else if (!n.read && tab === "unread") {
+      setTab("read");
+    }
+  };
+
   const notifications = useMemo(() => {
-    const base = tab === "unread" ? unread || [] : all || [];
+    let base: Notification[] = [];
+    if (tab === "unread") {
+      base = unread || [];
+    } else if (tab === "read") {
+      base = (all || []).filter((n) => n.read);
+    } else {
+      base = all || [];
+    }
     if (severity === "all") return base;
     return base.filter((n) => inferSeverity(n) === severity);
   }, [tab, severity, all, unread]);
@@ -137,13 +159,14 @@ export const NotificationsPage = () => {
             [
               ["all", "Todos", all?.length || 0],
               ["unread", "Não lidos", unreadCount],
+              ["read", "Lidos", readCount],
             ] as [string, string, number][]
           ).map(([val, label, count]) => {
             const active = tab === val;
             return (
               <button
                 key={val}
-                onClick={() => setTab(val as "all" | "unread")}
+                onClick={() => setTab(val as "all" | "unread" | "read")}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -251,10 +274,7 @@ export const NotificationsPage = () => {
                   }}
                 >
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      markAsRead(n.id);
-                    }}
+                    onClick={(e) => handleToggleRead(n, e)}
                     style={{
                       width: 20,
                       height: 20,
