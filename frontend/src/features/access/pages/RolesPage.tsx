@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { FormModal, ConfirmDialog, EmptyState, ErrorState } from "@components/common";
 import { X, Users } from "lucide-react";
 import {
@@ -11,7 +11,7 @@ import {
   useRevokePermission,
 } from "../hooks/useRoles";
 import { usePermissions } from "../hooks/usePermissions";
-import type { RoleListItem } from "../../../types/access.ts";
+import type { RoleListItem } from "@/types/access";
 
 // ─── Modal criar / editar papel ───────────────────────────────────────────────
 
@@ -95,7 +95,11 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
     // Otimistic update
     setOptimisticToggles((prev) => {
       const next = new Set(prev);
-      next.has(permIdStr) ? next.delete(permIdStr) : next.add(permIdStr);
+      if (next.has(permIdStr)) {
+        next.delete(permIdStr);
+      } else {
+        next.add(permIdStr);
+      }
       return next;
     });
 
@@ -110,15 +114,22 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
   const effectiveGrants = useMemo(() => {
     const base = new Set(grantedIds);
     optimisticToggles.forEach((id) => {
-      base.has(id) ? base.delete(id) : base.add(id);
+      if (base.has(id)) {
+        base.delete(id);
+      } else {
+        base.add(id);
+      }
     });
     return base;
   }, [grantedIds, optimisticToggles]);
 
+  const prevIsPendingRef = useRef(isPending);
+
   useEffect(() => {
-    if (!isPending) {
+    if (prevIsPendingRef.current && !isPending) {
       setOptimisticToggles(new Set());
     }
+    prevIsPendingRef.current = isPending;
   }, [isPending]);
 
   return (
