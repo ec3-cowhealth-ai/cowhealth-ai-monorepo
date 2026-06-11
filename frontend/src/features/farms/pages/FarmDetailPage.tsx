@@ -48,7 +48,7 @@ export const FarmDetailPage = () => {
 
   const farmCows = useMemo(() => {
     const list = cows ?? [];
-    const sorted = [...list].sort((a, b) => {
+    return [...list].sort((a, b) => {
       switch (sortBy) {
         case "name": {
           const nameA = (a.name || a.tag).toLowerCase();
@@ -66,7 +66,6 @@ export const FarmDetailPage = () => {
           return 0;
       }
     });
-    return sorted;
   }, [cows, sortBy]);
 
   if (isLoading) {
