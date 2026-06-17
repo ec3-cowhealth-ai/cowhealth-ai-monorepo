@@ -661,10 +661,10 @@ export const CowDetailPage = () => {
         {/* Prontuário */}
         <div className="card" style={{ marginTop: "var(--s-4)" }}>
           <div style={{ marginBottom: 12 }}>
-            <p style={{ margin: 0, fontWeight: 700, color: C.text }}>Prontuário</p>
+            <p style={{ margin: 0, fontWeight: 700, color: C.text }}>Registros médicos</p>
           </div>
           {!medicalRecords || medicalRecords.length === 0 ? (
-            <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro clínico.</p>
+            <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro médico.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {medicalRecords.map((r) => (
