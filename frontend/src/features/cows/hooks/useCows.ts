@@ -15,6 +15,7 @@ export const useCows = (filters?: { farmId?: string; status?: string }) => {
   return useQuery({
     queryKey: ["cows", filters],
     queryFn: () => cowsService.list(filters),
+    refetchInterval: 30000,
   });
 };
 
