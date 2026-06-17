@@ -23,18 +23,35 @@ export default function ClinicalRecordDetailPage() {
 
   return (
     <div className="app-page">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/cows/${cowId}/clinical-records`)}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={() => navigate(`/cows/${cowId}/clinical-records`)}
+        >
           ← Prontuários
         </button>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {canUpdate && record && (
-            <button className="btn btn-secondary btn-sm" onClick={() => navigate(`/cows/${cowId}/clinical-records/${recId}/edit`)}>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => navigate(`/cows/${cowId}/clinical-records/${recId}/edit`)}
+            >
               Editar
             </button>
           )}
           {canDelete && record && (
-            <button className="btn btn-danger btn-sm" onClick={handleDelete} disabled={del.isPending}>
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={handleDelete}
+              disabled={del.isPending}
+            >
               {del.isPending ? "Excluindo…" : "Excluir"}
             </button>
           )}
@@ -42,7 +59,9 @@ export default function ClinicalRecordDetailPage() {
       </div>
 
       {isLoading && <p style={{ opacity: 0.6 }}>Carregando…</p>}
-      {isError && <p style={{ color: "var(--color-danger, #ef4444)" }}>Prontuário não encontrado.</p>}
+      {isError && (
+        <p style={{ color: "var(--color-danger, #ef4444)" }}>Prontuário não encontrado.</p>
+      )}
       {record && <ClinicalRecordDetail record={record} />}
     </div>
   );

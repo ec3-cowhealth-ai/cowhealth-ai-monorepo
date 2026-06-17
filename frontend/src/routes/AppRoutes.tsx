@@ -57,7 +57,10 @@ const AppRoutesInner = () => {
         <Route path="/cows/:id/clinical-records" element={<ClinicalRecordListPage />} />
         <Route path="/cows/:id/clinical-records/new" element={<ClinicalRecordFormPage />} />
         <Route path="/cows/:id/clinical-records/:recordId" element={<ClinicalRecordDetailPage />} />
-        <Route path="/cows/:id/clinical-records/:recordId/edit" element={<ClinicalRecordFormPage />} />
+        <Route
+          path="/cows/:id/clinical-records/:recordId/edit"
+          element={<ClinicalRecordFormPage />}
+        />
 
         {/* Notifications */}
         <Route path="/notifications" element={<NotificationsPage />} />

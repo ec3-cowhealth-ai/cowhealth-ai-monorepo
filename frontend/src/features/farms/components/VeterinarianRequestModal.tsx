@@ -55,15 +55,8 @@ export const VeterinarianRequestModal = ({
       />
 
       {/* Modal */}
-      <div
-        className="modal-overlay"
-        onClick={onClose}
-      >
-        <div
-          className="modal-card"
-          onClick={(e) => e.stopPropagation()}
-          style={{ maxWidth: 500 }}
-        >
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
           <div className="modal-card__header">
             <div>
               <h2 className="modal-card__title">Solicitar Veterinário</h2>
@@ -145,11 +138,7 @@ export const VeterinarianRequestModal = ({
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className="btn btn-primary btn-sm"
-                disabled={isLoading}
-              >
+              <button type="submit" className="btn btn-primary btn-sm" disabled={isLoading}>
                 {isLoading ? "Enviando..." : "Solicitar atendimento"}
               </button>
             </div>

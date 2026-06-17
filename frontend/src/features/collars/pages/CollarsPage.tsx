@@ -164,7 +164,11 @@ export const CollarsPage = () => {
         title="Coleiras"
         actions={
           canCreate && (
-            <button className="app-bar__action" aria-label="Criar coleira" onClick={() => setShowCreate(true)}>
+            <button
+              className="app-bar__action"
+              aria-label="Criar coleira"
+              onClick={() => setShowCreate(true)}
+            >
               <Plus size={20} />
             </button>
           )

@@ -88,28 +88,31 @@ function ManagePermissionsModal({ roleId, roleName, onClose }: ManagePermsModalP
 
   const isPending = granting || revoking;
 
-  const togglePermission = useCallback((permId: number) => {
-    if (isPending) return;
-    const permIdStr = String(permId);
+  const togglePermission = useCallback(
+    (permId: number) => {
+      if (isPending) return;
+      const permIdStr = String(permId);
 
-    // Otimistic update
-    setOptimisticToggles((prev) => {
-      const next = new Set(prev);
-      if (next.has(permIdStr)) {
-        next.delete(permIdStr);
+      // Otimistic update
+      setOptimisticToggles((prev) => {
+        const next = new Set(prev);
+        if (next.has(permIdStr)) {
+          next.delete(permIdStr);
+        } else {
+          next.add(permIdStr);
+        }
+        return next;
+      });
+
+      // API call
+      if (grantedIds.has(permIdStr)) {
+        revoke({ roleId: String(roleId), permissionId: permIdStr });
       } else {
-        next.add(permIdStr);
+        grant({ roleId: String(roleId), permissionId: permIdStr });
       }
-      return next;
-    });
-
-    // API call
-    if (grantedIds.has(permIdStr)) {
-      revoke({ roleId: String(roleId), permissionId: permIdStr });
-    } else {
-      grant({ roleId: String(roleId), permissionId: permIdStr });
-    }
-  }, [isPending, grantedIds, roleId, grant, revoke]);
+    },
+    [isPending, grantedIds, roleId, grant, revoke],
+  );
 
   const effectiveGrants = useMemo(() => {
     const base = new Set(grantedIds);

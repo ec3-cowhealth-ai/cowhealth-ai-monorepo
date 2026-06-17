@@ -11,7 +11,16 @@ const ScreenHome: React.FC = () => (
           <rect x="0" y="2" width="2" height="6" rx="0.5" fill="currentColor" opacity="0.4" />
           <rect x="3" y="1" width="2" height="7" rx="0.5" fill="currentColor" opacity="0.6" />
           <rect x="6" y="0" width="2" height="8" rx="0.5" fill="currentColor" />
-          <rect x="9" y="0" width="3" height="8" rx="1" fill="none" stroke="currentColor" strokeWidth="0.8" />
+          <rect
+            x="9"
+            y="0"
+            width="3"
+            height="8"
+            rx="1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="0.8"
+          />
           <rect x="9.5" y="0.5" width="2" height="7" rx="0.6" fill="currentColor" />
         </svg>
       </span>

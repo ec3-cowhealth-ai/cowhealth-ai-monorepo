@@ -209,9 +209,7 @@ export function CowSelectorBar({
               />
               <span style={{ color: C.text }}>
                 Selecionada automaticamente:{" "}
-                <strong>
-                  {alertCow ? alertCow.tag : `ID ${selectedCowId}`}
-                </strong>
+                <strong>{alertCow ? alertCow.tag : `ID ${selectedCowId}`}</strong>
               </span>
               <span style={{ fontSize: 11, color: C.muted }}>
                 ({alerts.find((a) => String(a.cowId) === selectedCowId)?.title ?? "último alerta"})

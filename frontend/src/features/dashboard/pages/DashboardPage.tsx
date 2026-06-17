@@ -34,7 +34,10 @@ export const DashboardPage = () => {
     const now = new Date();
     const days = option === "7days" ? 7 : option === "14days" ? 14 : option === "30days" ? 30 : 90;
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-    return { startDate: startDate.toISOString().split("T")[0], endDate: now.toISOString().split("T")[0] };
+    return {
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: now.toISOString().split("T")[0],
+    };
   };
 
   const dateRangeLabel = {
@@ -48,13 +51,14 @@ export const DashboardPage = () => {
 
   const kpiFarmId = selectionMode === "farm" && selectedFarmId ? selectedFarmId : undefined;
   const { startDate, endDate } = getDateRange(dateRange);
-  const { data: overview }      = useDashboardOverview(kpiFarmId, startDate, endDate);
+  const { data: overview } = useDashboardOverview(kpiFarmId, startDate, endDate);
   const { data: cowsPerStatus } = useCowsPerStatus(kpiFarmId, startDate, endDate);
 
   // Get the display farm based on selection mode
-  const displayFarm = selectionMode === "farm" && selectedFarmId
-    ? farms.find((f) => String(f.id) === selectedFarmId)
-    : null;
+  const displayFarm =
+    selectionMode === "farm" && selectedFarmId
+      ? farms.find((f) => String(f.id) === selectedFarmId)
+      : null;
 
   // Cow list for selector
   const cowListFilters =
@@ -95,15 +99,30 @@ export const DashboardPage = () => {
   return (
     <div className="app-page" style={{ background: C.bg, minHeight: "100%" }}>
       <div style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
-
         {/* TopBar — fiel ao preview */}
-        <header style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <header
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
           <div>
-            <h1 style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontSize: 42, lineHeight: 1, margin: 0, color: C.text, fontWeight: 400,
-              display: "flex", alignItems: "center", gap: 12,
-            }}>
+            <h1
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: 42,
+                lineHeight: 1,
+                margin: 0,
+                color: C.text,
+                fontWeight: 400,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
               <CowHead size={38} color={C.green} />
               Visão geral do rebanho
             </h1>
@@ -122,18 +141,20 @@ export const DashboardPage = () => {
               <ChevronDown style={{ width: 14, height: 14, color: C.muted }} />
             </button>
             {showDateMenu && (
-              <div style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                marginTop: 8,
-                background: "var(--bg-elev-1)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                zIndex: 1000,
-                minWidth: 200,
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-              }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  marginTop: 8,
+                  background: "var(--bg-elev-1)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 8,
+                  zIndex: 1000,
+                  minWidth: 200,
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                }}
+              >
                 {(["7days", "14days", "30days", "90days"] as const).map((option) => (
                   <button
                     key={option}
@@ -151,7 +172,8 @@ export const DashboardPage = () => {
                       border: "none",
                       color: "var(--text-primary)",
                       cursor: "pointer",
-                      borderBottom: option !== "90days" ? `1px solid var(--border-subtle)` : undefined,
+                      borderBottom:
+                        option !== "90days" ? `1px solid var(--border-subtle)` : undefined,
                     }}
                   >
                     {dateRangeLabel[option]}
@@ -201,7 +223,6 @@ export const DashboardPage = () => {
 
         {/* Activity timeline */}
         <DashboardActivityTimeline cowId={effectiveCowId} />
-
       </div>
     </div>
   );

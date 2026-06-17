@@ -59,13 +59,28 @@ export const CowDetailCard = ({ cow, lat, lng }: CowDetailCardProps) => {
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 700, fontFamily: "var(--font-display)" }}>{cow.name}</div>
-          <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--text-muted)", marginTop: 1 }}>
+          <div
+            style={{
+              fontSize: 11,
+              fontFamily: "var(--font-mono)",
+              color: "var(--text-muted)",
+              marginTop: 1,
+            }}
+          >
             #{cow.tag}
           </div>
           <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>
-            {cow.farm?.name}{cow.collar && ` · ${cow.collar.name}`}
+            {cow.farm?.name}
+            {cow.collar && ` · ${cow.collar.name}`}
           </div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1, fontFamily: "var(--font-mono)" }}>
+          <div
+            style={{
+              fontSize: 11,
+              color: "var(--text-muted)",
+              marginTop: 1,
+              fontFamily: "var(--font-mono)",
+            }}
+          >
             latitude {lat.toFixed(6)} · longitude {lng.toFixed(6)}
           </div>
         </div>

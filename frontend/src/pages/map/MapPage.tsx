@@ -21,9 +21,10 @@ const STATUS_COLOR: Record<string, string> = {
 
 function MapController({ center }: { center: [number, number] }) {
   const map = useMap();
+  const [lat, lng] = center;
   useEffect(() => {
-    map.flyTo(center, map.getZoom(), { duration: 1 });
-  }, [center[0], center[1]]);
+    map.flyTo([lat, lng], map.getZoom(), { duration: 1 });
+  }, [map, lat, lng]);
   return null;
 }
 
@@ -50,7 +51,9 @@ function makeCowIcon(color: string, selected: boolean, isReal: boolean) {
 
 export const MapPage = () => {
   const { selectedFarm, farms, setSelectedFarm } = useFarmContext();
-  const [selectedCow, setSelectedCow] = useState<{ cow: Cow; lat: number; lng: number } | null>(null);
+  const [selectedCow, setSelectedCow] = useState<{ cow: Cow; lat: number; lng: number } | null>(
+    null,
+  );
 
   const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
   const { data: rawCows = [] } = useCows({ farmId });
@@ -124,7 +127,10 @@ export const MapPage = () => {
               isReal,
             )}
             eventHandlers={{
-              click: () => setSelectedCow(selectedCow?.cow.id === cow.id ? null : { cow, lat: lat!, lng: lng! }),
+              click: () =>
+                setSelectedCow(
+                  selectedCow?.cow.id === cow.id ? null : { cow, lat: lat!, lng: lng! },
+                ),
             }}
           >
             <Popup>
@@ -204,7 +210,12 @@ export const MapPage = () => {
       </div>
 
       <div style={{ position: "relative", zIndex: 1000 }}>
-        <MapLegend okCount={okCount} heatStressCount={heatStressCows.length} calvingCount={calvingCows.length} alertCount={alertCows.length} />
+        <MapLegend
+          okCount={okCount}
+          heatStressCount={heatStressCows.length}
+          calvingCount={calvingCows.length}
+          alertCount={alertCows.length}
+        />
       </div>
 
       {selectedCow && (

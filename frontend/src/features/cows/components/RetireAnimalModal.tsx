@@ -35,7 +35,14 @@ export const RetireAnimalModal = ({ open, cowId, onClose }: RetireAnimalModalPro
           <p className="modal-title">Aposentar Animal</p>
         </div>
         <div className="modal-body">
-          <p style={{ fontSize: "var(--t-sm)", color: "var(--danger)", fontWeight: 600, marginBottom: 8 }}>
+          <p
+            style={{
+              fontSize: "var(--t-sm)",
+              color: "var(--danger)",
+              fontWeight: 600,
+              marginBottom: 8,
+            }}
+          >
             Esta ação é irreversível. O animal sairá do rebanho ativo.
           </p>
           <p style={{ fontSize: "var(--t-sm)", color: "var(--text-secondary)", marginBottom: 16 }}>

@@ -10,7 +10,10 @@ import { useFarm, useUpdateFarm } from "../hooks/useFarms";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
 import { FarmForm } from "../components/FarmForm";
-import { VeterinarianRequestModal, type VeterinarianRequestData } from "../components/VeterinarianRequestModal";
+import {
+  VeterinarianRequestModal,
+  type VeterinarianRequestData,
+} from "../components/VeterinarianRequestModal";
 
 type SortBy = "name" | "id" | "status";
 
@@ -110,7 +113,11 @@ export const FarmDetailPage = () => {
               <Stethoscope size={18} />
             </button>
             {canEdit && (
-              <button className="app-bar__action" aria-label="Editar fazenda" onClick={() => setShowEdit(true)}>
+              <button
+                className="app-bar__action"
+                aria-label="Editar fazenda"
+                onClick={() => setShowEdit(true)}
+              >
                 <Edit2 size={18} />
               </button>
             )}
@@ -280,8 +287,12 @@ export const FarmDetailPage = () => {
                     color: "var(--text-primary)",
                   }}
                 >
-                  Ordenar por: <strong>{sortBy === "name" ? "Nome" : sortBy === "id" ? "ID" : "Status"}</strong>
-                  <ChevronDown size={16} style={{ transform: showSortMenu ? "rotate(180deg)" : "" }} />
+                  Ordenar por:{" "}
+                  <strong>{sortBy === "name" ? "Nome" : sortBy === "id" ? "ID" : "Status"}</strong>
+                  <ChevronDown
+                    size={16}
+                    style={{ transform: showSortMenu ? "rotate(180deg)" : "" }}
+                  />
                 </button>
                 {showSortMenu && (
                   <div
@@ -372,7 +383,8 @@ export const FarmDetailPage = () => {
                   RETIRED: "Aposentado",
                 };
 
-                const cColor = statusColor[cow.status as keyof typeof statusColor] || "var(--text-secondary)";
+                const cColor =
+                  statusColor[cow.status as keyof typeof statusColor] || "var(--text-secondary)";
                 const cBg = statusBg[cow.status as keyof typeof statusBg] || "var(--bg-elev-1)";
                 const cLabel = statusLabel[cow.status as keyof typeof statusLabel] || cow.status;
 
@@ -458,7 +470,12 @@ export const FarmDetailPage = () => {
           open={showEdit}
           onClose={() => setShowEdit(false)}
           initialData={farm}
-          onSubmit={(data) => updateFarm({ id: String(farm.id), input: data }, { onSuccess: () => setShowEdit(false) })}
+          onSubmit={(data) =>
+            updateFarm(
+              { id: String(farm.id), input: data },
+              { onSuccess: () => setShowEdit(false) },
+            )
+          }
           isLoading={updating}
         />
       )}

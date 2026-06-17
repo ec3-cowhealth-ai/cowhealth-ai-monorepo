@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import logoFull from "@/assets/landing/chai_logo_full.png";
 
 const links = [
-  { href: "#product",    label: "Produto" },
+  { href: "#product", label: "Produto" },
   { href: "#technology", label: "Tecnologia" },
-  { href: "#dashboard",  label: "Painel" },
-  { href: "#app",        label: "Aplicativo" },
-  { href: "#welfare",    label: "Bem-estar" },
-  { href: "#pilot",      label: "Piloto" },
+  { href: "#dashboard", label: "Painel" },
+  { href: "#app", label: "Aplicativo" },
+  { href: "#welfare", label: "Bem-estar" },
+  { href: "#pilot", label: "Piloto" },
 ];
 
 export const LandingNav: React.FC = () => {
@@ -25,18 +25,12 @@ export const LandingNav: React.FC = () => {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-xl ${
-        scrolled
-          ? "bg-background/85 border-b border-border/60"
-          : "bg-background/50"
+        scrolled ? "bg-background/85 border-b border-border/60" : "bg-background/50"
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
         <a href="#top" className="flex items-center">
-          <img
-            src={logoFull}
-            alt="CowHealth AI"
-            className="h-14 w-auto"
-          />
+          <img src={logoFull} alt="CowHealth AI" className="h-14 w-auto" />
         </a>
 
         <ul className="hidden items-center gap-9 md:flex">

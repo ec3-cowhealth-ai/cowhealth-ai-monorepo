@@ -15,6 +15,8 @@ export const getDashboardOverview = async (
   const farmFilter = buildFarmFilter(farmId, farmIds);
   const cowWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
 
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
   const [
     totalCows,
     healthyCows,
@@ -22,6 +24,7 @@ export const getDashboardOverview = async (
     totalFarms,
     totalActiveCollars,
     unreadNotifications,
+    tempAgg,
   ] = await Promise.all([
     prisma.cow.count({ where: cowWhere }),
     prisma.cow.count({ where: { ...cowWhere, status: "HEALTHY" } }),
@@ -31,6 +34,10 @@ export const getDashboardOverview = async (
     prisma.farm.count(),
     prisma.collar.count({ where: { status: "ACTIVE" } }),
     prisma.notification.count({ where: { readAt: null, userId } }),
+    prisma.temperatureData.aggregate({
+      where: { cow: cowWhere, recordedAt: { gte: since24h } },
+      _avg: { celsius: true },
+    }),
   ]);
 
   const topFarm = farmId
@@ -50,6 +57,7 @@ export const getDashboardOverview = async (
     totalFarms,
     totalActiveCollars,
     unreadNotifications,
+    avgTemperature: tempAgg._avg.celsius !== null ? Math.round(tempAgg._avg.celsius * 10) / 10 : null,
     topFarm: topFarm ? { id: topFarm.id, name: topFarm.name, cowCount: topFarm._count.cows } : null,
   };
 };

@@ -5,7 +5,12 @@ interface MapLegendProps {
   alertCount: number;
 }
 
-export const MapLegend = ({ okCount, heatStressCount, calvingCount, alertCount }: MapLegendProps) => {
+export const MapLegend = ({
+  okCount,
+  heatStressCount,
+  calvingCount,
+  alertCount,
+}: MapLegendProps) => {
   const items = [
     { label: "Saudável", count: okCount, color: "#22c55e" },
     { label: "Est. Térmico", count: heatStressCount, color: "#f59e0b" },

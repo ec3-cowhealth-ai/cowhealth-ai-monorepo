@@ -25,8 +25,7 @@ export const SolutionSection: React.FC = () => {
     <section id="solution" className="relative bg-gradient-forest py-28 text-cream lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
-          <span className="h-px w-6 bg-signal/40" />
-          A solução
+          <span className="h-px w-6 bg-signal/40" />A solução
         </div>
         <h2 className="font-display text-4xl leading-[1.02] text-cream text-balance max-w-3xl sm:text-5xl lg:text-6xl">
           Dos sinais da vaca

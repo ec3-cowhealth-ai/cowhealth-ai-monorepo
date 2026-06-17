@@ -11,9 +11,26 @@ export const CowsPerFarmChart = ({ data }: CowsPerFarmChartProps) => (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-        <XAxis dataKey="label" tick={{ fontSize: 12, fill: "var(--text-muted)" }} axisLine={{ stroke: "var(--border)" }} tickLine={false} />
-        <YAxis tick={{ fontSize: 12, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-        <Tooltip contentStyle={{ background: "var(--bg-elev-2)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 12, fill: "var(--text-muted)" }}
+          axisLine={{ stroke: "var(--border)" }}
+          tickLine={false}
+        />
+        <YAxis
+          tick={{ fontSize: 12, fill: "var(--text-muted)" }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <Tooltip
+          contentStyle={{
+            background: "var(--bg-elev-2)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            color: "var(--text-primary)",
+          }}
+          itemStyle={{ color: "var(--text-primary)" }}
+        />
         <Bar dataKey="value" fill="#339989" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>

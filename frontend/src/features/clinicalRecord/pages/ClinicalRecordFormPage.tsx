@@ -1,12 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useCreateClinicalRecord, useUpdateClinicalRecord, useClinicalRecord } from "../hooks/useClinicalRecords";
+import {
+  useCreateClinicalRecord,
+  useUpdateClinicalRecord,
+  useClinicalRecord,
+} from "../hooks/useClinicalRecords";
 import ClinicalRecordForm from "../components/ClinicalRecordForm";
 import type { ClinicalRecord, CreateClinicalRecordInput } from "../types";
 
 /** Converte null → undefined para compatibilidade com o formulário */
 const toFormInput = (r: ClinicalRecord): Partial<CreateClinicalRecordInput> =>
   Object.fromEntries(
-    Object.entries(r).map(([k, v]) => [k, v === null ? undefined : v])
+    Object.entries(r).map(([k, v]) => [k, v === null ? undefined : v]),
   ) as Partial<CreateClinicalRecordInput>;
 
 export default function ClinicalRecordFormPage() {
@@ -34,14 +38,24 @@ export default function ClinicalRecordFormPage() {
   };
 
   if (isEdit && loadingExisting) {
-    return <div className="app-page"><p style={{ opacity: 0.6 }}>Carregando…</p></div>;
+    return (
+      <div className="app-page">
+        <p style={{ opacity: 0.6 }}>Carregando…</p>
+      </div>
+    );
   }
 
   return (
     <div className="app-page">
       <button
         className="btn btn-ghost btn-sm"
-        onClick={() => navigate(isEdit ? `/cows/${cowId}/clinical-records/${recordId}` : `/cows/${cowId}/clinical-records`)}
+        onClick={() =>
+          navigate(
+            isEdit
+              ? `/cows/${cowId}/clinical-records/${recordId}`
+              : `/cows/${cowId}/clinical-records`,
+          )
+        }
         style={{ marginBottom: "1rem" }}
       >
         ← Voltar

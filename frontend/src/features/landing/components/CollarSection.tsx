@@ -40,8 +40,7 @@ export const CollarSection: React.FC = () => {
 
         <div className="flex flex-col justify-center">
           <div className="mb-5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-forest">
-            <span className="h-px w-6 bg-forest/40" />
-            A coleira inteligente
+            <span className="h-px w-6 bg-forest/40" />A coleira inteligente
           </div>
           <h2 className="font-display text-4xl leading-[1.02] text-balance max-w-3xl sm:text-5xl text-foreground">
             Projetada para

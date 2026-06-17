@@ -39,9 +39,9 @@ import type { Period } from "@/types/period";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const NOTIF_TONE: Record<string, string> = {
-  ALERT:   C.red,
+  ALERT: C.red,
   WARNING: C.orange,
-  INFO:    "#6bb4e8",
+  INFO: "#6bb4e8",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -219,8 +219,18 @@ export const CowDetailPage = () => {
   const { mutate: deleteCow, isPending: deleting } = useDeleteCow();
 
   const { data: heartRate } = useCowHeartRateDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
-  const { data: temperature } = useCowTemperatureDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
-  const { data: accelerometer } = useCowAccelerometerDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
+  const { data: temperature } = useCowTemperatureDaily(
+    id || "",
+    sensorPeriod,
+    sensorFrom,
+    sensorTo,
+  );
+  const { data: accelerometer } = useCowAccelerometerDaily(
+    id || "",
+    sensorPeriod,
+    sensorFrom,
+    sensorTo,
+  );
   const { data: notifications } = useNotifications();
   const { data: medicalRecords } = useMedicalRecords(Number(id));
 
@@ -280,10 +290,18 @@ export const CowDetailPage = () => {
         actions={
           canCRUD && (
             <div style={{ display: "flex", gap: 12 }}>
-              <button className="app-bar__action" aria-label="Editar vaca" onClick={() => setShowEdit(true)}>
+              <button
+                className="app-bar__action"
+                aria-label="Editar vaca"
+                onClick={() => setShowEdit(true)}
+              >
                 <Edit2 size={18} />
               </button>
-              <button className="app-bar__action" aria-label="Excluir vaca" onClick={() => setShowDelete(true)}>
+              <button
+                className="app-bar__action"
+                aria-label="Excluir vaca"
+                onClick={() => setShowDelete(true)}
+              >
                 <Trash2 size={18} />
               </button>
             </div>
@@ -499,97 +517,106 @@ export const CowDetailPage = () => {
         {/* Sensor charts — grade 3 colunas desktop / 1 coluna mobile */}
         {temperature?.length || heartRate?.length || accelerometer?.length ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ ...cardStyle, padding: "12px 14px" }}>
-            <p style={{ margin: "0 0 10px 0", fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Período dos sensores
-            </p>
-            <PeriodPicker
-              value={sensorPeriod}
-              onChange={setSensorPeriod}
-              customFrom={sensorFrom}
-              customTo={sensorTo}
-              onCustomFromChange={setSensorFrom}
-              onCustomToChange={setSensorTo}
-            />
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: 12,
-            }}
-          >
-            {temperature && temperature.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 12,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: C.muted,
-                  }}
-                >
-                  <Thermometer size={13} color={C.orange} /> Temperatura
+            <div style={{ ...cardStyle, padding: "12px 14px" }}>
+              <p
+                style={{
+                  margin: "0 0 10px 0",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: C.muted,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                Período dos sensores
+              </p>
+              <PeriodPicker
+                value={sensorPeriod}
+                onChange={setSensorPeriod}
+                customFrom={sensorFrom}
+                customTo={sensorTo}
+                onCustomFromChange={setSensorFrom}
+                onCustomToChange={setSensorTo}
+              />
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 12,
+              }}
+            >
+              {temperature && temperature.length > 0 && (
+                <div style={{ ...cardStyle }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: C.muted,
+                    }}
+                  >
+                    <Thermometer size={13} color={C.orange} /> Temperatura
+                  </div>
+                  <LineChart
+                    data={temperature}
+                    color={C.orange}
+                    unit="°C"
+                    thresholds={[
+                      { v: 39.5, c: C.red },
+                      { v: 38.0, c: "#6bb4e8" },
+                    ]}
+                  />
                 </div>
-                <LineChart
-                  data={temperature}
-                  color={C.orange}
-                  unit="°C"
-                  thresholds={[
-                    { v: 39.5, c: C.red },
-                    { v: 38.0, c: "#6bb4e8" },
-                  ]}
-                />
-              </div>
-            )}
-            {heartRate && heartRate.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 12,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: C.muted,
-                  }}
-                >
-                  <Heart size={13} color={C.red} /> Freq. Cardíaca
+              )}
+              {heartRate && heartRate.length > 0 && (
+                <div style={{ ...cardStyle }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: C.muted,
+                    }}
+                  >
+                    <Heart size={13} color={C.red} /> Freq. Cardíaca
+                  </div>
+                  <LineChart
+                    data={heartRate}
+                    color={C.red}
+                    unit=" bpm"
+                    thresholds={[
+                      { v: 120, c: C.red },
+                      { v: 40, c: "#6bb4e8" },
+                    ]}
+                  />
                 </div>
-                <LineChart
-                  data={heartRate}
-                  color={C.red}
-                  unit=" bpm"
-                  thresholds={[
-                    { v: 120, c: C.red },
-                    { v: 40, c: "#6bb4e8" },
-                  ]}
-                />
-              </div>
-            )}
-            {accelerometer && accelerometer.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 12,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: C.muted,
-                  }}
-                >
-                  <span style={{ fontSize: 13 }}>↯</span> Atividade
+              )}
+              {accelerometer && accelerometer.length > 0 && (
+                <div style={{ ...cardStyle }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: C.muted,
+                    }}
+                  >
+                    <span style={{ fontSize: 13 }}>↯</span> Atividade
+                  </div>
+                  <LineChart data={accelerometer} color={C.green} unit=" m/s²" />
                 </div>
-                <LineChart data={accelerometer} color={C.green} unit=" m/s²" />
-              </div>
-            )}
-          </div>
+              )}
+            </div>
           </div>
         ) : null}
 

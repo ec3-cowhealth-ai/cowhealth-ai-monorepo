@@ -24,7 +24,14 @@ export function CowGlyph({ style }: SvgProps) {
 
 export function TempIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M10 3a2 2 0 012 2v7a3 3 0 11-4 0V5a2 2 0 012-2z" />
     </svg>
   );
@@ -32,7 +39,14 @@ export function TempIcon({ style }: SvgProps) {
 
 export function HeartIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M10 16s-6-3.5-6-8a3.5 3.5 0 016-2.5A3.5 3.5 0 0116 8c0 4.5-6 8-6 8z" />
     </svg>
   );
@@ -40,7 +54,14 @@ export function HeartIcon({ style }: SvgProps) {
 
 export function ShieldIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M10 2l6 2v5c0 4-3 7-6 9-3-2-6-5-6-9V4l6-2z" />
       <path d="M7 10l2 2 4-4" />
     </svg>
@@ -49,7 +70,14 @@ export function ShieldIcon({ style }: SvgProps) {
 
 export function ChevronDown({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M5 8l5 5 5-5" />
     </svg>
   );
@@ -57,7 +85,14 @@ export function ChevronDown({ style }: SvgProps) {
 
 export function ChevronRight({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M8 5l5 5-5 5" />
     </svg>
   );
@@ -65,7 +100,14 @@ export function ChevronRight({ style }: SvgProps) {
 
 export function BellIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M5 9a5 5 0 0110 0v3l1 2H4l1-2V9zM8 16a2 2 0 004 0" />
     </svg>
   );
@@ -73,7 +115,14 @@ export function BellIcon({ style }: SvgProps) {
 
 export function CameraIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <rect x="3" y="6" width="14" height="10" rx="2" />
       <circle cx="10" cy="11" r="2.5" />
       <path d="M7 6l1-2h4l1 2" />
@@ -83,7 +132,14 @@ export function CameraIcon({ style }: SvgProps) {
 
 export function ActivityIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M3 10h3l2-5 4 10 2-5h3" />
     </svg>
   );
@@ -91,7 +147,14 @@ export function ActivityIcon({ style }: SvgProps) {
 
 export function ClockIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <circle cx="10" cy="10" r="6" />
       <path d="M10 7v3l2 1" />
     </svg>
@@ -100,7 +163,14 @@ export function ClockIcon({ style }: SvgProps) {
 
 export function AlertTriangleIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M10 3l8 14H2L10 3z" />
       <path d="M10 9v3M10 14v.5" />
     </svg>
@@ -109,7 +179,14 @@ export function AlertTriangleIcon({ style }: SvgProps) {
 
 export function CalIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <rect x="3" y="5" width="14" height="12" rx="1.5" />
       <path d="M3 8h14M7 3v4M13 3v4" />
     </svg>
@@ -118,7 +195,14 @@ export function CalIcon({ style }: SvgProps) {
 
 export function FilterIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M3 5h14M5 10h10M8 15h4" />
     </svg>
   );
@@ -126,7 +210,14 @@ export function FilterIcon({ style }: SvgProps) {
 
 export function CheckIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
       <path d="M4 10l4 4 8-8" />
     </svg>
   );
@@ -134,7 +225,14 @@ export function CheckIcon({ style }: SvgProps) {
 
 export function FarmIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <path d="M2 10L10 2l8 8v8H2V10z" />
       <path d="M7 18v-5h6v5" />
     </svg>
@@ -143,7 +241,14 @@ export function FarmIcon({ style }: SvgProps) {
 
 export function GlobeIcon({ style }: SvgProps) {
   return (
-    <svg aria-hidden="true" style={style} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg
+      aria-hidden="true"
+      style={style}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+    >
       <circle cx="10" cy="10" r="7" />
       <path d="M3 10h14M10 3c-2 2-3 4.5-3 7s1 5 3 7M10 3c2 2 3 4.5 3 7s-1 5-3 7" />
     </svg>
@@ -161,7 +266,14 @@ export function KpiIcon({ name, color }: { name: string; color: string }) {
       return <CowHead size={18} color={color} />;
     case "circle":
       return (
-        <svg aria-hidden="true" style={s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <svg
+          aria-hidden="true"
+          style={s}
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+        >
           <circle cx="10" cy="10" r="6" />
           <path d="M10 4v3M10 13v3M4 10h3M13 10h3" />
         </svg>

@@ -11,7 +11,10 @@ export const getClinicalRecords = async (cowId: number): Promise<ClinicalRecordS
   return data;
 };
 
-export const getClinicalRecord = async (cowId: number, recordId: number): Promise<ClinicalRecord> => {
+export const getClinicalRecord = async (
+  cowId: number,
+  recordId: number,
+): Promise<ClinicalRecord> => {
   const { data } = await api.get(`/cows/${cowId}/clinical-records/${recordId}`);
   return data;
 };

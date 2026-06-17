@@ -305,26 +305,37 @@ function RiskScoreCard({ cowId }: { cowId: string | null }) {
     enabled: !!cowId,
   });
 
-  const latestTemp  = tempData?.[tempData.length - 1]?.average;
-  const latestHr    = hrData?.[hrData.length - 1]?.average;
+  const latestTemp = tempData?.[tempData.length - 1]?.average;
+  const latestHr = hrData?.[hrData.length - 1]?.average;
   const latestAccel = accelData?.[accelData.length - 1]?.average;
 
-  const tempOk  = latestTemp  === undefined || (latestTemp  >= 37.5 && latestTemp  < 39.5);
-  const hrOk    = latestHr    === undefined || (latestHr    >= 40   && latestHr    <= 100);
+  const tempOk = latestTemp === undefined || (latestTemp >= 37.5 && latestTemp < 39.5);
+  const hrOk = latestHr === undefined || (latestHr >= 40 && latestHr <= 100);
   // magnitude < 2 m/s² = baixa atividade (possível letargia); > 5 = agitação excessiva
-  const accelOk = latestAccel === undefined || (latestAccel >= 0.3  && latestAccel <= 5.0);
+  const accelOk = latestAccel === undefined || (latestAccel >= 0.3 && latestAccel <= 5.0);
 
-  const accelStatus = latestAccel === undefined
-    ? "Sem dados"
-    : latestAccel < 0.3 ? "Baixa atividade"
-    : latestAccel > 5.0 ? "Agitação"
-    : "Normal";
+  const accelStatus =
+    latestAccel === undefined
+      ? "Sem dados"
+      : latestAccel < 0.3
+        ? "Baixa atividade"
+        : latestAccel > 5.0
+          ? "Agitação"
+          : "Normal";
 
   const factors = [
-    { label: "Temperatura",    ok: tempOk,  status: latestTemp  === undefined ? "Sem dados" : tempOk  ? "Normal" : "Atenção" },
-    { label: "Freq. cardíaca", ok: hrOk,    status: latestHr    === undefined ? "Sem dados" : hrOk    ? "Normal" : "Atenção" },
-    { label: "Atividade",      ok: accelOk, status: accelStatus },
-    { label: "Ruminação",      ok: true,    status: "Não capturado" },
+    {
+      label: "Temperatura",
+      ok: tempOk,
+      status: latestTemp === undefined ? "Sem dados" : tempOk ? "Normal" : "Atenção",
+    },
+    {
+      label: "Freq. cardíaca",
+      ok: hrOk,
+      status: latestHr === undefined ? "Sem dados" : hrOk ? "Normal" : "Atenção",
+    },
+    { label: "Atividade", ok: accelOk, status: accelStatus },
+    { label: "Ruminação", ok: true, status: "Não capturado" },
   ];
 
   const knowns = [tempOk, hrOk, accelOk].filter((v) => v !== undefined);

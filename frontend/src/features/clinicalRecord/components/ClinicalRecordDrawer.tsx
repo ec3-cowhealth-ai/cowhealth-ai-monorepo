@@ -9,7 +9,12 @@ interface ClinicalRecordDrawerProps {
   isLoading?: boolean;
 }
 
-export default function ClinicalRecordDrawer({ open, onClose, onSubmit, isLoading }: ClinicalRecordDrawerProps) {
+export default function ClinicalRecordDrawer({
+  open,
+  onClose,
+  onSubmit,
+  isLoading,
+}: ClinicalRecordDrawerProps) {
   if (!open) return null;
 
   const handleSubmit = async (data: CreateClinicalRecordInput) => {

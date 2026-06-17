@@ -55,10 +55,7 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
   const { data: farms } = useFarms();
   const { data: roles } = useRoles();
 
-  const isSuperAdmin = useMemo(
-    () => me?.roles.some((r) => r.name === "SuperAdmin") || false,
-    [me],
-  );
+  const isSuperAdmin = useMemo(() => me?.roles.some((r) => r.name === "SuperAdmin") || false, [me]);
 
   const [form, setForm] = useState({
     name: "",
@@ -114,7 +111,11 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
               const farm = farms?.find((f) => String(f.id) === newFarmId);
               const domain = farm ? normalizeEmailPattern(farm.name) : "";
               const prefix = form.email.split("@")[0] || "";
-              setForm({ ...form, farmId: newFarmId, email: domain ? `${prefix}@${domain}.com` : form.email });
+              setForm({
+                ...form,
+                farmId: newFarmId,
+                email: domain ? `${prefix}@${domain}.com` : form.email,
+              });
             }}
           >
             <option value="">Selecionar fazenda...</option>
@@ -165,7 +166,6 @@ function CreateUserModal({ open, onClose, isLoading, onSubmit }: CreateModalProp
           ))}
         </select>
       </div>
-
     </FormModal>
   );
 }
@@ -183,10 +183,7 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
   const { data: me } = useMe();
   const { data: farms } = useFarms();
 
-  const isSuperAdmin = useMemo(
-    () => me?.roles.some((r) => r.name === "SuperAdmin") || false,
-    [me],
-  );
+  const isSuperAdmin = useMemo(() => me?.roles.some((r) => r.name === "SuperAdmin") || false, [me]);
 
   const [form, setForm] = useState({
     name: user?.name ?? "",
@@ -251,7 +248,6 @@ function EditUserModal({ user, onClose, isLoading, onSubmit }: EditModalProps) {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
       </div>
-
     </FormModal>
   );
 }
@@ -303,7 +299,9 @@ function ManageRolesModal({ userId, onClose }: RolesModalProps) {
                       <span key={role.id} className="role-badge">
                         {role.name}
                         <button
-                          onClick={() => remove({ userId: String(userId), roleId: String(role.id) })}
+                          onClick={() =>
+                            remove({ userId: String(userId), roleId: String(role.id) })
+                          }
                           disabled={removing}
                           className="role-badge__remove"
                         >
@@ -468,9 +466,7 @@ export const UsersPage = () => {
 
                   {/* Papel */}
                   <td>
-                    <span className="badge badge--muted">
-                      {user.roles?.[0]?.role?.name ?? "—"}
-                    </span>
+                    <span className="badge badge--muted">{user.roles?.[0]?.role?.name ?? "—"}</span>
                   </td>
 
                   {/* Status */}
