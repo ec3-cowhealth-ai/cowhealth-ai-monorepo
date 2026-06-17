@@ -177,6 +177,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
             </div>
           )}
           <button
+            aria-label="Alterar foto da vaca"
             style={{
               position: "absolute",
               bottom: 4,

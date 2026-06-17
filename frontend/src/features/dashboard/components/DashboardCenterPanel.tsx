@@ -370,6 +370,7 @@ function RiskGauge({ value }: { value: number }) {
     <div style={{ flexShrink: 0, textAlign: "center" }}>
       <div style={{ position: "relative", width: 80, height: 80 }}>
         <svg
+          aria-hidden="true"
           viewBox="0 0 70 70"
           style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}
         >
@@ -567,6 +568,7 @@ function ComingSoon({ label }: { label: string }) {
         }}
       >
         <svg
+          aria-hidden="true"
           viewBox="0 0 20 20"
           style={{ width: 18, height: 18, color: C.green }}
           fill="none"

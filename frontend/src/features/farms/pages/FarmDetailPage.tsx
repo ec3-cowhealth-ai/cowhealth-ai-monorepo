@@ -105,12 +105,12 @@ export const FarmDetailPage = () => {
             <button
               className="app-bar__action"
               onClick={() => setShowVetRequest(true)}
-              title="Solicitar veterinário"
+              aria-label="Solicitar veterinário"
             >
               <Stethoscope size={18} />
             </button>
             {canEdit && (
-              <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+              <button className="app-bar__action" aria-label="Editar fazenda" onClick={() => setShowEdit(true)}>
                 <Edit2 size={18} />
               </button>
             )}

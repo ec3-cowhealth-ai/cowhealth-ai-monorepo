@@ -206,11 +206,11 @@ export const CowsPage = () => {
         subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
         actions={
           <div style={{ display: "flex", gap: 12 }}>
-            <button className="app-bar__action" onClick={() => setShowSearch((v) => !v)}>
+            <button className="app-bar__action" aria-label="Pesquisar vacas" onClick={() => setShowSearch((v) => !v)}>
               <Search size={20} />
             </button>
             {canCRUD && (
-              <button className="app-bar__action" onClick={() => setShowCreate(true)}>
+              <button className="app-bar__action" aria-label="Criar vaca" onClick={() => setShowCreate(true)}>
                 <Plus size={20} />
               </button>
             )}

@@ -6,6 +6,8 @@ import ClinicalRecordDrawer from "../components/ClinicalRecordDrawer";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
 import type { CreateClinicalRecordInput } from "../types";
+import { useMedicalRecords } from "@features/cows/hooks/useMedicalRecords";
+import { MedicalRecordCard } from "@features/cows/components/MedicalRecordCard";
 
 export default function ClinicalRecordListPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +16,7 @@ export default function ClinicalRecordListPage() {
   const [showDrawer, setShowDrawer] = useState(false);
   const canCreate = useHasPermission(PERMISSIONS.CREATE_CLINICAL_RECORD);
   const { data: records, isLoading, isError } = useClinicalRecords(cowId);
+  const { data: medicalRecords } = useMedicalRecords(cowId);
   const create = useCreateClinicalRecord(cowId);
 
   const handleCreateSubmit = async (data: CreateClinicalRecordInput) => {
@@ -46,6 +49,18 @@ export default function ClinicalRecordListPage() {
           {records.map((r) => (
             <ClinicalRecordCard key={r.id} cowId={cowId} record={r} />
           ))}
+        </div>
+      )}
+
+      {medicalRecords && medicalRecords.length > 0 && (
+        <div style={{ marginTop: "2rem" }}>
+          <hr style={{ border: "none", borderTop: "1px solid var(--border-subtle)", marginBottom: "1.5rem" }} />
+          <h2 style={{ margin: "0 0 1rem 0", fontSize: "1rem", fontWeight: 600 }}>Registros médicos</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {medicalRecords.map((r) => (
+              <MedicalRecordCard key={r.id} record={r} cowId={cowId} />
+            ))}
+          </div>
         </div>
       )}
 

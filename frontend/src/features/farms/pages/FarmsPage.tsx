@@ -49,7 +49,7 @@ export const FarmsPage = () => {
         title="Fazendas"
         actions={
           canCreate && (
-            <button className="app-bar__action" onClick={() => setShowForm(true)}>
+            <button className="app-bar__action" aria-label="Criar fazenda" onClick={() => setShowForm(true)}>
               <Plus size={20} />
             </button>
           )

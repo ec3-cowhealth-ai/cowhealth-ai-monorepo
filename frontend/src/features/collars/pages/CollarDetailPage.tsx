@@ -167,12 +167,12 @@ export const CollarDetailPage = () => {
           (canEdit || canDelete) && (
             <div style={{ display: "flex", gap: 12 }}>
               {canEdit && (
-                <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+                <button className="app-bar__action" aria-label="Editar coleira" onClick={() => setShowEdit(true)}>
                   <Edit2 size={18} />
                 </button>
               )}
               {canDelete && (
-                <button className="app-bar__action" onClick={() => setShowDelete(true)}>
+                <button className="app-bar__action" aria-label="Excluir coleira" onClick={() => setShowDelete(true)}>
                   <Trash2 size={18} />
                 </button>
               )}

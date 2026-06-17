@@ -280,10 +280,10 @@ export const CowDetailPage = () => {
         actions={
           canCRUD && (
             <div style={{ display: "flex", gap: 12 }}>
-              <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+              <button className="app-bar__action" aria-label="Editar vaca" onClick={() => setShowEdit(true)}>
                 <Edit2 size={18} />
               </button>
-              <button className="app-bar__action" onClick={() => setShowDelete(true)}>
+              <button className="app-bar__action" aria-label="Excluir vaca" onClick={() => setShowDelete(true)}>
                 <Trash2 size={18} />
               </button>
             </div>
