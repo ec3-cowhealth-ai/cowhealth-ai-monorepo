@@ -2,11 +2,11 @@
 // Quando o backend retornar latitude/longitude em GET /farms, os valores opcionais do tipo Farm
 // serão usados e este mapa deixa de ser necessário.
 const FARM_COORDS: Record<number, { lat: number; lng: number }> = {
-  1: { lat: -23.40185, lng: -51.12492 },
-  2: { lat: -19.82942, lng: -47.86768 },
-  3: { lat: -16.7653, lng: -49.0724 },
-  4: { lat: -20.6038, lng: -48.6286 },
-  5: { lat: -15.7395, lng: -56.0482 },
+  1: { lat: -24.6953, lng: -50.7126 }, // Fazenda Aurora
+  2: { lat: -24.8373, lng: -49.9234 }, // Fazenda Sao Bento
+  3: { lat: -24.9638, lng: -50.0298 }, // Fazenda Santa Clara
+  4: { lat: -26.7771, lng: -51.6224 }, // Fazenda Boa Esperanca
+  5: { lat: -24.9578, lng: -53.4554 }, // Fazenda Vale Verde
 };
 
 // Raio de distribuição das vacas dentro da fazenda (em metros)
