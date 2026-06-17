@@ -243,8 +243,8 @@ const farmData = [
     state: "PR",
     phone: "(41) 99000-0001",
     email: "aurora@cowhealth.com",
-    latitude: -23.40185,
-    longitude: -51.12492,
+    latitude: -24.6953,
+    longitude: -50.7126,
   },
   {
     name: "Fazenda Sao Bento",
@@ -253,8 +253,8 @@ const farmData = [
     state: "PR",
     phone: "(43) 99000-0002",
     email: "saobento@cowhealth.com",
-    latitude: -19.82942,
-    longitude: -47.86768,
+    latitude: -24.8373,
+    longitude: -49.9234,
   },
   {
     name: "Fazenda Boa Esperanca",
@@ -263,8 +263,8 @@ const farmData = [
     state: "PR",
     phone: "(44) 99000-0003",
     email: "boaesperanca@cowhealth.com",
-    latitude: -16.7653,
-    longitude: -49.0724,
+    latitude: -26.7771,
+    longitude: -51.6224,
   },
   {
     name: "Fazenda Santa Clara",
@@ -273,8 +273,8 @@ const farmData = [
     state: "PR",
     phone: "(42) 99000-0004",
     email: "santaclara@cowhealth.com",
-    latitude: -20.6038,
-    longitude: -48.6286,
+    latitude: -24.9638,
+    longitude: -50.0298,
   },
   {
     name: "Fazenda Vale Verde",
@@ -283,8 +283,8 @@ const farmData = [
     state: "PR",
     phone: "(45) 99000-0005",
     email: "valeverde@cowhealth.com",
-    latitude: -15.7395,
-    longitude: -56.0482,
+    latitude: -24.9578,
+    longitude: -53.4554,
   },
 ];
 
