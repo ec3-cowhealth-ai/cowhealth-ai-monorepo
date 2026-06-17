@@ -50,7 +50,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;
-  height: 100vh;
+  height: 100vh; /* fallback for browsers without dvh support */
   height: 100dvh;
   overflow: hidden;
   background: var(--bg-app);

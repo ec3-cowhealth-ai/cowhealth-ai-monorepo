@@ -4,7 +4,7 @@ import type {
   ClinicalRecordSummary,
   CreateClinicalRecordInput,
   UpdateClinicalRecordInput,
-} from "../features/clinicalRecord/types";
+} from "@features/clinicalRecord/types";
 
 export const getClinicalRecords = async (cowId: number): Promise<ClinicalRecordSummary[]> => {
   const { data } = await api.get(`/cows/${cowId}/clinical-records`);

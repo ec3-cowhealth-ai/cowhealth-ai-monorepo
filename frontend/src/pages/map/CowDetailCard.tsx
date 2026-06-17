@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { Icon } from "@components/ui/Icon";
-import { COW_STATUS_VALUES } from "../../types/cows";
-import type { Cow } from "../../types/cows";
+import { COW_STATUS_VALUES } from "@/types/cows";
+import type { Cow } from "@/types/cows";
 
 interface CowDetailCardProps {
   cow: Cow;

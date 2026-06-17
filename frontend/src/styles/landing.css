@@ -137,7 +137,7 @@ button {
 /* Stage wrapper for viewport height */
 .stage {
   display: block;
-  min-height: 100vh;
+  min-height: 100vh; /* fallback for browsers without dvh support */
   min-height: 100dvh;
   background: var(--bg-app);
 }
@@ -145,7 +145,7 @@ button {
 /* APP */
 .app {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; /* fallback for browsers without dvh support */
   min-height: 100dvh;
   background: var(--bg-app);
   color: var(--text-primary);

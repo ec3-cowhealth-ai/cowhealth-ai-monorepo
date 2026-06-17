@@ -35,7 +35,7 @@ export const getDashboardOverview = async (
     prisma.collar.count({ where: { status: "ACTIVE" } }),
     prisma.notification.count({ where: { readAt: null, userId } }),
     prisma.temperatureData.aggregate({
-      where: { cow: cowWhere, recordedAt: { gte: since24h } },
+      where: { cow: cowWhere, measuredAt: { gte: since24h } },
       _avg: { celsius: true },
     }),
   ]);

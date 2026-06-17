@@ -20,7 +20,7 @@ export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => (
     <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>Vacas por Status</p>
     <ResponsiveContainer width="100%" height={260}>
       <PieChart>
-        <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={90} label>
+        <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={90} label={true}>
           {data.map((entry, i) => (
             <Cell key={`cell-${i}`} fill={STATUS_COLORS[entry.label] ?? "#8884d8"} />
           ))}
