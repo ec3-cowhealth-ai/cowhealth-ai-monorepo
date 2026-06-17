@@ -11,7 +11,7 @@ import { DashboardCenterPanel } from "../components/DashboardCenterPanel";
 import { DashboardAlertFeed } from "../components/DashboardAlertFeed";
 import { DashboardActivityTimeline } from "../components/DashboardActivityTimeline";
 import { DashboardOverviewChart } from "../components/DashboardOverviewChart";
-import { CalIcon, FilterIcon, ChevronDown } from "../components/DashboardIcons";
+import { CalIcon, ChevronDown } from "../components/DashboardIcons";
 import { CowHead } from "@components/ui/CowHeadIcon";
 
 type DateRangeOption = "7days" | "14days" | "30days" | "90days";
@@ -159,10 +159,6 @@ export const DashboardPage = () => {
                 ))}
               </div>
             )}
-            <button style={{ ...btnOutlineStyle }}>
-              <FilterIcon style={{ width: 16, height: 16, color: C.green }} />
-              Filtrar
-            </button>
           </div>
         </header>
 

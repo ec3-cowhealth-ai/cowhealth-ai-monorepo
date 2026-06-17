@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { C } from "../constants/colors";
+import { CowHead } from "@components/ui/CowHeadIcon";
 
 type SvgProps = { style?: CSSProperties; color?: string };
 
@@ -157,7 +158,7 @@ export function KpiIcon({ name, color }: { name: string; color: string }) {
     case "heart":
       return <HeartIcon style={s} />;
     case "cow":
-      return <CowGlyph style={s} />;
+      return <CowHead size={18} color={color} />;
     case "circle":
       return (
         <svg aria-hidden="true" style={s} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6">
