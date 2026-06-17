@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { CowMark } from "@components/ui/CowMark";
+import { CowHead } from "@components/ui/CowHeadIcon";
 import { StatusDot } from "@components/ui/StatusDot";
 import { Icon } from "@components/ui/Icon";
 import { COW_STATUS_VALUES } from "../../types/cows";
@@ -7,9 +7,11 @@ import type { Cow } from "../../types/cows";
 
 interface CowDetailCardProps {
   cow: Cow;
+  lat: number;
+  lng: number;
 }
 
-export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
+export const CowDetailCard = ({ cow, lat, lng }: CowDetailCardProps) => {
   const navigate = useNavigate();
 
   const tone =
@@ -27,7 +29,7 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
         left: 16,
         right: 16,
         zIndex: 10,
-        background: "rgba(19,21,21,0.92)",
+        background: "var(--bg-elev-1)",
         backdropFilter: "blur(20px)",
         border: "1px solid var(--border)",
         borderRadius: 16,
@@ -46,9 +48,9 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
             position: "relative",
           }}
         >
-          <CowMark
-            s={26}
-            primary={cow.status === COW_STATUS_VALUES.ALERT ? "var(--danger)" : "var(--verdigris)"}
+          <CowHead
+            size={26}
+            color={cow.status === COW_STATUS_VALUES.ALERT ? "var(--danger)" : "var(--verdigris)"}
           />
           <span style={{ position: "absolute", bottom: -2, right: -2 }}>
             <StatusDot tone={tone} pulse={cow.status === COW_STATUS_VALUES.ALERT} />
@@ -56,21 +58,15 @@ export const CowDetailCard = ({ cow }: CowDetailCardProps) => {
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontWeight: 700, fontFamily: "var(--font-display)" }}>{cow.name}</span>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--text-muted)",
-              }}
-            >
-              #{cow.tag}
-            </span>
+          <div style={{ fontWeight: 700, fontFamily: "var(--font-display)" }}>{cow.name}</div>
+          <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--text-muted)", marginTop: 1 }}>
+            #{cow.tag}
           </div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-            {cow.farm?.name}
-            {cow.collar && ` · ${cow.collar.name}`}
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1 }}>
+            {cow.farm?.name}{cow.collar && ` · ${cow.collar.name}`}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 1, fontFamily: "var(--font-mono)" }}>
+            latitude {lat.toFixed(6)} · longitude {lng.toFixed(6)}
           </div>
         </div>
 

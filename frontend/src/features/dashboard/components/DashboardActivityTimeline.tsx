@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "@lib/api";
 import { C, cardStyle, btnOutlineStyle } from "../constants/colors";
@@ -28,6 +28,7 @@ interface Props {
 
 export function DashboardActivityTimeline({ cowId }: Props) {
   const [date, setDate] = useState(() => toLocalDate(new Date()));
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["activity-timeline", cowId, date],
@@ -72,8 +73,19 @@ export function DashboardActivityTimeline({ cowId }: Props) {
           >
             <ChevronLeft size={12} />
           </button>
-          <button style={{ ...btnOutlineStyle, fontSize: 11, padding: "5px 12px", minWidth: 100, justifyContent: "center" }}>
+          <button
+            onClick={() => dateInputRef.current?.showPicker()}
+            style={{ ...btnOutlineStyle, fontSize: 11, padding: "5px 12px", minWidth: 100, justifyContent: "center", position: "relative" }}
+          >
             {dateLabel} <ChevronDown style={{ width: 12, height: 12 }} />
+            <input
+              ref={dateInputRef}
+              type="date"
+              value={date}
+              max={toLocalDate(new Date())}
+              onChange={(e) => e.target.value && setDate(e.target.value)}
+              style={{ position: "absolute", opacity: 0, width: 0, height: 0, pointerEvents: "none" }}
+            />
           </button>
           <button
             onClick={nextDay}
