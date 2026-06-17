@@ -263,8 +263,8 @@ const farmData = [
     state: "PR",
     phone: "(44) 99000-0003",
     email: "boaesperanca@cowhealth.com",
-    latitude: -26.7771,
-    longitude: -51.6224,
+    latitude: -23.6800,
+    longitude: -52.2500,
   },
   {
     name: "Fazenda Santa Clara",

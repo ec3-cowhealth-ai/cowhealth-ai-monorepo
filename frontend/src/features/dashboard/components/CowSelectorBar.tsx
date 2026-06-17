@@ -52,7 +52,7 @@ export function CowSelectorBar({
       {/* Mode toggle */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <span style={{ fontSize: 12, color: C.muted, fontWeight: 500, marginRight: 4 }}>
-          Seleção de vaca:
+          Seleção de rebanho:
         </span>
         {MODES.map(({ key, label, Icon }) => {
           const active = mode === key;
