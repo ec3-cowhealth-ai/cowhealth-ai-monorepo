@@ -26,7 +26,7 @@ Cada administrador acessa exclusivamente a sua fazenda.
 | `administrador@saobento.com` | `12345678` | Fazenda Sao Bento (Londrina, PR) |
 | `administrador@boaesperanca.com` | `12345678` | Fazenda Boa Esperanca (Maringa, PR) |
 | `administrador@santaclara.com` | `12345678` | Fazenda Santa Clara (Ponta Grossa, PR) |
-| `administrador@valeverde.com` | `12345678` | Fazenda Vale Verde (Cascavel, PR) |
+| `administrador@trevizan.com` | `12345678` | Fazenda Trevizan (Rio Grande do Sul) |
 
 ---
 
@@ -64,7 +64,7 @@ Cada administrador acessa exclusivamente a sua fazenda.
 |---|---|---|---|---|---|
 | 1 | Fazenda Santa Clara | Ponta Grossa | PR | -25.0945 | -50.1633 |
 | 2 | Fazenda Aurora | Curitiba | PR | -14.0658 | -50.4153 |
-| 3 | Fazenda Vale Verde | Cascavel | PR | -24.9578 | -53.4554 |
+| 3 | Fazenda Trevizan | Rio Grande do Sul | RS | -29.1335 | -51.3928 |
 | 4 | Fazenda Sao Bento | Londrina | PR | -14.9375 | -51.0800 |
 | 5 | Fazenda Boa Esperanca | Maringa | PR | -12.9167 | -52.4167 |
 

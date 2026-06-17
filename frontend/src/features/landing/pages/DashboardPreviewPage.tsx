@@ -189,7 +189,7 @@ function Sidebar() {
         }}>JH</div>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 13, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Dr. James Harper</div>
-          <div style={{ fontSize: 11, color: "#7fa890", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Fazenda Vale Verde</div>
+          <div style={{ fontSize: 11, color: "#7fa890", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Fazenda Trevizan</div>
         </div>
         <ChevronDown style={{ width: 16, height: 16, color: "#7fa890", flexShrink: 0 }} />
       </div>
@@ -210,7 +210,7 @@ function TopBar() {
           Visão geral do rebanho
         </h1>
         <div style={{ marginTop: 4, fontSize: 13, color: C.muted }}>
-          Fazenda Vale Verde · 247 cabeças
+          Fazenda Trevizan · 247 cabeças
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
