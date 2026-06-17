@@ -11,15 +11,9 @@ export const getDashboardOverview = async (
   farmId?: number,
   userId?: number,
   farmIds?: number[] | null,
-  _period?: "day" | "week" | "month",
-  dateStart?: string,
-  dateEnd?: string,
 ) => {
   const farmFilter = buildFarmFilter(farmId, farmIds);
-  const dateFilter = dateStart && dateEnd
-    ? { createdAt: { gte: new Date(dateStart), lte: new Date(dateEnd + "T23:59:59") } }
-    : {};
-  const cowWhere = { ...farmFilter, ...dateFilter, status: { not: "RETIRED" as const } };
+  const cowWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
 
   const [
     totalCows,
@@ -63,14 +57,9 @@ export const getDashboardOverview = async (
 export const getCowsPerStatus = async (
   farmId?: number,
   farmIds?: number[] | null,
-  dateStart?: string,
-  dateEnd?: string,
 ) => {
   const farmFilter = buildFarmFilter(farmId, farmIds);
-  const dateFilter = dateStart && dateEnd
-    ? { createdAt: { gte: new Date(dateStart), lte: new Date(dateEnd + "T23:59:59") } }
-    : {};
-  const where = { ...farmFilter, ...dateFilter, status: { not: "RETIRED" as const } };
+  const where = { ...farmFilter, status: { not: "RETIRED" as const } };
 
   const statusGroups = await prisma.cow.groupBy({
     by: ["status"],
@@ -261,7 +250,9 @@ const classifyActivity = (avgXY: number, avgGyro: number) => {
 };
 
 export const getCowActivityTimeline = async (cowId: number, date?: string) => {
-  const base = date ? new Date(date) : new Date();
+  // Append T00:00:00 (no Z) so the string is parsed as local time, not UTC.
+  // new Date("2026-06-17") → UTC midnight; new Date("2026-06-17T00:00:00") → local midnight.
+  const base = date ? new Date(date + "T00:00:00") : new Date();
   const start = new Date(base); start.setHours(0, 0, 0, 0);
   const end   = new Date(base); end.setHours(23, 59, 59, 999);
 
@@ -290,7 +281,7 @@ export const getCowActivityTimeline = async (cowId: number, date?: string) => {
       label,
       icon,
       color,
-      durationMin: recs.length * 60,
+      durationMin: 60,
     };
   });
 
@@ -376,9 +367,9 @@ const buildBuckets = (period: string, from?: string, to?: string): Bucket[] => {
 
   if (period === "custom" && from && to) {
     const buckets: Bucket[] = [];
-    const cur = new Date(from);
+    const cur = new Date(from + "T00:00:00");
     cur.setHours(0, 0, 0, 0);
-    const toDate = new Date(to);
+    const toDate = new Date(to + "T00:00:00");
     toDate.setHours(23, 59, 59, 999);
     while (cur <= toDate) {
       const start = new Date(cur);
@@ -403,6 +394,9 @@ const buildBuckets = (period: string, from?: string, to?: string): Bucket[] => {
   });
 };
 
+// Limiares fisiológicos para classificação histórica por bucket
+const THRESH = { tempHeatStress: 39.5, tempAlert: 39.0, bpmHigh: 100 };
+
 export const getHealthTimeline = async (
   farmId?: number,
   farmIds?: number[] | null,
@@ -411,17 +405,66 @@ export const getHealthTimeline = async (
   to?: string,
 ) => {
   const farmFilter = buildFarmFilter(farmId, farmIds);
-  const baseWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
+  const cowWhere = { ...farmFilter, status: { not: "RETIRED" as const } };
   const buckets = buildBuckets(period, from, to);
 
+  // IDs das vacas ativas no escopo da fazenda
+  const activeCows = await prisma.cow.findMany({ where: cowWhere, select: { id: true } });
+  const cowIds = activeCows.map((c) => c.id);
+
+  if (cowIds.length === 0) {
+    return buckets.map(({ label }) => ({ label, healthy: 0, alert: 0, heatStress: 0, calving: 0 }));
+  }
+
   return Promise.all(
-    buckets.map(async ({ end, label }) => {
-      const [healthy, alert, heatStress, calving] = await Promise.all([
-        prisma.cow.count({ where: { ...baseWhere, status: "HEALTHY",    createdAt: { lte: end } } }),
-        prisma.cow.count({ where: { ...baseWhere, status: "ALERT",      createdAt: { lte: end } } }),
-        prisma.cow.count({ where: { ...baseWhere, status: "HEAT_STRESS",createdAt: { lte: end } } }),
-        prisma.cow.count({ where: { ...baseWhere, status: "CALVING",    createdAt: { lte: end } } }),
+    buckets.map(async ({ start, end, label }) => {
+      const dateFilter = { gte: start, lte: end };
+
+      // Pico de temperatura e FC por vaca no bucket — MAX detecta anomalias que a média esconde
+      const [tempGroups, bpmGroups, calvingNotifs] = await Promise.all([
+        prisma.temperatureData.groupBy({
+          by: ["cowId"],
+          where: { cowId: { in: cowIds }, measuredAt: dateFilter },
+          _max: { celsius: true },
+        }),
+        prisma.heartRateData.groupBy({
+          by: ["cowId"],
+          where: { cowId: { in: cowIds }, measuredAt: dateFilter },
+          _max: { bpm: true },
+        }),
+        prisma.notification.findMany({
+          where: { cowId: { in: cowIds }, alertType: "CALVING", createdAt: dateFilter },
+          select: { cowId: true },
+        }),
       ]);
+
+      const bpmMap = new Map(bpmGroups.map((g) => [g.cowId, g._max.bpm ?? 0]));
+      const calvingIds = new Set(calvingNotifs.map((n) => n.cowId));
+      const classified = new Set<number>();
+
+      let healthy = 0, alert = 0, heatStress = 0;
+      const calving = calvingIds.size;
+
+      for (const tg of tempGroups) {
+        classified.add(tg.cowId);
+        if (calvingIds.has(tg.cowId)) continue;
+
+        const maxTemp = tg._max.celsius ?? 0;
+        const maxBpm = bpmMap.get(tg.cowId) ?? 0;
+
+        if (maxTemp > THRESH.tempHeatStress && maxBpm > THRESH.bpmHigh) heatStress++;
+        else if (maxTemp > THRESH.tempAlert || maxBpm > THRESH.bpmHigh) alert++;
+        else healthy++;
+      }
+
+      // Vacas com FC mas sem leitura de temperatura no bucket
+      for (const bg of bpmGroups) {
+        if (classified.has(bg.cowId) || calvingIds.has(bg.cowId)) continue;
+        classified.add(bg.cowId);
+        if ((bg._max.bpm ?? 0) > THRESH.bpmHigh) alert++;
+        else healthy++;
+      }
+
       return { label, healthy, alert, heatStress, calving };
     }),
   );

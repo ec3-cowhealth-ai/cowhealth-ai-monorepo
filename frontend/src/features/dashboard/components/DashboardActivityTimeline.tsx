@@ -38,6 +38,7 @@ export function DashboardActivityTimeline({ cowId }: Props) {
       return res.data;
     },
     enabled: !!cowId,
+    refetchInterval: 30000,
   });
 
   const prevDay = () => {

@@ -42,16 +42,16 @@ export default function ClinicalRecordDrawer({ open, onClose, onSubmit, isLoadin
         style={{
           position: "fixed",
           top: 0,
-          left: 0,
+          right: 0,
           height: "100vh",
           width: "100%",
           maxWidth: 600,
-          background: "var(--bg-primary)",
-          boxShadow: "2px 0 12px rgba(0, 0, 0, 0.15)",
+          background: "var(--bg-elev-1)",
+          boxShadow: "-2px 0 20px rgba(0, 0, 0, 0.25)",
           zIndex: 1000,
           display: "flex",
           flexDirection: "column",
-          animation: "slideInLeft 0.3s ease-out",
+          animation: "slideInRight 0.3s ease-out",
         }}
       >
         {/* Header */}
@@ -103,9 +103,9 @@ export default function ClinicalRecordDrawer({ open, onClose, onSubmit, isLoadin
       </div>
 
       <style>{`
-        @keyframes slideInLeft {
+        @keyframes slideInRight {
           from {
-            transform: translateX(-100%);
+            transform: translateX(100%);
           }
           to {
             transform: translateX(0);

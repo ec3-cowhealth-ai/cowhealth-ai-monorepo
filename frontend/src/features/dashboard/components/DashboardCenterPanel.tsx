@@ -299,21 +299,37 @@ function RiskScoreCard({ cowId }: { cowId: string | null }) {
     queryFn: () => cowsService.getHeartRateDaily(cowId!, 7),
     enabled: !!cowId,
   });
+  const { data: accelData } = useQuery({
+    queryKey: ["cows", cowId, "accelerometer-daily", 7],
+    queryFn: () => cowsService.getAccelerometerDaily(cowId!, 7),
+    enabled: !!cowId,
+  });
 
-  const latestTemp = tempData?.[tempData.length - 1]?.average;
-  const latestHr = hrData?.[hrData.length - 1]?.average;
+  const latestTemp  = tempData?.[tempData.length - 1]?.average;
+  const latestHr    = hrData?.[hrData.length - 1]?.average;
+  const latestAccel = accelData?.[accelData.length - 1]?.average;
 
-  const tempOk = latestTemp === undefined || (latestTemp >= 37.5 && latestTemp < 39.5);
-  const hrOk = latestHr === undefined || (latestHr >= 40 && latestHr <= 80);
+  const tempOk  = latestTemp  === undefined || (latestTemp  >= 37.5 && latestTemp  < 39.5);
+  const hrOk    = latestHr    === undefined || (latestHr    >= 40   && latestHr    <= 100);
+  // magnitude < 2 m/s² = baixa atividade (possível letargia); > 5 = agitação excessiva
+  const accelOk = latestAccel === undefined || (latestAccel >= 0.3  && latestAccel <= 5.0);
+
+  const accelStatus = latestAccel === undefined
+    ? "Sem dados"
+    : latestAccel < 0.3 ? "Baixa atividade"
+    : latestAccel > 5.0 ? "Agitação"
+    : "Normal";
 
   const factors = [
-    { label: "Temperatura", ok: tempOk, status: tempOk ? "Normal" : "Atenção" },
-    { label: "Freq. cardíaca", ok: hrOk, status: hrOk ? "Normal" : "Atenção" },
-    { label: "Atividade", ok: true, status: "Aguardando dados" },
-    { label: "Ruminação", ok: true, status: "Aguardando dados" },
+    { label: "Temperatura",    ok: tempOk,  status: latestTemp  === undefined ? "Sem dados" : tempOk  ? "Normal" : "Atenção" },
+    { label: "Freq. cardíaca", ok: hrOk,    status: latestHr    === undefined ? "Sem dados" : hrOk    ? "Normal" : "Atenção" },
+    { label: "Atividade",      ok: accelOk, status: accelStatus },
+    { label: "Ruminação",      ok: true,    status: "Não capturado" },
   ];
 
-  const score = !cowId ? 0 : [tempOk, hrOk].filter(Boolean).length * 14;
+  const knowns = [tempOk, hrOk, accelOk].filter((v) => v !== undefined);
+  const badCount = knowns.filter((v) => !v).length;
+  const score = !cowId ? 0 : knowns.length === 0 ? 0 : Math.round((badCount / knowns.length) * 100);
 
   return (
     <div style={{ ...cardStyle }}>
@@ -364,8 +380,8 @@ function RiskGauge({ value }: { value: number }) {
   const r = 30,
     c = 2 * Math.PI * r;
   const offset = c - (value / 100) * c;
-  const color = value < 30 ? C.green : value < 60 ? C.orange : C.red;
-  const label = value < 30 ? "Risco baixo" : value < 60 ? "Moderado" : "Alto risco";
+  const color = value <= 33 ? C.green : value <= 66 ? C.orange : C.red;
+  const label = value <= 33 ? "Risco baixo" : value <= 66 ? "Moderado" : "Alto risco";
   return (
     <div style={{ flexShrink: 0, textAlign: "center" }}>
       <div style={{ position: "relative", width: 80, height: 80 }}>

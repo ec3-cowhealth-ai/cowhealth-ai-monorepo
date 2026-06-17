@@ -757,10 +757,11 @@ async function main() {
 
   console.log(`${createdCows.length} vacas criadas`);
 
-  // Dados de sensores — 1 semana de historico para todas as vacas com colar
-  console.log("Criando dados de sensores (1 semana por vaca — isso pode demorar)...");
+  // Dados de sensores — 166 dias de histórico (2026-01-01 → 2026-06-16, 1 leitura/hora)
+  console.log("Criando dados de sensores (166 dias × 160 vacas — isso pode demorar)...");
 
-  const HOURS_OF_DATA = 168;
+  const HOURS_OF_DATA = 166 * 24; // 3 984 horas
+  const SIM_START = new Date("2026-01-01T00:00:00.000Z");
 
   for (const { cow, scenario } of createdCows) {
     const heartRateRecords = [];
@@ -768,7 +769,7 @@ async function main() {
     const accelerometerRecords = [];
 
     for (let hoursAgo = HOURS_OF_DATA; hoursAgo >= 0; hoursAgo--) {
-      const measuredAt = dateHoursAgo(hoursAgo);
+      const measuredAt = new Date(SIM_START.getTime() + (HOURS_OF_DATA - hoursAgo) * 3_600_000);
       const isAlertWindow = hoursAgo <= 6;
 
       let bpm: number, celsius: number;
