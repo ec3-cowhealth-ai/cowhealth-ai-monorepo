@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useState, useMemo } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useState, useMemo, useEffect } from "react";
 import { AppBar } from "@components/layout";
 import { Icon } from "@components/ui/Icon";
 import { useCows } from "@features/cows/hooks/useCows";
@@ -18,6 +18,14 @@ const STATUS_COLOR: Record<string, string> = {
   [COW_STATUS_VALUES.CALVING]: "#a855f7",
   [COW_STATUS_VALUES.ALERT]: "#ef4444",
 };
+
+function MapController({ center }: { center: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(center, map.getZoom(), { duration: 1 });
+  }, [center[0], center[1]]);
+  return null;
+}
 
 function makeCowIcon(color: string, selected: boolean, isReal: boolean) {
   const cls = [
@@ -100,10 +108,10 @@ export const MapPage = () => {
       <MapContainer
         center={center}
         zoom={15}
-        key={`${center[0]},${center[1]}`}
         style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
         zoomControl={false}
       >
+        <MapController center={center} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

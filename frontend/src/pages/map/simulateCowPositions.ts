@@ -5,7 +5,7 @@ const FARM_COORDS: Record<number, { lat: number; lng: number }> = {
   1: { lat: -24.6953, lng: -50.7126 }, // Fazenda Aurora
   2: { lat: -24.8373, lng: -49.9234 }, // Fazenda Sao Bento
   3: { lat: -24.9638, lng: -50.0298 }, // Fazenda Santa Clara
-  4: { lat: -23.6800, lng: -52.2500 }, // Fazenda Boa Esperanca
+  4: { lat: -27.3482, lng: -51.0117 }, // Fazenda Boa Esperanca
   5: { lat: -24.9578, lng: -53.4554 }, // Fazenda Vale Verde
 };
 
