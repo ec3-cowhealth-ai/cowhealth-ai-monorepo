@@ -184,7 +184,7 @@ export const DashboardPage = () => {
         <DashboardKPIs overview={overview} cowsPerStatus={cowsPerStatus} />
 
         {/* Health timeline chart */}
-        <DashboardOverviewChart farmId={selectedFarm?.id} />
+        <DashboardOverviewChart farmId={kpiFarmId ? Number(kpiFarmId) : undefined} />
 
         {/* Main 3-column grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
