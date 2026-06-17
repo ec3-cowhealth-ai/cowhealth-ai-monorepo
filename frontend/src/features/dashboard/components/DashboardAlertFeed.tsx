@@ -9,6 +9,7 @@ interface Props {
   onSelectCow?: (cowId: string) => void;
 }
 
+// noinspection NonAsciiCharacters
 type Severity = "Alto" | "Médio" | "Baixo";
 
 function severity(type: string | undefined): Severity {

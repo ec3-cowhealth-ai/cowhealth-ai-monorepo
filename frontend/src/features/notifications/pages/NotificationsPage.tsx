@@ -83,14 +83,11 @@ export const NotificationsPage = () => {
   };
 
   const notifications = useMemo(() => {
-    let base: Notification[] = [];
-    if (tab === "unread") {
-      base = unread || [];
-    } else if (tab === "read") {
-      base = (all || []).filter((n) => n.read);
-    } else {
-      base = all || [];
-    }
+    const base = tab === "unread"
+      ? unread || []
+      : tab === "read"
+        ? (all || []).filter((n) => n.read)
+        : all || [];
     if (severity === "all") return base;
     return base.filter((n) => inferSeverity(n) === severity);
   }, [tab, severity, all, unread]);
