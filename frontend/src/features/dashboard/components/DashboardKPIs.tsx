@@ -80,11 +80,11 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
     },
     {
       label: "Temp. média",
-      value: "--",
+      value: overview?.avgTemperature != null ? String(overview.avgTemperature) : "--",
       unit: "°C",
       sub: "",
-      delta: "Dados em breve",
-      tone: "warn",
+      delta: overview?.avgTemperature != null ? "Últimas 24h" : "Sem leituras recentes",
+      tone: overview?.avgTemperature != null && overview.avgTemperature > 39.5 ? "warn" : "good",
       icon: "temp",
     },
   ];
