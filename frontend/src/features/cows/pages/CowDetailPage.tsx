@@ -11,7 +11,7 @@ import {
   Edit2,
   Trash2,
   Link,
-  LinkOff,
+  Link2Off,
   Plus,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
@@ -415,7 +415,7 @@ export const CowDetailPage = () => {
                     title="Desvincular"
                     onClick={() => setShowUnlink(true)}
                   >
-                    <LinkOff size={12} />
+                    <Link2Off size={12} />
                   </button>
                 )}
               </div>
