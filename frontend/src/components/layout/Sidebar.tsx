@@ -28,7 +28,7 @@ export const Sidebar = () => {
     { label: "Home", path: "/dashboard", icon: <Home size={18} /> },
     { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
     { label: "Coleiras", path: "/collars", icon: <WifiCog size={18} /> },
-    { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },
+    { label: "Rebanho", path: "/cows", icon: <CowHead size={18} /> },
     { label: "Mapa", path: "/map", icon: <Map size={18} /> },
     {
       label: "Alertas",
