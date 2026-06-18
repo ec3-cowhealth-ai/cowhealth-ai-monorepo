@@ -4,7 +4,7 @@ import { cowsService } from "@services/cowsService";
 import { ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { C, cardStyle } from "../constants/colors";
-import { CameraIcon, ChevronRight } from "./DashboardIcons";
+import { ChevronRight } from "./DashboardIcons";
 import { getCowBreedImage } from "@/utils/cowBreedImage";
 import { useBreakpoint } from "@hooks/useBreakpoint";
 
@@ -184,26 +184,6 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
               <CowHead size={56} color={C.green} />
             </div>
           )}
-          <button
-            aria-label="Alterar foto da vaca"
-            style={{
-              position: "absolute",
-              bottom: 4,
-              right: 4,
-              width: 28,
-              height: 28,
-              borderRadius: 999,
-              background: C.card,
-              border: `1px solid ${C.border}`,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            <CameraIcon style={{ width: 13, height: 13, color: C.green }} />
-          </button>
         </div>
 
         {/* Name + status */}

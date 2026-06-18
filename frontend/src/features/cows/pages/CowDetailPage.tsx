@@ -11,7 +11,7 @@ import {
   Edit2,
   Trash2,
   Link,
-  Unlink,
+  LinkOff,
   Plus,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
@@ -205,6 +205,7 @@ export const CowDetailPage = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showLink, setShowLink] = useState(false);
+  const [showUnlink, setShowUnlink] = useState(false);
   const [showRetireModal, setShowRetireModal] = useState(false);
 
   const canCRUD = useHasPermission(PERMISSIONS.UPDATE_COW);
@@ -412,9 +413,9 @@ export const CowDetailPage = () => {
                   <button
                     className="btn btn-xs btn-ghost"
                     title="Desvincular"
-                    onClick={() => updateCow({ id: String(cow.id), input: { collarId: null } })}
+                    onClick={() => setShowUnlink(true)}
                   >
-                    <Unlink size={12} />
+                    <LinkOff size={12} />
                   </button>
                 )}
               </div>
@@ -767,6 +768,18 @@ export const CowDetailPage = () => {
         }
       />
 
+      <ConfirmDialog
+        open={showUnlink}
+        title="Desvincular Coleira"
+        description={`Tem certeza que deseja desvincular a coleira "${cow.collar?.name}" desta vaca?`}
+        confirmLabel="Desvincular"
+        isDangerous
+        onConfirm={() => {
+          updateCow({ id: String(cow.id), input: { collarId: null } });
+          setShowUnlink(false);
+        }}
+        onCancel={() => setShowUnlink(false)}
+      />
       <ConfirmDialog
         open={showDelete}
         title="Excluir Animal"
