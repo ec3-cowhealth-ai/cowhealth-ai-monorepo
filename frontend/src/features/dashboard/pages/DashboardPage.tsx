@@ -208,7 +208,7 @@ export const DashboardPage = () => {
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 300px",
             gap: isMobile ? 16 : 24,
-            alignItems: "start",
+            alignItems: "stretch",
             minWidth: 0,
             width: "100%",
           }}

@@ -63,7 +63,7 @@ function SevBadge({ sev }: { sev: Severity }) {
 
 export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
   const navigate = useNavigate();
-  const visible = alerts.slice(0, 6);
+  const visible = alerts.slice(0, 3);
 
   return (
     <aside style={{ minWidth: 0, width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
@@ -107,7 +107,7 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
 
         {isLoading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
                 style={{

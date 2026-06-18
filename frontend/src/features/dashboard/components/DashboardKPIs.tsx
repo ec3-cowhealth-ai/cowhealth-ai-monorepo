@@ -89,6 +89,8 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
         display: "grid",
         gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : `repeat(${kpis.length}, 1fr)`,
         gap: isMobile ? 10 : 16,
+        height: "100%",
+        alignContent: "start",
       }}
     >
       {kpis.map((k, i) => (
