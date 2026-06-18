@@ -26,7 +26,7 @@ interface Props {
 }
 
 export const DashboardOverviewChart = ({ farmId }: Props) => {
-  const [period, setPeriod] = useState<Period>("daily");
+  const [period, setPeriod] = useState<Period>("hourly");
   const [customFrom, setCustomFrom] = useState<string>("");
   const [customTo, setCustomTo] = useState<string>("");
 
