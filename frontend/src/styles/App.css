@@ -194,13 +194,13 @@
 .sidebar__user-name {
   font-size: var(--t-sm);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--sidebar-text);
   margin: 0;
 }
 
 .sidebar__user-role {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--sidebar-text-muted);
   margin: 0;
 }
 
@@ -211,9 +211,9 @@
   width: 32px;
   height: 32px;
   border-radius: var(--r-md);
-  background: var(--bg-elev-2);
+  background: var(--sidebar-item-bg);
   border: 1px solid var(--border);
-  color: var(--text-secondary);
+  color: var(--sidebar-text);
   cursor: pointer;
   transition:
     background 0.15s ease,
