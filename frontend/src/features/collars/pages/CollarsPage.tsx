@@ -245,7 +245,7 @@ export const CollarsPage = () => {
           <p style={{ margin: 0, fontSize: 14, color: C.muted }}>Nenhuma coleira encontrada</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
           {filteredCollars.map((collar) => (
             <CollarCard
               key={collar.id}
