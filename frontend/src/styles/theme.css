@@ -47,7 +47,7 @@
   --type-procedure-color: var(--warning);
   --type-medication-color: var(--success);
 
-  --sidebar-bg: #0f2e1f;
+  --sidebar-bg: #102e1f;
   --sidebar-text: #a8c1b1;
   --sidebar-active: #1a4632;
 
@@ -80,6 +80,8 @@
 
   --btn-primary-bg: #257568;
   --btn-primary-bg-hover: #1e6155;
+  --sidebar-bg: #102e1f;
+  --sidebar-text: #a8c1b1;
   --sidebar-active-text: #267a6a;
   --status-success-bg: #e6f1ea;
   --status-warning-bg: #fbe9d8;
