@@ -1,4 +1,4 @@
-import { Tag } from "lucide-react";
+import { WifiCog } from "lucide-react";
 import type { Collar } from "../../../types/collars.ts";
 import { COLLAR_STATUS_VALUES } from "../../../types/collars.ts";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
@@ -55,7 +55,7 @@ export const CollarCard = ({ collar, onClick }: CollarCardProps) => {
             flexShrink: 0,
           }}
         >
-          <Tag size={18} color={sColor} />
+          <WifiCog size={18} color={sColor} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>{collar.name}</p>

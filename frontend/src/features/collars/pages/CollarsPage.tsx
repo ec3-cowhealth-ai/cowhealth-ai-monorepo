@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, FormModal } from "@components/common";
-import { Plus, Tag } from "lucide-react";
+import { Plus, WifiCog } from "lucide-react";
 import { CollarCard } from "../components/CollarCard";
 import { useCollars, useCreateCollar } from "../hooks/useCollars";
 import { useFarms } from "@features/farms/hooks/useFarms";
@@ -177,7 +177,7 @@ export const CollarsPage = () => {
 
       {/* Header */}
       <header style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <Tag size={34} color={C.green} />
+        <WifiCog size={34} color={C.green} />
         <div>
           <h1
             style={{
@@ -241,7 +241,7 @@ export const CollarsPage = () => {
             textAlign: "center",
           }}
         >
-          <Tag size={40} color={C.muted} />
+          <WifiCog size={40} color={C.muted} />
           <p style={{ margin: 0, fontSize: 14, color: C.muted }}>Nenhuma coleira encontrada</p>
         </div>
       ) : (

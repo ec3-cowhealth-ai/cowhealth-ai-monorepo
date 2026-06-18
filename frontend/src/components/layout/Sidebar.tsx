@@ -4,7 +4,7 @@ import { useMe } from "@hooks/useAuth";
 import { useHasPermission } from "@hooks/usePermission";
 import { PERMISSIONS } from "@config/permissions";
 import { useUnreadNotifications } from "@hooks/useNotifications";
-import { Home, Warehouse, Tag, Bell, ShieldCheck, LogOut, Sun, Moon, Map } from "lucide-react";
+import { Home, Warehouse, WifiCog, Bell, ShieldCheck, LogOut, Sun, Moon, Map } from "lucide-react";
 import { useTheme } from "@hooks/useTheme";
 import { CowHead } from "@components/ui/CowHeadIcon";
 
@@ -27,7 +27,7 @@ export const Sidebar = () => {
   const navItems: NavItem[] = [
     { label: "Home", path: "/dashboard", icon: <Home size={18} /> },
     { label: "Fazendas", path: "/farms", icon: <Warehouse size={18} /> },
-    { label: "Coleiras", path: "/collars", icon: <Tag size={18} /> },
+    { label: "Coleiras", path: "/collars", icon: <WifiCog size={18} /> },
     { label: "Vacas", path: "/cows", icon: <CowHead size={18} /> },
     { label: "Mapa", path: "/map", icon: <Map size={18} /> },
     {

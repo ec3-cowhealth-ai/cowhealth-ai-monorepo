@@ -5,7 +5,7 @@ import { LoadingSpinner, FormModal, ConfirmDialog } from "@components/common";
 import {
   AlertTriangle,
   Warehouse,
-  Tag,
+  WifiCog,
   Thermometer,
   Heart,
   Edit2,
@@ -406,7 +406,7 @@ export const CowDetailPage = () => {
                   }}
                   onClick={() => navigate(`/collars/${cow.collar!.id}`)}
                 >
-                  <Tag size={11} /> {cow.collar.name}
+                  <WifiCog size={11} /> {cow.collar.name}
                 </button>
                 {canCRUD && (
                   <button
