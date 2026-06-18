@@ -219,7 +219,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
               textTransform: "uppercase",
             }}
           >
-            Brinco {cow.tag}
+            Colar {cow.tag}
           </div>
           <span
             style={{
