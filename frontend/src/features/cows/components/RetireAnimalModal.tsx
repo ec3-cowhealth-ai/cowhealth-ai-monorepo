@@ -30,12 +30,19 @@ export const RetireAnimalModal = ({ open, cowId, onClose }: RetireAnimalModalPro
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <p className="modal-title">Aposentar Animal</p>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-card__header">
+          <p className="modal-card__title">Aposentar Animal</p>
         </div>
-        <div className="modal-body">
-          <p style={{ fontSize: "var(--t-sm)", color: "var(--danger)", fontWeight: 600, marginBottom: 8 }}>
+        <div className="modal-card__body">
+          <p
+            style={{
+              fontSize: "var(--t-sm)",
+              color: "var(--danger)",
+              fontWeight: 600,
+              marginBottom: 8,
+            }}
+          >
             Esta ação é irreversível. O animal sairá do rebanho ativo.
           </p>
           <p style={{ fontSize: "var(--t-sm)", color: "var(--text-secondary)", marginBottom: 16 }}>
@@ -62,7 +69,7 @@ export const RetireAnimalModal = ({ open, cowId, onClose }: RetireAnimalModalPro
             </button>
           </div>
         </div>
-        <div className="modal-footer">
+        <div className="modal-card__footer">
           <button className="btn btn-ghost btn-sm" onClick={onClose} disabled={isPending}>
             Cancelar
           </button>

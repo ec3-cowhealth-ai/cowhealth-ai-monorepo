@@ -14,7 +14,7 @@
 
   --text-primary: #fffafb;
   --text-secondary: rgba(255, 250, 251, 0.66);
-  --text-muted: rgba(255, 250, 251, 0.42);
+  --text-muted: rgba(255, 250, 251, 0.5);
   --text-inverse: #131515;
 
   --danger: #e87c5c;
@@ -30,10 +30,22 @@
   --accent-soft: rgba(125, 226, 209, 0.18);
   --accent-on: #131515;
 
-  --status-success-bg: rgba(125, 226, 209, 0.16);
-  --status-warning-bg: rgba(232, 198, 107, 0.16);
-  --status-danger-bg: rgba(232, 124, 92, 0.16);
-  --status-info-bg: rgba(107, 180, 232, 0.16);
+  /* Opaque dark equivalents of the rgba tints — WCAG-safe for contrast checking */
+  --status-success-bg: #2b3d3a;
+  --status-warning-bg: #3c3829;
+  --status-danger-bg: #3c2c27;
+  --status-info-bg: #28353d;
+  --status-success-text: var(--success);
+  --status-warning-text: var(--warning);
+  --status-danger-text: var(--danger);
+  --status-info-text: var(--info);
+
+  --btn-primary-bg: #257568;
+  --btn-primary-bg-hover: #1e6155;
+  --sidebar-active-text: var(--accent);
+  --type-checkup-color: #6bb4e8;
+  --type-procedure-color: var(--warning);
+  --type-medication-color: var(--success);
 
   --sidebar-bg: #0f2e1f;
   --sidebar-text: #a8c1b1;
@@ -59,17 +71,27 @@
 
   --text-primary: #131515;
   --text-secondary: rgba(19, 21, 21, 0.62);
-  --text-muted: rgba(19, 21, 21, 0.4);
+  --text-muted: rgba(19, 21, 21, 0.63);
   --text-inverse: #fafaf8;
 
   --primary-soft: rgba(51, 153, 137, 0.12);
   --accent-soft: rgba(125, 226, 209, 0.25);
   --accent-on: #131515;
 
+  --btn-primary-bg: #257568;
+  --btn-primary-bg-hover: #1e6155;
+  --sidebar-active-text: #267a6a;
   --status-success-bg: #e6f1ea;
   --status-warning-bg: #fbe9d8;
   --status-danger-bg: #fde8e4;
   --status-info-bg: #e4f0fb;
+  --status-success-text: #237066;
+  --status-warning-text: #7a4e05;
+  --status-danger-text: #a03020;
+  --status-info-text: #1a5c8c;
+  --type-checkup-color: #1a5c8c;
+  --type-procedure-color: #7a4e05;
+  --type-medication-color: #237066;
 
   --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-subtle);
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.14), 0 0 0 1px var(--border-subtle);

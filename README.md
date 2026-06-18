@@ -1,212 +1,113 @@
 # CowHealth AI
 
-[![Repository](https://img.shields.io/badge/repository-monorepo-2B2C28?style=for-the-badge)](./)
-[![Stack](https://img.shields.io/badge/stack-React%2019%20%7C%20TypeScript%20%7C%20Express%20%7C%20Prisma-339989?style=for-the-badge)](./)
-[![Frontend](https://img.shields.io/badge/frontend-Vite%20%2B%20React%20Query%20%2B%20Axios-7DE2D1?style=for-the-badge)](./frontend)
-[![Backend](https://img.shields.io/badge/backend-Express%20%2B%20Prisma%20%2B%20JWT-131515?style=for-the-badge)](./backend)
-[![Database](https://img.shields.io/badge/database-MySQL-E8C66B?style=for-the-badge)](./backend/prisma/schema.prisma)
-[![Architecture](https://img.shields.io/badge/architecture-feature--oriented%20monorepo-6BB4E8?style=for-the-badge)](./docs/architecture/frontend-architecture.md)
+[![Repository](https://img.shields.io/badge/repositório-monorepo-2B2C28?style=for-the-badge)](./)
+[![Platform](https://img.shields.io/badge/plataforma-web-339989?style=for-the-badge)](./)
+[![Language](https://img.shields.io/badge/idioma-Português%20BR-E8C66B?style=for-the-badge)](./)
 
-CowHealth AI is a bovine health monitoring platform organized as a web monorepo. The repository contains a React frontend, an Express + Prisma backend, a MySQL schema, and project documentation that describes the current architecture, design system, and implementation rules.
+> **Saiba antes. Aja mais rápido. Proteja cada vaca.**
 
-## What To Read First
+CowHealth AI é uma plataforma de monitoramento de saúde bovina de precisão para fazendas leiteiras. Cada vaca usa uma coleira inteligente que transmite dados fisiológicos e comportamentais continuamente — frequência cardíaca, temperatura corporal e movimentação. Esses dados alimentam um motor de análise que detecta condições críticas em tempo real e gera alertas acionáveis para produtores e veterinários, antes que pequenos sinais virem grandes problemas.
 
-1. [START_HERE.md](/START_HERE.md)
-2. [MANAGER.md](/MANAGER.md)
-3. [docs/README.md](/docs/README.md)
-4. [docs/agents/agents.md](/docs/agents/agents.md)
-5. [docs/agents/design.md](/docs/agents/design.md)
-6. [docs/architecture/frontend-architecture.md](/docs/architecture/frontend-architecture.md)
-7. [docs/architecture/backend-architecture.md](/docs/architecture/backend-architecture.md)
-8. [backend/prisma/schema.prisma](/backend/prisma/schema.prisma)
+---
 
-## Overview
-
-CowHealth AI is built around two runtime surfaces:
-
-- `frontend/` provides the web application UI.
-- `backend/` provides the API, authentication, authorization, and persistence layer.
-
-### Current implemented features
-
-- JWT authentication with permissions embedded in the token.
-- Protected routing with an `AppShell` layout (responsive sidebar on desktop, bottom navigation on mobile).
-- Farm selector with persistent selection via `FarmContext` and localStorage.
-- Dashboard with KPI cards filtered by selected farm.
-- Cow list and detail pages with health status indicators.
-- Cow photo upload served through an authenticated backend endpoint.
-- Interactive GPS tracking map with simulated real-time cow positions.
-- Collar management pages.
-- Zod-based request validation on all backend endpoints.
-- CORS restricted by origin with a global error handler.
-- Role-based access control with permissions stored in JWT.
-
-## Tech Stack
-
-### Frontend
-
-- React 19
-- TypeScript
-- Vite
-- React Router v7
-- TanStack React Query
-- Axios
-- Lucide React + `@lucide/lab` (CowHead icon)
-- Custom CSS design system (no Tailwind in the authenticated app)
-- Leaflet (interactive map)
-
-### Backend
-
-- Express 5
-- TypeScript
-- Prisma ORM
-- MySQL
-- JSON Web Tokens (permissions embedded)
-- bcrypt
-- multer (cow photo uploads)
-- Zod (request validation)
-
-## Repository Structure
-
-```text
-.
-├── README.md
-├── START_HERE.md
-├── MANAGER.md
-├── backend/
-├── docs/
-├── frontend/
+## Como funciona
 
 ```
-
-### Frontend
-
-```text
-frontend/
-├── public/
-├── src/
-│   ├── components/
-│   │   ├── layout/       # AppShell, Sidebar, BottomNav, AppBar
-│   │   └── ui/           # Icon, shared components
-│   ├── config/
-│   ├── context/          # FarmContext
-│   ├── features/         # Domain modules (farms, cows, collars, dashboard…)
-│   ├── hooks/
-│   ├── lib/              # Axios client, QueryClient
-│   ├── pages/
-│   │   ├── map/          # GPS tracking map + cow simulation
-│   │   └── …
-│   ├── routes/           # AppRoutes, ProtectedRoute
-│   ├── services/
-│   ├── styles/           # App.css — design system tokens and components
-│   ├── types/
-│   └── utils/
-├── package.json
-├── vite.config.ts
-└── tsconfig*.json
+Coleira RF10A (IoT)
+  │  temperatura · frequência cardíaca · acelerômetro · giroscópio · GPS
+  │  transmissão via Wi-Fi / MQTT
+  ▼
+Backend (Express + Prisma)
+  │  ingestão de dados → cowHealthAnalyzer → classifica condição
+  │  dispara notificação com severidade (HIGH / MEDIUM / LOW)
+  ▼
+Dashboard Web (React)
+  ├── Produtor rural → visão do rebanho, alertas, mapa GPS
+  └── Veterinário   → prontuário clínico, histórico, plano de tratamento
 ```
 
-### Backend
+---
 
-```text
-backend/
-├── prisma/
-│   ├── schema.prisma
-│   ├── seed.ts
-│   └── migrations/
-├── src/
-│   ├── controllers/
-│   ├── helpers/
-│   ├── lib/              # Prisma client singleton
-│   ├── middlewares/      # auth, validateSchema, errorHandler
-│   ├── routes/
-│   ├── services/
-│   └── types/
-├── package.json
-└── tsconfig.json
-```
+## A coleira inteligente
 
-## Design System
+A coleira RF10A é o sensor central do sistema. Robusta e projetada para condições reais de fazenda, transmite dados continuamente via MQTT para o backend — com frequência ajustável por dispositivo (a cada 2, 10 ou 60 minutos).
 
-The authenticated app uses a pure CSS design system defined in `frontend/src/styles/App.css`. There is no Tailwind inside protected routes.
+**Sensores integrados:**
 
-Key tokens and components:
-
-- `--bg-app: #131515` — dark base
-- `.app-shell`, `.sidebar`, `.bottom-nav`, `.app-bar`, `.app-page`
-- `.btn`, `.btn-primary`, `.btn-secondary`, `.btn-ghost`, `.btn-danger`, `.btn-sm`, `.btn-lg`
-- `.status-badge--success/warning/danger/muted/info`
-- `.kpi-card`, `.card`, `.card--clickable`
-- `.data-table`, `.tabs`, `.modal-*`
-- Breakpoint: 768px (sidebar on desktop, bottom-nav on mobile)
-
-## Database Model
-
-The Prisma schema models:
-
-- Authentication and RBAC: `User`, `Role`, `Permission`, `PermissionGroup`, junction tables
-- Core domain: `Farm`, `Cow`, `Collar`
-- Telemetry: `HeartRateData`, `TemperatureData`, `AccelerometerData`
-- Notifications: `Notification`
-
-## Local Setup
-
-### 1. Install dependencies
-
-```bash
-cd frontend && npm install
-cd ../backend && npm install
-```
-
-### 2. Environment variables
-
-Frontend — create `frontend/.env.local`:
-
-```dotenv
-VITE_API_URL=http://localhost:3001
-```
-
-Backend — create `backend/.env`:
-
-```dotenv
-PORT=3001
-DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/cowhealth-db"
-JWT_SECRET="a-long-random-string"
-JWT_EXPIRES_IN="7d"
-```
-
-### 3. Run locally
-
-```bash
-# Terminal 1
-cd frontend && npm run dev     # http://localhost:5173
-
-# Terminal 2
-cd backend && npm run dev      # http://localhost:3001
-```
-
-## Verification
-
-```bash
-cd frontend && npm run lint && npm run build
-cd backend  && npm run lint && npm run build
-```
-
-## Documentation Map
-
-| Document | Purpose |
+| Sensor | Dados coletados |
 |---|---|
-| `START_HERE.md` | Practical entry point |
-| `MANAGER.md` | Project management and decisions |
-| `docs/agents/agents.md` | Agent roles and responsibilities |
-| `docs/agents/design.md` | Design system reference |
-| `docs/architecture/frontend-architecture.md` | Frontend structure and conventions |
-| `docs/architecture/backend-architecture.md` | Backend route matrix and conventions |
-| `docs/change_control/CHANGELOG.md` | Change history |
-| `docs/change_control/CHANGE_BUGFIX.md` | Bug fix log |
+| Infravermelho | Temperatura corporal (°C) |
+| Fotopletismografia | Frequência cardíaca (BPM) e SpO₂ |
+| Acelerômetro (3 eixos) | Movimentação, postura, agitação |
+| Giroscópio (3 eixos) | Assimetria de marcha, detecção de claudicação |
+| GPS | Posição geográfica (latitude / longitude) |
 
-## Notes
+Processamento na borda (edge), arquitetura tolerante a falhas de conexão e invólucro testado em campo.
 
-- This is a web repo, not a mobile app repo.
-- Treat older plans and audits as historical unless listed in `docs/README.md` as current working docs.
-- The source code and Prisma schema are the final truth for runtime behavior.
+---
+
+## Motor de diagnóstico heurístico
+
+O `cowHealthAnalyzer` é um classificador puro que recebe um snapshot de sensores de uma vaca e determina se ela apresenta alguma condição de saúde. Não há LLM — as regras são heurísticas baseadas em limiares fisiológicos documentados no **Anexo VII**.
+
+**8 condições definidas no modelo:**
+
+| Condição | Sinais monitorados |
+|---|---|
+| **Parto iminente** (CALVING) | Mudanças posturais frequentes + FC elevada + queda de temperatura |
+| **Estresse térmico** (HEAT_STRESS) | Temperatura média alta + FC elevada + picos de agitação |
+| **Doença respiratória bovina** (BRD) | Temperatura alta + FC alta + SpO₂ baixo + baixa atividade |
+| **Mastite sistêmica** (MASTITIS) | Temperatura alta + FC elevada + postura anormal prolongada |
+| **Cetose** (KETOSIS) | Alta variabilidade da FC + baixa atividade + temperatura abaixo do normal |
+| **Claudicação** (LAMENESS) | Assimetria de marcha (giroscópio) + postura incomum + FC elevada |
+| **Desidratação / Choque** (SHOCK) | SpO₂ crítico + FC muito alta + temperatura periférica baixa + letargia |
+| **Risco escalado** (AT_RISK) | Score ponderado — combina múltiplos sintomas parciais |
+
+Hoje **CALVING** e **HEAT_STRESS** estão implementados. Os demais estão modelados em `docs/heuristic_models/` e planejados para a próxima fase.
+
+---
+
+## Funcionalidades
+
+### Para o produtor rural
+
+- **Dashboard** com KPIs do rebanho por fazenda: total de vacas, distribuição por status de saúde, alertas ativos
+- **Feed de alertas** em tempo real com severidade (alta / média / baixa) e tipo de evento
+- **Mapa GPS** interativo com posição de cada vaca no pasto (Leaflet)
+- **Lista de vacas** com status visual de saúde, filtros e busca
+- **Ficha individual** da vaca: raça, peso, data de nascimento, galeria de fotos, histórico de sensor (FC, temperatura, acelerômetro em gráficos)
+- **Status reprodutivo**: gestante, inseminada, seca, pós-parto — com datas de parto e número de lactação
+- **Linha do tempo de atividade**: ruminação, alimentação, descanso, alta/baixa atividade, caminhada
+- **Gestão de coleiras**: vincular, desvincular, ajustar frequência de transmissão, monitorar bateria e status
+
+### Para o veterinário
+
+- **Prontuário clínico completo** (`CowClinicalRecord`): avaliação gerada a partir de um alerta ou visita agendada, registra:
+  - Sinais vitais medidos na consulta (FC, SpO₂, temperatura corporal e ambiente)
+  - Biometria (peso, escore de condição corporal)
+  - Histórico de saúde, sintomas atuais, diagnóstico e plano de tratamento
+  - Medicamentos administrados, vacinações, procedimentos cirúrgicos e alergias
+  - Snapshot reprodutivo da consulta (status, elegibilidade, janela de inseminação, gestação)
+  - Recomendações veterinárias e agendamento de retorno
+- **Registros médicos** por evento: checkup, procedimento, medicação
+- **Solicitação de veterinário** diretamente pela fazenda
+
+### Para o administrador
+
+- **Gestão de fazendas**: cadastro com CNPJ, endereço e geolocalização
+- **Gestão de usuários**: criar, editar, ativar/desativar, associar a fazendas
+- **RBAC completo**: papéis (roles), permissões granulares e grupos de permissões — tudo configurável pela interface
+
+---
+
+## Landing page
+
+O sistema inclui um site público de apresentação em `/landing`, com seções de produto, problema, solução, demonstração da coleira, diferenciais e chamada para piloto. Separado do app autenticado.
+
+---
+
+## Referência técnica
+
+Stack, estrutura de pastas, design system, modelo de dados, setup local e mapa de documentação estão em:
+
+**[TECHNICAL.md](./TECHNICAL.md)**

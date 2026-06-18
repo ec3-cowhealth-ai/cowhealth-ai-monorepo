@@ -20,8 +20,7 @@ export const ProblemSection: React.FC = () => {
     <section className="relative bg-background py-28 lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-forest">
-          <span className="h-px w-6 bg-forest/40" />
-          O problema
+          <span className="h-px w-6 bg-forest/40" />O problema
         </div>
         <h2 className="font-display text-4xl leading-[1.02] text-balance sm:text-5xl lg:text-6xl max-w-3xl text-foreground">
           Problemas de saúde no rebanho leiteiro

@@ -132,15 +132,18 @@ export const listAccelerometer = async (request: Request, response: Response): P
 // Sensores — média diária para gráficos
 
 export const listHeartRateDaily = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => getCowHeartRateDaily(Number(request.params.id)), 200, 404);
+  const days = Number(request.query.days) || 7;
+  await handleRequest(response, () => getCowHeartRateDaily(Number(request.params.id), days), 200, 404);
 };
 
 export const listTemperatureDaily = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => getCowTemperatureDaily(Number(request.params.id)), 200, 404);
+  const days = Number(request.query.days) || 7;
+  await handleRequest(response, () => getCowTemperatureDaily(Number(request.params.id), days), 200, 404);
 };
 
 export const listAccelerometerDaily = async (request: Request, response: Response): Promise<void> => {
-  await handleRequest(response, () => getCowAccelerometerDaily(Number(request.params.id)), 200, 404);
+  const days = Number(request.query.days) || 7;
+  await handleRequest(response, () => getCowAccelerometerDaily(Number(request.params.id), days), 200, 404);
 };
 
 // Histórico completo dos sensores

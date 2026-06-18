@@ -99,7 +99,9 @@ export const OnboardingPage = () => {
       </div>
 
       {/* Actions */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 360 }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 360 }}
+      >
         <button
           className="btn btn-primary"
           onClick={() => {
@@ -110,10 +112,7 @@ export const OnboardingPage = () => {
           {step < SLIDES.length - 1 ? "Próximo" : "Começar"}
         </button>
         {step < SLIDES.length - 1 && (
-          <button
-            className="btn btn-ghost"
-            onClick={() => finish(navigate)}
-          >
+          <button className="btn btn-ghost" onClick={() => finish(navigate)}>
             Pular
           </button>
         )}

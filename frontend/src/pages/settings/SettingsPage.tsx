@@ -94,12 +94,20 @@ export const SettingsPage = () => {
       <AppBar title="Configurações" showBack />
 
       <div style={{ padding: "24px 16px", display: "flex", flexDirection: "column", gap: 24 }}>
-
         {/* Notificações */}
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
             <Bell size={16} color={C.muted} />
-            <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 700,
+                color: C.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
               Notificações
             </p>
           </div>
@@ -129,7 +137,16 @@ export const SettingsPage = () => {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
             <User size={16} color={C.muted} />
-            <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 700,
+                color: C.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
               Conta
             </p>
           </div>
@@ -166,16 +183,18 @@ export const SettingsPage = () => {
             >
               <ShieldCheck size={16} color={C.muted} style={{ marginTop: 2, flexShrink: 0 }} />
               <div>
-                <p style={{ margin: 0, fontSize: 14, color: C.text, fontWeight: 500 }}>Privacidade (LGPD)</p>
+                <p style={{ margin: 0, fontSize: 14, color: C.text, fontWeight: 500 }}>
+                  Privacidade (LGPD)
+                </p>
                 <p style={{ margin: "4px 0 0 0", fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
-                  Os dados coletados são utilizados exclusivamente para monitoramento de saúde animal
-                  e gestão de rebanho, conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+                  Os dados coletados são utilizados exclusivamente para monitoramento de saúde
+                  animal e gestão de rebanho, conforme a Lei Geral de Proteção de Dados (Lei nº
+                  13.709/2018).
                 </p>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -36,7 +36,9 @@ export const FarmsPage = () => {
   if (isLoading) {
     return (
       <div style={{ background: C.bg, minHeight: "100%" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48 }}>
+        <div
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48 }}
+        >
           <LoadingSpinner />
         </div>
       </div>
@@ -49,7 +51,11 @@ export const FarmsPage = () => {
         title="Fazendas"
         actions={
           canCreate && (
-            <button className="app-bar__action" onClick={() => setShowForm(true)}>
+            <button
+              className="app-bar__action"
+              aria-label="Criar fazenda"
+              onClick={() => setShowForm(true)}
+            >
               <Plus size={20} />
             </button>
           )
@@ -72,7 +78,11 @@ export const FarmsPage = () => {
           <EmptyState
             icon={<Warehouse size={40} />}
             title="Nenhuma fazenda encontrada"
-            description={canCreate ? "Crie sua primeira fazenda para começar" : "Você não tem acesso a nenhuma fazenda."}
+            description={
+              canCreate
+                ? "Crie sua primeira fazenda para começar"
+                : "Você não tem acesso a nenhuma fazenda."
+            }
             action={
               canCreate ? (
                 <button className="btn btn-primary" onClick={() => setShowForm(true)}>

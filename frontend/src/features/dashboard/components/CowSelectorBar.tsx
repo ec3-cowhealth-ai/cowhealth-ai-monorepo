@@ -4,6 +4,7 @@ import type { Farm } from "@/types/farms";
 import type { Notification } from "@hooks/useNotifications";
 import { C, cardStyle } from "../constants/colors";
 import { FarmIcon, GlobeIcon, BellIcon, ChevronDown } from "./DashboardIcons";
+import { useBreakpoint } from "@hooks/useBreakpoint";
 
 export type SelectionMode = "farm" | "global" | "alert";
 
@@ -46,13 +47,14 @@ export function CowSelectorBar({
   }, [mode, alerts, onCowSelect]);
 
   const alertCow = mode === "alert" ? cowList.find((c) => String(c.id) === selectedCowId) : null;
+  const { isMobile } = useBreakpoint();
 
   return (
-    <div style={{ ...cardStyle }}>
+    <div style={{ ...cardStyle, overflow: "hidden", padding: isMobile ? "12px" : cardStyle.padding }}>
       {/* Mode toggle */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <span style={{ fontSize: 12, color: C.muted, fontWeight: 500, marginRight: 4 }}>
-          Seleção de vaca:
+          Seleção de rebanho:
         </span>
         {MODES.map(({ key, label, Icon }) => {
           const active = mode === key;
@@ -209,9 +211,7 @@ export function CowSelectorBar({
               />
               <span style={{ color: C.text }}>
                 Selecionada automaticamente:{" "}
-                <strong>
-                  {alertCow ? alertCow.tag : `ID ${selectedCowId}`}
-                </strong>
+                <strong>{alertCow ? alertCow.tag : `ID ${selectedCowId}`}</strong>
               </span>
               <span style={{ fontSize: 11, color: C.muted }}>
                 ({alerts.find((a) => String(a.cowId) === selectedCowId)?.title ?? "último alerta"})

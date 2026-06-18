@@ -5,7 +5,7 @@ import { LoadingSpinner, FormModal, ConfirmDialog } from "@components/common";
 import {
   AlertTriangle,
   Warehouse,
-  Tag,
+  WifiCog,
   Thermometer,
   Heart,
   Edit2,
@@ -15,6 +15,7 @@ import {
   Plus,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
+import { getCowBreedImage } from "@/utils/cowBreedImage";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
 import { PeriodPicker } from "@components/ui/PeriodPicker";
@@ -39,9 +40,9 @@ import type { Period } from "@/types/period";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
 
 const NOTIF_TONE: Record<string, string> = {
-  ALERT:   C.red,
+  ALERT: C.red,
   WARNING: C.orange,
-  INFO:    "#6bb4e8",
+  INFO: "#6bb4e8",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -219,8 +220,18 @@ export const CowDetailPage = () => {
   const { mutate: deleteCow, isPending: deleting } = useDeleteCow();
 
   const { data: heartRate } = useCowHeartRateDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
-  const { data: temperature } = useCowTemperatureDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
-  const { data: accelerometer } = useCowAccelerometerDaily(id || "", sensorPeriod, sensorFrom, sensorTo);
+  const { data: temperature } = useCowTemperatureDaily(
+    id || "",
+    sensorPeriod,
+    sensorFrom,
+    sensorTo,
+  );
+  const { data: accelerometer } = useCowAccelerometerDaily(
+    id || "",
+    sensorPeriod,
+    sensorFrom,
+    sensorTo,
+  );
   const { data: notifications } = useNotifications();
   const { data: medicalRecords } = useMedicalRecords(Number(id));
 
@@ -270,6 +281,7 @@ export const CowDetailPage = () => {
   const sColor = STATUS_COLOR[cow.status] ?? C.green;
   const sBg = STATUS_BG[cow.status] ?? "var(--status-success-bg)";
   const sLabel = STATUS_LABEL[cow.status] ?? cow.status;
+  const breedImage = getCowBreedImage(cow.breed, cow.id);
 
   return (
     <div className="app-page">
@@ -280,10 +292,18 @@ export const CowDetailPage = () => {
         actions={
           canCRUD && (
             <div style={{ display: "flex", gap: 12 }}>
-              <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+              <button
+                className="app-bar__action"
+                aria-label="Editar vaca"
+                onClick={() => setShowEdit(true)}
+              >
                 <Edit2 size={18} />
               </button>
-              <button className="app-bar__action" onClick={() => setShowDelete(true)}>
+              <button
+                className="app-bar__action"
+                aria-label="Excluir vaca"
+                onClick={() => setShowDelete(true)}
+              >
                 <Trash2 size={18} />
               </button>
             </div>
@@ -306,9 +326,14 @@ export const CowDetailPage = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
+                overflow: "hidden",
               }}
             >
-              <CowHead size={36} color={sColor} />
+              {breedImage ? (
+                <img src={breedImage} alt={cow.breed ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <CowHead size={36} color={sColor} />
+              )}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1
@@ -381,7 +406,7 @@ export const CowDetailPage = () => {
                   }}
                   onClick={() => navigate(`/collars/${cow.collar!.id}`)}
                 >
-                  <Tag size={11} /> {cow.collar.name}
+                  <WifiCog size={11} /> {cow.collar.name}
                 </button>
                 {canCRUD && (
                   <button
@@ -499,97 +524,106 @@ export const CowDetailPage = () => {
         {/* Sensor charts — grade 3 colunas desktop / 1 coluna mobile */}
         {temperature?.length || heartRate?.length || accelerometer?.length ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ ...cardStyle, padding: "12px 14px" }}>
-            <p style={{ margin: "0 0 10px 0", fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Período dos sensores
-            </p>
-            <PeriodPicker
-              value={sensorPeriod}
-              onChange={setSensorPeriod}
-              customFrom={sensorFrom}
-              customTo={sensorTo}
-              onCustomFromChange={setSensorFrom}
-              onCustomToChange={setSensorTo}
-            />
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: 12,
-            }}
-          >
-            {temperature && temperature.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 12,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: C.muted,
-                  }}
-                >
-                  <Thermometer size={13} color={C.orange} /> Temperatura
+            <div style={{ ...cardStyle, padding: "12px 14px" }}>
+              <p
+                style={{
+                  margin: "0 0 10px 0",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: C.muted,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                Período dos sensores
+              </p>
+              <PeriodPicker
+                value={sensorPeriod}
+                onChange={setSensorPeriod}
+                customFrom={sensorFrom}
+                customTo={sensorTo}
+                onCustomFromChange={setSensorFrom}
+                onCustomToChange={setSensorTo}
+              />
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 12,
+              }}
+            >
+              {temperature && temperature.length > 0 && (
+                <div style={{ ...cardStyle }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: C.muted,
+                    }}
+                  >
+                    <Thermometer size={13} color={C.orange} /> Temperatura
+                  </div>
+                  <LineChart
+                    data={temperature}
+                    color={C.orange}
+                    unit="°C"
+                    thresholds={[
+                      { v: 39.5, c: C.red },
+                      { v: 38.0, c: "#6bb4e8" },
+                    ]}
+                  />
                 </div>
-                <LineChart
-                  data={temperature}
-                  color={C.orange}
-                  unit="°C"
-                  thresholds={[
-                    { v: 39.5, c: C.red },
-                    { v: 38.0, c: "#6bb4e8" },
-                  ]}
-                />
-              </div>
-            )}
-            {heartRate && heartRate.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 12,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: C.muted,
-                  }}
-                >
-                  <Heart size={13} color={C.red} /> Freq. Cardíaca
+              )}
+              {heartRate && heartRate.length > 0 && (
+                <div style={{ ...cardStyle }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: C.muted,
+                    }}
+                  >
+                    <Heart size={13} color={C.red} /> Freq. Cardíaca
+                  </div>
+                  <LineChart
+                    data={heartRate}
+                    color={C.red}
+                    unit=" bpm"
+                    thresholds={[
+                      { v: 120, c: C.red },
+                      { v: 40, c: "#6bb4e8" },
+                    ]}
+                  />
                 </div>
-                <LineChart
-                  data={heartRate}
-                  color={C.red}
-                  unit=" bpm"
-                  thresholds={[
-                    { v: 120, c: C.red },
-                    { v: 40, c: "#6bb4e8" },
-                  ]}
-                />
-              </div>
-            )}
-            {accelerometer && accelerometer.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 12,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: C.muted,
-                  }}
-                >
-                  <span style={{ fontSize: 13 }}>↯</span> Atividade
+              )}
+              {accelerometer && accelerometer.length > 0 && (
+                <div style={{ ...cardStyle }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: C.muted,
+                    }}
+                  >
+                    <span style={{ fontSize: 13 }}>↯</span> Atividade
+                  </div>
+                  <LineChart data={accelerometer} color={C.green} unit=" m/s²" />
                 </div>
-                <LineChart data={accelerometer} color={C.green} unit=" m/s²" />
-              </div>
-            )}
-          </div>
+              )}
+            </div>
           </div>
         ) : null}
 
@@ -661,10 +695,10 @@ export const CowDetailPage = () => {
         {/* Prontuário */}
         <div className="card" style={{ marginTop: "var(--s-4)" }}>
           <div style={{ marginBottom: 12 }}>
-            <p style={{ margin: 0, fontWeight: 700, color: C.text }}>Prontuário</p>
+            <p style={{ margin: 0, fontWeight: 700, color: C.text }}>Registros médicos</p>
           </div>
           {!medicalRecords || medicalRecords.length === 0 ? (
-            <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro clínico.</p>
+            <p style={{ margin: 0, fontSize: 13, color: C.muted }}>Nenhum registro médico.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {medicalRecords.map((r) => (

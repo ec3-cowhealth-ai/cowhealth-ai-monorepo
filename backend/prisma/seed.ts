@@ -243,8 +243,8 @@ const farmData = [
     state: "PR",
     phone: "(41) 99000-0001",
     email: "aurora@cowhealth.com",
-    latitude: -23.40185,
-    longitude: -51.12492,
+    latitude: -24.6953,
+    longitude: -50.7126,
   },
   {
     name: "Fazenda Sao Bento",
@@ -253,8 +253,8 @@ const farmData = [
     state: "PR",
     phone: "(43) 99000-0002",
     email: "saobento@cowhealth.com",
-    latitude: -19.82942,
-    longitude: -47.86768,
+    latitude: -24.8373,
+    longitude: -49.9234,
   },
   {
     name: "Fazenda Boa Esperanca",
@@ -263,8 +263,8 @@ const farmData = [
     state: "PR",
     phone: "(44) 99000-0003",
     email: "boaesperanca@cowhealth.com",
-    latitude: -16.7653,
-    longitude: -49.0724,
+    latitude: -27.3482,
+    longitude: -51.0117,
   },
   {
     name: "Fazenda Santa Clara",
@@ -273,18 +273,18 @@ const farmData = [
     state: "PR",
     phone: "(42) 99000-0004",
     email: "santaclara@cowhealth.com",
-    latitude: -20.6038,
-    longitude: -48.6286,
+    latitude: -24.9638,
+    longitude: -50.0298,
   },
   {
-    name: "Fazenda Vale Verde",
+    name: "Fazenda Trevizan",
     cnpj: "55.555.555/0001-05",
     city: "Cascavel",
     state: "PR",
     phone: "(45) 99000-0005",
-    email: "valeverde@cowhealth.com",
-    latitude: -15.7395,
-    longitude: -56.0482,
+    email: "trevizan@cowhealth.com",
+    latitude: -29.1335,
+    longitude: -51.3928,
   },
 ];
 
@@ -312,7 +312,9 @@ const shuffleStatuses = (statuses: CowStatus[]): CowStatus[] => {
 
 const SHUFFLED_STATUSES = shuffleStatuses(COW_STATUS_DISTRIBUTION);
 
-const BREEDS = ["Gir", "Holandesa", "Girolando", "Jersey"];
+// Uma raça por fazenda (índice alinhado com farmData)
+// Aurora=Holandesa, SaoBento=Gir, BoaEsperanca=Girolando, SantaClara=Jersey, Trevizan=Holandesa
+const FARM_BREEDS = ["Holandesa", "Gir", "Girolando", "Jersey", "Holandesa"];
 const COW_NAMES = [
   "Mimosa",
   "Bonita",
@@ -567,7 +569,7 @@ async function main() {
   const saoBento = createdFarms[1];
   const boaEsperanca = createdFarms[2];
   const santaClara = createdFarms[3];
-  const valeVerde = createdFarms[4];
+  const trevizan = createdFarms[4];
 
   const userData = [
     {
@@ -601,10 +603,10 @@ async function main() {
       farmId: santaClara.id,
     },
     {
-      name: "Administrador Vale Verde",
-      email: "administrador@valeverde.com",
+      name: "Administrador Trevizan",
+      email: "administrador@trevizan.com",
       roleModel: adminRole,
-      farmId: valeVerde.id,
+      farmId: trevizan.id,
     },
     {
       name: "Veterinario",
@@ -725,7 +727,7 @@ async function main() {
       const status = SHUFFLED_STATUSES[statusIndex++];
       const tag = `BR-${String(globalIndex + 1).padStart(3, "0")}`;
       const name = COW_NAMES[cowIndex % COW_NAMES.length];
-      const breed = BREEDS[globalIndex % BREEDS.length];
+      const breed = FARM_BREEDS[farmIndex];
       const weight = Math.round(randomBetween(700, 850));
 
       // Vincula colar ACTIVE (os 160 primeiros colares)
@@ -757,10 +759,11 @@ async function main() {
 
   console.log(`${createdCows.length} vacas criadas`);
 
-  // Dados de sensores — 1 semana de historico para todas as vacas com colar
-  console.log("Criando dados de sensores (1 semana por vaca — isso pode demorar)...");
+  // Dados de sensores — 166 dias de histórico (2026-01-01 → 2026-06-16, 1 leitura/hora)
+  console.log("Criando dados de sensores (166 dias × 160 vacas — isso pode demorar)...");
 
-  const HOURS_OF_DATA = 168;
+  const HOURS_OF_DATA = 166 * 24; // 3 984 horas
+  const SIM_START = new Date("2026-01-01T00:00:00.000Z");
 
   for (const { cow, scenario } of createdCows) {
     const heartRateRecords = [];
@@ -768,7 +771,7 @@ async function main() {
     const accelerometerRecords = [];
 
     for (let hoursAgo = HOURS_OF_DATA; hoursAgo >= 0; hoursAgo--) {
-      const measuredAt = dateHoursAgo(hoursAgo);
+      const measuredAt = new Date(SIM_START.getTime() + (HOURS_OF_DATA - hoursAgo) * 3_600_000);
       const isAlertWindow = hoursAgo <= 6;
 
       let bpm: number, celsius: number;
@@ -1160,7 +1163,7 @@ async function main() {
     adminSaoBento,     // administrador@saobento.com
     adminBoaEsperanca, // administrador@boaesperanca.com
     adminSantaClara,   // administrador@santaclara.com
-    adminValeVerde,    // administrador@valeverde.com
+    adminTrevizan,    // administrador@trevizan.com
     vetUserFarm,       // vet@cowhealth.com
     zootUserFarm,      // zoot@cowhealth.com
     gerenteUser,       // gerente@cowhealth.com
@@ -1175,7 +1178,7 @@ async function main() {
     { userId: adminSaoBento.id,  farmId: saoBento.id },
     { userId: adminBoaEsperanca.id,  farmId: boaEsperanca.id },
     { userId: adminSantaClara.id,  farmId: santaClara.id },
-    { userId: adminValeVerde.id,  farmId: valeVerde.id },
+    { userId: adminTrevizan.id,  farmId: trevizan.id },
     // Veterinário atende 2 fazendas em uma região
     { userId: vetUserFarm.id,    farmId: aurora.id },
     { userId: vetUserFarm.id,    farmId: saoBento.id },
@@ -1190,7 +1193,7 @@ async function main() {
     { userId: financeiroUser.id, farmId: saoBento.id },
     { userId: financeiroUser.id, farmId: boaEsperanca.id },
     { userId: financeiroUser.id, farmId: santaClara.id },
-    { userId: financeiroUser.id, farmId: valeVerde.id },
+    { userId: financeiroUser.id, farmId: trevizan.id },
     // Observador em 1 fazenda
     { userId: observadorUser.id, farmId: santaClara.id },
   ];
@@ -1203,7 +1206,7 @@ async function main() {
   console.log("  administrador@saobento.com       → Fazenda Sao Bento");
   console.log("  administrador@boaesperanca.com   → Fazenda Boa Esperanca");
   console.log("  administrador@santaclara.com     → Fazenda Santa Clara");
-  console.log("  administrador@valeverde.com      → Fazenda Vale Verde");
+  console.log("  administrador@trevizan.com      → Fazenda Trevizan");
   console.log("  vet@cowhealth.com                → Fazenda Aurora, Fazenda Sao Bento");
   console.log("  zoot@cowhealth.com               → Fazenda Boa Esperanca");
   console.log("  gerente@cowhealth.com            → Fazenda Aurora");
@@ -1219,7 +1222,7 @@ async function main() {
   console.log("  administrador@saobento.com     Administrador");
   console.log("  administrador@boaesperanca.com Administrador");
   console.log("  administrador@santaclara.com   Administrador");
-  console.log("  administrador@valeverde.com    Administrador");
+  console.log("  administrador@trevizan.com    Administrador");
   console.log("  vet@cowhealth.com              Veterinario");
   console.log("  zoot@cowhealth.com             Zootecnista");
   console.log("  gerente@cowhealth.com          Gerente de Fazenda");

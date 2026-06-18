@@ -35,7 +35,10 @@ export const PilotSection: React.FC<PilotSectionProps> = ({ onSignUp }) => {
   };
 
   return (
-    <section id="pilot" className="relative isolate overflow-hidden bg-gradient-forest py-28 text-cream lg:py-36">
+    <section
+      id="pilot"
+      className="relative isolate overflow-hidden bg-gradient-forest py-28 text-cream lg:py-36"
+    >
       <div className="mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-20 lg:px-10">
         <div className="flex flex-col justify-center">
           <div className="mb-5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
@@ -98,9 +101,7 @@ export const PilotSection: React.FC<PilotSectionProps> = ({ onSignUp }) => {
                     <path d="m5 12 5 5L20 7" />
                   </svg>
                 </div>
-                <h3 className="mt-5 font-display text-2xl text-foreground">
-                  Solicitação recebida
-                </h3>
+                <h3 className="mt-5 font-display text-2xl text-foreground">Solicitação recebida</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Nossa equipe entrará em contato em até dois dias úteis.
                 </p>
@@ -109,22 +110,9 @@ export const PilotSection: React.FC<PilotSectionProps> = ({ onSignUp }) => {
           ) : (
             <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
               <PilotField label="Nome" name="name" error={errors.name} />
-              <PilotField
-                label="Empresa / Fazenda"
-                name="company"
-                error={errors.company}
-              />
-              <PilotField
-                label="E-mail"
-                name="email"
-                type="email"
-                error={errors.email}
-              />
-              <PilotField
-                label="Tamanho do rebanho"
-                name="herd"
-                placeholder="ex.: 250 vacas"
-              />
+              <PilotField label="Empresa / Fazenda" name="company" error={errors.company} />
+              <PilotField label="E-mail" name="email" type="email" error={errors.email} />
+              <PilotField label="Tamanho do rebanho" name="herd" placeholder="ex.: 250 vacas" />
               <div className="sm:col-span-2">
                 <PilotField
                   label="Função"

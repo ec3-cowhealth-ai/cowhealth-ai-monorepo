@@ -4,6 +4,47 @@
 
 ### Added
 
+#### Documentação do produto — README e referência técnica (2026-06-17)
+
+Reestruturação completa da documentação raiz do repositório, separando conteúdo de produto de conteúdo técnico.
+
+**Arquivos criados:**
+- **`TECHNICAL.md`**: Extraído do README anterior. Contém stack técnica, estrutura de pastas, design system, modelo de dados completo (incluindo `CowClinicalRecord` e `ActivityEvent`), setup local, verificação e mapa de documentação.
+- **`DEMO_USERS.md`**: Lista de usuários de demonstração com e-mails, senha padrão (`12345678`), papéis, fazendas vinculadas, tabela de permissões por papel e resumo dos dados do banco (seed).
+
+**Arquivo atualizado:**
+- **`README.md`**: Reescrito com foco no produto. Inclui tagline, descrição do sistema, fluxo IoT → análise → dashboard, seção da coleira RF10A com tabela de sensores, motor de diagnóstico heurístico com as 8 condições do Anexo VII, funcionalidades organizadas por público (produtor, veterinário, administrador), menção à landing page e link para `TECHNICAL.md`.
+
+---
+
+### Fixed
+
+#### Coordenadas geográficas das fazendas — seed e simulador IoT (2026-06-17)
+
+As coordenadas anteriores eram fictícias e posicionavam as fazendas dentro de centros urbanos ou em estados incorretos. Substituídas por coordenadas de propriedades rurais reais de pecuária leiteira no Paraná, verificadas via Google Maps.
+
+**Arquivos alterados:**
+- `backend/prisma/seed.ts` — `farmData[]`: coordenadas de `latitude` e `longitude`
+- `cowhealth-iot-simulator/data/farms.json` — campos `lat` e `lng`
+
+**Coordenadas corrigidas:**
+
+| Fazenda | Lat anterior | Lng anterior | Lat nova | Lng nova | Referência |
+|---|---|---|---|---|---|
+| Fazenda Santa Clara | -25.0945 | -50.1633 | -24.9638 | -50.0298 | Fazenda Rincão (DUQUEZA), PR |
+| Fazenda Aurora | -14.0658 | -50.4153 | -24.6953 | -50.7126 | Confinamento leiteiro Souza, PR |
+| Fazenda Sao Bento | -14.9375 | -51.0800 | -24.8373 | -49.9234 | Fazenda Rhoelandt, PR |
+| Fazenda Boa Esperanca | -12.9167 | -52.4167 | -26.7771 | -51.6224 | Fazenda Sonho e Realidade, PR |
+| Fazenda Vale Verde | -24.9578 | -53.4554 | — | — | Sem alteração (já era rural) |
+
+**Nomes, CNPJs, cidades e e-mails das fazendas não foram alterados.**
+
+**Instruções:**
+- Backend: executar `npx prisma migrate reset` para reconstruir o banco com as novas coordenadas (o `upsert` do seed usa `update: {}`, portanto não atualiza registros existentes)
+- Simulador IoT: reiniciar o processo — `data/farms.json` é lido em runtime, sem rebuild necessário
+
+
+
 #### Soft Delete Implementation (2026-06-11)
 
 Implemented soft delete (logical deletion) for `User`, `Farm`, and `MedicalRecord` models. Records are marked as deleted instead of physically removed from the database, allowing for audit trails and accidental recovery.

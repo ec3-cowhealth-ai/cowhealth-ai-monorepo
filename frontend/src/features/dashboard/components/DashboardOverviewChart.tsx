@@ -15,10 +15,10 @@ import { C } from "../constants/colors";
 import type { Period } from "@/types/period";
 
 const SERIES = [
-  { key: "healthy",    label: "Saudável",   color: "#339989" },
-  { key: "alert",      label: "Alerta",     color: "#e53e3e" },
+  { key: "healthy", label: "Saudável", color: "#339989" },
+  { key: "alert", label: "Alerta", color: "#e53e3e" },
   { key: "heatStress", label: "Est. Térmico", color: "#f57f17" },
-  { key: "calving",    label: "Parto",      color: "#6bb4e8" },
+  { key: "calving", label: "Parto", color: "#6bb4e8" },
 ];
 
 interface Props {
@@ -26,25 +26,40 @@ interface Props {
 }
 
 export const DashboardOverviewChart = ({ farmId }: Props) => {
-  const [period, setPeriod] = useState<Period>("daily");
+  const [period, setPeriod] = useState<Period>("hourly");
   const [customFrom, setCustomFrom] = useState<string>("");
-  const [customTo, setCustomTo]     = useState<string>("");
+  const [customTo, setCustomTo] = useState<string>("");
 
   const effectiveFrom = period === "custom" && customFrom ? customFrom : undefined;
-  const effectiveTo   = period === "custom" && customTo   ? customTo   : undefined;
+  const effectiveTo = period === "custom" && customTo ? customTo : undefined;
 
   const { data = [], isLoading } = useHealthTimeline(farmId, period, effectiveFrom, effectiveTo);
 
-  const isEmpty = !isLoading && data.every(
-    (p) => p.healthy === 0 && p.alert === 0 && p.heatStress === 0 && p.calving === 0
-  );
+  const isEmpty =
+    !isLoading &&
+    data.every((p) => p.healthy === 0 && p.alert === 0 && p.heatStress === 0 && p.calving === 0);
 
   return (
-    <div className="card" style={{ padding: "var(--s-4)", background: "var(--bg-elev-1)", display: "flex", flexDirection: "column", gap: 12 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-        <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: C.text }}>
-          Saúde do rebanho
-        </p>
+    <div
+      className="card"
+      style={{
+        padding: "var(--s-4)",
+        background: "var(--bg-elev-1)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 8,
+        }}
+      >
+        <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: C.text }}>Saúde do rebanho</p>
       </div>
 
       <PeriodPicker
@@ -59,16 +74,18 @@ export const DashboardOverviewChart = ({ farmId }: Props) => {
       {isLoading ? (
         <div className="skeleton" style={{ height: 240 }} />
       ) : isEmpty ? (
-        <div style={{
-          height: 240,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: C.muted,
-          fontSize: 13,
-          border: `1px dashed ${C.border}`,
-          borderRadius: 10,
-        }}>
+        <div
+          style={{
+            height: 240,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: C.muted,
+            fontSize: 13,
+            border: `1px dashed ${C.border}`,
+            borderRadius: 10,
+          }}
+        >
           Sem dados para o período selecionado
         </div>
       ) : (

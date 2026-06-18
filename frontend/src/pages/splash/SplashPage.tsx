@@ -37,7 +37,13 @@ export const SplashPage = () => {
       >
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
           <circle cx="18" cy="18" r="16" stroke="var(--verdigris, #00c8a0)" strokeWidth="2.5" />
-          <path d="M11 20 C13 14, 17 14, 18 18 C19 22, 23 22, 25 16" stroke="var(--verdigris, #00c8a0)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path
+            d="M11 20 C13 14, 17 14, 18 18 C19 22, 23 22, 25 16"
+            stroke="var(--verdigris, #00c8a0)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
         </svg>
       </div>
       <p

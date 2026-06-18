@@ -20,13 +20,25 @@ export const CowsPerStatusChart = ({ data }: CowsPerStatusChartProps) => (
     <p style={{ fontWeight: 600, marginBottom: "var(--s-3)" }}>Vacas por Status</p>
     <ResponsiveContainer width="100%" height={260}>
       <PieChart>
-        <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={90} label>
+        <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={90} label={true}>
           {data.map((entry, i) => (
             <Cell key={`cell-${i}`} fill={STATUS_COLORS[entry.label] ?? "#8884d8"} />
           ))}
         </Pie>
-        <Tooltip contentStyle={{ background: "var(--bg-elev-2)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
-        <Legend formatter={(value) => <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>{value}</span>} />
+        <Tooltip
+          contentStyle={{
+            background: "var(--bg-elev-2)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            color: "var(--text-primary)",
+          }}
+          itemStyle={{ color: "var(--text-primary)" }}
+        />
+        <Legend
+          formatter={(value) => (
+            <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>{value}</span>
+          )}
+        />
       </PieChart>
     </ResponsiveContainer>
   </div>

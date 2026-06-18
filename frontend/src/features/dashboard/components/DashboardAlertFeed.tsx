@@ -9,6 +9,7 @@ interface Props {
   onSelectCow?: (cowId: string) => void;
 }
 
+// noinspection NonAsciiCharacters
 type Severity = "Alto" | "Médio" | "Baixo";
 
 function severity(type: string | undefined): Severity {
@@ -65,7 +66,7 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
   const visible = alerts.slice(0, 6);
 
   return (
-    <aside style={{ gridColumn: "span 3", display: "flex", flexDirection: "column", gap: 16 }}>
+    <aside style={{ minWidth: 0, width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ ...cardStyle }}>
         <div
           style={{
@@ -208,43 +209,6 @@ export function DashboardAlertFeed({ alerts, isLoading, onSelectCow }: Props) {
         )}
       </div>
 
-      {/* Promo card */}
-      <div
-        style={{
-          borderRadius: 16,
-          background: C.sidebar,
-          color: "var(--primary-on)",
-          padding: 20,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ fontWeight: 600, fontSize: 14 }}>Monitore em qualquer lugar</div>
-        <p
-          style={{
-            fontSize: 12,
-            color: "#a8c1b1",
-            marginTop: 4,
-            lineHeight: 1.5,
-            margin: "4px 0 0",
-          }}
-        >
-          Receba alertas em tempo real e atualizações do rebanho no celular.
-        </p>
-        <div
-          style={{
-            position: "absolute",
-            right: -12,
-            bottom: -12,
-            width: 80,
-            height: 100,
-            borderRadius: 14,
-            background: C.sidebarActive,
-            border: `4px solid ${C.sidebar}`,
-            transform: "rotate(6deg)",
-          }}
-        />
-      </div>
     </aside>
   );
 }

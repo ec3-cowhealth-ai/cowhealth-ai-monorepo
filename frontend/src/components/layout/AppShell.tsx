@@ -12,9 +12,9 @@ const AppShellFrame = () => {
     <div className="app-shell" data-theme={theme}>
       <Sidebar />
       <OfflineBanner />
-      <div className="app-shell__main">
+      <main className="app-shell__main">
         <Outlet />
-      </div>
+      </main>
       <BottomNav />
     </div>
   );

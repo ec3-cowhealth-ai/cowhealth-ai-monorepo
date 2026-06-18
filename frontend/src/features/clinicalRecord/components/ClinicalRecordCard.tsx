@@ -43,10 +43,19 @@ export default function ClinicalRecordCard({ cowId, record }: Props) {
           {record.diagnosis.length > 100 ? record.diagnosis.slice(0, 100) + "…" : record.diagnosis}
         </p>
       )}
-      <div style={{ fontSize: "0.75rem", opacity: 0.6, display: "flex", justifyContent: "space-between" }}>
+      <div
+        style={{
+          fontSize: "0.75rem",
+          opacity: 0.6,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <span>Dr(a). {record.veterinarian.name}</span>
         {record.followUpRequired && (
-          <span style={{ color: "var(--color-warning, #f59e0b)" }}>⚠ Acompanhamento necessário</span>
+          <span style={{ color: "var(--color-warning, #f59e0b)" }}>
+            ⚠ Acompanhamento necessário
+          </span>
         )}
       </div>
     </div>

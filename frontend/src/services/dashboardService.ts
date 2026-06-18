@@ -7,6 +7,7 @@ export interface DashboardOverviewResponse {
   totalFarms: number;
   totalActiveCollars: number;
   unreadNotifications: number;
+  avgTemperature: number | null;
   topFarm: { id: number; name: string; cowCount: number } | null;
 }
 
@@ -26,9 +27,7 @@ export const getDashboardOverview = (farmId?: string, dateStart?: string, dateEn
   if (dateStart) params.dateStart = dateStart;
   if (dateEnd) params.dateEnd = dateEnd;
 
-  return api
-    .get<DashboardOverviewResponse>("/dashboard/overview", { params })
-    .then((r) => r.data);
+  return api.get<DashboardOverviewResponse>("/dashboard/overview", { params }).then((r) => r.data);
 };
 
 export const getCowsPerStatus = (farmId?: string, dateStart?: string, dateEnd?: string) => {
@@ -37,9 +36,7 @@ export const getCowsPerStatus = (farmId?: string, dateStart?: string, dateEnd?: 
   if (dateStart) params.dateStart = dateStart;
   if (dateEnd) params.dateEnd = dateEnd;
 
-  return api
-    .get<CowStatusItem[]>("/dashboard/cows-per-status", { params })
-    .then((r) => r.data);
+  return api.get<CowStatusItem[]>("/dashboard/cows-per-status", { params }).then((r) => r.data);
 };
 
 export const getCowsPerFarm = () =>

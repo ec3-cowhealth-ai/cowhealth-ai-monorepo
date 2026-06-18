@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useFarmContext } from "@/context/FarmContext";
+import { useBreakpoint } from "@hooks/useBreakpoint";
 import { useDashboardOverview, useCowsPerStatus } from "../hooks/useDashboard";
 import { useCows } from "@features/cows/hooks/useCows";
 import { useUnreadNotifications } from "@hooks/useNotifications";
@@ -11,7 +12,7 @@ import { DashboardCenterPanel } from "../components/DashboardCenterPanel";
 import { DashboardAlertFeed } from "../components/DashboardAlertFeed";
 import { DashboardActivityTimeline } from "../components/DashboardActivityTimeline";
 import { DashboardOverviewChart } from "../components/DashboardOverviewChart";
-import { CalIcon, FilterIcon, ChevronDown } from "../components/DashboardIcons";
+import { CalIcon, ChevronDown } from "../components/DashboardIcons";
 import { CowHead } from "@components/ui/CowHeadIcon";
 
 type DateRangeOption = "7days" | "14days" | "30days" | "90days";
@@ -34,7 +35,10 @@ export const DashboardPage = () => {
     const now = new Date();
     const days = option === "7days" ? 7 : option === "14days" ? 14 : option === "30days" ? 30 : 90;
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-    return { startDate: startDate.toISOString().split("T")[0], endDate: now.toISOString().split("T")[0] };
+    return {
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: now.toISOString().split("T")[0],
+    };
   };
 
   const dateRangeLabel = {
@@ -48,13 +52,14 @@ export const DashboardPage = () => {
 
   const kpiFarmId = selectionMode === "farm" && selectedFarmId ? selectedFarmId : undefined;
   const { startDate, endDate } = getDateRange(dateRange);
-  const { data: overview }      = useDashboardOverview(kpiFarmId, startDate, endDate);
+  const { data: overview } = useDashboardOverview(kpiFarmId, startDate, endDate);
   const { data: cowsPerStatus } = useCowsPerStatus(kpiFarmId, startDate, endDate);
 
   // Get the display farm based on selection mode
-  const displayFarm = selectionMode === "farm" && selectedFarmId
-    ? farms.find((f) => String(f.id) === selectedFarmId)
-    : null;
+  const displayFarm =
+    selectionMode === "farm" && selectedFarmId
+      ? farms.find((f) => String(f.id) === selectedFarmId)
+      : null;
 
   // Cow list for selector
   const cowListFilters =
@@ -92,19 +97,37 @@ export const DashboardPage = () => {
     setSelectedCowId(cowId);
   }, []);
 
+  const { isMobile, isTablet, isDesktop } = useBreakpoint();
+  const pad = isMobile ? "16px" : isTablet ? "20px 24px" : "24px 32px";
+
   return (
     <div className="app-page" style={{ background: C.bg, minHeight: "100%" }}>
-      <div style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
-
+      <div style={{ padding: pad, display: "flex", flexDirection: "column", gap: isMobile ? 16 : 24 }}>
         {/* TopBar — fiel ao preview */}
-        <header style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <header
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
           <div>
-            <h1 style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
-              fontSize: 42, lineHeight: 1, margin: 0, color: C.text, fontWeight: 400,
-              display: "flex", alignItems: "center", gap: 12,
-            }}>
-              <CowHead size={38} color={C.green} />
+            <h1
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: isMobile ? 26 : 42,
+                lineHeight: 1,
+                margin: 0,
+                color: C.text,
+                fontWeight: 400,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <CowHead size={isMobile ? 24 : 38} color={C.green} />
               Visão geral do rebanho
             </h1>
             <div style={{ marginTop: 4, fontSize: 13, color: C.muted }}>
@@ -122,18 +145,20 @@ export const DashboardPage = () => {
               <ChevronDown style={{ width: 14, height: 14, color: C.muted }} />
             </button>
             {showDateMenu && (
-              <div style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                marginTop: 8,
-                background: "var(--bg-elev-1)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                zIndex: 1000,
-                minWidth: 200,
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-              }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  marginTop: 8,
+                  background: "var(--bg-elev-1)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 8,
+                  zIndex: 1000,
+                  minWidth: 200,
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                }}
+              >
                 {(["7days", "14days", "30days", "90days"] as const).map((option) => (
                   <button
                     key={option}
@@ -151,7 +176,8 @@ export const DashboardPage = () => {
                       border: "none",
                       color: "var(--text-primary)",
                       cursor: "pointer",
-                      borderBottom: option !== "90days" ? `1px solid var(--border-subtle)` : undefined,
+                      borderBottom:
+                        option !== "90days" ? `1px solid var(--border-subtle)` : undefined,
                     }}
                   >
                     {dateRangeLabel[option]}
@@ -159,10 +185,6 @@ export const DashboardPage = () => {
                 ))}
               </div>
             )}
-            <button style={{ ...btnOutlineStyle }}>
-              <FilterIcon style={{ width: 16, height: 16, color: C.green }} />
-              Filtrar
-            </button>
           </div>
         </header>
 
@@ -180,14 +202,38 @@ export const DashboardPage = () => {
           isLoadingCows={loadingCows}
         />
 
-        {/* KPIs */}
-        <DashboardKPIs overview={overview} cowsPerStatus={cowsPerStatus} />
+        {/* KPIs + Alertas */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 300px",
+            gap: isMobile ? 16 : 24,
+            alignItems: "start",
+            minWidth: 0,
+            width: "100%",
+          }}
+        >
+          <DashboardKPIs overview={overview} cowsPerStatus={cowsPerStatus} />
+          <DashboardAlertFeed
+            alerts={alerts}
+            isLoading={loadingAlerts}
+            onSelectCow={handleAlertCowSelect}
+          />
+        </div>
 
         {/* Health timeline chart */}
-        <DashboardOverviewChart farmId={selectedFarm?.id} />
+        <DashboardOverviewChart farmId={kpiFarmId ? Number(kpiFarmId) : undefined} />
 
-        {/* Main 3-column grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
+        {/* Main grid — 12 cols desktop, 1 col mobile/tablet */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isDesktop ? "repeat(12, 1fr)" : "1fr",
+            gap: isMobile ? 16 : 24,
+            minWidth: 0,
+            width: "100%",
+          }}
+        >
           <CowProfilePanel
             cowId={effectiveCowId}
             onPrev={handlePrev}
@@ -196,16 +242,10 @@ export const DashboardPage = () => {
             hasNext={hasNext}
           />
           <DashboardCenterPanel cowId={effectiveCowId} />
-          <DashboardAlertFeed
-            alerts={alerts}
-            isLoading={loadingAlerts}
-            onSelectCow={handleAlertCowSelect}
-          />
         </div>
 
         {/* Activity timeline */}
         <DashboardActivityTimeline cowId={effectiveCowId} />
-
       </div>
     </div>
   );

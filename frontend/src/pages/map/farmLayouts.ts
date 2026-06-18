@@ -142,7 +142,7 @@ const saoBento: FarmLayout = {
   ],
 };
 
-// Fazenda 2 — Vale Verde (formato em L, lagoa no canto)
+// Fazenda 2 — Trevizan (formato em L, lagoa no canto)
 const valeVerde: FarmLayout = {
   viewBox: "0 0 390 620",
   roads: [{ d: "M0 260 L390 260" }, { d: "M260 0 L260 260" }],

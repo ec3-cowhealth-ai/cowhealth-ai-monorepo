@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { C, cardStyle } from "../constants/colors";
 import { CameraIcon, ChevronRight } from "./DashboardIcons";
+import { getCowBreedImage } from "@/utils/cowBreedImage";
+import { useBreakpoint } from "@hooks/useBreakpoint";
 
 interface Props {
   cowId: string | null;
@@ -29,6 +31,9 @@ function age(birthDate: string | undefined): string {
 }
 
 export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Props) {
+  const { isDesktop } = useBreakpoint();
+  const colSpan = isDesktop ? "span 3" : "1 / -1";
+
   const { data: cow, isLoading } = useQuery({
     queryKey: ["cows", cowId],
     queryFn: () => cowsService.get(cowId!),
@@ -40,7 +45,10 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
       <section
         style={{
           ...cardStyle,
-          gridColumn: "span 3",
+          gridColumn: colSpan,
+          minWidth: 0,
+          width: "100%",
+          boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -72,7 +80,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
 
   if (isLoading) {
     return (
-      <section style={{ ...cardStyle, gridColumn: "span 3" }}>
+      <section style={{ ...cardStyle, gridColumn: colSpan, minWidth: 0, width: "100%", boxSizing: "border-box" }}>
         <Skeleton />
       </section>
     );
@@ -88,7 +96,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
       : "var(--status-success-bg)";
 
   const firstPhoto = cow.photos?.[0];
-  const photoUrl = firstPhoto ? `/uploads/${firstPhoto}` : null;
+  const photoUrl = firstPhoto ? `/uploads/${firstPhoto}` : getCowBreedImage(cow.breed, cow.id);
 
   const rows = [
     ["Fazenda", cow.farm?.name ?? "--"],
@@ -120,7 +128,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
   };
 
   return (
-    <div style={{ gridColumn: "span 3", position: "relative" }}>
+    <div style={{ gridColumn: colSpan, position: "relative", minWidth: 0, width: "100%", boxSizing: "border-box" }}>
       {onPrev && (
         <button
           onClick={onPrev}
@@ -177,6 +185,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
             </div>
           )}
           <button
+            aria-label="Alterar foto da vaca"
             style={{
               position: "absolute",
               bottom: 4,
@@ -218,7 +227,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
               textTransform: "uppercase",
             }}
           >
-            Brinco {cow.tag}
+            Colar {cow.tag}
           </div>
           <span
             style={{

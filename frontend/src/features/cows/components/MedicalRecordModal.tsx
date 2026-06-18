@@ -35,7 +35,12 @@ export const MedicalRecordModal = ({ open, cowId, onClose }: Props) => {
       },
       {
         onSuccess: () => {
-          setForm({ type: "CHECKUP", title: "", notes: "", recordedAt: toDatetimeLocal(new Date()) });
+          setForm({
+            type: "CHECKUP",
+            title: "",
+            notes: "",
+            recordedAt: toDatetimeLocal(new Date()),
+          });
           onClose();
         },
       },

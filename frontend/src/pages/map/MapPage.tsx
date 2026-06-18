@@ -1,13 +1,13 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useState, useMemo } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useState, useMemo, useEffect } from "react";
 import { AppBar } from "@components/layout";
 import { Icon } from "@components/ui/Icon";
 import { useCows } from "@features/cows/hooks/useCows";
-import { useFarmContext } from "../../context/FarmContext";
-import { COW_STATUS_VALUES } from "../../types/cows";
-import type { Cow } from "../../types/cows";
+import { useFarmContext } from "@/context/FarmContext";
+import { COW_STATUS_VALUES } from "@/types/cows";
+import type { Cow } from "@/types/cows";
 import { MapLegend } from "./MapLegend";
 import { CowDetailCard } from "./CowDetailCard";
 import { simulateCowPositions } from "./simulateCowPositions";
@@ -15,9 +15,18 @@ import { simulateCowPositions } from "./simulateCowPositions";
 const STATUS_COLOR: Record<string, string> = {
   [COW_STATUS_VALUES.HEALTHY]: "#22c55e",
   [COW_STATUS_VALUES.HEAT_STRESS]: "#f59e0b",
-  [COW_STATUS_VALUES.CALVING]: "#a855f7",
+  [COW_STATUS_VALUES.CALVING]: "#6bb4e8",
   [COW_STATUS_VALUES.ALERT]: "#ef4444",
 };
+
+function MapController({ center }: { center: [number, number] }) {
+  const map = useMap();
+  const [lat, lng] = center;
+  useEffect(() => {
+    map.flyTo([lat, lng], map.getZoom(), { duration: 1 });
+  }, [map, lat, lng]);
+  return null;
+}
 
 function makeCowIcon(color: string, selected: boolean, isReal: boolean) {
   const cls = [
@@ -42,17 +51,17 @@ function makeCowIcon(color: string, selected: boolean, isReal: boolean) {
 
 export const MapPage = () => {
   const { selectedFarm, farms, setSelectedFarm } = useFarmContext();
-  const [selectedCow, setSelectedCow] = useState<Cow | null>(null);
+  const [selectedCow, setSelectedCow] = useState<{ cow: Cow; lat: number; lng: number } | null>(
+    null,
+  );
 
   const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
   const { data: rawCows = [] } = useCows({ farmId });
   const cows = rawCows.filter((c: Cow) => c.status !== COW_STATUS_VALUES.RETIRED);
 
   const alertCows = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.ALERT);
-  const warnCows = cows.filter(
-    (c: Cow) =>
-      c.status === COW_STATUS_VALUES.HEAT_STRESS || c.status === COW_STATUS_VALUES.CALVING,
-  );
+  const heatStressCows = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEAT_STRESS);
+  const calvingCows = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.CALVING);
   const okCount = cows.filter((c: Cow) => c.status === COW_STATUS_VALUES.HEALTHY).length;
 
   const cowsWithPosition = useMemo(() => {
@@ -100,10 +109,10 @@ export const MapPage = () => {
       <MapContainer
         center={center}
         zoom={15}
-        key={`${center[0]},${center[1]}`}
         style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
         zoomControl={false}
       >
+        <MapController center={center} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -114,11 +123,14 @@ export const MapPage = () => {
             position={[lat!, lng!]}
             icon={makeCowIcon(
               STATUS_COLOR[cow.status] ?? "#22c55e",
-              selectedCow?.id === cow.id,
+              selectedCow?.cow.id === cow.id,
               isReal,
             )}
             eventHandlers={{
-              click: () => setSelectedCow(selectedCow?.id === cow.id ? null : cow),
+              click: () =>
+                setSelectedCow(
+                  selectedCow?.cow.id === cow.id ? null : { cow, lat: lat!, lng: lng! },
+                ),
             }}
           >
             <Popup>
@@ -198,12 +210,17 @@ export const MapPage = () => {
       </div>
 
       <div style={{ position: "relative", zIndex: 1000 }}>
-        <MapLegend okCount={okCount} warnCount={warnCows.length} alertCount={alertCows.length} />
+        <MapLegend
+          okCount={okCount}
+          heatStressCount={heatStressCows.length}
+          calvingCount={calvingCows.length}
+          alertCount={alertCows.length}
+        />
       </div>
 
       {selectedCow && (
         <div style={{ position: "absolute", bottom: 80, left: 16, right: 16, zIndex: 1000 }}>
-          <CowDetailCard cow={selectedCow} />
+          <CowDetailCard cow={selectedCow.cow} lat={selectedCow.lat} lng={selectedCow.lng} />
         </div>
       )}
     </div>

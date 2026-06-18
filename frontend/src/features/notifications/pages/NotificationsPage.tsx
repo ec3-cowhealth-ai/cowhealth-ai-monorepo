@@ -14,7 +14,7 @@ import { C, cardStyle } from "@features/dashboard/constants/colors";
 const TYPE_COLOR: Record<string, string> = {
   ALERT: C.red,
   WARNING: C.orange,
-  INFO:    "#6bb4e8",
+  INFO: "#6bb4e8",
 };
 
 const timeAgo = (dateStr: string) => {
@@ -83,14 +83,12 @@ export const NotificationsPage = () => {
   };
 
   const notifications = useMemo(() => {
-    let base: Notification[] = [];
-    if (tab === "unread") {
-      base = unread || [];
-    } else if (tab === "read") {
-      base = (all || []).filter((n) => n.read);
-    } else {
-      base = all || [];
-    }
+    const base =
+      tab === "unread"
+        ? unread || []
+        : tab === "read"
+          ? (all || []).filter((n) => n.read)
+          : all || [];
     if (severity === "all") return base;
     return base.filter((n) => inferSeverity(n) === severity);
   }, [tab, severity, all, unread]);
@@ -195,9 +193,8 @@ export const NotificationsPage = () => {
             const active = severity === sev;
             const accentColor = sev === "all" ? C.muted : SEVERITY_COLOR[sev];
             const base = tab === "unread" ? unread || [] : all || [];
-            const count = sev === "all"
-              ? base.length
-              : base.filter((n) => inferSeverity(n) === sev).length;
+            const count =
+              sev === "all" ? base.length : base.filter((n) => inferSeverity(n) === sev).length;
             return (
               <button
                 key={sev}
@@ -229,7 +226,9 @@ export const NotificationsPage = () => {
                   />
                 )}
                 {SEVERITY_LABEL[sev]}
-                {count > 0 && <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>}
+                {count > 0 && (
+                  <span style={{ opacity: active ? 0.75 : 0.55, fontSize: 11 }}>{count}</span>
+                )}
               </button>
             );
           })}
@@ -266,8 +265,11 @@ export const NotificationsPage = () => {
                   key={n.id}
                   style={{
                     ...cardStyle,
-                    display: "flex", alignItems: "flex-start", gap: 12,
-                    padding: 16, textAlign: "left",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
+                    padding: 16,
+                    textAlign: "left",
                     borderLeft: `4px solid ${color}`,
                     opacity: n.read ? 0.65 : 1,
                     borderRadius: 12,

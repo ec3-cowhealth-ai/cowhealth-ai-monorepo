@@ -18,12 +18,7 @@ const formatDate = (iso: string) =>
 const exportCsv = (rows: SensorHistoryRow[]) => {
   const header = "Data/Hora,Temperatura (°C),FC (bpm),Atividade (m/s²)";
   const lines = rows.map((r) =>
-    [
-      formatDate(r.measuredAt),
-      r.temperature ?? "",
-      r.heartRate ?? "",
-      r.activity ?? "",
-    ].join(","),
+    [formatDate(r.measuredAt), r.temperature ?? "", r.heartRate ?? "", r.activity ?? ""].join(","),
   );
   const blob = new Blob([[header, ...lines].join("\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -42,7 +37,8 @@ export const CowHistoryPage = () => {
 
   const { data, isLoading } = useQuery<SensorHistoryRow[]>({
     queryKey: ["cows", id, "sensor-history", applied],
-    queryFn: () => cowsService.getSensorHistory(id!, applied.from || undefined, applied.to || undefined),
+    queryFn: () =>
+      cowsService.getSensorHistory(id!, applied.from || undefined, applied.to || undefined),
     enabled: !!id,
   });
 
@@ -71,10 +67,7 @@ export const CowHistoryPage = () => {
               onChange={(e) => setTo(e.target.value)}
             />
           </div>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => setApplied({ from, to })}
-          >
+          <button className="btn btn-primary btn-sm" onClick={() => setApplied({ from, to })}>
             Aplicar
           </button>
           {data && data.length > 0 && (
@@ -90,7 +83,9 @@ export const CowHistoryPage = () => {
             <LoadingSpinner />
           </div>
         ) : !data || data.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 40, color: "var(--text-muted)", fontSize: 14 }}>
+          <div
+            style={{ textAlign: "center", padding: 40, color: "var(--text-muted)", fontSize: 14 }}
+          >
             Nenhuma leitura encontrada no período selecionado.
           </div>
         ) : (

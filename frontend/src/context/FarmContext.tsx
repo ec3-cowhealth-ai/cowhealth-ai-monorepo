@@ -21,8 +21,8 @@ export const useFarmContext = () => useContext(FarmContext);
 
 export const FarmProvider = ({ children }: { children: ReactNode }) => {
   const { data: farms = [], isLoading } = useFarms();
-  const [selectedFarmId, setSelectedFarmId] = useState<string | null>(
-    () => localStorage.getItem("selectedFarmId"),
+  const [selectedFarmId, setSelectedFarmId] = useState<string | null>(() =>
+    localStorage.getItem("selectedFarmId"),
   );
 
   // Deriva a fazenda selecionada sem setState em efeito

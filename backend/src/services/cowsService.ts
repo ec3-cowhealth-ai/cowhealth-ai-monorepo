@@ -237,21 +237,21 @@ export const getCowAccelerometer = async (cowId: number, options: SensorQueryInp
   );
 };
 
-// Sensores - média diária para gráficos na última semana
+// Sensores - média diária para gráficos
 
-const sevenDaysAgo = () => {
+const daysAgo = (days: number) => {
   const date = new Date();
-  date.setDate(date.getDate() - 6);
+  date.setDate(date.getDate() - (days - 1));
   date.setHours(0, 0, 0, 0);
   return date;
 };
 
-export const getCowHeartRateDaily = async (cowId: number) => {
+export const getCowHeartRateDaily = async (cowId: number, days: number = 7) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");
 
   const records = await prisma.heartRateData.findMany({
-    where: { cowId, measuredAt: { gte: sevenDaysAgo() } },
+    where: { cowId, measuredAt: { gte: daysAgo(days) } },
     select: { bpm: true, measuredAt: true },
     orderBy: { measuredAt: "asc" },
   });
@@ -259,12 +259,12 @@ export const getCowHeartRateDaily = async (cowId: number) => {
   return aggregateDailyAverage(records, "bpm");
 };
 
-export const getCowTemperatureDaily = async (cowId: number) => {
+export const getCowTemperatureDaily = async (cowId: number, days: number = 7) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");
 
   const records = await prisma.temperatureData.findMany({
-    where: { cowId, measuredAt: { gte: sevenDaysAgo() } },
+    where: { cowId, measuredAt: { gte: daysAgo(days) } },
     select: { celsius: true, measuredAt: true },
     orderBy: { measuredAt: "asc" },
   });
@@ -272,17 +272,16 @@ export const getCowTemperatureDaily = async (cowId: number) => {
   return aggregateDailyAverage(records, "celsius");
 };
 
-export const getCowAccelerometerDaily = async (cowId: number) => {
+export const getCowAccelerometerDaily = async (cowId: number, days: number = 7) => {
   const cow = await prisma.cow.findUnique({ where: { id: cowId } });
   if (!cow) throw new Error("Vaca não encontrada.");
 
   const records = await prisma.accelerometerData.findMany({
-    where: { cowId, measuredAt: { gte: sevenDaysAgo() } },
+    where: { cowId, measuredAt: { gte: daysAgo(days) } },
     select: { accelX: true, accelY: true, accelZ: true, measuredAt: true },
     orderBy: { measuredAt: "asc" },
   });
 
-  // Converte cada leitura em magnitude antes de agregar por dia
   const magnitudeRecords = records.map((r) => ({
     measuredAt: r.measuredAt,
     magnitude: Math.sqrt(r.accelX ** 2 + r.accelY ** 2 + r.accelZ ** 2),

@@ -15,6 +15,7 @@ export const useCows = (filters?: { farmId?: string; status?: string }) => {
   return useQuery({
     queryKey: ["cows", filters],
     queryFn: () => cowsService.list(filters),
+    refetchInterval: 30000,
   });
 };
 
@@ -25,7 +26,12 @@ export const useCow = (id: string) => {
   });
 };
 
-export const useCowHeartRateDaily = (cowId: string, period: Period = "daily", customFrom?: string, customTo?: string) => {
+export const useCowHeartRateDaily = (
+  cowId: string,
+  period: Period = "daily",
+  customFrom?: string,
+  customTo?: string,
+) => {
   const days = periodToDays(period, customFrom, customTo);
   return useQuery({
     queryKey: ["cows", cowId, "heart-rate-daily", days],
@@ -34,7 +40,12 @@ export const useCowHeartRateDaily = (cowId: string, period: Period = "daily", cu
   });
 };
 
-export const useCowTemperatureDaily = (cowId: string, period: Period = "daily", customFrom?: string, customTo?: string) => {
+export const useCowTemperatureDaily = (
+  cowId: string,
+  period: Period = "daily",
+  customFrom?: string,
+  customTo?: string,
+) => {
   const days = periodToDays(period, customFrom, customTo);
   return useQuery({
     queryKey: ["cows", cowId, "temperature-daily", days],
@@ -68,8 +79,8 @@ export const useUpdateCow = () => {
 export const useCowMedicalRecords = (cowId: string) => {
   return useQuery({
     queryKey: ["cows", cowId, "medical-records"],
-    queryFn:  () => cowsService.getMedicalRecords(cowId),
-    enabled:  !!cowId,
+    queryFn: () => cowsService.getMedicalRecords(cowId),
+    enabled: !!cowId,
   });
 };
 
@@ -94,7 +105,12 @@ export const useRetireCow = () => {
   });
 };
 
-export const useCowAccelerometerDaily = (cowId: string, period: Period = "daily", customFrom?: string, customTo?: string) => {
+export const useCowAccelerometerDaily = (
+  cowId: string,
+  period: Period = "daily",
+  customFrom?: string,
+  customTo?: string,
+) => {
   const days = periodToDays(period, customFrom, customTo);
   return useQuery({
     queryKey: ["cows", cowId, "accelerometer-daily", days],

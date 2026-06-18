@@ -31,14 +31,12 @@ export const TrustSection: React.FC = () => {
             <h2 className="font-display text-4xl leading-[1.02] text-balance max-w-3xl sm:text-5xl lg:text-6xl text-foreground">
               Construída sobre observação de campo,
               <br />
-              <span className="italic text-forest">
-                sistemas embarcados e lógica veterinária.
-              </span>
+              <span className="italic text-forest">sistemas embarcados e lógica veterinária.</span>
             </h2>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
               A CowHealth AI foi projetada a partir de desafios reais de fazendas leiteiras —
-              combinando sensoriamento embarcado, arquitetura IoT, regras heurísticas de saúde e
-              uma abordagem que prioriza o bem-estar animal.
+              combinando sensoriamento embarcado, arquitetura IoT, regras heurísticas de saúde e uma
+              abordagem que prioriza o bem-estar animal.
             </p>
           </div>
 

@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
-import { LoadingSpinner, EmptyState, StatusBadge, FormModal, ConfirmDialog } from "@components/common";
+import {
+  LoadingSpinner,
+  EmptyState,
+  StatusBadge,
+  FormModal,
+  ConfirmDialog,
+} from "@components/common";
 import { XCircle, Edit2, Trash2, Warehouse } from "lucide-react";
 import { useCollar, useUpdateCollar, useDeleteCollar } from "../hooks/useCollars";
 import { useFarms } from "../../farms/hooks/useFarms";
@@ -26,11 +32,21 @@ const getStatusTone = (status: string): "success" | "warning" | "danger" | "mute
 // ─── Modal de Edição ──────────────────────────────────────────────────────────
 
 interface EditModalProps {
-  collar: { name: string; status: CollarStatus; dataFrequency: DataFrequency; farmId?: number | null };
+  collar: {
+    name: string;
+    status: CollarStatus;
+    dataFrequency: DataFrequency;
+    farmId?: number | null;
+  };
   open: boolean;
   onClose: () => void;
   isLoading: boolean;
-  onSubmit: (data: { name: string; status: CollarStatus; dataFrequency: DataFrequency; farmId?: number }) => void;
+  onSubmit: (data: {
+    name: string;
+    status: CollarStatus;
+    dataFrequency: DataFrequency;
+    farmId?: number;
+  }) => void;
 }
 
 function EditCollarModal({ collar, open, onClose, isLoading, onSubmit }: EditModalProps) {
@@ -167,12 +183,20 @@ export const CollarDetailPage = () => {
           (canEdit || canDelete) && (
             <div style={{ display: "flex", gap: 12 }}>
               {canEdit && (
-                <button className="app-bar__action" onClick={() => setShowEdit(true)}>
+                <button
+                  className="app-bar__action"
+                  aria-label="Editar coleira"
+                  onClick={() => setShowEdit(true)}
+                >
                   <Edit2 size={18} />
                 </button>
               )}
               {canDelete && (
-                <button className="app-bar__action" onClick={() => setShowDelete(true)}>
+                <button
+                  className="app-bar__action"
+                  aria-label="Excluir coleira"
+                  onClick={() => setShowDelete(true)}
+                >
                   <Trash2 size={18} />
                 </button>
               )}
@@ -335,7 +359,10 @@ export const CollarDetailPage = () => {
           onClose={() => setShowEdit(false)}
           isLoading={updating}
           onSubmit={(data) =>
-            updateCollar({ id: collar.id.toString(), input: data }, { onSuccess: () => setShowEdit(false) })
+            updateCollar(
+              { id: collar.id.toString(), input: data },
+              { onSuccess: () => setShowEdit(false) },
+            )
           }
         />
       )}
@@ -347,7 +374,9 @@ export const CollarDetailPage = () => {
           description={`Tem certeza que deseja excluir a coleira "${collar.name}"? Esta ação não pode ser desfeita.`}
           confirmLabel={deleting ? "Excluindo..." : "Excluir"}
           isDangerous
-          onConfirm={() => deleteCollar(collar.id.toString(), { onSuccess: () => navigate("/collars") })}
+          onConfirm={() =>
+            deleteCollar(collar.id.toString(), { onSuccess: () => navigate("/collars") })
+          }
           onCancel={() => setShowDelete(false)}
         />
       )}

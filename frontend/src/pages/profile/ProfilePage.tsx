@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Warehouse, Tag, User, Settings, ChevronRight, LogOut, BookOpen } from "lucide-react";
+import { Warehouse, WifiCog, User, Settings, ChevronRight, LogOut, BookOpen } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { useMe, useLogout } from "@hooks/useAuth";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
@@ -8,7 +8,7 @@ import { C, cardStyle } from "@features/dashboard/constants/colors";
 const menuItems: { icon: ReactNode; label: string; path: string; action?: () => void }[] = [
   { icon: <CowHead size={18} color={C.green} />, label: "Rebanho", path: "/cows" },
   { icon: <Warehouse size={18} color={C.green} />, label: "Fazendas", path: "/farms" },
-  { icon: <Tag size={18} color={C.green} />, label: "Coleiras", path: "/collars" },
+  { icon: <WifiCog size={18} color={C.green} />, label: "Coleiras", path: "/collars" },
   { icon: <User size={18} color={C.green} />, label: "Usuários", path: "/access/users" },
   { icon: <Settings size={18} color={C.green} />, label: "Configurações", path: "/settings" },
   { icon: <BookOpen size={18} color={C.green} />, label: "Ver tutorial", path: "/onboarding" },

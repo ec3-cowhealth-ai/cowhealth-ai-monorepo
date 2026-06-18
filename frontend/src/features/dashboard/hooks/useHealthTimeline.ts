@@ -10,7 +10,12 @@ export interface HealthTimelinePoint {
   calving: number;
 }
 
-export const useHealthTimeline = (farmId?: number, period: Period = "daily", from?: string, to?: string) =>
+export const useHealthTimeline = (
+  farmId?: number,
+  period: Period = "daily",
+  from?: string,
+  to?: string,
+) =>
   useQuery({
     queryKey: ["dashboard", "health-timeline", farmId, period, from, to],
     queryFn: async () => {
@@ -18,7 +23,7 @@ export const useHealthTimeline = (farmId?: number, period: Period = "daily", fro
       if (farmId) params.set("farmId", String(farmId));
       params.set("period", period);
       if (from) params.set("from", from);
-      if (to)   params.set("to",   to);
+      if (to) params.set("to", to);
       const res = await api.get<HealthTimelinePoint[]>(`/dashboard/health-timeline?${params}`);
       return res.data;
     },

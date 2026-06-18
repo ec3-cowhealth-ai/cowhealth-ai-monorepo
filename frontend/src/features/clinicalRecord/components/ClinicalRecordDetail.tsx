@@ -43,7 +43,15 @@ function Field({ label, value }: FieldProps) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ marginBottom: "1.5rem" }}>
-      <h3 style={{ fontSize: "0.875rem", opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
+      <h3
+        style={{
+          fontSize: "0.875rem",
+          opacity: 0.5,
+          textTransform: "uppercase",
+          letterSpacing: "0.08em",
+          marginBottom: "0.75rem",
+        }}
+      >
         {title}
       </h3>
       {children}
@@ -57,12 +65,23 @@ interface Props {
 
 export default function ClinicalRecordDetail({ record }: Props) {
   const date = new Date(record.recordDate).toLocaleDateString("pt-BR", {
-    day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: "1.5rem",
+        }}
+      >
         <div>
           <div style={{ fontSize: "0.875rem", opacity: 0.6 }}>Data do atendimento</div>
           <div style={{ fontWeight: 600 }}>{date}</div>
@@ -105,20 +124,42 @@ export default function ClinicalRecordDetail({ record }: Props) {
       </Section>
 
       <Section title="Status Reprodutivo">
-        <Field label="Status reprodutivo" value={record.reproductiveStatus ? REPRO_LABEL[record.reproductiveStatus] : null} />
+        <Field
+          label="Status reprodutivo"
+          value={record.reproductiveStatus ? REPRO_LABEL[record.reproductiveStatus] : null}
+        />
         <Field label="Elegível para reprodução" value={record.breedingEligibility} />
         <Field label="Status de estro" value={record.estrusStatus} />
         <Field label="Janela de inseminação" value={record.inseminationWindow} />
         <Field label="Gestante" value={record.pregnancyStatus} />
-        <Field label="Último parto" value={record.lastCalvingDate ? new Date(record.lastCalvingDate).toLocaleDateString("pt-BR") : null} />
-        <Field label="Parto previsto" value={record.expectedCalvingDate ? new Date(record.expectedCalvingDate).toLocaleDateString("pt-BR") : null} />
+        <Field
+          label="Último parto"
+          value={
+            record.lastCalvingDate
+              ? new Date(record.lastCalvingDate).toLocaleDateString("pt-BR")
+              : null
+          }
+        />
+        <Field
+          label="Parto previsto"
+          value={
+            record.expectedCalvingDate
+              ? new Date(record.expectedCalvingDate).toLocaleDateString("pt-BR")
+              : null
+          }
+        />
         <Field label="Alimentação" value={record.feedingNotes} />
       </Section>
 
       <Section title="Acompanhamento e Notas">
         <Field label="Recomendações veterinárias" value={record.veterinaryRecommendations} />
         <Field label="Acompanhamento necessário" value={record.followUpRequired} />
-        <Field label="Data de acompanhamento" value={record.followUpDate ? new Date(record.followUpDate).toLocaleDateString("pt-BR") : null} />
+        <Field
+          label="Data de acompanhamento"
+          value={
+            record.followUpDate ? new Date(record.followUpDate).toLocaleDateString("pt-BR") : null
+          }
+        />
         <Field label="Notas gerais" value={record.generalNotes} />
       </Section>
     </div>

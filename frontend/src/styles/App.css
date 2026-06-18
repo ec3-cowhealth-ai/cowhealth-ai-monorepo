@@ -50,7 +50,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;
-  height: 100vh;
+  height: 100vh; /* fallback for browsers without dvh support */
   height: 100dvh;
   overflow: hidden;
   background: var(--bg-app);
@@ -125,7 +125,7 @@
 
 .sidebar__nav-item.is-active {
   background: var(--primary-soft);
-  color: var(--primary);
+  color: var(--sidebar-active-text, var(--accent));
   border-color: var(--primary);
 }
 
@@ -560,12 +560,12 @@
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: var(--btn-primary-bg, var(--primary));
   color: var(--primary-on);
   box-shadow: var(--shadow-glow);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--btn-primary-bg-hover, var(--primary-hover));
 }
 
 .btn-secondary {
@@ -591,6 +591,7 @@
 .btn-danger {
   background: var(--danger);
   color: var(--snow);
+  border-color: var(--danger);
 }
 .btn-danger:hover:not(:disabled) {
   background: #d66d4f;
@@ -635,25 +636,25 @@
   border-radius: 50%;
 }
 .status-badge--success {
-  background: rgba(125, 226, 209, 0.16);
-  color: var(--success);
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
 }
 .status-badge--success .status-badge__dot {
-  background: var(--success);
+  background: var(--status-success-text);
 }
 .status-badge--warning {
-  background: rgba(232, 198, 107, 0.16);
-  color: var(--warning);
+  background: var(--status-warning-bg);
+  color: var(--status-warning-text);
 }
 .status-badge--warning .status-badge__dot {
-  background: var(--warning);
+  background: var(--status-warning-text);
 }
 .status-badge--danger {
-  background: rgba(232, 124, 92, 0.16);
-  color: var(--danger);
+  background: var(--status-danger-bg);
+  color: var(--status-danger-text);
 }
 .status-badge--danger .status-badge__dot {
-  background: var(--danger);
+  background: var(--status-danger-text);
 }
 .status-badge--muted {
   background: var(--bg-elev-2);
@@ -663,11 +664,11 @@
   background: var(--text-muted);
 }
 .status-badge--info {
-  background: rgba(107, 180, 232, 0.16);
-  color: var(--info);
+  background: var(--status-info-bg);
+  color: var(--status-info-text);
 }
 .status-badge--info .status-badge__dot {
-  background: var(--info);
+  background: var(--status-info-text);
 }
 
 /* KPI CARD */
@@ -831,8 +832,12 @@
 }
 
 @keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @media (min-width: 640px) {
