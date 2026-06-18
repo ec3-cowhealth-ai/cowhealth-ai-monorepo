@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useFarmContext } from "@/context/FarmContext";
+import { useBreakpoint } from "@hooks/useBreakpoint";
 import { useDashboardOverview, useCowsPerStatus } from "../hooks/useDashboard";
 import { useCows } from "@features/cows/hooks/useCows";
 import { useUnreadNotifications } from "@hooks/useNotifications";
@@ -96,9 +97,12 @@ export const DashboardPage = () => {
     setSelectedCowId(cowId);
   }, []);
 
+  const { isMobile, isTablet, isDesktop } = useBreakpoint();
+  const pad = isMobile ? "16px" : isTablet ? "20px 24px" : "24px 32px";
+
   return (
     <div className="app-page" style={{ background: C.bg, minHeight: "100%" }}>
-      <div style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ padding: pad, display: "flex", flexDirection: "column", gap: isMobile ? 16 : 24 }}>
         {/* TopBar — fiel ao preview */}
         <header
           style={{
@@ -113,7 +117,7 @@ export const DashboardPage = () => {
             <h1
               style={{
                 fontFamily: "'Instrument Serif', Georgia, serif",
-                fontSize: 42,
+                fontSize: isMobile ? 26 : 42,
                 lineHeight: 1,
                 margin: 0,
                 color: C.text,
@@ -123,7 +127,7 @@ export const DashboardPage = () => {
                 gap: 12,
               }}
             >
-              <CowHead size={38} color={C.green} />
+              <CowHead size={isMobile ? 24 : 38} color={C.green} />
               Visão geral do rebanho
             </h1>
             <div style={{ marginTop: 4, fontSize: 13, color: C.muted }}>
@@ -198,14 +202,38 @@ export const DashboardPage = () => {
           isLoadingCows={loadingCows}
         />
 
-        {/* KPIs */}
-        <DashboardKPIs overview={overview} cowsPerStatus={cowsPerStatus} />
+        {/* KPIs + Alertas */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 300px",
+            gap: isMobile ? 16 : 24,
+            alignItems: "start",
+            minWidth: 0,
+            width: "100%",
+          }}
+        >
+          <DashboardKPIs overview={overview} cowsPerStatus={cowsPerStatus} />
+          <DashboardAlertFeed
+            alerts={alerts}
+            isLoading={loadingAlerts}
+            onSelectCow={handleAlertCowSelect}
+          />
+        </div>
 
         {/* Health timeline chart */}
         <DashboardOverviewChart farmId={kpiFarmId ? Number(kpiFarmId) : undefined} />
 
-        {/* Main 3-column grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 24 }}>
+        {/* Main grid — 12 cols desktop, 1 col mobile/tablet */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isDesktop ? "repeat(12, 1fr)" : "1fr",
+            gap: isMobile ? 16 : 24,
+            minWidth: 0,
+            width: "100%",
+          }}
+        >
           <CowProfilePanel
             cowId={effectiveCowId}
             onPrev={handlePrev}
@@ -214,11 +242,6 @@ export const DashboardPage = () => {
             hasNext={hasNext}
           />
           <DashboardCenterPanel cowId={effectiveCowId} />
-          <DashboardAlertFeed
-            alerts={alerts}
-            isLoading={loadingAlerts}
-            onSelectCow={handleAlertCowSelect}
-          />
         </div>
 
         {/* Activity timeline */}

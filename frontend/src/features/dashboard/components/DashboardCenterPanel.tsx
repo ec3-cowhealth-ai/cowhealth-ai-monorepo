@@ -1,5 +1,6 @@
 import "leaflet/dist/leaflet.css";
 import { useState } from "react";
+import { useBreakpoint } from "@hooks/useBreakpoint";
 import { useQuery } from "@tanstack/react-query";
 import {
   AreaChart,
@@ -45,9 +46,10 @@ type Tab = (typeof TABS)[number];
 
 export function DashboardCenterPanel({ cowId }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("Saúde");
+  const { isDesktop, isMobile } = useBreakpoint();
 
   return (
-    <section style={{ gridColumn: "span 6", display: "flex", flexDirection: "column", gap: 16 }}>
+    <section style={{ gridColumn: isDesktop ? "span 6" : "1 / -1", minWidth: 0, width: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
       {/* Temp card */}
       <div style={{ ...cardStyle }}>
         {/* Tab bar */}
@@ -60,7 +62,7 @@ export function DashboardCenterPanel({ cowId }: Props) {
             padding: "0 20px",
           }}
         >
-          {TABS.map((t) => (
+          {TABS.filter((t) => !isMobile || t !== "Notas").map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -99,7 +101,7 @@ function HealthTab({ cowId }: { cowId: string | null }) {
   return (
     <>
       <TemperatureCard cowId={cowId} />
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginTop: 16 }}>
         <HeartRateCard cowId={cowId} />
         <RiskScoreCard cowId={cowId} />
       </div>

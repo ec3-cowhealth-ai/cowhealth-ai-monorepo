@@ -1,6 +1,7 @@
 import type { DashboardOverviewResponse, CowStatusItem } from "@services/dashboardService";
 import { C, cardStyle } from "../constants/colors";
 import { KpiIcon } from "./DashboardIcons";
+import { useBreakpoint } from "@hooks/useBreakpoint";
 
 interface Props {
   overview: DashboardOverviewResponse | undefined;
@@ -70,15 +71,6 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
       icon: "cow",
     },
     {
-      label: "Em aberto",
-      value: "--",
-      unit: "",
-      sub: "",
-      delta: "Dados em breve",
-      tone: "good",
-      icon: "circle",
-    },
-    {
       label: "Temp. média",
       value: overview?.avgTemperature != null ? String(overview.avgTemperature) : "--",
       unit: "°C",
@@ -89,8 +81,16 @@ export function DashboardKPIs({ overview, cowsPerStatus }: Props) {
     },
   ];
 
+  const { isMobile } = useBreakpoint();
+
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16 }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : `repeat(${kpis.length}, 1fr)`,
+        gap: isMobile ? 10 : 16,
+      }}
+    >
       {kpis.map((k, i) => (
         <KpiCard key={i} {...k} />
       ))}
