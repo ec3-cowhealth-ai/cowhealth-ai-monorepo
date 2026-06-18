@@ -312,7 +312,9 @@ const shuffleStatuses = (statuses: CowStatus[]): CowStatus[] => {
 
 const SHUFFLED_STATUSES = shuffleStatuses(COW_STATUS_DISTRIBUTION);
 
-const BREEDS = ["Gir", "Holandesa", "Girolando", "Jersey"];
+// Uma raça por fazenda (índice alinhado com farmData)
+// Aurora=Holandesa, SaoBento=Gir, BoaEsperanca=Girolando, SantaClara=Jersey, Trevizan=Holandesa
+const FARM_BREEDS = ["Holandesa", "Gir", "Girolando", "Jersey", "Holandesa"];
 const COW_NAMES = [
   "Mimosa",
   "Bonita",
@@ -725,7 +727,7 @@ async function main() {
       const status = SHUFFLED_STATUSES[statusIndex++];
       const tag = `BR-${String(globalIndex + 1).padStart(3, "0")}`;
       const name = COW_NAMES[cowIndex % COW_NAMES.length];
-      const breed = BREEDS[globalIndex % BREEDS.length];
+      const breed = FARM_BREEDS[farmIndex];
       const weight = Math.round(randomBetween(700, 850));
 
       // Vincula colar ACTIVE (os 160 primeiros colares)

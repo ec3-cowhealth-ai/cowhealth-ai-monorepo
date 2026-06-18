@@ -5,6 +5,7 @@ import { AppBar } from "@components/layout";
 import { LoadingSpinner, EmptyState } from "@components/common";
 import { XCircle, Edit2, ChevronDown, Stethoscope } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
+import { getCowBreedImage } from "@/utils/cowBreedImage";
 import { cowsService } from "@services/cowsService";
 import { useFarm, useUpdateFarm } from "../hooks/useFarms";
 import { useHasPermission } from "@hooks/usePermission";
@@ -422,9 +423,15 @@ export const FarmDetailPage = () => {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        overflow: "hidden",
+                        flexShrink: 0,
                       }}
                     >
-                      <CowHead size={22} color={cColor} />
+                      {getCowBreedImage(cow.breed, cow.id) ? (
+                        <img src={getCowBreedImage(cow.breed, cow.id)!} alt={cow.breed ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <CowHead size={22} color={cColor} />
+                      )}
                     </div>
                     <div style={{ minWidth: 0, width: "100%", textAlign: "center" }}>
                       <p

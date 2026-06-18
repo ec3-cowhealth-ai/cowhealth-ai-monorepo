@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { C, cardStyle } from "../constants/colors";
 import { CameraIcon, ChevronRight } from "./DashboardIcons";
+import { getCowBreedImage } from "@/utils/cowBreedImage";
 
 interface Props {
   cowId: string | null;
@@ -88,7 +89,7 @@ export function CowProfilePanel({ cowId, onPrev, onNext, hasPrev, hasNext }: Pro
       : "var(--status-success-bg)";
 
   const firstPhoto = cow.photos?.[0];
-  const photoUrl = firstPhoto ? `/uploads/${firstPhoto}` : null;
+  const photoUrl = firstPhoto ? `/uploads/${firstPhoto}` : getCowBreedImage(cow.breed, cow.id);
 
   const rows = [
     ["Fazenda", cow.farm?.name ?? "--"],

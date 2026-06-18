@@ -15,6 +15,7 @@ import {
   Plus,
 } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
+import { getCowBreedImage } from "@/utils/cowBreedImage";
 import { StatusDot } from "@components/ui/StatusDot";
 import { LineChart } from "@components/ui/LineChart";
 import { PeriodPicker } from "@components/ui/PeriodPicker";
@@ -280,6 +281,7 @@ export const CowDetailPage = () => {
   const sColor = STATUS_COLOR[cow.status] ?? C.green;
   const sBg = STATUS_BG[cow.status] ?? "var(--status-success-bg)";
   const sLabel = STATUS_LABEL[cow.status] ?? cow.status;
+  const breedImage = getCowBreedImage(cow.breed, cow.id);
 
   return (
     <div className="app-page">
@@ -324,9 +326,14 @@ export const CowDetailPage = () => {
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
+                overflow: "hidden",
               }}
             >
-              <CowHead size={36} color={sColor} />
+              {breedImage ? (
+                <img src={breedImage} alt={cow.breed ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <CowHead size={36} color={sColor} />
+              )}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1

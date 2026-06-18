@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar } from "@components/layout";
 import { LoadingSpinner, FormModal } from "@components/common";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, ChevronDown } from "lucide-react";
 import { CowHead } from "@components/ui/CowHeadIcon";
 import { useCows, useCreateCow } from "../hooks/useCows";
 import { useFarmContext } from "@/context/FarmContext";
@@ -11,6 +11,7 @@ import { PERMISSIONS } from "@config/permissions";
 import { COW_STATUS_VALUES } from "@/types/cows";
 import type { Cow } from "@/types/cows";
 import { C, cardStyle } from "@features/dashboard/constants/colors";
+import { getCowBreedImage } from "@/utils/cowBreedImage";
 
 type StatusFilter = "" | "HEALTHY" | "ALERT" | "HEAT_STRESS" | "CALVING";
 
@@ -160,11 +161,19 @@ export const CowsPage = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [showSearch, setShowSearch] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [farmFilter, setFarmFilter] = useState<string>("");
+  const [showFarmMenu, setShowFarmMenu] = useState(false);
 
   const canCRUD = useHasPermission(PERMISSIONS.CREATE_COW);
 
-  const { selectedFarm } = useFarmContext();
-  const farmId = selectedFarm ? String(selectedFarm.id) : undefined;
+  const { selectedFarm, farms } = useFarmContext();
+  const hasMultipleFarms = farms.length > 1;
+
+  // Se usuário tem múltiplas fazendas, usa o filtro local; senão usa a fazenda selecionada
+  const farmId = hasMultipleFarms
+    ? farmFilter || undefined
+    : selectedFarm ? String(selectedFarm.id) : undefined;
+
   const { data: cows, isLoading } = useCows({ farmId });
   const { mutate: createCow, isPending: creating } = useCreateCow();
 
@@ -203,7 +212,7 @@ export const CowsPage = () => {
     <div className="app-page">
       <AppBar
         title="Rebanho"
-        subtitle={`${selectedFarm?.name ?? ""} · ${counts.all} animais`}
+        subtitle={`${hasMultipleFarms ? (farmFilter ? farms.find(f => String(f.id) === farmFilter)?.name ?? "Todas as fazendas" : "Todas as fazendas") : (selectedFarm?.name ?? "")} · ${counts.all} animais`}
         actions={
           <div style={{ display: "flex", gap: 12 }}>
             <button
@@ -246,6 +255,68 @@ export const CowsPage = () => {
             boxSizing: "border-box",
           }}
         />
+      )}
+
+      {/* Farm filter — só aparece se usuário tem acesso a múltiplas fazendas */}
+      {hasMultipleFarms && (
+        <div style={{ position: "relative", alignSelf: "flex-start" }}>
+          <button
+            onClick={() => setShowFarmMenu((v) => !v)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "8px 14px",
+              borderRadius: 10,
+              border: `1px solid ${farmFilter ? C.green : C.border}`,
+              background: farmFilter ? "var(--status-success-bg)" : C.card,
+              color: farmFilter ? C.green : C.muted,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+          >
+            {farmFilter ? farms.find(f => String(f.id) === farmFilter)?.name : "Todas as fazendas"}
+            <ChevronDown size={14} />
+          </button>
+          {showFarmMenu && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                marginTop: 4,
+                background: C.card,
+                border: `1px solid ${C.border}`,
+                borderRadius: 10,
+                zIndex: 100,
+                minWidth: 200,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+              }}
+            >
+              {[{ id: "", name: "Todas as fazendas" }, ...farms.map(f => ({ id: String(f.id), name: f.name }))].map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => { setFarmFilter(f.id); setShowFarmMenu(false); }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: "10px 16px",
+                    textAlign: "left",
+                    fontSize: 13,
+                    background: farmFilter === f.id ? "var(--status-success-bg)" : "transparent",
+                    border: "none",
+                    color: farmFilter === f.id ? C.green : C.text,
+                    fontWeight: farmFilter === f.id ? 600 : 400,
+                    cursor: "pointer",
+                  }}
+                >
+                  {f.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Filter pills */}
@@ -298,7 +369,7 @@ export const CowsPage = () => {
           <p style={{ margin: 0, fontSize: 14 }}>Nenhuma vaca encontrada</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 16 }}>
           {filtered.map((cow: Cow) => {
             const sColor = STATUS_COLOR[cow.status] ?? C.green;
             const sBg = STATUS_BG[cow.status] ?? "var(--status-success-bg)";
@@ -326,9 +397,15 @@ export const CowsPage = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    overflow: "hidden",
+                    flexShrink: 0,
                   }}
                 >
-                  <CowHead size={30} color={sColor} />
+                  {getCowBreedImage(cow.breed, cow.id) ? (
+                    <img src={getCowBreedImage(cow.breed, cow.id)!} alt={cow.breed ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <CowHead size={30} color={sColor} />
+                  )}
                 </div>
 
                 <div>
@@ -336,7 +413,7 @@ export const CowsPage = () => {
                     {cow.name || cow.tag}
                   </p>
                   <p style={{ margin: "2px 0 0 0", fontSize: 11, color: C.muted }}>
-                    Brinco {cow.tag}
+                    Colar {cow.tag}
                   </p>
                 </div>
 
