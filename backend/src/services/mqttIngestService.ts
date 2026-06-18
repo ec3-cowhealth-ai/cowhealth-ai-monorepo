@@ -192,7 +192,7 @@ export const ingestMqttPayload = async (body: unknown) => {
 
   const detectedStatus = await analyzeHealth(cow.id);
 
-  if (detectedStatus && cow.status !== detectedStatus) {
+if (detectedStatus && cow.status !== detectedStatus) {
     await prisma.cow.update({
       where: { id: cow.id },
       data: { status: detectedStatus },
